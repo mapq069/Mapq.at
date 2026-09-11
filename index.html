@@ -32,9 +32,16 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 <style>
   .hero{background-image:url('DSC04780.jpg')}
   .gallery .shot{display:block}
+  .gallery .shot.extra-photo{display:block;grid-column:span 6;height:40vw}
 </style>
 <script>
-  document.querySelector('.section-title span').textContent='11 FOTOS / 2026';
+  document.querySelector('.section-title span').textContent='12 FOTOS / 2026';
   document.querySelector('.section-title h2').textContent='Galerie';
+  const gallery=document.querySelector('.gallery');
+  const extra=document.createElement('a');
+  extra.className='shot extra-photo'; extra.href='#contact';
+  extra.innerHTML='<img src="DSC04724.jpg" alt="Fotografie DSC04724" loading="eager"><span class="tag">FOTO</span>';
+  gallery.appendChild(extra);
+  extra.addEventListener('click',e=>{e.preventDefault();document.getElementById('fullImage').src=extra.querySelector('img').src;document.getElementById('lightbox').classList.add('open')});
 </script>
 </body></html>
