@@ -31,11 +31,13 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 <script>const observer=new IntersectionObserver(entries=>entries.forEach((entry,i)=>{if(entry.isIntersecting){entry.target.style.transitionDelay=(i%6)*80+'ms';entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.12});document.querySelectorAll('.shot').forEach(el=>{observer.observe(el);el.addEventListener('click',e=>{e.preventDefault();document.getElementById('fullImage').src=el.querySelector('img').src;document.getElementById('lightbox').classList.add('open')})});function closeGallery(){document.getElementById('lightbox').classList.remove('open')}</script>
 <style>
   .hero{background-image:url('DSC04780.jpg')}
-  .gallery .shot{display:block}
+  .gallery .shot{display:block;opacity:1;transform:none;filter:none;background:#050b12}
+  .gallery .shot img{filter:none}
+  .lightbox.open{display:flex}
   .gallery .shot.extra-photo{display:block;grid-column:span 6;height:40vw}
 </style>
 <script>
-  document.querySelector('.section-title span').textContent='12 FOTOS / 2026';
+  document.querySelector('.section-title span').textContent='13 FOTOS / 2026';
   document.querySelector('.section-title h2').textContent='Galerie';
   const gallery=document.querySelector('.gallery');
   const extra=document.createElement('a');
