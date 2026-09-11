@@ -58,7 +58,9 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 .gallery .shot:nth-child(7){grid-column:9 / span 3;margin-top:80px;--tilt:3deg}
 @media(max-width:700px){.gallery{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:32px 16px}.gallery .shot:nth-child(n){grid-column:1 / span 4;grid-row:auto;margin:0 0 16px}.gallery .shot:nth-child(even){grid-column:3 / span 4;margin-top:15px}.gallery .shot:nth-child(1),.gallery .shot:nth-child(3){grid-column:1 / span 6}}
 .gallery .shot img{width:100%;height:auto;display:block;filter:none}
-.gallery .shot{cursor:zoom-in}
+.gallery .shot{cursor:zoom-in;isolation:isolate}
+.gallery .shot::before{content:"";position:absolute;inset:12% -7% -70px;z-index:-1;pointer-events:none;background-image:var(--photo-backdrop);background-size:cover;background-position:center;filter:blur(25px);opacity:.55;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 30%,#000 58%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 30%,#000 58%,transparent 100%)}
+@media(max-width:700px){.gallery .shot::before{inset:12% -3% -40px;filter:blur(16px);opacity:.45}}
 #photo-view{border:0;padding:24px;background:#03070bf5;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;color:white}
 #photo-view[open]{display:flex;align-items:center;justify-content:center}
 #photo-view::backdrop{background:#03070b}
@@ -69,6 +71,18 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 <dialog id="photo-view" aria-label="Foto in Vollbild"><button type="button">Schließen ×</button><img alt=""></dialog>
 <script>
 const viewer=document.getElementById('photo-view');
+const backdrop=document.createElement('div');
+backdrop.className='page-blur';backdrop.setAttribute('aria-hidden','true');
+backdrop.innerHTML='<div></div><div></div>';
+document.body.prepend(backdrop);
+const layers=[...backdrop.children];let active=0,current='';
+function setBackdrop(src){if(src===current)return;current=src;active=1-active;layers[active].style.backgroundImage='url("'+src+'")';layers[active].style.opacity='1';layers[1-active].style.opacity='0'}
+const photos=[...document.querySelectorAll('.gallery .shot img')];
+if(photos.length)setBackdrop(photos[0].src);
+let scheduled=false;
+function updateBackdrop(){scheduled=false;let nearest=null,distance=Infinity;photos.forEach(photo=>{const rect=photo.getBoundingClientRect();const delta=Math.abs(rect.top+rect.height/2-innerHeight/2);if(delta<distance){nearest=photo;distance=delta}});if(nearest)setBackdrop(nearest.src)}
+addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateBackdrop)}},{passive:true});
+document.querySelectorAll('.gallery .shot').forEach(link=>{link.style.setProperty('--photo-backdrop','url("'+link.querySelector('img').getAttribute('src')+'")')});
 document.querySelectorAll('.gallery .shot').forEach(link=>link.addEventListener('click',event=>{
 if(typeof viewer.showModal!=='function')return;
 event.preventDefault();
@@ -80,4 +94,11 @@ viewer.showModal();
 viewer.querySelector('button').addEventListener('click',()=>viewer.close());
 viewer.addEventListener('click',event=>{if(event.target===viewer)viewer.close()});
 </script>
+<style>
+body{isolation:isolate;background:#050b12}
+.page-blur{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;-webkit-mask-image:linear-gradient(#000,rgba(0,0,0,.8) 40%,transparent 100%);mask-image:linear-gradient(#000,rgba(0,0,0,.8) 40%,transparent 100%)}
+.page-blur>div{position:absolute;inset:-70px;background-size:cover;background-position:center;filter:blur(42px) brightness(.44);opacity:0;transition:opacity 1.2s ease}
+.gallery .shot::before{display:none}
+@media(prefers-reduced-motion:reduce){.page-blur>div{transition:none}}
+</style>
 </body></html>
