@@ -23,6 +23,12 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 <main id="top"><section class="intro"><h1>DER<br><em>ECHTE</em><br>MOMENT.</h1><div class="intro-copy"><b>Matteo Hanser / Tirol</b>Automotive-, Action- und Outdoor-Fotografie. Bilder mit Bewegung, Atmosphäre und einem Hauch Blau.</div></section>
 
 
+<section class="section" id="work" aria-label="Fotografien"><div class="gallery">
+<a class="shot" href="DSC00931.jpg"><img src="DSC00931.jpg" alt="Motorrad und Fahrerin vor den Tiroler Bergen" decoding="async"></a>
+<a class="shot" href="DSC04406.jpg"><img src="DSC04406.jpg" alt="Detail am Motorrad mit blauer Felge" decoding="async"></a>
+<a class="shot" href="DSC04780.jpg"><img src="DSC04780.jpg" alt="Audi vor Wiese und Bergen" decoding="async"></a>
+<a class="shot" href="DSC04993.jpg"><img src="DSC04993.jpg" alt="Audi-Felge aus tiefer Perspektive" decoding="async"></a>
+</div></section>
 <section class="section about" id="about"><h2>LESS NOISE.<br>MORE FRAME.</h2><div><p>MAPQ sammelt echte Momente zwischen Asphalt, Bergen und Geschwindigkeit. Für Brands, Fahrer, Teams und Menschen mit einer Geschichte.</p><a href="https://www.instagram.com/mapq.raw/" target="_blank">Instagram ansehen ↗</a></div></section>
 <section class="contact" id="contact"><h2>KONTAKT.</h2><div><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com ↗</a><br><a class="social-contact" href="https://www.instagram.com/mapq.raw/" target="_blank">Instagram: @mapq.raw ↗</a><p class="dm-note">Für Shootings kannst du mir auch gerne eine DM schreiben.</p></div></section></main><footer><span>© 2026 MAPQ</span><span>VISUALS IN MOTION</span></footer>
 
@@ -37,4 +43,31 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
   @media(max-width:700px){.gallery .shot:nth-child(n){margin:0 0 16px;aspect-ratio:auto}.gallery .shot img{height:auto}}
 </style>
 
+<style>
+.gallery .shot:nth-child(n){display:block;opacity:1;filter:none;transform:none;height:auto;margin:0;aspect-ratio:auto;grid-column:span 6}
+.gallery .shot:nth-child(1),.gallery .shot:nth-child(3){grid-column:span 12}
+.gallery .shot:nth-child(2){grid-row:3}
+.gallery .shot img{width:100%;height:auto;display:block;filter:none}
+.gallery .shot{cursor:zoom-in}
+#photo-view{border:0;padding:24px;background:#03070bf5;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;color:white}
+#photo-view[open]{display:flex;align-items:center;justify-content:center}
+#photo-view::backdrop{background:#03070b}
+#photo-view img{max-width:95vw;max-height:90dvh;object-fit:contain}
+#photo-view button{position:absolute;right:20px;top:16px;background:#145eff;color:white;border:0;padding:12px 18px;cursor:pointer}
+@media(max-width:700px){.gallery .shot:nth-child(n){margin-bottom:16px}.contact>div{min-width:0}.contact a{overflow-wrap:anywhere}}
+</style>
+<dialog id="photo-view" aria-label="Foto in Vollbild"><button type="button">Schließen ×</button><img alt=""></dialog>
+<script>
+const viewer=document.getElementById('photo-view');
+document.querySelectorAll('.gallery .shot').forEach(link=>link.addEventListener('click',event=>{
+if(typeof viewer.showModal!=='function')return;
+event.preventDefault();
+const photo=link.querySelector('img');
+viewer.querySelector('img').src=link.href;
+viewer.querySelector('img').alt=photo.alt;
+viewer.showModal();
+}));
+viewer.querySelector('button').addEventListener('click',()=>viewer.close());
+viewer.addEventListener('click',event=>{if(event.target===viewer)viewer.close()});
+</script>
 </body></html>
