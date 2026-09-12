@@ -25,8 +25,8 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 
 <section class="section" id="work" aria-label="Fotografien"><div class="gallery">
 <a class="shot" href="DSC00931.jpg"><img src="DSC00931.jpg" alt="Motorrad und Fahrerin vor den Tiroler Bergen" decoding="async"></a>
-<a class="shot" href="DSC04406.jpg"><img src="DSC04406.jpg" alt="Detail am Motorrad mit blauer Felge" decoding="async"></a>
 <a class="shot" href="DSC04780.jpg"><img src="DSC04780.jpg" alt="Audi vor Wiese und Bergen" decoding="async"></a>
+<a class="shot" href="DSC04406.jpg"><img src="DSC04406.jpg" alt="Detail am Motorrad mit blauer Felge" decoding="async"></a>
 <a class="shot" href="DSC04993.jpg"><img src="DSC04993.jpg" alt="Audi-Felge aus tiefer Perspektive" decoding="async"></a>
 <a class="shot" href="DSC07814.jpg"><img src="DSC07814.jpg" alt="Blauer BMW vor einer Wiese im Abendlicht" decoding="async"></a>
 <a class="shot" href="DSC02961.jpg"><img src="DSC02961.jpg" alt="Volkswagen-Innenraum mit braunen Sitzen und offenem Schiebedach" decoding="async"></a>
@@ -137,5 +137,21 @@ body{isolation:isolate;background:#050b12}
 .gallery .shot:hover img{transform:none}
 @media(max-width:700px){.gallery .shot:nth-child(n){padding:5px}}
 @media(prefers-reduced-motion:reduce){.gallery .shot:nth-child(n),.gallery .shot::after{transition:none}}
+</style>
+<style>
+.nav .brand,.nav .brand:visited{color:#28a9ff}
+</style>
+<style>
+.gallery{grid-template-columns:repeat(12,minmax(0,1fr));gap:36px;max-width:1232px}
+.gallery .shot:nth-child(n){grid-column:span 4;grid-row:auto;margin:0;transform:none;align-self:start}
+.gallery .shot:nth-child(1),.gallery .shot:nth-child(2){grid-column:span 6}
+.gallery .shot:nth-child(9){grid-column:5/span 4}
+.gallery .shot img{width:100%;height:auto}
+@media(max-width:700px){
+.gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.gallery .shot:nth-child(n){grid-column:span 1;grid-row:auto;margin:0}
+.gallery .shot:nth-child(1),.gallery .shot:nth-child(2){grid-column:1/-1}
+.gallery .shot:nth-child(9){grid-column:1/-1;width:calc(50% - 10px);justify-self:center}
+}
 </style>
 </body></html>
