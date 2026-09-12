@@ -28,11 +28,11 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 <a class="shot" href="DSC04406.jpg"><img src="DSC04406.jpg" alt="Detail am Motorrad mit blauer Felge" decoding="async"></a>
 <a class="shot" href="DSC04780.jpg"><img src="DSC04780.jpg" alt="Audi vor Wiese und Bergen" decoding="async"></a>
 <a class="shot" href="DSC04993.jpg"><img src="DSC04993.jpg" alt="Audi-Felge aus tiefer Perspektive" decoding="async"></a>
-<a class="shot" href="DSC00127.jpg"><img src="DSC00127.jpg" alt="Hund vor den Bergen bei Sonnenuntergang" decoding="async"></a>
 <a class="shot" href="DSC07814.jpg"><img src="DSC07814.jpg" alt="Blauer BMW vor einer Wiese im Abendlicht" decoding="async"></a>
 <a class="shot" href="DSC02961.jpg"><img src="DSC02961.jpg" alt="Volkswagen-Innenraum mit braunen Sitzen und offenem Schiebedach" decoding="async"></a>
 <a class="shot" href="DSC03082.jpg"><img src="DSC03082.jpg" alt="Wanderer vor einem großen Wasserfall in den Bergen" decoding="async"></a>
 <a class="shot" href="DSC03159.jpg"><img src="DSC03159.jpg" alt="Aufeinander gestapelte Steine vor einem bewaldeten Berghang" decoding="async"></a>
+<a class="shot" href="DSC00127.jpg"><img src="DSC00127.jpg" alt="Hund vor den Bergen bei Sonnenuntergang" decoding="async"></a>
 </div></section>
 <section class="section about" id="about"><h2>LESS NOISE.<br>MORE FRAME.</h2><div><p>MAPQ sammelt echte Momente zwischen Asphalt, Bergen und Geschwindigkeit. Für Brands, Fahrer, Teams und Menschen mit einer Geschichte.</p><a href="https://www.instagram.com/mapq.raw/" target="_blank">Instagram ansehen ↗</a></div></section>
 <section class="contact" id="contact"><h2>KONTAKT.</h2><div><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com ↗</a><br><a class="social-contact" href="https://www.instagram.com/mapq.raw/" target="_blank">Instagram: @mapq.raw ↗</a><p class="dm-note">Für Shootings kannst du mir auch gerne eine DM schreiben.</p></div></section></main><footer><span>© 2026 MAPQ</span><span>VISUALS IN MOTION</span></footer>
@@ -105,5 +105,37 @@ body{isolation:isolate;background:#050b12}
 .gallery .shot::before{display:none}
 @media(prefers-reduced-motion:reduce){.page-blur>div{transition:none}}
 </style>
+<style>
+/* Asymmetrische Bildfolge: Motorrad, Automobile, Natur. */
+#work{padding-top:50px}
+.gallery{max-width:1232px;gap:clamp(36px,6vw,88px) clamp(20px,3vw,44px);grid-template-columns:repeat(12,minmax(0,1fr))}
+.gallery .shot:nth-child(n){transform:none;margin:0;grid-row:auto;height:auto;aspect-ratio:auto;box-shadow:none;align-self:start}
+.gallery .shot:nth-child(1){grid-column:1/span 8;grid-row:1}
+.gallery .shot:nth-child(2){grid-column:10/span 3;grid-row:1;margin-top:22%}
+.gallery .shot:nth-child(3){grid-column:3/span 10;grid-row:2}
+.gallery .shot:nth-child(4){grid-column:1/span 4;grid-row:3}
+.gallery .shot:nth-child(5){grid-column:6/span 4;grid-row:3;margin-top:20%}
+.gallery .shot:nth-child(6){grid-column:9/span 3;grid-row:4}
+.gallery .shot:nth-child(7){grid-column:1/span 5;grid-row:5}
+.gallery .shot:nth-child(8){grid-column:8/span 4;grid-row:5;margin-top:25%}
+.gallery .shot:nth-child(9){grid-column:4/span 5;grid-row:6}
+.gallery .shot img{transition:transform .5s ease}
+.gallery .shot:hover img{transform:scale(1.015);filter:none}
+@media(max-width:700px){
+.gallery{grid-template-columns:repeat(6,minmax(0,1fr));gap:32px 16px}
+.gallery .shot:nth-child(n){grid-column:1/span 4;grid-row:auto;margin:0;transform:none}
+.gallery .shot:nth-child(even){grid-column:3/span 4}
+.gallery .shot:nth-child(1),.gallery .shot:nth-child(3){grid-column:1/-1}
+.gallery .shot:nth-child(9){grid-column:2/span 4}
+}
+</style>
+<style>
+.gallery .shot:nth-child(n){padding:8px;background:rgba(5,11,18,.8);border:1px solid rgba(132,181,224,.28);box-shadow:0 12px 32px #0004;transition:border-color .3s ease,box-shadow .3s ease}
+.gallery .shot::after{content:"";position:absolute;inset:-1px;pointer-events:none;z-index:2;background:linear-gradient(#28a9ff,#28a9ff) left top/26px 2px no-repeat,linear-gradient(#28a9ff,#28a9ff) left top/2px 26px no-repeat,linear-gradient(#28a9ff,#28a9ff) right bottom/26px 2px no-repeat,linear-gradient(#28a9ff,#28a9ff) right bottom/2px 26px no-repeat;opacity:.85;transition:opacity .3s ease}
+.gallery .shot:hover,.gallery .shot:focus-visible{border-color:#28a9ff;box-shadow:0 0 24px #149aff26,0 16px 36px #0006;outline:2px solid transparent}
+.gallery .shot:hover::after{opacity:1}
+.gallery .shot:hover img{transform:none}
+@media(max-width:700px){.gallery .shot:nth-child(n){padding:5px}}
+@media(prefers-reduced-motion:reduce){.gallery .shot:nth-child(n),.gallery .shot::after{transition:none}}
+</style>
 </body></html>
-
