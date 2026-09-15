@@ -3,237 +3,584 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Fotoanfrage an MAPQ senden">
-  <meta name="color-scheme" content="dark">
-  <title>Anfrage — MAPQ Photography</title>
+
+  <title>MAPQ — Photography</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23050b12%22/%3E%3Cpath d=%22M15 45V21h7l10 13 10-13h7v24h-8V33l-9 11-9-11v12Z%22 fill=%22%2328a9ff%22/%3E%3C/svg%3E">
+
   <style>
     :root {
-      color-scheme: dark;
       --background: #050b12;
       --surface: #0b1521;
-      --surface-hover: #10253d;
+      --blue: #145eff;
+      --blue-light: #28a9ff;
       --text: #f3f8ff;
       --muted: #8fa6bd;
       --line: #284661;
-      --blue: #28a9ff;
-      --blue-strong: #145eff;
-      --error: #ff8c9b;
     }
-    * { box-sizing: border-box; }
-    html { min-width: 320px; }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      min-height: 100dvh;
       margin: 0;
-      background:
-        radial-gradient(circle at 82% 12%, rgba(20, 94, 255, .22), transparent 32rem),
-        radial-gradient(circle at 12% 86%, rgba(40, 169, 255, .12), transparent 30rem),
-        var(--background);
+      background: var(--background);
       color: var(--text);
       font-family: Manrope, Arial, sans-serif;
-      font-size: 1rem;
-      line-height: 1.55;
     }
-    a { color: inherit; }
-    a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
-      outline: 3px solid var(--blue);
-      outline-offset: 4px;
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
+
     .nav {
-      min-height: 5.125rem;
-      padding: 1rem 5vw;
+      min-height: 82px;
+      padding: 0 5vw;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1.5rem;
       border-bottom: 1px solid #17334c;
     }
+
     .brand {
-      color: var(--blue);
-      text-decoration: none;
-      font-size: 1.5rem;
+      color: var(--blue-light);
+      font-size: 24px;
       font-weight: 800;
       letter-spacing: -.08em;
     }
-    .back {
+
+    .links {
+      display: flex;
+      gap: 28px;
       color: var(--muted);
-      text-decoration: none;
-      font-family: "DM Mono", monospace;
-      font-size: .875rem;
-      letter-spacing: .06em;
+      font: 11px "DM Mono", monospace;
+      letter-spacing: .1em;
       text-transform: uppercase;
     }
-    .back:hover { color: var(--blue); }
-    main {
-      width: min(72rem, calc(100% - 10vw));
-      margin-inline: auto;
-      padding: clamp(3.5rem, 8vw, 7rem) 0;
-      display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(22rem, 1.1fr);
-      gap: clamp(3rem, 8vw, 8rem);
-      align-items: start;
+
+    .links a:hover {
+      color: var(--blue-light);
     }
-    .eyebrow {
-      margin: 0 0 1.3rem;
-      color: var(--blue);
-      font-family: "DM Mono", monospace;
-      font-size: .875rem;
+
+    main {
+      padding: 0 5vw;
+    }
+
+    .intro {
+      min-height: 76vh;
+      padding: 100px 0 55px;
+      display: grid;
+      grid-template-columns: 1.3fr .7fr;
+      align-items: end;
+      gap: 8vw;
+    }
+
+    .intro h1 {
+      margin: 0;
+      font-size: clamp(70px, 13vw, 190px);
+      line-height: .78;
+      letter-spacing: -.11em;
+    }
+
+    .intro h1 em {
+      color: var(--blue-light);
+      font-style: normal;
+    }
+
+    .intro-copy {
+      max-width: 320px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .intro-copy b {
+      display: block;
+      margin-bottom: 22px;
+      color: var(--blue-light);
+      font: 12px "DM Mono", monospace;
       letter-spacing: .12em;
       text-transform: uppercase;
     }
-    h1 {
+
+    .gallery-section {
+      padding: 70px 0 120px;
+    }
+
+    .gallery {
+      max-width: 1232px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 36px;
+    }
+
+    .shot {
+      grid-column: span 4;
+      display: block;
+      padding: 8px;
+      background: rgba(5, 11, 18, .8);
+      border: 1px solid rgba(132, 181, 224, .28);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .3);
+      overflow: hidden;
+      transition: border-color .3s ease, transform .3s ease;
+    }
+
+    .shot:nth-child(1),
+    .shot:nth-child(2) {
+      grid-column: span 6;
+    }
+
+    .shot:nth-child(9) {
+      grid-column: 5 / span 4;
+    }
+
+    .shot:hover {
+      border-color: var(--blue-light);
+      transform: translateY(-4px);
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .about {
+      padding: 100px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10vw;
+      border-top: 1px solid #17334c;
+    }
+
+    .about h2 {
       margin: 0;
-      font-size: clamp(3.5rem, 8vw, 7.5rem);
-      line-height: .85;
+      font-size: clamp(38px, 6vw, 80px);
+      line-height: .9;
       letter-spacing: -.09em;
     }
-    .intro {
-      max-width: 28rem;
-      margin: 2rem 0 0;
+
+    .about p {
+      max-width: 380px;
+      margin: 0;
       color: var(--muted);
-      font-size: 1.0625rem;
+      line-height: 1.65;
     }
-    .contact-form {
-      padding: clamp(1.5rem, 4vw, 2.75rem);
-      background: rgba(11, 21, 33, .9);
-      border: 1px solid var(--line);
-      box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .3);
+
+    .about a {
+      display: inline-block;
+      margin-top: 28px;
+      color: var(--blue-light);
+      font: 12px "DM Mono", monospace;
+      text-transform: uppercase;
     }
-    .field { margin-bottom: 1.5rem; }
-    label {
-      display: block;
-      margin-bottom: .55rem;
-      font-family: "DM Mono", monospace;
-      font-size: .875rem;
-      color: #c7dcf2;
+
+    .request-cta {
+      display: flex;
+      justify-content: center;
+      margin: 50px auto 30px;
     }
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: .95rem 1rem;
-      background: var(--background);
-      color: var(--text);
-      font: inherit;
-      transition: border-color .2s ease, background .2s ease;
-    }
-    input:hover, select:hover, textarea:hover { border-color: var(--blue); }
-    input:focus, select:focus, textarea:focus { background: var(--surface-hover); }
-    select { cursor: pointer; }
-    option { background: var(--surface); color: var(--text); }
-    textarea { min-height: 11rem; resize: vertical; }
-    ::placeholder { color: #71879d; opacity: 1; }
-    .submit {
-      width: 100%;
-      min-height: 3.6rem;
-      border: 0;
-      padding: .9rem 1.25rem;
-      background: var(--blue-strong);
+
+    .request-cta a {
+      min-width: 240px;
+      padding: 19px 34px;
+      background: var(--blue);
       color: white;
-      font: 700 1rem Manrope, Arial, sans-serif;
-      cursor: pointer;
-      transition: background .2s ease, transform .2s ease;
+      border: 1px solid var(--blue-light);
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
     }
-    .submit:hover { background: var(--blue); }
-    .submit:active { transform: translateY(1px); }
-    .note {
-      margin: 1rem 0 0;
+
+    .request-cta a:hover {
+      background: var(--blue-light);
+      color: var(--background);
+      transform: translateY(-3px);
+    }
+
+    .instagram-card {
+      max-width: 900px;
+      margin: 30px auto 80px;
+      padding: 32px;
+      background: rgba(5, 11, 18, .92);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, .3);
+    }
+
+    .instagram-heading {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .instagram-heading svg {
+      margin-left: auto;
+      color: var(--blue-light);
+    }
+
+    .instagram-avatar {
+      width: 66px;
+      height: 66px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 2px solid var(--blue-light);
+      border-radius: 50%;
+      background: black;
+    }
+
+    .instagram-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .instagram-label {
       color: var(--muted);
-      font-size: .875rem;
+      font-size: 10px;
+      letter-spacing: .18em;
     }
-    .status {
-      min-height: 1.5rem;
-      margin: .75rem 0 0;
-      color: var(--error);
-      font-size: .875rem;
+
+    .instagram-heading h2 {
+      margin: 3px 0;
+      font-size: 28px;
+      letter-spacing: -.04em;
     }
-    @media (max-width: 760px) {
-      .nav { min-height: 4.25rem; }
-      main {
-        width: calc(100% - 2.5rem);
-        grid-template-columns: 1fr;
-        padding: 3.5rem 0;
+
+    .instagram-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .instagram-description {
+      margin: 24px 0;
+      color: #c7dcf2;
+      line-height: 1.7;
+    }
+
+    .instagram-preview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    .instagram-preview img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+
+    .instagram-bottom {
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .instagram-bottom span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .instagram-bottom a {
+      padding: 14px 20px;
+      background: var(--blue);
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .contact {
+      margin: 100px -5vw 0;
+      padding: 80px 5vw;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      background: var(--blue);
+      color: white;
+    }
+
+    .contact h2 {
+      margin: 0;
+      font-size: clamp(70px, 14vw, 180px);
+      line-height: .8;
+      letter-spacing: -.1em;
+    }
+
+    .contact a {
+      padding-bottom: 8px;
+      border-bottom: 1px solid white;
+      font: 16px "DM Mono", monospace;
+    }
+
+    .dm-note {
+      max-width: 420px;
+      margin-top: 18px;
+      color: #c7dcf2;
+      font-size: 15px;
+    }
+
+    footer {
+      padding: 24px 5vw;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font: 10px "DM Mono", monospace;
+    }
+
+    @media (max-width: 700px) {
+      .nav {
+        min-height: 68px;
       }
-      h1 { font-size: clamp(3.75rem, 17vw, 6rem); }
-      .contact-form { padding: 1.25rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { transition: none !important; }
+
+      .links {
+        gap: 14px;
+      }
+
+      .links a:first-child {
+        display: none;
+      }
+
+      .intro {
+        min-height: auto;
+        padding: 80px 0 50px;
+        display: block;
+      }
+
+      .intro-copy {
+        margin-top: 45px;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .shot,
+      .shot:nth-child(1),
+      .shot:nth-child(2) {
+        grid-column: span 1;
+      }
+
+      .shot:nth-child(9) {
+        grid-column: 1 / -1;
+        width: calc(50% - 10px);
+        justify-self: center;
+      }
+
+      .about {
+        display: block;
+        padding: 80px 0;
+      }
+
+      .about p {
+        margin-top: 38px;
+      }
+
+      .request-cta {
+        margin: 30px auto 18px;
+      }
+
+      .request-cta a {
+        width: 100%;
+      }
+
+      .instagram-card {
+        margin: 18px auto 50px;
+        padding: 20px;
+      }
+
+      .instagram-bottom {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .instagram-bottom a {
+        text-align: center;
+      }
+
+      .contact {
+        display: block;
+        padding: 65px 5vw;
+      }
+
+      .contact div {
+        margin-top: 50px;
+      }
+
+      .contact a {
+        overflow-wrap: anywhere;
+      }
     }
   </style>
 </head>
+
 <body>
-  <nav class="nav" aria-label="Navigation">
-    <a class="brand" href="/">MAPQ</a>
-    <a class="back" href="/">← Zurück zur Startseite</a>
+  <nav class="nav">
+    <a class="brand" href="#top">MAPQ</a>
+
+    <div class="links">
+      <a href="#about">Über mich</a>
+      <a href="#contact">Kontakt</a>
+    </div>
   </nav>
 
-  <main>
-    <section aria-labelledby="page-title">
-      <p class="eyebrow">Fotoanfrage / Tirol</p>
-      <h1 id="page-title">DEINE<br>IDEE.<br>MEIN<br>FRAME.</h1>
-      <p class="intro">Erzähl mir kurz, was du fotografieren lassen möchtest. Beim Senden öffnet sich dein E-Mail-Programm mit der fertigen Anfrage.</p>
+  <main id="top">
+    <section class="intro">
+      <h1>
+        DER<br>
+        <em>ECHTE</em><br>
+        MOMENT.
+      </h1>
+
+      <div class="intro-copy">
+        <b>Matteo Hanser / Tirol</b>
+        Automotive-, Action- und Outdoor-Fotografie. Bilder mit Bewegung,
+        Atmosphäre und einem Hauch Blau.
+      </div>
     </section>
 
-    <form class="contact-form" id="contact-form">
-      <div class="field">
-        <label for="email">Deine E-Mail-Adresse</label>
-        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@beispiel.at" required>
+    <section class="gallery-section" aria-label="Fotografien">
+      <div class="gallery">
+        <a class="shot" href="DSC00931.jpg">
+          <img src="DSC00931.jpg" alt="Motorrad vor den Tiroler Bergen">
+        </a>
+
+        <a class="shot" href="DSC04780.jpg">
+          <img src="DSC04780.jpg" alt="Audi vor Wiese und Bergen">
+        </a>
+
+        <a class="shot" href="DSC04406.jpg">
+          <img src="DSC04406.jpg" alt="Motorrad mit blauer Felge">
+        </a>
+
+        <a class="shot" href="DSC04993.jpg">
+          <img src="DSC04993.jpg" alt="Autofelge aus tiefer Perspektive">
+        </a>
+
+        <a class="shot" href="DSC07814.jpg">
+          <img src="DSC07814.jpg" alt="Blauer BMW im Abendlicht">
+        </a>
+
+        <a class="shot" href="DSC02961.jpg">
+          <img src="DSC02961.jpg" alt="Innenraum eines Autos">
+        </a>
+
+        <a class="shot" href="DSC03082.jpg">
+          <img src="DSC03082.jpg" alt="Wanderer vor einem Wasserfall">
+        </a>
+
+        <a class="shot" href="DSC03159.jpg">
+          <img src="DSC03159.jpg" alt="Steine vor einem Berg">
+        </a>
+
+        <a class="shot" href="DSC00127.jpg">
+          <img src="DSC00127.jpg" alt="Hund bei Sonnenuntergang">
+        </a>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <h2>LESS NOISE.<br>MORE FRAME.</h2>
+
+      <div>
+        <p>
+          MAPQ sammelt echte Momente zwischen Asphalt, Bergen und Geschwindigkeit.
+          Für Brands, Fahrer, Teams und Menschen mit einer Geschichte.
+        </p>
+
+        <a href="https://www.instagram.com/mapq.raw/" target="_blank" rel="noopener">
+          Instagram ansehen ↗
+        </a>
+      </div>
+    </section>
+
+    <!-- dieser button führt zur neuen anfrageseite -->
+    <section class="request-cta" aria-label="Fotoanfrage">
+      <a href="/anfrage/">Anfragen</a>
+    </section>
+
+    <!-- instagram-bereich -->
+    <section class="instagram-card" aria-label="Instagram von MAPQ">
+      <div class="instagram-heading">
+        <span class="instagram-avatar">
+          <img src="mapq-instagram-profile.png" alt="MAPQ RAW Profilbild">
+        </span>
+
+        <div>
+          <span class="instagram-label">INSTAGRAM</span>
+          <h2>@mapq.raw</h2>
+          <p>Matteo Hanser · Tirol</p>
+        </div>
+
+        <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+          <circle cx="12" cy="12" r="4"></circle>
+          <circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"></circle>
+        </svg>
       </div>
 
-      <div class="field">
-        <label for="subject">Was soll fotografiert werden?</label>
-        <select id="subject" name="subject" required>
-          <option value="" selected disabled>Bitte auswählen</option>
-          <option value="Auto">Auto</option>
-          <option value="Motorrad">Motorrad</option>
-          <option value="Porträt">Porträt</option>
-          <option value="Event">Event</option>
-          <option value="Outdoor oder Natur">Outdoor oder Natur</option>
-          <option value="Sonstiges">Sonstiges</option>
-        </select>
-      </div>
+      <p class="instagram-description">
+        Asphalt. Berge. Echte Momente.<br>
+        Deine Idee fürs nächste Shooting? Schreib mir auf Instagram.
+      </p>
 
-      <div class="field">
-        <label for="message">Deine Nachricht</label>
-        <textarea id="message" name="message" placeholder="Beschreibe deine Idee, den Ort und einen möglichen Termin" maxlength="3000" required></textarea>
-      </div>
+      <a class="instagram-preview"
+        href="https://www.instagram.com/mapq.raw/"
+        target="_blank"
+        rel="noopener">
+        <img src="DSC00931.jpg" alt="Motorrad vor Bergen">
+        <img src="DSC04780.jpg" alt="Audi in der Landschaft">
+        <img src="DSC00127.jpg" alt="Hund bei Sonnenuntergang">
+      </a>
 
-      <button class="submit" type="submit">Anfrage senden →</button>
-      <p class="note">Deine Angaben werden nicht auf dieser Website gespeichert.</p>
-      <p class="status" id="status" aria-live="polite"></p>
-      <noscript><p class="note">Bitte sende deine Anfrage direkt an Matteohanser8@gmail.com.</p></noscript>
-    </form>
+      <div class="instagram-bottom">
+        <span>Eine Auswahl meiner Fotografie</span>
+
+        <a href="https://www.instagram.com/mapq.raw/"
+          target="_blank"
+          rel="noopener">
+          Auf Instagram schreiben ↗
+        </a>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <h2>KONTAKT.</h2>
+
+      <div>
+        <a href="mailto:Matteohanser8@gmail.com">
+          Matteohanser8@gmail.com ↗
+        </a>
+
+        <p class="dm-note">
+          Für Shootings kannst du mir auch gerne eine DM schreiben.
+        </p>
+      </div>
+    </section>
   </main>
 
-  <script>
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("status");
-
-    form.addEventListener("submit", event => {
-      event.preventDefault();
-
-      if (!form.reportValidity()) return;
-
-      const email = document.getElementById("email").value.trim();
-      const subject = document.getElementById("subject").value.trim();
-      const message = document.getElementById("message").value.trim();
-
-      if (!email || !subject || !message) {
-        status.textContent = "Bitte fülle alle Felder aus.";
-        return;
-      }
-
-      const mailSubject = `Fotoanfrage: ${subject}`;
-      const mailBody = `E-Mail-Adresse: ${email}\n\nWas soll fotografiert werden?\n${subject}\n\nNachricht:\n${message}`;
-      const mailto = `mailto:Matteohanser8@gmail.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-
-      status.textContent = "Dein E-Mail-Programm wird geöffnet.";
-      window.location.href = mailto;
-    });
-  </script>
+  <footer>
+    <span>© 2026 MAPQ</span>
+    <span>VISUALS IN MOTION</span>
+  </footer>
 </body>
 </html>
