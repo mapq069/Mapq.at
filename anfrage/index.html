@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="Fotoanfrage an MAPQ senden">
+  <meta name="color-scheme" content="dark">
+
+  <title>Anfrage — MAPQ Photography</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #050b12;
+      --surface: #0b1521;
+      --surface-hover: #10253d;
+      --text: #f3f8ff;
+      --muted: #8fa6bd;
+      --line: #284661;
+      --blue: #28a9ff;
+      --blue-strong: #145eff;
+      --error: #ff8c9b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(20, 94, 255, .22), transparent 32rem),
+        radial-gradient(circle at 12% 86%, rgba(40, 169, 255, .12), transparent 30rem),
+        var(--background);
+      color: var(--text);
+      font-family: Manrope, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .nav {
+      min-height: 82px;
+      padding: 16px 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid #17334c;
+    }
+
+    .brand {
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.08em;
+    }
+
+    .back {
+      color: var(--muted);
+      text-decoration: none;
+      font-family: "DM Mono", monospace;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .back:hover {
+      color: var(--blue);
+    }
+
+    main {
+      width: min(1152px, 90%);
+      margin: auto;
+      padding: clamp(56px, 8vw, 112px) 0;
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: clamp(48px, 8vw, 128px);
+      align-items: start;
+    }
+
+    .eyebrow {
+      margin: 0 0 20px;
+      color: var(--blue);
+      font-family: "DM Mono", monospace;
+      font-size: 14px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(56px, 8vw, 120px);
+      line-height: .85;
+      letter-spacing: -.09em;
+    }
+
+    .intro {
+      max-width: 450px;
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .contact-form {
+      padding: clamp(24px, 4vw, 44px);
+      background: rgba(11, 21, 33, .9);
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .3);
+    }
+
+    .field {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      color: #c7dcf2;
+      font-family: "DM Mono", monospace;
+      font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 15px 16px;
+      background: var(--background);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 0;
+      font: inherit;
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+      border-color: var(--blue);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      background: var(--surface-hover);
+      outline: 3px solid var(--blue);
+      outline-offset: 3px;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    option {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 176px;
+      resize: vertical;
+    }
+
+    ::placeholder {
+      color: #71879d;
+    }
+
+    .submit {
+      width: 100%;
+      min-height: 58px;
+      padding: 14px 20px;
+      background: var(--blue-strong);
+      color: white;
+      border: 0;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .submit:hover {
+      background: var(--blue);
+    }
+
+    .note {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status {
+      min-height: 24px;
+      margin: 12px 0 0;
+      color: var(--error);
+      font-size: 14px;
+    }
+
+    @media (max-width: 760px) {
+      .nav {
+        min-height: 68px;
+      }
+
+      main {
+        width: calc(100% - 40px);
+        grid-template-columns: 1fr;
+        padding: 56px 0;
+      }
+
+      h1 {
+        font-size: clamp(60px, 17vw, 96px);
+      }
+
+      .contact-form {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav">
+    <a class="brand" href="/">MAPQ</a>
+    <a class="back" href="/">← Zurück zur Startseite</a>
+  </nav>
+
+  <main>
+    <section>
+      <p class="eyebrow">Fotoanfrage / Tirol</p>
+
+      <h1>
+        DEINE<br>
+        IDEE.<br>
+        MEIN<br>
+        FRAME.
+      </h1>
+
+      <p class="intro">
+        Erzähl mir kurz, was du fotografieren lassen möchtest.
+        Beim Senden öffnet sich dein E-Mail-Programm mit der fertigen Anfrage.
+      </p>
+    </section>
+
+    <form class="contact-form" id="contact-form">
+      <div class="field">
+        <label for="email">Deine E-Mail-Adresse</label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="name@beispiel.at"
+          required>
+      </div>
+
+      <div class="field">
+        <label for="subject">Was soll fotografiert werden?</label>
+
+        <select id="subject" name="subject" required>
+          <option value="" selected disabled>Bitte auswählen</option>
+          <option value="Auto">Auto</option>
+          <option value="Motorrad">Motorrad</option>
+          <option value="Porträt">Porträt</option>
+          <option value="Event">Event</option>
+          <option value="Outdoor oder Natur">Outdoor oder Natur</option>
+          <option value="Sonstiges">Sonstiges</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="message">Deine Nachricht</label>
+
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Beschreibe deine Idee, den Ort und einen möglichen Termin"
+          maxlength="3000"
+          required></textarea>
+      </div>
+
+      <button class="submit" type="submit">
+        Anfrage senden →
+      </button>
+
+      <p class="note">
+        Deine Angaben werden nicht auf dieser Website gespeichert.
+      </p>
+
+      <p class="status" id="status"></p>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById("contact-form");
+    const statusText = document.getElementById("status");
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      const email = document.getElementById("email").value.trim();
+      const subject = document.getElementById("subject").value;
+      const message = document.getElementById("message").value.trim();
+
+      if (!email || !subject || !message) {
+        statusText.textContent = "Bitte fülle alle Felder aus.";
+        return;
+      }
+
+      const mailSubject = "Fotoanfrage: " + subject;
+
+      const mailBody =
+        "E-Mail-Adresse: " + email +
+        "\n\nWas soll fotografiert werden?\n" + subject +
+        "\n\nNachricht:\n" + message;
+
+      const mailLink =
+        "mailto:Matteohanser8@gmail.com" +
+        "?subject=" + encodeURIComponent(mailSubject) +
+        "&body=" + encodeURIComponent(mailBody);
+
+      statusText.textContent = "Dein E-Mail-Programm wird geöffnet.";
+      window.location.href = mailLink;
+    });
+  </script>
+</body>
+</html>
