@@ -1,5 +1,38 @@
 <!doctype html>
 <html lang="de">
+  <style>
+.intro-with-button {
+  grid-template-columns: minmax(0, 1.3fr) auto minmax(260px, .7fr);
+  gap: clamp(25px, 4vw, 70px);
+}
+
+.current-images-button {
+  align-self: end;
+  margin-bottom: 45px;
+  padding: 17px 28px;
+  background: #145eff;
+  color: white;
+  border: 1px solid #28a9ff;
+  font: 700 14px Manrope, sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.current-images-button:hover {
+  background: #28a9ff;
+  color: #050b12;
+}
+
+@media (max-width: 700px) {
+  .current-images-button {
+    display: block;
+    width: 100%;
+    margin: 30px 0 0;
+  }
+}
+</style>
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MAPQ — Photography</title>
@@ -20,8 +53,30 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 </style>
 </head><body>
 <nav class="nav"><a class="brand" href="#top">MAPQ</a><div class="links"><a href="#about">Über mich</a><a href="#contact">Kontakt</a></div></nav>
-<main id="top"><section class="intro"><h1>DER<br><em>ECHTE</em><br>MOMENT.</h1><div class="intro-copy"><b>Matteo Hanser / Tirol</b>Automotive-, Action- und Outdoor-Fotografie. Bilder mit Bewegung, Atmosphäre und einem Hauch Blau.</div></section>
+<<main id="top">
 
+<section class="intro intro-with-button">
+
+  <h1>
+    DER<br>
+    <em>ECHTE</em><br>
+    MOMENT.
+  </h1>
+
+  <a class="current-images-button"
+     href="https://drive.google.com/drive/folders/1jyVHDlOn9tCoSueNOa9N6unC9Cpwh2CO?usp=drive_link"
+     target="_blank"
+     rel="noopener noreferrer">
+    Aktuelle Bilder
+  </a>
+
+  <div class="intro-copy">
+    <b>Matteo Hanser / Tirol</b>
+    Automotive-, Action- und Outdoor-Fotografie. Bilder mit Bewegung,
+    Atmosphäre und einem Hauch Blau.
+  </div>
+
+</section>
 
 <section class="section" id="work" aria-label="Fotografien"><div class="gallery">
 <a class="shot" href="DSC00931.jpg"><img src="DSC00931.jpg" alt="Motorrad und Fahrerin vor den Tiroler Bergen" decoding="async"></a>
