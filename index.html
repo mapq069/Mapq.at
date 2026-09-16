@@ -35,7 +35,7 @@
 </style>
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAPQ — Photography</title>
+<title>Galerie — MAPQ Photography</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -52,65 +52,28 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 .shot{opacity:0;transform:translateY(48px) scale(.96);filter:blur(3px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1),filter .8s ease}.shot.visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
 </style>
 <style>
-.gallery-entry{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;max-width:900px;margin:auto;padding:32px 36px;background:linear-gradient(120deg,#0b1725,#050b12);border:1px solid #28a9ff65;border-left:4px solid #28a9ff;border-radius:16px;color:#f3f8ff;transition:border-color .2s ease,background .2s ease}
-.gallery-entry-label{display:block;margin-bottom:12px;font:14px "DM Mono",monospace;letter-spacing:.12em;color:#8fa6bd}
-.gallery-entry-title{display:block;font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-.05em;line-height:1.2}
-.gallery-entry-arrow{font-size:56px;line-height:1;color:#28a9ff;transition:transform .2s ease}
-.gallery-entry:hover{border-color:#28a9ff;background:#10253d}
-.gallery-entry:hover .gallery-entry-arrow{transform:translate(4px,-4px)}
-.gallery-entry:focus-visible{outline:3px solid #28a9ff;outline-offset:5px}
-@media(max-width:700px){.gallery-entry{padding:24px 20px;gap:14px}.gallery-entry-label{letter-spacing:.04em}.gallery-entry-arrow{font-size:40px}}
-@media(prefers-reduced-motion:reduce){.gallery-entry,.gallery-entry-arrow{transition:none}.gallery-entry:hover .gallery-entry-arrow{transform:none}}
+.gallery-heading{padding:70px 0 20px}
+.gallery-heading p{font:14px "DM Mono",monospace;color:#28a9ff;letter-spacing:.1em}
+.gallery-heading h1{font-size:clamp(46px,8vw,110px);line-height:1.05;letter-spacing:-.07em;margin:20px 0}
+.gallery-heading a{display:inline-block;padding:12px 0;font-size:16px;color:#8fa6bd}
+.gallery-heading a:hover{color:#28a9ff}
 </style>
 </head><body>
-<nav class="nav"><a class="brand" href="#top">MAPQ</a><div class="links"><a href="#about">Über mich</a><a href="#contact">Kontakt</a></div></nav>
+<nav class="nav"><a class="brand" href="../index.html">MAPQ</a><div class="links"><a href="../index.html#about">Über mich</a><a href="../index.html">← Startseite</a></div></nav>
 <main id="top">
-
-<section class="intro intro-with-button">
-
-  <h1>
-    DER<br>
-    <em>ECHTE</em><br>
-    MOMENT.
-  </h1>
-
-  <a class="current-images-button"
-     href="https://drive.google.com/drive/folders/1jyVHDlOn9tCoSueNOa9N6unC9Cpwh2CO?usp=drive_link"
-     target="_blank"
-     rel="noopener noreferrer">
-    Aktuelle Bilder
-  </a>
-
-  <div class="intro-copy">
-    <b>Matteo Hanser / Tirol</b>
-    Automotive-, Action- und Outdoor-Fotografie. Bilder mit Bewegung,
-    Atmosphäre und einem Hauch Blau.
-  </div>
-
-</section>
-
-<section class="section" id="work" aria-label="Galerie öffnen">
-  <a class="gallery-entry" href="galerie/index.html">
-    <span><span class="gallery-entry-label">PORTFOLIO / 9 FOTOGRAFIEN</span><span class="gallery-entry-title">Bilder ansehen</span></span>
-    <span class="gallery-entry-arrow" aria-hidden="true">↗</span>
-  </a>
-</section>
-<section class="section about" id="about"><h2>LESS NOISE.<br>MORE FRAME.</h2><div><p>MAPQ sammelt echte Momente zwischen Asphalt, Bergen und Geschwindigkeit. Für Brands, Fahrer, Teams und Menschen mit einer Geschichte.</p><a href="https://www.instagram.com/mapq.raw/" target="_blank">Instagram ansehen ↗</a></div></section>
-
-<div style="display:flex;justify-content:center;margin:70px auto 25px;">
-  <a href="anfrage/index.html"
-     style="display:inline-block;padding:18px 40px;background:#145eff;color:white;border:1px solid #28a9ff;text-decoration:none;font-family:Manrope,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">
-    Anfragen
-  </a>
-</div>
-  
-<section class="instagram-card" aria-label="Instagram von MAPQ">
-<div class="instagram-heading"><span class="instagram-avatar"><img src="mapq-instagram-profile.png" alt="MAPQ RAW Profilbild"></span><div><span class="instagram-label">INSTAGRAM</span><h2>@mapq.raw</h2><p>Matteo Hanser · Tirol</p></div><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg></div>
-<p class="instagram-description">Asphalt. Berge. Echte Momente.<br>Deine Idee fürs nächste Shooting? Schreib mir auf Instagram.</p>
-<a class="instagram-preview" href="https://www.instagram.com/mapq.raw/" target="_blank" rel="noopener noreferrer" aria-label="Instagram-Profil von mapq.raw öffnen"><img src="DSC00931.jpg" alt="Motorrad vor den Bergen" loading="lazy"><img src="DSC04780.jpg" alt="Audi in der Landschaft" loading="lazy"><img src="DSC00127.jpg" alt="Hund bei Sonnenuntergang" loading="lazy"></a>
-<div class="instagram-bottom"><span>Eine Auswahl meiner Fotografie</span><a href="https://www.instagram.com/mapq.raw/" target="_blank" rel="noopener noreferrer">Auf Instagram schreiben ↗</a></div>
-</section>
-<section class="contact" id="contact"><h2>KONTAKT.</h2><div><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com ↗</a><p class="dm-note">Für Shootings kannst du mir auch gerne eine DM schreiben.</p></div></section></main><footer><span>© 2026 MAPQ</span><span>VISUALS IN MOTION</span></footer>
+<header class="gallery-heading"><p>MAPQ / PORTFOLIO</p><h1>Meine Bilder.</h1><a href="../index.html">← Zurück zur Startseite</a></header>
+<section class="section" id="work" aria-label="Fotografien"><div class="gallery">
+<a class="shot" href="../DSC00931.jpg"><img src="../DSC00931.jpg" alt="Motorrad und Fahrerin vor den Tiroler Bergen" decoding="async"></a>
+<a class="shot" href="../DSC04780.jpg"><img src="../DSC04780.jpg" alt="Audi vor Wiese und Bergen" decoding="async"></a>
+<a class="shot" href="../DSC04406.jpg"><img src="../DSC04406.jpg" alt="Detail am Motorrad mit blauer Felge" decoding="async"></a>
+<a class="shot" href="../DSC04993.jpg"><img src="../DSC04993.jpg" alt="Audi-Felge aus tiefer Perspektive" decoding="async"></a>
+<a class="shot" href="../DSC07814.jpg"><img src="../DSC07814.jpg" alt="Blauer BMW vor einer Wiese im Abendlicht" decoding="async"></a>
+<a class="shot" href="../DSC02961.jpg"><img src="../DSC02961.jpg" alt="Volkswagen-Innenraum mit braunen Sitzen und offenem Schiebedach" decoding="async"></a>
+<a class="shot" href="../DSC03082.jpg"><img src="../DSC03082.jpg" alt="Wanderer vor einem großen Wasserfall in den Bergen" decoding="async"></a>
+<a class="shot" href="../DSC03159.jpg"><img src="../DSC03159.jpg" alt="Aufeinander gestapelte Steine vor einem bewaldeten Berghang" decoding="async"></a>
+<a class="shot" href="../DSC00127.jpg"><img src="../DSC00127.jpg" alt="Hund vor den Bergen bei Sonnenuntergang" decoding="async"></a>
+</div></section>
+</main><footer><span>© 2026 MAPQ</span><span>VISUALS IN MOTION</span></footer>
 
 
 <style>
@@ -147,18 +110,31 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 #photo-view button{position:absolute;right:20px;top:16px;background:#145eff;color:white;border:0;padding:12px 18px;cursor:pointer}
 @media(max-width:700px){.gallery .shot:nth-child(n){margin-bottom:16px}.contact>div{min-width:0}.contact a{overflow-wrap:anywhere}}
 </style>
-
+<dialog id="photo-view" aria-label="Foto in Vollbild"><button type="button">Schließen ×</button><img alt=""></dialog>
 <script>
-(() => {
-  const backdrop = document.createElement("div");
-  backdrop.className = "page-blur";
-  backdrop.setAttribute("aria-hidden", "true");
-  const layer = document.createElement("div");
-  layer.style.backgroundImage = 'url("DSC00931.jpg")';
-  layer.style.opacity = "1";
-  backdrop.append(layer);
-  document.body.prepend(backdrop);
-})();
+const viewer=document.getElementById('photo-view');
+const backdrop=document.createElement('div');
+backdrop.className='page-blur';backdrop.setAttribute('aria-hidden','true');
+backdrop.innerHTML='<div></div><div></div>';
+document.body.prepend(backdrop);
+const layers=[...backdrop.children];let active=0,current='';
+function setBackdrop(src){if(src===current)return;current=src;active=1-active;layers[active].style.backgroundImage='url("'+src+'")';layers[active].style.opacity='1';layers[1-active].style.opacity='0'}
+const photos=[...document.querySelectorAll('.gallery .shot img')];
+if(photos.length)setBackdrop(photos[0].src);
+let scheduled=false;
+function updateBackdrop(){scheduled=false;let nearest=null,distance=Infinity;photos.forEach(photo=>{const rect=photo.getBoundingClientRect();const delta=Math.abs(rect.top+rect.height/2-innerHeight/2);if(delta<distance){nearest=photo;distance=delta}});if(nearest)setBackdrop(nearest.src)}
+addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateBackdrop)}},{passive:true});
+document.querySelectorAll('.gallery .shot').forEach(link=>{link.style.setProperty('--photo-backdrop','url("'+link.querySelector('img').getAttribute('src')+'")')});
+document.querySelectorAll('.gallery .shot').forEach(link=>link.addEventListener('click',event=>{
+if(typeof viewer.showModal!=='function')return;
+event.preventDefault();
+const photo=link.querySelector('img');
+viewer.querySelector('img').src=link.href;
+viewer.querySelector('img').alt=photo.alt;
+viewer.showModal();
+}));
+viewer.querySelector('button').addEventListener('click',()=>viewer.close());
+viewer.addEventListener('click',event=>{if(event.target===viewer)viewer.close()});
 </script>
 <style>
 body{isolation:isolate;background:#050b12}
