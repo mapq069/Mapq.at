@@ -70,14 +70,20 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 <style>
 .site-bg-video{position:fixed;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);object-fit:cover;object-position:center;transform:scale(1.04);z-index:-2;pointer-events:none}
 .site-bg-tint{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(5,11,18,.3),rgba(5,11,18,.62) 65%,rgba(5,11,18,.82))}
+.sound-toggle{position:fixed;right:clamp(14px,3vw,36px);bottom:clamp(14px,3vw,36px);z-index:40;display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid #28a9ff;background:rgba(5,11,18,.88);color:#f3f8ff;border-radius:999px;font:700 12px "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 10px 35px rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.sound-toggle:hover{background:#145eff}.sound-toggle:focus-visible{outline:3px solid #f3f8ff;outline-offset:4px}.sound-toggle-icon{color:#28a9ff;font-size:16px}.sound-toggle:hover .sound-toggle-icon{color:#fff}
 .page-blur{display:none!important}
 @media(prefers-reduced-motion:reduce){.site-bg-video{display:none}}
 </style>
 </head><body>
-<video class="site-bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
+<video id="site-background-video" class="site-bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
   <source src="mapq-background.mp4" type="video/mp4">
 </video>
 <div class="site-bg-tint" aria-hidden="true"></div>
+<button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="false" aria-label="Videoton einschalten">
+  <span class="sound-toggle-icon" aria-hidden="true">◉</span>
+  <span class="sound-toggle-text">Sound an</span>
+</button>
 <nav class="nav"><a class="brand" href="#top">MAPQ</a><div class="links"><a href="#about">Über mich</a><a href="#contact">Kontakt</a></div></nav>
 <main id="top">
 
@@ -265,4 +271,30 @@ body{isolation:isolate;background:#050b12}
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"f34a1b9dc3cb495fab979d2ad94c5ae0"}'></script>
 <!-- End Cloudflare Web Analytics -->
+<script>
+(() => {
+  const video = document.getElementById("site-background-video");
+  const button = document.getElementById("sound-toggle");
+  const label = button?.querySelector(".sound-toggle-text");
+
+  if (!video || !button || !label) return;
+
+  button.addEventListener("click", async () => {
+    video.muted = !video.muted;
+
+    if (!video.muted) {
+      try {
+        await video.play();
+      } catch {
+        video.muted = true;
+      }
+    }
+
+    const soundIsOn = !video.muted;
+    button.setAttribute("aria-pressed", String(soundIsOn));
+    button.setAttribute("aria-label", soundIsOn ? "Videoton ausschalten" : "Videoton einschalten");
+    label.textContent = soundIsOn ? "Sound aus" : "Sound an";
+  });
+})();
+</script>
 </body></html>
