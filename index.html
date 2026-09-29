@@ -72,6 +72,13 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 .site-bg-tint{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(5,11,18,.3),rgba(5,11,18,.62) 65%,rgba(5,11,18,.82))}
 .sound-toggle{position:fixed;right:clamp(14px,3vw,36px);bottom:clamp(14px,3vw,36px);z-index:40;display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid #28a9ff;background:rgba(5,11,18,.88);color:#f3f8ff;border-radius:999px;font:700 12px "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 10px 35px rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .sound-toggle:hover{background:#145eff}.sound-toggle:focus-visible{outline:3px solid #f3f8ff;outline-offset:4px}.sound-toggle-icon{color:#28a9ff;font-size:16px}.sound-toggle:hover .sound-toggle-icon{color:#fff}
+.mapq-navbar{position:sticky;top:0;z-index:80;justify-content:flex-start;gap:16px;background:rgba(5,11,18,.78);border-color:rgba(40,169,255,.24);box-shadow:0 10px 35px rgba(0,0,0,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.nav-toggle{position:relative;z-index:83;display:block;width:48px;height:44px;padding:10px;border:1px solid rgba(40,169,255,.5);border-radius:12px;background:rgba(10,22,36,.9);cursor:pointer}.nav-toggle span{display:block;width:100%;height:2px;margin:5px 0;border-radius:2px;background:#f3f8ff;transition:transform .25s ease,opacity .2s ease}.nav-toggle:focus-visible{outline:3px solid #28a9ff;outline-offset:4px}
+.mapq-navbar .brand{position:relative;z-index:83}.mapq-navbar .links{position:fixed;top:0;bottom:0;left:0;z-index:81;width:min(340px,88vw);display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:105px 24px 28px;background:linear-gradient(145deg,rgba(11,31,52,.86),rgba(5,11,18,.74));border-right:1px solid rgba(40,169,255,.72);box-shadow:22px 0 70px rgba(0,0,0,.65),inset -1px 0 24px rgba(40,169,255,.08);transform:translateX(-105%);visibility:hidden;transition:transform .3s cubic-bezier(.22,.61,.36,1),visibility .3s;backdrop-filter:blur(28px) saturate(1.35);-webkit-backdrop-filter:blur(28px) saturate(1.35)}
+.mapq-navbar .links a,.mapq-navbar .links a:first-child{display:block;padding:15px 16px;color:#c7dcf2;border:1px solid transparent;border-radius:12px;font-size:13px;text-align:left}.mapq-navbar .links a:hover{color:#fff;background:rgba(20,94,255,.2);border-color:rgba(40,169,255,.35)}.mapq-navbar .links .nav-cta{margin-top:8px;color:#fff;background:#145eff;border-color:#28a9ff;text-align:center}.mapq-navbar .links .nav-cta:hover{background:#28a9ff;color:#050b12}
+.nav-backdrop{position:fixed;inset:0;z-index:79;background:rgba(1,5,10,.62);opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s;cursor:pointer}.mapq-navbar.menu-open .links{transform:translateX(0);visibility:visible}.mapq-navbar.menu-open .nav-backdrop{opacity:1;visibility:visible}.mapq-navbar.menu-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}.mapq-navbar.menu-open .nav-toggle span:nth-child(2){opacity:0}.mapq-navbar.menu-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:700px){.mapq-navbar{height:68px;padding:0 5vw}.mapq-navbar .links{padding-top:92px}}
+@media(prefers-reduced-motion:reduce){.mapq-navbar .links,.nav-backdrop,.nav-toggle span{transition:none}}
 .page-blur{display:none!important}
 @media(prefers-reduced-motion:reduce){.site-bg-video{display:none}}
 </style>
@@ -86,7 +93,21 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
   <span class="sound-toggle-icon" aria-hidden="true">◉</span>
   <span class="sound-toggle-text">Sound an</span>
 </button>
-<nav class="nav"><a class="brand" href="#top">MAPQ</a><div class="links"><a href="#about">Über mich</a><a href="#contact">Kontakt</a></div></nav>
+<nav class="nav mapq-navbar" aria-label="Hauptnavigation">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menü öffnen">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="brand" href="#top">MAPQ</a>
+  <div class="links" id="nav-links">
+    <a href="#top">Startseite</a>
+    <a href="#work">Highlights</a>
+    <a href="AktuelleBilder/">Aktuelle Bilder</a>
+    <a href="#about">Über mich</a>
+    <a href="#contact">Kontakt</a>
+    <a class="nav-cta" href="anfrage/">Anfragen</a>
+  </div>
+  <div class="nav-backdrop" aria-hidden="true"></div>
+</nav>
 <main id="top">
 
 <section class="intro intro-with-button">
@@ -296,6 +317,34 @@ body{isolation:isolate;background:#050b12}
     button.setAttribute("aria-pressed", String(soundIsOn));
     button.setAttribute("aria-label", soundIsOn ? "Videoton ausschalten" : "Videoton einschalten");
     label.textContent = soundIsOn ? "Sound aus" : "Sound an";
+  });
+})();
+</script>
+<script>
+(() => {
+  const nav = document.querySelector(".mapq-navbar");
+  const toggle = nav?.querySelector(".nav-toggle");
+  const links = nav?.querySelector(".links");
+  const backdrop = nav?.querySelector(".nav-backdrop");
+
+  if (!nav || !toggle || !links || !backdrop) return;
+
+  const closeMenu = () => {
+    nav.classList.remove("menu-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Menü öffnen");
+  };
+
+  toggle.addEventListener("click", () => {
+    const open = nav.classList.toggle("menu-open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Menü schließen" : "Menü öffnen");
+  });
+
+  links.querySelectorAll("a").forEach(link => link.addEventListener("click", closeMenu));
+  backdrop.addEventListener("click", closeMenu);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMenu();
   });
 })();
 </script>
