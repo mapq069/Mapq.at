@@ -87,10 +87,10 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 @keyframes mapq-focus-in{from{opacity:0;transform:translate(-50%,-50%) scale(1.22)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @media(max-width:700px){.mapq-camera-mode::before{inset:10px}.camera-hud{left:20px;right:20px;top:20px}.camera-settings{bottom:76px;gap:20px;font-size:10px}.camera-exit{right:20px;bottom:20px}.camera-focus{width:56vw}}
 @media(prefers-reduced-motion:reduce){.camera-focus{animation:none}}
-.mapq-navbar .nav-cta{position:relative;overflow:hidden;-webkit-touch-callout:none;user-select:none;touch-action:manipulation}.mapq-navbar .nav-cta::after{content:"";position:absolute;left:0;bottom:0;width:0;height:3px;background:#f3f8ff;box-shadow:0 0 10px #28a9ff}.mapq-navbar .nav-cta.is-holding::after{animation:mapq-hold-progress 2s linear forwards}
+.mapq-request-hold{position:relative!important;overflow:hidden!important;-webkit-touch-callout:none;user-select:none;touch-action:manipulation}.mapq-request-hold::after{content:"";position:absolute;left:0;bottom:0;width:0;height:3px;background:#f3f8ff;box-shadow:0 0 10px #28a9ff}.mapq-request-hold.is-holding::after{animation:mapq-hold-progress 2s linear forwards}
 .mapq-hold-video{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:clamp(14px,4vw,46px);background:#02070ef5}.mapq-hold-video.active{display:flex}.mapq-hold-video video{display:block;max-width:min(96vw,520px);max-height:91dvh;width:auto;height:auto;background:#000;border:1px solid #28a9ff;border-radius:10px;box-shadow:0 0 55px rgba(20,94,255,.38)}.hold-video-close{position:fixed;right:22px;top:20px;z-index:151;padding:11px 15px;background:#06192b;color:#f3f8ff;border:1px solid #28a9ff;border-radius:8px;font:500 11px "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.hold-video-close:hover{background:#145eff}
 @keyframes mapq-hold-progress{from{width:0}to{width:100%}}
-@media(prefers-reduced-motion:reduce){.mapq-navbar .nav-cta.is-holding::after{animation:none;width:100%}}
+@media(prefers-reduced-motion:reduce){.mapq-request-hold.is-holding::after{animation:none;width:100%}}
 .page-blur{display:none!important}
 @media(prefers-reduced-motion:reduce){.site-bg-video{display:none}}
 </style>
@@ -416,8 +416,8 @@ body{isolation:isolate;background:#050b12}
 </script>
 <script>
 (() => {
-  const requestLink = document.querySelector(".mapq-navbar .nav-cta");
-  if (!requestLink || document.querySelector(".mapq-hold-video")) return;
+  const requestLinks = [...document.querySelectorAll('a[href^="anfrage"]')];
+  if (!requestLinks.length || document.querySelector(".mapq-hold-video")) return;
 
   const player = document.createElement("div");
   player.className = "mapq-hold-video";
@@ -431,13 +431,14 @@ body{isolation:isolate;background:#050b12}
   const video = player.querySelector("video");
   const close = player.querySelector(".hold-video-close");
   let timer = null;
-  let longPressTriggered = false;
+  let activeLink = null;
+  let startPoint = null;
   let suppressClickUntil = 0;
 
-  const openVideo = async () => {
-    longPressTriggered = true;
-    suppressClickUntil = Date.now() + 900;
-    requestLink.classList.remove("is-holding");
+  const openVideo = async link => {
+    suppressClickUntil = Date.now() + 1200;
+    link.classList.remove("is-holding");
+    document.querySelector(".mapq-navbar")?.classList.remove("menu-open");
     player.classList.add("active");
     player.setAttribute("aria-hidden", "false");
     video.currentTime = 0;
@@ -454,7 +455,9 @@ body{isolation:isolate;background:#050b12}
   const cancelHold = () => {
     if (timer !== null) clearTimeout(timer);
     timer = null;
-    requestLink.classList.remove("is-holding");
+    activeLink?.classList.remove("is-holding");
+    activeLink = null;
+    startPoint = null;
   };
 
   const closeVideo = () => {
@@ -464,23 +467,35 @@ body{isolation:isolate;background:#050b12}
     video.currentTime = 0;
   };
 
-  requestLink.title = "2 Sekunden gedrückt halten für das Video";
-  requestLink.addEventListener("pointerdown", event => {
-    if (event.button !== undefined && event.button !== 0) return;
-    longPressTriggered = false;
-    cancelHold();
-    requestLink.classList.add("is-holding");
-    timer = setTimeout(openVideo, 2000);
+  requestLinks.forEach(link => {
+    link.classList.add("mapq-request-hold");
+    link.title = "2 Sekunden gedrückt halten für das Video";
+
+    link.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      cancelHold();
+      activeLink = link;
+      startPoint = {x:event.clientX,y:event.clientY};
+      link.classList.add("is-holding");
+      timer = setTimeout(() => openVideo(link), 2000);
+    });
+
+    link.addEventListener("pointermove", event => {
+      if (activeLink !== link || !startPoint) return;
+      const distance = Math.hypot(event.clientX - startPoint.x, event.clientY - startPoint.y);
+      if (distance > 22) cancelHold();
+    });
+
+    link.addEventListener("pointerup", cancelHold);
+    link.addEventListener("pointercancel", cancelHold);
+    link.addEventListener("contextmenu", event => event.preventDefault());
+    link.addEventListener("click", event => {
+      if (Date.now() < suppressClickUntil) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
   });
-  ["pointerup", "pointercancel", "pointerleave"].forEach(type => requestLink.addEventListener(type, cancelHold));
-  requestLink.addEventListener("contextmenu", event => event.preventDefault());
-  requestLink.addEventListener("click", event => {
-    if (longPressTriggered || Date.now() < suppressClickUntil) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      longPressTriggered = false;
-    }
-  }, true);
 
   close.addEventListener("click", closeVideo);
   player.addEventListener("click", event => {
