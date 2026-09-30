@@ -88,7 +88,7 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 @media(max-width:700px){.mapq-camera-mode::before{inset:10px}.camera-hud{left:20px;right:20px;top:20px}.camera-settings{bottom:76px;gap:20px;font-size:10px}.camera-exit{right:20px;bottom:20px}.camera-focus{width:56vw}}
 @media(prefers-reduced-motion:reduce){.camera-focus{animation:none}}
 .mapq-request-hold{position:relative!important;overflow:hidden!important;-webkit-touch-callout:none;user-select:none;touch-action:manipulation}.mapq-request-hold::after{content:"";position:absolute;left:0;bottom:0;width:0;height:3px;background:#f3f8ff;box-shadow:0 0 10px #28a9ff}.mapq-request-hold.is-holding::after{animation:mapq-hold-progress 2s linear forwards}
-.mapq-hold-video{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:clamp(14px,4vw,46px);background:#02070ef5}.mapq-hold-video.active{display:flex}.mapq-hold-video video{display:block;max-width:min(96vw,520px);max-height:91dvh;width:auto;height:auto;background:#000;border:1px solid #28a9ff;border-radius:10px;box-shadow:0 0 55px rgba(20,94,255,.38)}.hold-video-close{position:fixed;right:22px;top:20px;z-index:151;padding:11px 15px;background:#06192b;color:#f3f8ff;border:1px solid #28a9ff;border-radius:8px;font:500 11px "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.hold-video-close:hover{background:#145eff}
+.mapq-hold-video{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:clamp(14px,4vw,46px);background:#02070ef5}.mapq-hold-video.active{display:flex}.mapq-hold-video video{display:block;max-width:min(96vw,520px);max-height:91dvh;width:auto;height:auto;background:#000;border:1px solid #28a9ff;border-radius:10px;box-shadow:0 0 55px rgba(20,94,255,.38)}.hold-video-close{position:fixed;right:22px;top:20px;z-index:151;padding:11px 15px;background:#06192b;color:#f3f8ff;border:1px solid #28a9ff;border-radius:8px;font:500 11px "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.hold-video-close:hover{background:#145eff}.hold-video-play{position:fixed;left:50%;top:50%;z-index:152;transform:translate(-50%,-50%);padding:17px 24px;background:#145eff;color:#fff;border:1px solid #28a9ff;border-radius:10px;box-shadow:0 12px 45px #0009;font:700 13px "DM Mono",monospace;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.hold-video-play:hover{background:#28a9ff;color:#050b12}.hold-video-play[hidden]{display:none}
 @keyframes mapq-hold-progress{from{width:0}to{width:100%}}
 @media(prefers-reduced-motion:reduce){.mapq-request-hold.is-holding::after{animation:none;width:100%}}
 .page-blur{display:none!important}
@@ -425,17 +425,29 @@ body{isolation:isolate;background:#050b12}
   player.innerHTML = `
     <button class="hold-video-close" type="button">Video schließen ×</button>
     <video src="mapq-anfrage-video.mp4" controls playsinline preload="metadata"></video>
+    <button class="hold-video-play" type="button" hidden>▶ Mit Ton starten</button>
   `;
   document.body.append(player);
 
   const video = player.querySelector("video");
   const close = player.querySelector(".hold-video-close");
+  const playWithSoundButton = player.querySelector(".hold-video-play");
   let timer = null;
   let activeLink = null;
   let startPoint = null;
   let suppressClickUntil = 0;
 
-  const openVideo = async link => {
+  const playWithSound = async () => {
+    video.muted = false;
+    try {
+      await video.play();
+      playWithSoundButton.hidden = true;
+    } catch {
+      playWithSoundButton.hidden = false;
+    }
+  };
+
+  const openVideo = link => {
     suppressClickUntil = Date.now() + 1200;
     link.classList.remove("is-holding");
     document.querySelector(".mapq-navbar")?.classList.remove("menu-open");
@@ -443,13 +455,7 @@ body{isolation:isolate;background:#050b12}
     player.setAttribute("aria-hidden", "false");
     video.currentTime = 0;
     video.muted = false;
-    try {
-      await video.play();
-    } catch {
-      video.muted = true;
-      await video.play().catch(() => {});
-    }
-    close.focus();
+    playWithSoundButton.hidden = false;
   };
 
   const cancelHold = () => {
@@ -465,6 +471,7 @@ body{isolation:isolate;background:#050b12}
     player.setAttribute("aria-hidden", "true");
     video.pause();
     video.currentTime = 0;
+    playWithSoundButton.hidden = true;
   };
 
   requestLinks.forEach(link => {
@@ -486,7 +493,14 @@ body{isolation:isolate;background:#050b12}
       if (distance > 22) cancelHold();
     });
 
-    link.addEventListener("pointerup", cancelHold);
+    link.addEventListener("pointerup", event => {
+      const videoWasOpened = player.classList.contains("active") && activeLink === link;
+      cancelHold();
+      if (videoWasOpened) {
+        event.preventDefault();
+        playWithSound();
+      }
+    });
     link.addEventListener("pointercancel", cancelHold);
     link.addEventListener("contextmenu", event => event.preventDefault());
     link.addEventListener("click", event => {
@@ -498,6 +512,7 @@ body{isolation:isolate;background:#050b12}
   });
 
   close.addEventListener("click", closeVideo);
+  playWithSoundButton.addEventListener("click", playWithSound);
   player.addEventListener("click", event => {
     if (event.target === player) closeVideo();
   });
