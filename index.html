@@ -79,6 +79,14 @@ body{background:#050b12;color:#f3f8ff}.nav{border-color:#17334c}.intro-copy,.abo
 .nav-backdrop{position:fixed;inset:0;z-index:79;background:rgba(1,5,10,.62);opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s;cursor:pointer}.mapq-navbar.menu-open .links{transform:translateX(0);visibility:visible}.mapq-navbar.menu-open .nav-backdrop{opacity:1;visibility:visible}.mapq-navbar.menu-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}.mapq-navbar.menu-open .nav-toggle span:nth-child(2){opacity:0}.mapq-navbar.menu-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 @media(max-width:700px){.mapq-navbar{height:68px;padding:0 5vw}.mapq-navbar .links{padding-top:92px}}
 @media(prefers-reduced-motion:reduce){.mapq-navbar .links,.nav-backdrop,.nav-toggle span{transition:none}}
+.mapq-camera-mode{position:fixed;inset:0;z-index:120;display:none;pointer-events:none;color:#f3f8ff;font-family:"DM Mono",monospace;background:radial-gradient(circle at center,transparent 35%,rgba(0,8,18,.16) 64%,rgba(0,4,10,.7) 100%)}
+.mapq-camera-mode.active{display:block}.mapq-camera-mode::before{content:"";position:absolute;inset:20px;border:1px solid rgba(40,169,255,.82);background:linear-gradient(90deg,transparent calc(33.333% - .5px),rgba(40,169,255,.2) 33.333%,transparent calc(33.333% + .5px),transparent calc(66.666% - .5px),rgba(40,169,255,.2) 66.666%,transparent calc(66.666% + .5px)),linear-gradient(transparent calc(33.333% - .5px),rgba(40,169,255,.2) 33.333%,transparent calc(33.333% + .5px),transparent calc(66.666% - .5px),rgba(40,169,255,.2) 66.666%,transparent calc(66.666% + .5px))}
+.camera-hud{position:absolute;left:34px;right:34px;top:32px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:12px;letter-spacing:.1em;text-shadow:0 2px 8px #000}.camera-raw{padding:7px 10px;color:#fff;background:#145eff;border:1px solid #28a9ff;border-radius:5px;font-weight:500}.camera-battery{display:flex;align-items:center;gap:9px}.camera-battery-icon{position:relative;width:30px;height:14px;border:2px solid #f3f8ff;border-radius:2px}.camera-battery-icon::before{content:"";position:absolute;inset:2px;background:#28a9ff}.camera-battery-icon::after{content:"";position:absolute;right:-5px;top:3px;width:3px;height:6px;background:#f3f8ff;border-radius:0 2px 2px 0}
+.camera-focus{position:absolute;left:50%;top:50%;width:min(240px,42vw);aspect-ratio:1.45;transform:translate(-50%,-50%);background:linear-gradient(#28a9ff,#28a9ff) left top/34px 2px no-repeat,linear-gradient(#28a9ff,#28a9ff) left top/2px 34px no-repeat,linear-gradient(#28a9ff,#28a9ff) right top/34px 2px no-repeat,linear-gradient(#28a9ff,#28a9ff) right top/2px 34px no-repeat,linear-gradient(#28a9ff,#28a9ff) left bottom/34px 2px no-repeat,linear-gradient(#28a9ff,#28a9ff) left bottom/2px 34px no-repeat,linear-gradient(#28a9ff,#28a9ff) right bottom/34px 2px no-repeat,linear-gradient(#28a9ff,#28a9ff) right bottom/2px 34px no-repeat;filter:drop-shadow(0 0 6px rgba(40,169,255,.65));animation:mapq-focus-in .45s ease-out}
+.camera-focus::before{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;transform:translate(-50%,-50%);border:1px solid #28a9ff;border-radius:50%;box-shadow:0 0 10px #28a9ff}.camera-settings{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);display:flex;gap:clamp(20px,5vw,70px);padding:10px 18px;background:#06192b;border:1px solid rgba(40,169,255,.55);border-radius:7px;font-size:12px;white-space:nowrap}.camera-exit{position:absolute;right:34px;bottom:32px;pointer-events:auto;padding:10px 14px;background:#06192b;color:#f3f8ff;border:1px solid #28a9ff;border-radius:7px;font:500 11px "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.camera-exit:hover{background:#145eff}
+@keyframes mapq-focus-in{from{opacity:0;transform:translate(-50%,-50%) scale(1.22)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media(max-width:700px){.mapq-camera-mode::before{inset:10px}.camera-hud{left:20px;right:20px;top:20px}.camera-settings{bottom:76px;gap:20px;font-size:10px}.camera-exit{right:20px;bottom:20px}.camera-focus{width:56vw}}
+@media(prefers-reduced-motion:reduce){.camera-focus{animation:none}}
 .page-blur{display:none!important}
 @media(prefers-reduced-motion:reduce){.site-bg-video{display:none}}
 </style>
@@ -345,6 +353,60 @@ body{isolation:isolate;background:#050b12}
   backdrop.addEventListener("click", closeMenu);
   document.addEventListener("keydown", event => {
     if (event.key === "Escape") closeMenu();
+  });
+})();
+</script>
+<script>
+(() => {
+  const brand = document.querySelector(".mapq-navbar .brand");
+  if (!brand || document.querySelector(".mapq-camera-mode")) return;
+
+  const camera = document.createElement("div");
+  camera.className = "mapq-camera-mode";
+  camera.setAttribute("aria-hidden", "true");
+  camera.innerHTML = `
+    <div class="camera-hud">
+      <span class="camera-raw">RAW</span>
+      <span>MAPQ / LIVE VIEW</span>
+      <span class="camera-battery"><span>100%</span><span class="camera-battery-icon" aria-hidden="true"></span></span>
+    </div>
+    <div class="camera-focus" aria-hidden="true"></div>
+    <div class="camera-settings"><span>1/250</span><span>F2.8</span><span>ISO 100</span></div>
+    <button class="camera-exit" type="button">Modus aus ×</button>
+  `;
+  document.body.append(camera);
+
+  const exit = camera.querySelector(".camera-exit");
+  const openCamera = () => {
+    camera.classList.add("active");
+    camera.setAttribute("aria-hidden", "false");
+  };
+  const closeCamera = () => {
+    camera.classList.remove("active");
+    camera.setAttribute("aria-hidden", "true");
+  };
+
+  brand.title = "Doppelklick für den geheimen Kamera-Modus";
+  brand.addEventListener("dblclick", event => {
+    event.preventDefault();
+    openCamera();
+  });
+
+  let lastTap = 0;
+  brand.addEventListener("touchend", event => {
+    const now = Date.now();
+    if (now - lastTap < 420) {
+      event.preventDefault();
+      openCamera();
+      lastTap = 0;
+    } else {
+      lastTap = now;
+    }
+  }, {passive:false});
+
+  exit.addEventListener("click", closeCamera);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && camera.classList.contains("active")) closeCamera();
   });
 })();
 </script>
