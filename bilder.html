@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Bilder – mapq.raw</title>
+<meta name="description" content="Alle Fotos von Matteo Hanser: Autos, Motorräder, Motorsport und Outdoor aus Tirol.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Chrom 2: tiefes Schwarz, Chrom-Verläufe nur auf Schrift und dem 3D-Tropfen. Michroma für Namen und Überschriften,
+   Figtree für Text. Zwei Seiten: Start (Tropfen, Auswahl, Über mich, Kontakt) und Bilder (alle Fotos). */
+:root{
+  color-scheme:dark;
+  --black:#08080a;
+  --black-2:#121215;
+  --line:#26272b;
+  --chrome:#ebebed;
+  --mute:#8e9095;
+  --f-d:"Michroma","Arial Black",Arial,sans-serif;
+  --f:"Figtree","Helvetica Neue",Arial,sans-serif;
+  --gl:max(clamp(16px,3.6vw,52px),env(safe-area-inset-left,0px));
+  --gr:max(clamp(16px,3.6vw,52px),env(safe-area-inset-right,0px));
+  --chrome-grad:linear-gradient(176deg,#ffffff 0%,#cfd1d5 26%,#55585e 47%,#1f2023 51%,#dfe0e3 60%,#8c8f95 80%,#f4f4f5 100%);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--black)}
+body{margin:0;background:var(--black);color:var(--chrome);font:400 1.0625rem/1.6 var(--f);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit}
+p{margin:0}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--chrome);outline-offset:3px}
+[hidden]{display:none!important}
+::selection{background:var(--chrome);color:var(--black)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
+h1,h2,h3{margin:0;font-family:var(--f-d);font-weight:400;letter-spacing:-.01em;line-height:1.05;text-wrap:balance}
+h2{font-size:clamp(1.8rem,4.2vw,3rem)}
+h3{font-size:1.15rem}
+.chrome{background:var(--chrome-grad);background-size:100% 240%;background-position:0 var(--sy,38%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mute{color:var(--mute)}
+.in{max-width:1360px;margin-inline:auto;padding-left:var(--gl);padding-right:var(--gr)}
+.top{position:fixed;left:0;right:0;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding:calc(16px + env(safe-area-inset-top,0px)) var(--gr) 16px var(--gl);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.top.solid{background:rgba(8,8,10,.9);border-bottom-color:var(--line)}
+.mk{font:400 .95rem/1 var(--f-d);text-decoration:none}
+.nav{display:flex;gap:1.5rem;align-items:center}
+.nav a{font:600 .92rem/1 var(--f);text-decoration:none;color:var(--mute);transition:color .2s}
+.nav a:hover,.nav a[aria-current="page"]{color:var(--chrome)}
+@media (max-width:640px){.nav .opt{display:none}}
+.btn{display:inline-flex;align-items:center;gap:.6rem;min-height:46px;padding:0 1.3rem;border:0;border-radius:999px;background:var(--chrome);color:var(--black);font:700 .95rem/1 var(--f);text-decoration:none;cursor:pointer;transition:background .2s}
+.btn:hover{background:#fff}
+.btn.line{background:transparent;color:var(--chrome);box-shadow:inset 0 0 0 1px rgba(235,235,237,.5)}
+.btn.line:hover{box-shadow:inset 0 0 0 1px var(--chrome);background:rgba(255,255,255,.06)}
+.acts{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;align-items:center}
+.ul{background:none;border:0;padding:0;cursor:pointer;font:600 .95rem/1.3 var(--f);color:var(--chrome);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+footer{border-top:1px solid var(--line)}
+footer .in{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;align-items:center;padding-block:1.5rem calc(2rem + env(safe-area-inset-bottom,0px));color:var(--mute);font-size:.9rem}
+footer .ul{font-size:.9rem;color:var(--mute);font-weight:500}
+.dlg{position:fixed;inset:0;z-index:62;display:grid;place-items:center;padding:16px;background:rgba(8,8,10,.85)}
+.dlg .box{position:relative;width:min(500px,100%);padding:1.75rem;background:var(--black-2);border:1px solid var(--line);border-radius:16px}
+.dlg h2{font-size:1.4rem;margin-bottom:1rem}
+.dlg .x{position:absolute;right:1.25rem;top:1.4rem;background:none;border:0;cursor:pointer;color:var(--mute);font:600 .9rem/1 var(--f)}
+dl{margin:0;border-top:1px solid var(--line)}
+dl div{display:flex;justify-content:space-between;gap:1rem;padding:.85rem 0;border-bottom:1px solid var(--line)}
+dt{color:var(--mute)}
+dd{margin:0;font-weight:700;text-align:right}
+/* Karten mit 3D-Kippen und Chrom-Glanz */
+.card{position:relative;display:block;width:100%;padding:0;border:0;background:var(--black-2);cursor:zoom-in;border-radius:6px;overflow:hidden;transform-style:preserve-3d;text-decoration:none;
+  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .25s ease-out,opacity .3s,box-shadow .25s;box-shadow:0 16px 36px rgba(0,0,0,.45)}
+.card img{width:100%;height:100%;object-fit:cover;filter:grayscale(.3);transition:filter .3s}
+.card .gl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;mix-blend-mode:overlay;
+  background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.8),rgba(255,255,255,0) 45%),linear-gradient(115deg,transparent 32%,rgba(255,255,255,.28) 48%,transparent 62%)}
+.card .cap{position:absolute;left:0;right:0;bottom:0;padding:2.2rem .9rem .75rem;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.72));display:flex;justify-content:space-between;gap:.5rem;align-items:baseline;text-align:left}
+.card .cap b{font:700 .92rem/1.25 var(--f)}
+.card .cap small{color:#c2c3c7;font-size:.78rem;white-space:nowrap}
+.card:hover img,.card:focus-visible img{filter:none}
+.card:hover .gl,.card:focus-visible .gl{opacity:1}
+.card:hover{box-shadow:0 30px 60px rgba(0,0,0,.6)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.head{padding-top:calc(110px + env(safe-area-inset-top,0px));padding-bottom:2rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1.25rem 2rem}
+.head h1{font-size:clamp(2.4rem,7vw,5.6rem);line-height:1}
+.head p{margin-top:.6rem}
+.filters{display:flex;flex-wrap:wrap;gap:.4rem}
+.filters button{min-height:40px;padding:0 1rem;border:1px solid var(--line);border-radius:999px;background:none;color:var(--mute);cursor:pointer;font:600 .9rem/1 var(--f)}
+.filters button sup{margin-left:.3em;font-size:.72em;font-variant-numeric:tabular-nums}
+.filters button:hover{color:var(--chrome);border-color:#45474c}
+.filters button[aria-pressed="true"]{background:var(--chrome);border-color:var(--chrome);color:var(--black)}
+.wall{columns:4 260px;column-gap:clamp(10px,1.4vw,18px);padding-bottom:5rem;perspective:1400px}
+.wall .card{margin-bottom:clamp(10px,1.4vw,18px);break-inside:avoid}
+.wall .card img{aspect-ratio:var(--ar);height:auto}
+.wall .card.off{display:none}
+/* Großansicht als eigene Bild-Ansicht mit Link */
+.lb{position:fixed;inset:0;z-index:60;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1rem;
+  padding:calc(16px + env(safe-area-inset-top,0px)) var(--gr) calc(18px + env(safe-area-inset-bottom,0px)) var(--gl);background:rgba(6,6,8,.97);perspective:1600px}
+.lbtop{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.lbtop span{font:400 .85rem/1 var(--f-d)}
+.lbtop button{background:none;border:0;cursor:pointer;color:var(--mute);font:600 .95rem/1 var(--f);padding:.5rem 0}
+.lbtop button:hover{color:var(--chrome)}
+.stagebox{min-height:0;display:flex;align-items:center;justify-content:center}
+.stagebox img{max-width:min(94vw,1200px);max-height:100%;width:auto;height:auto;border-radius:4px;box-shadow:0 40px 90px rgba(0,0,0,.7);transition:transform .2s ease-out}
+.stagebox img.in3d{animation:fl .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes fl{from{opacity:0;transform:rotateY(var(--from,-35deg)) scale(.88)}}
+.lbbar{display:flex;align-items:center;justify-content:space-between;gap:1rem 2rem;flex-wrap:wrap}
+.lbcap{display:flex;gap:.4rem 1rem;align-items:baseline;flex-wrap:wrap}
+.lbcap b{font-weight:700;font-size:1.1rem}
+.lbcap small{color:var(--mute);font-variant-numeric:tabular-nums}
+.lbnav{display:flex;gap:.6rem;align-items:center}
+.lbnav button{width:46px;height:46px;border-radius:50%;border:0;background:var(--black-2);box-shadow:inset 0 0 0 1px var(--line);color:var(--chrome);cursor:pointer;font-size:1.2rem}
+.lbnav button:hover{background:var(--chrome);color:var(--black)}
+.lbnav .cp{width:auto;border-radius:999px;padding:0 1rem;font:600 .88rem/1 var(--f)}
+</style>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <a class="mk" href="index.html">mapq.raw</a>
+  <nav class="nav" aria-label="Menü">
+    <a href="index.html">Start</a>
+    <a href="bilder.html" aria-current="page">Bilder</a>
+    <a class="opt" href="index.html#ueber">Über mich</a>
+    <a href="index.html#kontakt">Kontakt</a>
+  </nav>
+</header>
+
+<main class="in">
+  <div class="head">
+    <div><h1 class="chrome">Bilder</h1><p class="mute">20 Fotos aus der Saison 2026, Juli bis Oktober.</p></div>
+    <div class="filters" role="group" aria-label="Filter">
+      <button data-f="alle" aria-pressed="true">Alle<sup></sup></button>
+      <button data-f="auto" aria-pressed="false">Autos<sup></sup></button>
+      <button data-f="moto" aria-pressed="false">Motorräder<sup></sup></button>
+      <button data-f="outdoor" aria-pressed="false">Outdoor<sup></sup></button>
+      <button data-f="event" aria-pressed="false">Events<sup></sup></button>
+    </div>
+  </div>
+  <div class="wall" id="wall"></div>
+</main>
+
+<footer><div class="in"><span>© 2026 Matteo Hanser</span><a class="ul" href="index.html#kontakt">Shooting anfragen</a><button class="ul" id="imp-open">Impressum</button></div></footer>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Bild" hidden>
+  <div class="lbtop"><span>mapq.raw</span><button id="lbx">Zurück zu allen Bildern</button></div>
+  <div class="stagebox"><img id="lbi" alt=""></div>
+  <div class="lbbar">
+    <div class="lbcap" id="lbc"></div>
+    <div class="lbnav"><button class="cp" id="lbcp">Link kopieren</button><button id="lbp" aria-label="Vorheriges Bild">‹</button><button id="lbn" aria-label="Nächstes Bild">›</button></div>
+  </div>
+</div>
+
+<div class="dlg" id="imp" role="dialog" aria-modal="true" aria-labelledby="imp-h" hidden>
+  <div class="box">
+    <button class="x" id="imp-x">Schließen</button>
+    <h2 id="imp-h">Impressum</h2>
+    <dl>
+      <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
+      <div><dt>Ort</dt><dd>Tirol, Österreich</dd></div>
+      <div><dt>Anschrift</dt><dd>bitte ergänzen</dd></div>
+      <div><dt>E-Mail</dt><dd>bitte ergänzen</dd></div>
+    </dl>
+  </div>
+</div>
+
+<script>
+window.PHOTOS=[{"f": "bmw-8er.jpg", "t": "BMW 8er Gran Coupé", "c": "auto", "ar": 1.7769, "dsc": "DSC00572", "mon": "08.2026", "monL": "August 2026"}, {"f": "supermoto-tal.jpg", "t": "Supermoto über dem Tal", "c": "moto outdoor", "ar": 0.5628, "dsc": "DSC01920", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "mini-slalom.jpg", "t": "Mini beim Slalom", "c": "auto event", "ar": 1.7769, "dsc": "DSC06406", "mon": "09.2026", "monL": "September 2026"}, {"f": "golf-1.jpg", "t": "Golf 1 beim Treffen", "c": "auto event", "ar": 0.5628, "dsc": "DSC00281", "mon": "09.2026", "monL": "September 2026"}, {"f": "bmw-nacht.jpg", "t": "BMW bei Nacht", "c": "auto", "ar": 0.5628, "dsc": "DSC06179", "mon": "07.2026", "monL": "Juli 2026"}, {"f": "wheelie.jpg", "t": "Wheelie vor den Bergen", "c": "moto outdoor", "ar": 0.5626, "dsc": "DSC04554", "mon": "09.2026", "monL": "September 2026"}, {"f": "audi-s3.jpg", "t": "Audi S3 auf der Wiese", "c": "auto outdoor", "ar": 0.5628, "dsc": "DSC04862", "mon": "09.2026", "monL": "September 2026"}, {"f": "peugeot-106.jpg", "t": "Peugeot 106 am Start", "c": "auto event", "ar": 0.5628, "dsc": "DSC05515", "mon": "09.2026", "monL": "September 2026"}, {"f": "supermoto-wald.jpg", "t": "Supermoto im Wald", "c": "moto outdoor", "ar": 0.5628, "dsc": "DSC01737", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "bmw-e46.jpg", "t": "BMW E46 am Feldweg", "c": "auto", "ar": 0.5628, "dsc": "DSC00821", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "drift-nass.jpg", "t": "Drift auf nassem Asphalt", "c": "auto event", "ar": 0.5628, "dsc": "DSC08608", "mon": "08.2026", "monL": "August 2026"}, {"f": "traktor.jpg", "t": "Traktor vor den Bergen", "c": "auto outdoor", "ar": 0.5628, "dsc": "DSC00236", "mon": "09.2026", "monL": "September 2026"}, {"f": "yaris-slalom.jpg", "t": "Toyota GR Yaris beim Slalom", "c": "auto event", "ar": 0.5628, "dsc": "DSC05966", "mon": "09.2026", "monL": "September 2026"}, {"f": "bmw-heck.jpg", "t": "BMW von hinten", "c": "auto", "ar": 0.5628, "dsc": "DSC06301", "mon": "07.2026", "monL": "Juli 2026"}, {"f": "supermoto-berge.jpg", "t": "Supermoto vor den Bergen", "c": "moto outdoor", "ar": 0.5628, "dsc": "DSC00810", "mon": "08.2026", "monL": "August 2026"}, {"f": "rennwagen.jpg", "t": "Rennwagen beim Slalom", "c": "auto event", "ar": 0.5625, "dsc": "DSC09837", "mon": "09.2026", "monL": "September 2026"}, {"f": "audi-s3-felge.jpg", "t": "Audi S3, Felge", "c": "auto", "ar": 0.5629, "dsc": "DSC04986", "mon": "09.2026", "monL": "September 2026"}, {"f": "bmw-abendhimmel.jpg", "t": "BMW unter dem Abendhimmel", "c": "auto", "ar": 0.5628, "dsc": "DSC02000", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "bmw-drift.jpg", "t": "BMW im Drift", "c": "auto event", "ar": 0.5628, "dsc": "DSC08367", "mon": "08.2026", "monL": "August 2026"}, {"f": "bmw-huegel.jpg", "t": "BMW unter lila Wolken", "c": "auto outdoor", "ar": 0.5628, "dsc": "DSC00628", "mon": "10.2026", "monL": "Oktober 2026"}];
+/* Gemeinsam für beide Seiten: weiches Scrollen, Kopfzeile, Chrom-Spiegelung, Kippkarten, Impressum */
+var MQ=(function(){
+  var root=document.documentElement;
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fine=window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  function $(s,c){ return (c||document).querySelector(s); }
+  function $$(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  var lenis=null;
+  if(window.Lenis&&!reduce){ try{ lenis=new window.Lenis({lerp:.09,smoothWheel:true}); }catch(e){ lenis=null; } }
+  $$(".lb,.dlg,textarea").forEach(function(el){ el.setAttribute("data-lenis-prevent",""); });
+  var mx=0, my=0, smy=0, fns=[];
+  window.addEventListener("pointermove",function(e){ mx=e.clientX/innerWidth*2-1; my=e.clientY/innerHeight*2-1; },{passive:true});
+  var top=$(".top");
+  function tick(now){
+    requestAnimationFrame(tick);
+    if(lenis) lenis.raf(now);
+    smy+=(my-smy)*.06;
+    root.style.setProperty("--sy",(38+smy*26+clamp(window.scrollY/innerHeight,0,1)*40).toFixed(1)+"%");
+    if(top) top.classList.toggle("solid",window.scrollY>30);
+    for(var i=0;i<fns.length;i++){ try{ fns[i](now); }catch(err){} }
+  }
+  requestAnimationFrame(tick);
+  function tilt(el){
+    if(!fine||reduce) return;
+    el.addEventListener("pointermove",function(e){
+      var r=el.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+      el.style.setProperty("--ry",((x-.5)*18).toFixed(2)+"deg"); el.style.setProperty("--rx",((.5-y)*18).toFixed(2)+"deg");
+      el.style.setProperty("--gx",(x*100).toFixed(1)+"%"); el.style.setProperty("--gy",(y*100).toFixed(1)+"%"); el.style.setProperty("--sc","1.02");
+    });
+    el.addEventListener("pointerleave",function(){ el.style.setProperty("--rx","0deg"); el.style.setProperty("--ry","0deg"); el.style.setProperty("--sc","1"); });
+  }
+  var imp=$("#imp"), impOpen=$("#imp-open");
+  if(imp&&impOpen){
+    var closeImp=function(){ imp.hidden=true; if(lenis) lenis.start(); impOpen.focus(); };
+    impOpen.addEventListener("click",function(){ imp.hidden=false; if(lenis) lenis.stop(); $("#imp-x").focus(); });
+    $("#imp-x").addEventListener("click",closeImp);
+    imp.addEventListener("click",function(e){ if(e.target===imp) closeImp(); });
+    document.addEventListener("keydown",function(e){ if(!imp.hidden&&e.key==="Escape") closeImp(); });
+  }
+  function scrollTo(el){ if(!el) return; var y=el.getBoundingClientRect().top+window.scrollY-70; if(lenis) lenis.scrollTo(y,{duration:1.3}); else window.scrollTo({top:y,behavior:reduce?"auto":"smooth"}); }
+  return {$:$,$$:$$,clamp:clamp,reduce:reduce,fine:fine,lenis:lenis,fns:fns,tilt:tilt,scrollTo:scrollTo,mouse:function(){ return [mx,my]; }};
+})();
+
+(function(){
+  "use strict";
+  var $=MQ.$, $$=MQ.$$, reduce=MQ.reduce, P=window.PHOTOS||[];
+  function slug(it){ return it.f.replace(/\.jpg$/,""); }
+  var CAT={auto:"Auto",moto:"Motorrad",outdoor:"Outdoor",event:"Event"};
+
+  /* ---------- Wand ---------- */
+  var wall=$("#wall"), cards=[], filter="alle";
+  P.forEach(function(it){
+    var b=document.createElement("button"); b.type="button"; b.className="card"; b.setAttribute("aria-label",it.t+" groß ansehen");
+    var img=document.createElement("img"); img.src="bilder/klein/"+it.f; img.alt=""; img.style.setProperty("--ar",String(it.ar));
+    var g=document.createElement("span"); g.className="gl"; g.setAttribute("aria-hidden","true");
+    var cap=document.createElement("span"); cap.className="cap"; cap.innerHTML="<b></b><small></small>"; cap.querySelector("b").textContent=it.t; cap.querySelector("small").textContent=it.c.split(" ").map(function(k){ return CAT[k]; }).join(", ");
+    b.appendChild(img); b.appendChild(g); b.appendChild(cap); wall.appendChild(b); MQ.tilt(b);
+    b.addEventListener("click",function(){ open(slug(it),true,b); });
+    cards.push({el:b,it:it});
+  });
+  function match(it){ return filter==="alle"||it.c.split(" ").indexOf(filter)>=0; }
+  var fbs=$$(".filters button");
+  fbs.forEach(function(b){
+    var f=b.dataset.f; b.querySelector("sup").textContent=f==="alle"?P.length:P.filter(function(it){ return it.c.split(" ").indexOf(f)>=0; }).length;
+    b.addEventListener("click",function(){
+      filter=f; fbs.forEach(function(x){ x.setAttribute("aria-pressed",String(x===b)); });
+      cards.forEach(function(c){ c.el.classList.toggle("off",!match(c.it)); });
+    });
+  });
+
+  /* ---------- Bild-Ansicht mit eigenem Link ---------- */
+  var lb=$("#lb"), lbi=$("#lbi"), lbc=$("#lbc"), cur=null, opener=null, pushed=false, sx=null;
+  function list(){ var l=P.filter(match); return l.length?l:P; }
+  function find(s){ for(var i=0;i<P.length;i++) if(slug(P[i])===s) return P[i]; return null; }
+  function render(it,dir){
+    cur=it; lbi.classList.remove("in3d"); lbi.style.setProperty("--from",(dir<0?35:-35)+"deg");
+    lbi.src="bilder/"+it.f; lbi.alt=it.t; void lbi.offsetWidth; if(!reduce) lbi.classList.add("in3d");
+    var l=list(), i=l.indexOf(it);
+    lbc.textContent="";
+    [["b",it.t],["small",it.monL],["small",(i+1)+" / "+l.length]].forEach(function(x){ var e=document.createElement(x[0]); e.textContent=x[1]; lbc.appendChild(e); });
+    document.title=it.t+" – mapq.raw";
+    var nx=l[(i+1)%l.length]; if(nx){ var pre=new Image(); pre.src="bilder/"+nx.f; }
+  }
+  function open(s,push,el){
+    var it=find(s); if(!it) return;
+    if(el) opener=el;
+    if(lb.hidden){ lb.hidden=false; document.body.style.overflow="hidden"; if(MQ.lenis) MQ.lenis.stop(); }
+    render(it,1);
+    try{ if(push){ history.pushState({b:s},"","#"+s); pushed=true; } else history.replaceState({b:s},"","#"+s); }catch(e){}
+    $("#lbx").focus();
+  }
+  function step(d){ var l=list(), i=l.indexOf(cur), n=l[(i+d+l.length)%l.length]; render(n,d); try{ history.replaceState({b:slug(n)},"","#"+slug(n)); }catch(e){} }
+  function close(fromPop){
+    if(lb.hidden) return;
+    lb.hidden=true; document.body.style.overflow=""; if(MQ.lenis) MQ.lenis.start(); document.title="Bilder – mapq.raw";
+    if(!fromPop){ try{ if(pushed){ pushed=false; history.back(); } else history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
+    if(opener&&opener.focus) opener.focus();
+    else if(cur){ var c=cards.filter(function(x){ return x.it===cur; })[0]; if(c) c.el.focus(); }
+  }
+  $("#lbx").addEventListener("click",function(){ close(false); });
+  $("#lbp").addEventListener("click",function(){ step(-1); });
+  $("#lbn").addEventListener("click",function(){ step(1); });
+  $("#lbcp").addEventListener("click",function(){
+    var b=$("#lbcp"), url=location.href;
+    function ok(){ b.textContent="Link kopiert"; setTimeout(function(){ b.textContent="Link kopieren"; },1800); }
+    try{ navigator.clipboard.writeText(url).then(ok,function(){}); }catch(e){}
+  });
+  lb.addEventListener("click",function(e){ if(e.target===lb||e.target.classList.contains("stagebox")) close(false); });
+  lb.addEventListener("pointerdown",function(e){ sx=e.clientX; });
+  lb.addEventListener("pointerup",function(e){ if(sx===null) return; var d=e.clientX-sx; sx=null; if(Math.abs(d)>60) step(d<0?1:-1); });
+  if(MQ.fine&&!reduce) lb.addEventListener("pointermove",function(e){ var x=e.clientX/innerWidth-.5, y=e.clientY/innerHeight-.5; lbi.style.transform="rotateY("+(x*9).toFixed(2)+"deg) rotateX("+(-y*6).toFixed(2)+"deg)"; });
+  document.addEventListener("keydown",function(e){
+    if(lb.hidden) return;
+    if(e.key==="Escape") close(false); else if(e.key==="ArrowLeft") step(-1); else if(e.key==="ArrowRight") step(1);
+  });
+  function fromHash(){ var s=decodeURIComponent((location.hash||"").slice(1)); if(s&&find(s)) open(s,false); else close(true); }
+  window.addEventListener("popstate",function(){ pushed=false; fromHash(); });
+  window.addEventListener("hashchange",fromHash);
+  fromHash();
+})();
+
+</script>
+</body>
+</html>
