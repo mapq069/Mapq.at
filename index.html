@@ -3,347 +3,463 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="claude:viewport-fit-sides" content="cover">
-<title>mapq.raw</title>
+<title>mapq.raw – Matteo Hanser</title>
 <meta name="description" content="Matteo Hanser, Fotograf in Tirol. Autos, Motorräder und Motorsport.">
+<meta name="theme-color" content="#0b0b0d">
+<meta property="og:title" content="mapq.raw – Matteo Hanser">
+<meta property="og:description" content="Autos, Motorräder und Motorsport. Fotografiert in Tirol.">
+<meta property="og:image" content="https://mapq.at/bilder/bmw-8er.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b0b0d'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23ff5a36' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preload" as="image" href="bilder/bmw-8er.jpg">
 <style>
-/* Chrom 2: tiefes Schwarz, Chrom-Verläufe nur auf Schrift und dem 3D-Tropfen. Michroma für Namen und Überschriften,
-   Figtree für Text. Zwei Seiten: Start (Tropfen, Auswahl, Über mich, Kontakt) und Bilder (alle Fotos). */
+/* Neuaufbau: Kontaktabzug-Look. Dunkles Graphit, ein Dämmerungs-Orange als Akzent,
+   Archivo schmal und fett für Überschriften, Plex Mono für Bilddaten (DSC-Nummer, Monat). */
 :root{
   color-scheme:dark;
-  --black:#08080a;
-  --black-2:#121215;
-  --line:#26272b;
-  --chrome:#ebebed;
-  --mute:#8e9095;
-  --f-d:"Michroma","Arial Black",Arial,sans-serif;
-  --f:"Figtree","Helvetica Neue",Arial,sans-serif;
-  --gl:max(clamp(16px,3.6vw,52px),env(safe-area-inset-left,0px));
-  --gr:max(clamp(16px,3.6vw,52px),env(safe-area-inset-right,0px));
-  --chrome-grad:linear-gradient(176deg,#ffffff 0%,#cfd1d5 26%,#55585e 47%,#1f2023 51%,#dfe0e3 60%,#8c8f95 80%,#f4f4f5 100%);
+  --bg:#0b0b0d;
+  --bg-2:#141418;
+  --bg-3:#1d1d22;
+  --line:#2a2a31;
+  --fg:#efeee9;
+  --mute:#9a9aa2;
+  --acc:#ff5a36;
+  --f:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --gx:max(clamp(16px,4vw,56px),env(safe-area-inset-left,0px));
+  --max:1440px;
 }
 *,*::before,*::after{box-sizing:border-box}
-html{background:var(--black)}
-body{margin:0;background:var(--black);color:var(--chrome);font:400 1.0625rem/1.6 var(--f);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+html{background:var(--bg);scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.6 var(--f);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
-button{font:inherit;color:inherit}
-p{margin:0}
 img{display:block;max-width:100%}
-:focus-visible{outline:2px solid var(--chrome);outline-offset:3px}
-[hidden]{display:none!important}
-::selection{background:var(--chrome);color:var(--black)}
-html.lenis,html.lenis body{height:auto}
-.lenis.lenis-smooth{scroll-behavior:auto!important}
-.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
-.lenis.lenis-stopped{overflow:hidden}
-h1,h2,h3{margin:0;font-family:var(--f-d);font-weight:400;letter-spacing:-.01em;line-height:1.05;text-wrap:balance}
-h2{font-size:clamp(1.8rem,4.2vw,3rem)}
-h3{font-size:1.15rem}
-.chrome{background:var(--chrome-grad);background-size:100% 240%;background-position:0 var(--sy,38%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.mute{color:var(--mute)}
-.in{max-width:1360px;margin-inline:auto;padding-left:var(--gl);padding-right:var(--gr)}
-.top{position:fixed;left:0;right:0;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:1rem;
-  padding:calc(16px + env(safe-area-inset-top,0px)) var(--gr) 16px var(--gl);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
-.top.solid{background:rgba(8,8,10,.9);border-bottom-color:var(--line)}
-.mk{font:400 .95rem/1 var(--f-d);text-decoration:none}
-.nav{display:flex;gap:1.5rem;align-items:center}
-.nav a{font:600 .92rem/1 var(--f);text-decoration:none;color:var(--mute);transition:color .2s}
-.nav a:hover,.nav a[aria-current="page"]{color:var(--chrome)}
-@media (max-width:640px){.nav .opt{display:none}}
-.btn{display:inline-flex;align-items:center;gap:.6rem;min-height:46px;padding:0 1.3rem;border:0;border-radius:999px;background:var(--chrome);color:var(--black);font:700 .95rem/1 var(--f);text-decoration:none;cursor:pointer;transition:background .2s}
-.btn:hover{background:#fff}
-.btn.line{background:transparent;color:var(--chrome);box-shadow:inset 0 0 0 1px rgba(235,235,237,.5)}
-.btn.line:hover{box-shadow:inset 0 0 0 1px var(--chrome);background:rgba(255,255,255,.06)}
-.acts{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;align-items:center}
-.ul{background:none;border:0;padding:0;cursor:pointer;font:600 .95rem/1.3 var(--f);color:var(--chrome);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
-footer{border-top:1px solid var(--line)}
-footer .in{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;align-items:center;padding-block:1.5rem calc(2rem + env(safe-area-inset-bottom,0px));color:var(--mute);font-size:.9rem}
-footer .ul{font-size:.9rem;color:var(--mute);font-weight:500}
-.dlg{position:fixed;inset:0;z-index:62;display:grid;place-items:center;padding:16px;background:rgba(8,8,10,.85)}
-.dlg .box{position:relative;width:min(500px,100%);padding:1.75rem;background:var(--black-2);border:1px solid var(--line);border-radius:16px}
-.dlg h2{font-size:1.4rem;margin-bottom:1rem}
-.dlg .x{position:absolute;right:1.25rem;top:1.4rem;background:none;border:0;cursor:pointer;color:var(--mute);font:600 .9rem/1 var(--f)}
-dl{margin:0;border-top:1px solid var(--line)}
-dl div{display:flex;justify-content:space-between;gap:1rem;padding:.85rem 0;border-bottom:1px solid var(--line)}
-dt{color:var(--mute)}
-dd{margin:0;font-weight:700;text-align:right}
-/* Karten mit 3D-Kippen und Chrom-Glanz */
-.card{position:relative;display:block;width:100%;padding:0;border:0;background:var(--black-2);cursor:zoom-in;border-radius:6px;overflow:hidden;transform-style:preserve-3d;text-decoration:none;
-  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .25s ease-out,opacity .3s,box-shadow .25s;box-shadow:0 16px 36px rgba(0,0,0,.45)}
-.card img{width:100%;height:100%;object-fit:cover;filter:grayscale(.3);transition:filter .3s}
-.card .gl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;mix-blend-mode:overlay;
-  background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.8),rgba(255,255,255,0) 45%),linear-gradient(115deg,transparent 32%,rgba(255,255,255,.28) 48%,transparent 62%)}
-.card .cap{position:absolute;left:0;right:0;bottom:0;padding:2.2rem .9rem .75rem;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.72));display:flex;justify-content:space-between;gap:.5rem;align-items:baseline;text-align:left}
-.card .cap b{font:700 .92rem/1.25 var(--f)}
-.card .cap small{color:#c2c3c7;font-size:.78rem;white-space:nowrap}
-.card:hover img,.card:focus-visible img{filter:none}
-.card:hover .gl,.card:focus-visible .gl{opacity:1}
-.card:hover{box-shadow:0 30px 60px rgba(0,0,0,.6)}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+button,input,textarea{font:inherit;color:inherit}
+h1,h2,h3,p,dl,dd,figure{margin:0}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+::selection{background:var(--acc);color:#000}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
-/* Start */
-.hero{position:relative;min-height:clamp(620px,100svh,1000px);overflow:hidden;isolation:isolate;display:flex;align-items:flex-end}
-#blob{position:absolute;inset:0;width:100%;height:100%;z-index:-1;display:block}
-.no3d #blob{display:none}
-.no3d .hero::before{content:"";position:absolute;z-index:-1;right:8%;top:16%;width:min(46vw,520px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#fff,#bfc1c5 18%,#3b3d42 46%,#0c0c0e 62%,#6d7076 82%,#e2e3e6)}
-.hero .in{width:100%;padding-top:calc(90px + env(safe-area-inset-top,0px));padding-bottom:clamp(40px,8vh,90px)}
-.hero h1{font-size:clamp(2.5rem,8.4vw,7.6rem);line-height:.95;letter-spacing:-.03em;filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
-.hero .lede{margin:1.1rem 0 1.6rem;font-size:clamp(1.05rem,1.6vw,1.3rem);max-width:30ch;color:#cfd0d4}
-.hero .now{position:absolute;right:var(--gr);bottom:clamp(40px,8vh,90px);text-align:right;font-size:.85rem;color:var(--mute)}
-.hero .now b{display:block;color:var(--chrome);font-weight:600;font-size:.95rem}
-@media (max-width:760px){.hero .now{display:none}}
-.sec{border-top:1px solid var(--line)}
-.sec>.in{padding-block:clamp(3.5rem,8vw,6rem)}
-.pick-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1rem 2rem;margin-bottom:2rem}
-.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);perspective:1400px}
-.picks .card{aspect-ratio:4/5}
-.picks .card:nth-child(2){margin-top:clamp(20px,5vw,70px)}
-@media (max-width:700px){.picks{grid-template-columns:repeat(2,minmax(0,1fr))}.picks .card:nth-child(3){display:none}.picks .card:nth-child(2){margin-top:0}}
-.about{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(2rem,6vw,5rem);align-items:start}
-.about .copy{display:grid;gap:1rem}
-.about .copy p{font-size:1.1875rem;max-width:44ch;color:#d3d4d7}
-@media (max-width:860px){.about{grid-template-columns:1fr}}
-.contact{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(2rem,6vw,5rem);align-items:start}
-.handles{display:grid;margin-top:1.5rem}
-.handles a{font:400 clamp(1.3rem,3vw,2.1rem)/1.25 var(--f-d);text-decoration:none}
-.handles small{display:block;margin:.15rem 0 1.1rem;color:var(--mute);font-size:.95rem}
-form.req{display:grid;gap:1.2rem}
-.req fieldset{border:0;margin:0;padding:0}
-.req legend{padding:0;margin-bottom:.6rem;color:var(--mute);font-size:.95rem}
-.opts{display:flex;flex-wrap:wrap;gap:6px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gx)}
+.mono{font-family:var(--mono);font-size:.75rem;letter-spacing:.04em;text-transform:uppercase}
+.mute{color:var(--mute)}
+.display{font-family:var(--f);font-stretch:62%;font-weight:850;line-height:.88;letter-spacing:-.01em;text-transform:uppercase}
+.kicker{display:flex;align-items:center;gap:.6rem;color:var(--mute)}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc)}
+
+/* ---------- Kopfzeile ---------- */
+.top{position:fixed;inset:0 0 auto;z-index:20;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.top.solid{background:rgba(11,11,13,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
+.logo{font-stretch:75%;font-weight:800;font-size:1.25rem;text-decoration:none;letter-spacing:.01em}
+.logo span{color:var(--acc)}
+.nav{display:flex;gap:clamp(.9rem,2.5vw,2rem);font-size:.95rem;font-weight:500}
+.nav a{text-decoration:none;color:var(--mute);transition:color .2s}
+.nav a:hover{color:var(--fg)}
+@media (max-width:420px){.nav .opt{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 60%;z-index:-2;transform:scale(1.04);animation:settle 2.4s cubic-bezier(.2,.7,.2,1) forwards}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,11,13,.55) 0%,rgba(11,11,13,0) 28%,rgba(11,11,13,.15) 55%,var(--bg) 100%)}
+@keyframes settle{to{transform:scale(1)}}
+.hero .wrap{width:100%;padding-bottom:clamp(2rem,6vh,4rem)}
+.hero h1{font-size:clamp(4.2rem,17vw,15rem)}
+.hero h1 span{color:var(--acc)}
+.hero-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem 3rem;margin-top:1.4rem}
+.lede{max-width:34ch;font-size:clamp(1.05rem,1.6vw,1.3rem);line-height:1.45}
+.acts{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:.5rem;min-height:46px;padding:.7rem 1.3rem;border-radius:999px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);font-weight:600;font-size:.95rem;text-decoration:none;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.btn:hover{background:var(--acc);border-color:var(--acc);color:#000}
+.btn.ghost{background:transparent;color:var(--fg);border-color:rgba(239,238,233,.4)}
+.btn.ghost:hover{border-color:var(--fg);background:transparent;color:var(--fg)}
+.exif{position:absolute;top:84px;right:var(--gx);text-align:right;color:rgba(239,238,233,.75);line-height:1.7}
+
+/* ---------- Laufband ---------- */
+.ticker{border-block:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:.85rem 0;background:var(--bg-2)}
+.ticker-in{display:inline-flex;animation:run 60s linear infinite}
+.ticker span{font-stretch:62%;font-weight:800;font-size:1.35rem;text-transform:uppercase;padding-right:2.2rem}
+.ticker span::after{content:"/";color:var(--acc);padding-left:2.2rem}
+@keyframes run{to{transform:translateX(-50%)}}
+
+/* ---------- Abschnitte ---------- */
+.sec{padding:clamp(4rem,10vw,8rem) 0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin-bottom:clamp(1.75rem,4vw,3rem)}
+.sec-head h2{font-size:clamp(3rem,9vw,7rem);margin-top:.6rem}
+
+/* ---------- Bilder ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:.5rem}
+.filters button{min-height:40px;padding:.45rem 1rem;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer;font-size:.92rem;font-weight:500;transition:all .2s}
+.filters button sup{font-family:var(--mono);font-size:.68rem;margin-left:.3rem;vertical-align:super}
+.filters button:hover{color:var(--fg);border-color:var(--mute)}
+.filters button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.grid{columns:2;column-gap:10px}
+@media (min-width:720px){.grid{columns:3;column-gap:14px}}
+@media (min-width:1100px){.grid{columns:4}}
+.shot{break-inside:avoid;margin:0 0 10px;position:relative;display:block;width:100%;padding:0;border:0;background:var(--bg-3);cursor:zoom-in;overflow:hidden;border-radius:4px;text-align:left}
+@media (min-width:720px){.shot{margin-bottom:14px}}
+.shot img{width:100%;height:auto;transition:transform .7s cubic-bezier(.2,.7,.2,1),filter .4s}
+.shot .meta{position:absolute;inset:auto 0 0;display:flex;justify-content:space-between;gap:.5rem;padding:2.2rem .75rem .65rem;background:linear-gradient(transparent,rgba(0,0,0,.78));opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+.shot .meta b{font-weight:600;font-size:.9rem;line-height:1.25}
+.shot .meta i{font-style:normal;color:var(--acc);white-space:nowrap}
+.shot .no{position:absolute;top:.55rem;left:.6rem;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.6)}
+@media (hover:hover){.shot:hover img{transform:scale(1.035)}.shot:hover .meta,.shot:focus-visible .meta{opacity:1;transform:none}}
+@media (hover:none){.shot .meta{opacity:1;transform:none;padding-top:1.6rem}.shot .meta i{display:none}}
+.shot.off{display:none}
+.shot.in{animation:pop .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes pop{from{opacity:0;transform:translateY(14px)}}
+
+/* ---------- Über mich ---------- */
+.about{display:grid;gap:clamp(2rem,5vw,5rem);align-items:center}
+@media (min-width:900px){.about{grid-template-columns:5fr 7fr}}
+.about-pic{position:relative;max-width:440px}
+.about-pic img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px}
+.about-pic figcaption{margin-top:.7rem}
+.about h2{font-size:clamp(3rem,9vw,7rem);margin:.6rem 0 1.5rem}
+.about p{max-width:52ch;font-size:clamp(1.05rem,1.4vw,1.2rem);color:#d6d5d0}
+.about p+p{margin-top:1rem}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:2.2rem}
+.facts div{background:var(--bg);padding:1rem 1.1rem}
+.facts dt{color:var(--mute);margin-bottom:.3rem}
+.facts dd{font-weight:600}
+.stats{display:flex;flex-wrap:wrap;gap:2rem 3rem;margin-top:2.2rem}
+.stats b{display:block;font-stretch:62%;font-weight:850;font-size:clamp(2.6rem,6vw,4rem);line-height:1}
+.stats b em{font-style:normal;color:var(--acc)}
+
+/* ---------- Kontakt ---------- */
+.contact{background:var(--bg-2);border-top:1px solid var(--line)}
+.contact-grid{display:grid;gap:clamp(2.5rem,5vw,5rem)}
+@media (min-width:900px){.contact-grid{grid-template-columns:5fr 6fr}}
+.contact h2{font-size:clamp(3rem,9vw,7rem);margin:.6rem 0 1.2rem}
+.handles{margin-top:2rem;border-top:1px solid var(--line)}
+.handles a{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.15rem 0;border-bottom:1px solid var(--line);text-decoration:none;transition:padding .25s,color .25s}
+.handles a strong{font-stretch:75%;font-weight:750;font-size:clamp(1.4rem,3.2vw,2rem);overflow-wrap:anywhere}
+.handles a:hover{color:var(--acc);padding-left:.5rem}
+.handles small{color:var(--mute)}
+.req{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:clamp(1.25rem,3vw,2rem)}
+.req h3{font-stretch:75%;font-weight:750;font-size:1.5rem;margin:0 0 1.25rem}
+.req fieldset{border:0;padding:0;margin:0 0 1.25rem}
+.req legend{padding:0;margin-bottom:.6rem}
+.opts{display:flex;flex-wrap:wrap;gap:.45rem}
 .opts label{position:relative;cursor:pointer}
-.opts input{position:absolute;opacity:0;width:1px;height:1px}
-.opts span{display:inline-flex;align-items:center;min-height:38px;padding:0 .9rem;border:1px solid var(--line);border-radius:999px;font-size:.92rem;color:var(--mute)}
-.opts label:hover span{color:var(--chrome)}
-.opts input:checked+span{background:var(--chrome);border-color:var(--chrome);color:var(--black);font-weight:700}
-.opts input:focus-visible+span{outline:2px solid var(--chrome);outline-offset:2px}
-.fld{display:grid;gap:.4rem;color:var(--mute);font-size:.95rem}
-.fld input,.fld textarea{font:inherit;font-size:1.05rem;color:var(--chrome);background:var(--black-2);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem}
-.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--chrome)}
-.fld textarea{min-height:120px;resize:vertical}
-.req output{color:var(--mute);font-size:.95rem;min-height:1.5em}
-@media (max-width:860px){.contact{grid-template-columns:1fr}}
+.opts input{position:absolute;opacity:0;pointer-events:none}
+.opts span{display:inline-flex;align-items:center;min-height:38px;padding:.35rem .9rem;border-radius:999px;border:1px solid var(--line);font-size:.9rem;color:var(--mute);transition:all .2s}
+.opts label:hover span{color:var(--fg);border-color:var(--mute)}
+.opts input:checked+span{background:var(--acc);border-color:var(--acc);color:#000;font-weight:600}
+.opts input:focus-visible+span{outline:2px solid var(--acc);outline-offset:2px}
+.fld{display:block;margin-bottom:1rem}
+.fld span{display:block;margin-bottom:.45rem}
+.fld input,.fld textarea{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:4px;padding:.75rem .85rem;font-size:1rem;transition:border-color .2s}
+.fld textarea{min-height:110px;resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--acc)}
+.req .acts{margin-top:1.25rem}
+.out{display:block;min-height:1.5em;margin-top:.9rem;color:var(--acc);font-size:.92rem}
+
+/* ---------- Fußzeile ---------- */
+footer{border-top:1px solid var(--line);padding:1.6rem 0 calc(1.6rem + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;justify-content:space-between;align-items:center;color:var(--mute)}
+.link{background:none;border:0;padding:0;cursor:pointer;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--fg)}
+
+/* ---------- Dialoge ---------- */
+dialog{padding:0;border:0;color:var(--fg);background:transparent;max-width:none;max-height:none}
+dialog::backdrop{background:rgba(5,5,7,.92)}
+.imp{width:min(92vw,460px);background:var(--bg-2);border:1px solid var(--line);border-radius:6px;padding:1.75rem}
+.imp h2{font-stretch:75%;font-weight:800;font-size:1.8rem;margin-bottom:1.2rem}
+.imp dl div{display:flex;justify-content:space-between;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+.imp dt{color:var(--mute)}
+.imp dd{text-align:right;overflow-wrap:anywhere}
+.imp form{margin-top:1.4rem}
+
+.lb{width:100vw;height:100dvh;background:rgba(5,5,7,.97)}
+.lb[open]{display:grid;grid-template-rows:auto 1fr auto}
+.lb-top,.lb-bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem var(--gx)}
+.lb-stage{position:relative;min-height:0;display:grid;place-items:center;padding:0 var(--gx)}
+.lb-stage img{max-width:100%;max-height:calc(100dvh - 170px);object-fit:contain;border-radius:2px;transition:opacity .25s}
+.lb-stage img.load{opacity:.25}
+.lb-cap b{display:block;font-weight:600;font-size:1.05rem}
+.lb-nav{display:flex;gap:.5rem}
+.round{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--bg-2);cursor:pointer;display:grid;place-items:center;font-size:1.3rem;transition:border-color .2s,background .2s}
+.round:hover{border-color:var(--fg)}
+.lb-x{background:none;border:1px solid var(--line);border-radius:999px;padding:.5rem 1rem;cursor:pointer;min-height:42px}
+.lb-x:hover{border-color:var(--fg)}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.seen{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 </head>
 <body>
-<header class="top">
-  <a class="mk" href="index.html">mapq.raw</a>
-  <nav class="nav" aria-label="Menü">
-    <a href="index.html" aria-current="page">Start</a>
-    <a href="bilder.html">Bilder</a>
-    <a class="opt" href="#ueber" data-jump>Über mich</a>
-    <a href="#kontakt" data-jump>Kontakt</a>
-  </nav>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="logo" href="#start" aria-label="mapq.raw, nach oben">mapq<span>.</span>raw</a>
+    <nav class="nav" aria-label="Menü">
+      <a href="#bilder">Bilder</a>
+      <a class="opt" href="#ueber">Über mich</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+  </div>
 </header>
 
 <main>
   <section class="hero" id="start">
-    <canvas id="blob" aria-hidden="true"></canvas>
-    <div class="in">
-      <h1 class="chrome">mapq.raw</h1>
-      <p class="lede">Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.</p>
-      <div class="acts"><a class="btn" href="bilder.html">Bilder ansehen</a><a class="btn line" href="#kontakt" data-jump>Shooting anfragen</a></div>
-    </div>
-    <p class="now" aria-live="off"><span>Im Chrom gespiegelt</span><b id="now">BMW 8er Gran Coupé</b></p>
-  </section>
-
-  <section class="sec" id="auswahl">
-    <div class="in">
-      <div class="pick-head"><h2 class="chrome">Ausgewählt</h2><a class="ul" href="bilder.html">Alle 20 Bilder</a></div>
-      <div class="picks" id="picks"></div>
-    </div>
-  </section>
-
-  <section class="sec" id="ueber">
-    <div class="in about">
-      <div class="copy">
-        <h2 class="chrome">Über mich</h2>
-        <p>Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.</p>
-        <p>Ich arbeite gern mit Fahrern, Teams und Besitzern zusammen.</p>
-      </div>
-      <dl>
-        <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
-        <div><dt>Schwerpunkte</dt><dd>Automotive, Action, Outdoor</dd></div>
-        <div><dt>Region</dt><dd>Tirol, Österreich</dd></div>
-        <div><dt>Angebot</dt><dd>Shootings und Zusammenarbeit</dd></div>
-      </dl>
-    </div>
-  </section>
-
-  <section class="sec" id="kontakt">
-    <div class="in contact">
-      <div>
-        <h2 class="chrome">Kontakt</h2>
-        <p class="mute" style="margin-top:.75rem">Am schnellsten erreichst du mich auf Instagram.</p>
-        <div class="handles">
-          <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener">@mapq.raw</a><small>Instagram</small>
-          <a href="https://www.instagram.com/matzeqp" target="_blank" rel="noopener">@matzeqp</a><small>Privat</small>
+    <img src="bilder/bmw-8er.jpg" alt="Schwarzer BMW 8er Gran Coupé auf einer Straße in der Abenddämmerung" fetchpriority="high">
+    <p class="exif mono" aria-hidden="true">DSC00572<br>08.2026<br>Tirol</p>
+    <div class="wrap">
+      <p class="kicker mono">Fotografie · Tirol, Österreich</p>
+      <h1 class="display">mapq<span>.</span>raw</h1>
+      <div class="hero-row">
+        <p class="lede">Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.</p>
+        <div class="acts">
+          <a class="btn" href="#bilder">Bilder ansehen</a>
+          <a class="btn ghost" href="#kontakt">Shooting anfragen</a>
         </div>
       </div>
-      <form class="req" id="req">
-        <h3>Anfrage</h3>
-        <fieldset><legend>Worum geht es?</legend><div class="opts" id="o-art"></div></fieldset>
-        <fieldset><legend>Wann am liebsten?</legend><div class="opts" id="o-zeit"></div></fieldset>
-        <label class="fld" for="rn">Dein Name<input id="rn" autocomplete="name"></label>
-        <label class="fld" for="rm">Nachricht<textarea id="rm" placeholder="Fahrzeug, Ort, Wunschtermin"></textarea></label>
-        <div class="acts"><button type="button" class="btn" id="rc">Text kopieren</button><a class="ul" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Auf Instagram schreiben</a></div>
-        <output id="ro" aria-live="polite"></output>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-in" id="ticker"></div></div>
+
+  <section class="sec" id="bilder">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="kicker mono">Saison 2026 · Juli bis Oktober</p>
+          <h2 class="display">Bilder</h2>
+        </div>
+        <div class="filters" role="group" aria-label="Bilder filtern">
+          <button type="button" data-f="alle" aria-pressed="true">Alle<sup></sup></button>
+          <button type="button" data-f="auto" aria-pressed="false">Autos<sup></sup></button>
+          <button type="button" data-f="moto" aria-pressed="false">Motorräder<sup></sup></button>
+          <button type="button" data-f="event" aria-pressed="false">Events<sup></sup></button>
+          <button type="button" data-f="outdoor" aria-pressed="false">Outdoor<sup></sup></button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="ueber" style="padding-top:0">
+    <div class="wrap about">
+      <figure class="about-pic reveal">
+        <img src="bilder/klein/supermoto-berge.jpg" alt="Supermoto vor den Bergen" loading="lazy">
+        <figcaption class="mono mute">DSC00810 · Supermoto vor den Bergen</figcaption>
+      </figure>
+      <div class="reveal">
+        <p class="kicker mono">Hinter der Kamera</p>
+        <h2 class="display">Über mich</h2>
+        <p>Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.</p>
+        <p>Ich arbeite gern mit Fahrern, Teams und Besitzern zusammen.</p>
+        <div class="stats">
+          <div><b id="st-n">20</b><span class="mono mute">Bilder online</span></div>
+          <div><b>4</b><span class="mono mute">Monate Saison</span></div>
+          <div><b>3</b><span class="mono mute">Schwerpunkte</span></div>
+        </div>
+        <dl class="facts">
+          <div><dt class="mono">Name</dt><dd>Matteo Hanser</dd></div>
+          <div><dt class="mono">Schwerpunkte</dt><dd>Automotive, Action, Outdoor</dd></div>
+          <div><dt class="mono">Region</dt><dd>Tirol, Österreich</dd></div>
+          <div><dt class="mono">Angebot</dt><dd>Shootings und Zusammenarbeit</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec contact" id="kontakt">
+    <div class="wrap contact-grid">
+      <div class="reveal">
+        <p class="kicker mono">Shooting anfragen</p>
+        <h2 class="display">Kontakt</h2>
+        <p class="mute">Am schnellsten erreichst du mich auf Instagram.</p>
+        <div class="handles">
+          <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener"><strong>@mapq.raw</strong><small class="mono">Instagram ↗</small></a>
+          <a href="https://www.instagram.com/matzeqp" target="_blank" rel="noopener"><strong>@matzeqp</strong><small class="mono">Privat ↗</small></a>
+          <a href="mailto:Matteohanser8@gmail.com"><strong>Matteohanser8@gmail.com</strong><small class="mono">E-Mail ↗</small></a>
+        </div>
+      </div>
+      <form class="req reveal" id="req" novalidate>
+        <h3>Anfrage zusammenstellen</h3>
+        <fieldset><legend class="mono mute">Worum geht es?</legend><div class="opts" id="o-art"></div></fieldset>
+        <fieldset><legend class="mono mute">Wann am liebsten?</legend><div class="opts" id="o-zeit"></div></fieldset>
+        <label class="fld" for="rn"><span class="mono mute">Dein Name</span><input id="rn" autocomplete="name"></label>
+        <label class="fld" for="rm"><span class="mono mute">Nachricht</span><textarea id="rm" placeholder="Fahrzeug, Ort, Wunschtermin"></textarea></label>
+        <div class="acts">
+          <button type="button" class="btn" id="rc">Text kopieren &amp; Instagram öffnen</button>
+          <a class="btn ghost" id="rmail" href="mailto:Matteohanser8@gmail.com">Per E-Mail senden</a>
+        </div>
+        <output class="out" id="ro" aria-live="polite"></output>
       </form>
     </div>
   </section>
 </main>
 
-<footer><div class="in"><span>© 2026 Matteo Hanser</span><span>Stand: Oktober 2026</span><button class="ul" id="imp-open">Impressum</button></div></footer>
-
-<div class="dlg" id="imp" role="dialog" aria-modal="true" aria-labelledby="imp-h" hidden>
-  <div class="box">
-    <button class="x" id="imp-x">Schließen</button>
-    <h2 id="imp-h">Impressum</h2>
-    <dl>
-      <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
-      <div><dt>Ort</dt><dd>Tirol, Österreich</dd></div>
-      <div><dt>E-Mail</dt><dd><a class="ul" href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com</a></dd></div>
-    </dl>
+<footer>
+  <div class="wrap">
+    <span>© 2026 Matteo Hanser</span>
+    <span class="mono">Stand: Oktober 2026</span>
+    <button type="button" class="link" id="imp-open">Impressum</button>
   </div>
-</div>
+</footer>
+
+<dialog class="imp" id="imp" aria-labelledby="imp-h">
+  <h2 id="imp-h">Impressum</h2>
+  <dl>
+    <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
+    <div><dt>Ort</dt><dd>Tirol, Österreich</dd></div>
+    <div><dt>E-Mail</dt><dd><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com</a></dd></div>
+  </dl>
+  <form method="dialog"><button class="btn ghost">Schließen</button></form>
+</dialog>
+
+<dialog class="lb" id="lb" aria-label="Bildansicht">
+  <div class="lb-top">
+    <span class="mono mute" id="lb-no"></span>
+    <button type="button" class="lb-x" id="lb-x">Schließen ✕</button>
+  </div>
+  <div class="lb-stage" id="lb-stage"><img id="lb-img" alt=""></div>
+  <div class="lb-bar">
+    <div class="lb-cap"><b id="lb-t"></b><span class="mono mute" id="lb-m"></span></div>
+    <div class="lb-nav">
+      <button type="button" class="round" id="lb-p" aria-label="Vorheriges Bild">‹</button>
+      <button type="button" class="round" id="lb-n" aria-label="Nächstes Bild">›</button>
+    </div>
+  </div>
+</dialog>
 
 <script>
-window.PHOTOS=[{"f": "bmw-8er.jpg", "t": "BMW 8er Gran Coupé", "c": "auto", "ar": 1.7769, "dsc": "DSC00572", "mon": "08.2026", "monL": "August 2026"}, {"f": "supermoto-tal.jpg", "t": "Supermoto über dem Tal", "c": "moto outdoor", "ar": 0.5628, "dsc": "DSC01920", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "mini-slalom.jpg", "t": "Mini beim Slalom", "c": "auto event", "ar": 1.7769, "dsc": "DSC06406", "mon": "09.2026", "monL": "September 2026"}, {"f": "golf-1.jpg", "t": "Golf 1 beim Treffen", "c": "auto event", "ar": 0.5628, "dsc": "DSC00281", "mon": "09.2026", "monL": "September 2026"}, {"f": "bmw-nacht.jpg", "t": "BMW bei Nacht", "c": "auto", "ar": 0.5628, "dsc": "DSC06179", "mon": "07.2026", "monL": "Juli 2026"}, {"f": "wheelie.jpg", "t": "Wheelie vor den Bergen", "c": "moto outdoor", "ar": 0.5626, "dsc": "DSC04554", "mon": "09.2026", "monL": "September 2026"}, {"f": "audi-s3.jpg", "t": "Audi S3 auf der Wiese", "c": "auto outdoor", "ar": 0.5628, "dsc": "DSC04862", "mon": "09.2026", "monL": "September 2026"}, {"f": "peugeot-106.jpg", "t": "Peugeot 106 am Start", "c": "auto event", "ar": 0.5628, "dsc": "DSC05515", "mon": "09.2026", "monL": "September 2026"}, {"f": "supermoto-wald.jpg", "t": "Supermoto im Wald", "c": "moto outdoor", "ar": 0.5628, "dsc": "DSC01737", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "bmw-e46.jpg", "t": "BMW E46 am Feldweg", "c": "auto", "ar": 0.5628, "dsc": "DSC00821", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "drift-nass.jpg", "t": "Drift auf nassem Asphalt", "c": "auto event", "ar": 0.5628, "dsc": "DSC08608", "mon": "08.2026", "monL": "August 2026"}, {"f": "traktor.jpg", "t": "Traktor vor den Bergen", "c": "auto outdoor", "ar": 0.5628, "dsc": "DSC00236", "mon": "09.2026", "monL": "September 2026"}, {"f": "yaris-slalom.jpg", "t": "Toyota GR Yaris beim Slalom", "c": "auto event", "ar": 0.5628, "dsc": "DSC05966", "mon": "09.2026", "monL": "September 2026"}, {"f": "bmw-heck.jpg", "t": "BMW von hinten", "c": "auto", "ar": 0.5628, "dsc": "DSC06301", "mon": "07.2026", "monL": "Juli 2026"}, {"f": "supermoto-berge.jpg", "t": "Supermoto vor den Bergen", "c": "moto outdoor", "ar": 0.5628, "dsc": "DSC00810", "mon": "08.2026", "monL": "August 2026"}, {"f": "rennwagen.jpg", "t": "Rennwagen beim Slalom", "c": "auto event", "ar": 0.5625, "dsc": "DSC09837", "mon": "09.2026", "monL": "September 2026"}, {"f": "audi-s3-felge.jpg", "t": "Audi S3, Felge", "c": "auto", "ar": 0.5629, "dsc": "DSC04986", "mon": "09.2026", "monL": "September 2026"}, {"f": "bmw-abendhimmel.jpg", "t": "BMW unter dem Abendhimmel", "c": "auto", "ar": 0.5628, "dsc": "DSC02000", "mon": "10.2026", "monL": "Oktober 2026"}, {"f": "bmw-drift.jpg", "t": "BMW im Drift", "c": "auto event", "ar": 0.5628, "dsc": "DSC08367", "mon": "08.2026", "monL": "August 2026"}, {"f": "bmw-huegel.jpg", "t": "BMW unter lila Wolken", "c": "auto outdoor", "ar": 0.5628, "dsc": "DSC00628", "mon": "10.2026", "monL": "Oktober 2026"}];
-/* Gemeinsam für beide Seiten: weiches Scrollen, Kopfzeile, Chrom-Spiegelung, Kippkarten, Impressum */
-var MQ=(function(){
-  var root=document.documentElement;
-  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var fine=window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  function $(s,c){ return (c||document).querySelector(s); }
-  function $$(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); }
-  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
-  var lenis=null;
-  if(window.Lenis&&!reduce){ try{ lenis=new window.Lenis({lerp:.09,smoothWheel:true}); }catch(e){ lenis=null; } }
-  $$(".lb,.dlg,textarea").forEach(function(el){ el.setAttribute("data-lenis-prevent",""); });
-  var mx=0, my=0, smy=0, fns=[];
-  window.addEventListener("pointermove",function(e){ mx=e.clientX/innerWidth*2-1; my=e.clientY/innerHeight*2-1; },{passive:true});
-  var top=$(".top");
-  function tick(now){
-    requestAnimationFrame(tick);
-    if(lenis) lenis.raf(now);
-    smy+=(my-smy)*.06;
-    root.style.setProperty("--sy",(38+smy*26+clamp(window.scrollY/innerHeight,0,1)*40).toFixed(1)+"%");
-    if(top) top.classList.toggle("solid",window.scrollY>30);
-    for(var i=0;i<fns.length;i++){ try{ fns[i](now); }catch(err){} }
-  }
-  requestAnimationFrame(tick);
-  function tilt(el){
-    if(!fine||reduce) return;
-    el.addEventListener("pointermove",function(e){
-      var r=el.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
-      el.style.setProperty("--ry",((x-.5)*18).toFixed(2)+"deg"); el.style.setProperty("--rx",((.5-y)*18).toFixed(2)+"deg");
-      el.style.setProperty("--gx",(x*100).toFixed(1)+"%"); el.style.setProperty("--gy",(y*100).toFixed(1)+"%"); el.style.setProperty("--sc","1.02");
-    });
-    el.addEventListener("pointerleave",function(){ el.style.setProperty("--rx","0deg"); el.style.setProperty("--ry","0deg"); el.style.setProperty("--sc","1"); });
-  }
-  var imp=$("#imp"), impOpen=$("#imp-open");
-  if(imp&&impOpen){
-    var closeImp=function(){ imp.hidden=true; if(lenis) lenis.start(); impOpen.focus(); };
-    impOpen.addEventListener("click",function(){ imp.hidden=false; if(lenis) lenis.stop(); $("#imp-x").focus(); });
-    $("#imp-x").addEventListener("click",closeImp);
-    imp.addEventListener("click",function(e){ if(e.target===imp) closeImp(); });
-    document.addEventListener("keydown",function(e){ if(!imp.hidden&&e.key==="Escape") closeImp(); });
-  }
-  function scrollTo(el){ if(!el) return; var y=el.getBoundingClientRect().top+window.scrollY-70; if(lenis) lenis.scrollTo(y,{duration:1.3}); else window.scrollTo({top:y,behavior:reduce?"auto":"smooth"}); }
-  return {$:$,$$:$$,clamp:clamp,reduce:reduce,fine:fine,lenis:lenis,fns:fns,tilt:tilt,scrollTo:scrollTo,mouse:function(){ return [mx,my]; }};
-})();
-
+var PHOTOS=[
+  {f:"bmw-8er",t:"BMW 8er Gran Coupé",c:"auto",ar:1.7769,dsc:"DSC00572",m:"August 2026"},
+  {f:"supermoto-tal",t:"Supermoto über dem Tal",c:"moto outdoor",ar:.5628,dsc:"DSC01920",m:"Oktober 2026"},
+  {f:"mini-slalom",t:"Mini beim Slalom",c:"auto event",ar:1.7769,dsc:"DSC06406",m:"September 2026"},
+  {f:"golf-1",t:"Golf 1 beim Treffen",c:"auto event",ar:.5628,dsc:"DSC00281",m:"September 2026"},
+  {f:"bmw-nacht",t:"BMW bei Nacht",c:"auto",ar:.5628,dsc:"DSC06179",m:"Juli 2026"},
+  {f:"wheelie",t:"Wheelie vor den Bergen",c:"moto outdoor",ar:.5626,dsc:"DSC04554",m:"September 2026"},
+  {f:"audi-s3",t:"Audi S3 auf der Wiese",c:"auto outdoor",ar:.5628,dsc:"DSC04862",m:"September 2026"},
+  {f:"peugeot-106",t:"Peugeot 106 am Start",c:"auto event",ar:.5628,dsc:"DSC05515",m:"September 2026"},
+  {f:"supermoto-wald",t:"Supermoto im Wald",c:"moto outdoor",ar:.5628,dsc:"DSC01737",m:"Oktober 2026"},
+  {f:"bmw-e46",t:"BMW E46 am Feldweg",c:"auto",ar:.5628,dsc:"DSC00821",m:"Oktober 2026"},
+  {f:"drift-nass",t:"Drift auf nassem Asphalt",c:"auto event",ar:.5628,dsc:"DSC08608",m:"August 2026"},
+  {f:"traktor",t:"Traktor vor den Bergen",c:"auto outdoor",ar:.5628,dsc:"DSC00236",m:"September 2026"},
+  {f:"yaris-slalom",t:"Toyota GR Yaris beim Slalom",c:"auto event",ar:.5628,dsc:"DSC05966",m:"September 2026"},
+  {f:"bmw-heck",t:"BMW von hinten",c:"auto",ar:.5628,dsc:"DSC06301",m:"Juli 2026"},
+  {f:"supermoto-berge",t:"Supermoto vor den Bergen",c:"moto outdoor",ar:.5628,dsc:"DSC00810",m:"August 2026"},
+  {f:"rennwagen",t:"Rennwagen beim Slalom",c:"auto event",ar:.5625,dsc:"DSC09837",m:"September 2026"},
+  {f:"audi-s3-felge",t:"Audi S3, Felge",c:"auto",ar:.5629,dsc:"DSC04986",m:"September 2026"},
+  {f:"bmw-abendhimmel",t:"BMW unter dem Abendhimmel",c:"auto",ar:.5628,dsc:"DSC02000",m:"Oktober 2026"},
+  {f:"bmw-drift",t:"BMW im Drift",c:"auto event",ar:.5628,dsc:"DSC08367",m:"August 2026"},
+  {f:"bmw-huegel",t:"BMW unter lila Wolken",c:"auto outdoor",ar:.5628,dsc:"DSC00628",m:"Oktober 2026"}
+];
 (function(){
   "use strict";
-  var $=MQ.$, $$=MQ.$$, clamp=MQ.clamp, reduce=MQ.reduce, root=document.documentElement, P=window.PHOTOS||[];
-  function bySlug(s){ for(var i=0;i<P.length;i++) if(P[i].f===s+".jpg") return P[i]; }
+  function $(s){ return document.querySelector(s); }
+  function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+  function pad(n){ return (n<10?"0":"")+n; }
 
-  $$("[data-jump]").forEach(function(a){ a.addEventListener("click",function(e){ var el=$(a.getAttribute("href")); if(el){ e.preventDefault(); MQ.scrollTo(el); } }); });
-  if(location.hash&&$(location.hash)) setTimeout(function(){ MQ.scrollTo($(location.hash)); },300);
+  /* Kopfzeile */
+  var top=$("#top");
+  function onScroll(){ top.classList.toggle("solid",window.scrollY>40); }
+  window.addEventListener("scroll",onScroll,{passive:true}); onScroll();
 
-  /* ---------- Auswahl ---------- */
-  var picks=$("#picks");
-  ["bmw-8er","supermoto-tal","mini-slalom"].forEach(function(s){
-    var it=bySlug(s); if(!it) return;
-    var a=document.createElement("a"); a.className="card"; a.href="bilder.html#"+s; a.setAttribute("aria-label",it.t+" auf der Bilder-Seite ansehen");
-    var img=document.createElement("img"); img.src="bilder/klein/"+it.f; img.alt=""; img.loading="lazy";
-    var g=document.createElement("span"); g.className="gl"; g.setAttribute("aria-hidden","true");
-    var cap=document.createElement("span"); cap.className="cap"; cap.innerHTML="<b></b><small></small>"; cap.querySelector("b").textContent=it.t; cap.querySelector("small").textContent=it.monL;
-    a.appendChild(img); a.appendChild(g); a.appendChild(cap); picks.appendChild(a); MQ.tilt(a);
+  /* Laufband */
+  var tk=$("#ticker"), words=PHOTOS.map(function(p){ return p.t; });
+  words.concat(words).forEach(function(w){ var s=document.createElement("span"); s.textContent=w; tk.appendChild(s); });
+
+  /* Raster */
+  var grid=$("#grid");
+  PHOTOS.forEach(function(p,i){
+    var b=document.createElement("button");
+    b.type="button"; b.className="shot"; b.id="bild-"+p.f; b.dataset.c=p.c; b.dataset.i=i;
+    b.setAttribute("aria-label",p.t+" groß ansehen");
+    var img=document.createElement("img");
+    img.src="bilder/klein/"+p.f+".jpg"; img.alt=p.t; img.loading=i<4?"eager":"lazy"; img.decoding="async";
+    img.width=p.ar>1?760:428; img.height=Math.round(img.width/p.ar);
+    var no=document.createElement("span"); no.className="no mono"; no.textContent=pad(i+1);
+    var meta=document.createElement("span"); meta.className="meta";
+    var bt=document.createElement("b"); bt.textContent=p.t;
+    var it=document.createElement("i"); it.className="mono"; it.textContent=p.dsc;
+    meta.appendChild(bt); meta.appendChild(it);
+    b.appendChild(img); b.appendChild(no); b.appendChild(meta);
+    b.addEventListener("click",function(){ openLb(i); });
+    grid.appendChild(b);
   });
 
-  /* ---------- 3D-Chromtropfen ---------- */
-  var ENV=[["bmw-8er","bilder/bmw-8er.jpg"],["supermoto-tal","bilder/klein/supermoto-tal.jpg"],["mini-slalom","bilder/mini-slalom.jpg"],["golf-1","bilder/klein/golf-1.jpg"],["wheelie","bilder/klein/wheelie.jpg"],["bmw-nacht","bilder/klein/bmw-nacht.jpg"]];
-  var NOISE="vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}"+
-    "float snoise(vec3 v){const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);"+
-    "vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));"+
-    "float n_=0.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.0*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);"+
-    "vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;"+
-    "vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;"+
-    "vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}";
-  var blob=(function(){
-    var THREE=window.THREE, cv=$("#blob"); if(!THREE){ root.classList.add("no3d"); return null; }
-    var renderer;
-    try{ renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true}); }catch(e){ root.classList.add("no3d"); return null; }
-    if(!renderer.getContext()){ root.classList.add("no3d"); return null; }
-    var small=innerWidth<760;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75)); renderer.setClearColor(0x000000,0);
-    var scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(32,1,.1,50); camera.position.set(0,0,6);
-    var loader=new THREE.TextureLoader(), texs=[];
-    var blank=new THREE.DataTexture(new Uint8Array([40,40,44,255]),1,1,THREE.RGBAFormat); blank.needsUpdate=true;
-    var u={uT:{value:0},uM:{value:new THREE.Vector2()},uA:{value:blank},uB:{value:blank},uMix:{value:0},uAmp:{value:reduce?.1:.19}};
-    var mat=new THREE.ShaderMaterial({uniforms:u,
-      vertexShader:"uniform float uT;uniform vec2 uM;uniform float uAmp;varying vec3 vN;varying vec3 vP;"+NOISE+
-        "float disp(vec3 p){vec3 n=normalize(p);return snoise(p*1.3+vec3(uT*.22,uT*.17,0.))*uAmp+snoise(p*3.1-vec3(0.,uT*.13,uT*.1))*uAmp*.22+max(dot(n,normalize(vec3(uM,.7))),0.)*.16*length(uM);}"+
-        "void main(){vec3 n=normalize(position);vec3 p=position+n*disp(position);vec3 a=abs(n.y)>.95?vec3(1.,0.,0.):vec3(0.,1.,0.);vec3 t=normalize(cross(n,a));vec3 b=normalize(cross(n,t));float e=.012;"+
-        "vec3 q1=position+t*e;q1+=normalize(q1)*disp(q1);vec3 q2=position+b*e;q2+=normalize(q2)*disp(q2);vec3 nn=normalize(cross(q1-p,q2-p));if(dot(nn,n)<0.)nn=-nn;"+
-        "vN=normalize(normalMatrix*nn);vec4 mv=modelViewMatrix*vec4(p,1.);vP=mv.xyz;gl_Position=projectionMatrix*mv;}",
-      fragmentShader:"uniform sampler2D uA;uniform sampler2D uB;uniform float uMix;varying vec3 vN;varying vec3 vP;"+
-        "vec2 eq(vec3 d){return vec2(atan(d.z,d.x)/6.2831853+.5,asin(clamp(d.y,-1.,1.))/3.14159265+.5);}"+
-        "void main(){vec3 v=normalize(vP);vec3 n=normalize(vN);vec3 r=reflect(v,n);vec2 uv=eq(r);"+
-        "vec3 c=mix(texture2D(uA,uv).rgb,texture2D(uB,uv).rgb,uMix);float g=dot(c,vec3(.299,.587,.114));vec3 ch=mix(vec3(g),c,.5);"+
-        "float f=pow(1.-max(dot(-v,n),0.),3.);float band=smoothstep(.45,.5,abs(r.y))*.12;ch=ch*1.1+f*.55+band;ch=ch/(1.+ch*.15);gl_FragColor=vec4(ch,1.);}"
+  /* Filter */
+  var shots=$$(".shot"), fbtns=$$(".filters button");
+  fbtns.forEach(function(btn){
+    var f=btn.dataset.f;
+    btn.querySelector("sup").textContent=f==="alle"?PHOTOS.length:PHOTOS.filter(function(p){ return p.c.split(" ").indexOf(f)>-1; }).length;
+    btn.addEventListener("click",function(){
+      fbtns.forEach(function(x){ x.setAttribute("aria-pressed",String(x===btn)); });
+      shots.forEach(function(s){
+        var show=f==="alle"||s.dataset.c.split(" ").indexOf(f)>-1;
+        s.classList.toggle("off",!show); s.classList.remove("in");
+        if(show){ void s.offsetWidth; s.classList.add("in"); }
+      });
     });
-    var geo=new THREE.IcosahedronGeometry(1,small?36:56), mesh=new THREE.Mesh(geo,mat); scene.add(mesh);
-    var cur=0, fading=-1, fadeStart=0, lastSwitch=performance.now(), nowEl=$("#now");
-    ENV.forEach(function(e,i){
-      var tx=loader.load(e[1],function(){ if(i===0){ u.uA.value=tx; } });
-      tx.wrapS=THREE.RepeatWrapping; tx.wrapT=THREE.ClampToEdgeWrapping; tx.generateMipmaps=false; tx.minFilter=THREE.LinearFilter; texs.push(tx);
-    });
-    function size(){
-      var w=cv.clientWidth, h=cv.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
-      var narrow=w<760; mesh.position.set(narrow?0:.8*Math.min(1.4,w/h),narrow?.55:.1,0); var s=narrow?.82:Math.min(1.25,.75+w/h*.25); mesh.scale.setScalar(s);
-    }
-    size(); window.addEventListener("resize",size);
-    var rx=0, ry=0, lm=new THREE.Vector2();
-    function frame(now){
-      var hero=$("#start").getBoundingClientRect(); if(hero.bottom<0) return;
-      var m=MQ.mouse(), t=now/1000;
-      lm.x+=(m[0]-lm.x)*.06; lm.y+=(-m[1]-lm.y)*.06; u.uM.value.copy(lm);
-      u.uT.value=reduce?0:t;
-      var p=clamp(window.scrollY/Math.max(1,hero.height),0,1);
-      ry+=((reduce?0:t*.12)+lm.x*.7-ry)*.08; rx+=(lm.y*-.4+p*.8-rx)*.08;
-      mesh.rotation.set(rx,ry,0);
-      if(!reduce&&fading<0&&now-lastSwitch>6500&&texs[(cur+1)%texs.length].image){ fading=(cur+1)%texs.length; fadeStart=now; u.uB.value=texs[fading]; }
-      if(fading>=0){ var k=clamp((now-fadeStart)/1400,0,1); u.uMix.value=k*k*(3-2*k);
-        if(k>=1){ cur=fading; fading=-1; u.uA.value=texs[cur]; u.uMix.value=0; lastSwitch=now; }
-        if(k>.5&&nowEl){ var it=bySlug(ENV[fading>=0?fading:cur][0]); if(it&&nowEl.textContent!==it.t) nowEl.textContent=it.t; }
-      }
-      cv.style.opacity=(1-p*.6).toFixed(3);
-      renderer.render(scene,camera);
-    }
-    return {frame:frame};
-  })();
-  if(blob) MQ.fns.push(blob.frame);
+  });
+  function visible(){ return shots.filter(function(s){ return !s.classList.contains("off"); }).map(function(s){ return +s.dataset.i; }); }
 
-  /* ---------- Anfrage ---------- */
-  var ART=["Auto-Shooting","Motorrad-Shooting","Event oder Rennen","Outdoor und Landschaft","Etwas anderes"], ZEIT=["Morgens","Tagsüber","Abends","Nachts","Egal"];
+  /* Großansicht */
+  var lb=$("#lb"), lbImg=$("#lb-img"), cur=0, opener=null;
+  function show(i){
+    cur=i; var p=PHOTOS[i];
+    lbImg.classList.add("load");
+    var pre=new Image();
+    pre.onload=function(){ if(cur!==i) return; lbImg.src=pre.src; lbImg.alt=p.t; lbImg.classList.remove("load"); };
+    pre.src="bilder/"+p.f+".jpg";
+    $("#lb-t").textContent=p.t;
+    $("#lb-m").textContent=p.dsc+" · "+p.m;
+    $("#lb-no").textContent=pad(i+1)+" / "+pad(PHOTOS.length);
+    if(history.replaceState) history.replaceState(null,"","#bild-"+p.f);
+  }
+  function step(d){ var v=visible(), k=v.indexOf(cur); if(k<0) k=0; show(v[(k+d+v.length)%v.length]); }
+  function openLb(i){
+    opener=document.getElementById("bild-"+PHOTOS[i].f);
+    show(i);
+    if(lb.showModal) lb.showModal(); else lb.setAttribute("open","");
+    document.body.style.overflow="hidden";
+  }
+  function closeLb(){ if(lb.close) lb.close(); else lb.removeAttribute("open"); }
+  lb.addEventListener("close",function(){
+    document.body.style.overflow="";
+    if(history.replaceState) history.replaceState(null,"",location.pathname+"#bilder");
+    if(opener) opener.focus();
+  });
+  $("#lb-x").addEventListener("click",closeLb);
+  $("#lb-p").addEventListener("click",function(){ step(-1); });
+  $("#lb-n").addEventListener("click",function(){ step(1); });
+  $("#lb-stage").addEventListener("click",function(e){ if(e.target.id==="lb-stage") closeLb(); });
+  lb.addEventListener("keydown",function(e){
+    if(e.key==="ArrowRight"){ e.preventDefault(); step(1); }
+    if(e.key==="ArrowLeft"){ e.preventDefault(); step(-1); }
+  });
+  var sx=null;
+  lb.addEventListener("touchstart",function(e){ sx=e.touches[0].clientX; },{passive:true});
+  lb.addEventListener("touchend",function(e){
+    if(sx===null) return; var dx=e.changedTouches[0].clientX-sx; sx=null;
+    if(Math.abs(dx)>50) step(dx<0?1:-1);
+  });
+  /* Direktlink, z. B. mapq.at/#bild-bmw-8er */
+  var m=location.hash.match(/^#bild-(.+)$/);
+  if(m){ for(var j=0;j<PHOTOS.length;j++) if(PHOTOS[j].f===m[1]){ var k=j; setTimeout(function(){ document.getElementById("bilder").scrollIntoView(); openLb(k); },50); break; } }
+
+  /* Impressum */
+  var imp=$("#imp");
+  $("#imp-open").addEventListener("click",function(){ if(imp.showModal) imp.showModal(); else imp.setAttribute("open",""); });
+  imp.addEventListener("click",function(e){ if(e.target===imp) imp.close(); });
+
+  /* Einblenden beim Scrollen */
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("seen"); io.unobserve(e.target); } }); },{threshold:.15});
+    $$(".reveal").forEach(function(el){ io.observe(el); });
+  } else $$(".reveal").forEach(function(el){ el.classList.add("seen"); });
+
+  /* Anfrage */
+  var ART=["Auto-Shooting","Motorrad-Shooting","Event oder Rennen","Outdoor und Landschaft","Etwas anderes"],
+      ZEIT=["Morgens","Tagsüber","Abends","Nachts","Egal"];
   function opts(box,name,list,def){
     list.forEach(function(o,i){
       var l=document.createElement("label"), inp=document.createElement("input"), s=document.createElement("span");
@@ -352,20 +468,25 @@ var MQ=(function(){
     });
   }
   opts($("#o-art"),"art",ART,ART[0]); opts($("#o-zeit"),"zeit",ZEIT,"Egal");
-  var form=$("#req"), ro=$("#ro");
+  var form=$("#req"), ro=$("#ro"), mail=$("#rmail");
   form.addEventListener("submit",function(e){ e.preventDefault(); });
   function msg(){
-    var a=(form.querySelector('input[name="art"]:checked')||{}).value||ART[0], z=(form.querySelector('input[name="zeit"]:checked')||{}).value||"Egal";
-    var nm=$("#rn").value.trim(), m=$("#rm").value.trim();
-    return "Hallo Matteo, ich interessiere mich für: "+a+"."+(z!=="Egal"?" Am liebsten "+z.toLowerCase()+".":"")+(m?"\n\n"+m:"")+(nm?"\n\nLiebe Grüße, "+nm:"");
+    var a=form.querySelector('input[name="art"]:checked').value, z=form.querySelector('input[name="zeit"]:checked').value;
+    var nm=$("#rn").value.trim(), t=$("#rm").value.trim();
+    return "Hallo Matteo, ich interessiere mich für: "+a+"."+(z!=="Egal"?" Am liebsten "+z.toLowerCase()+".":"")+(t?"\n\n"+t:"")+(nm?"\n\nLiebe Grüße, "+nm:"");
   }
+  function syncMail(){
+    var a=form.querySelector('input[name="art"]:checked').value;
+    mail.href="mailto:Matteohanser8@gmail.com?subject="+encodeURIComponent("Anfrage: "+a)+"&body="+encodeURIComponent(msg());
+  }
+  form.addEventListener("input",syncMail); form.addEventListener("change",syncMail); syncMail();
   $("#rc").addEventListener("click",function(){
-    function ok(){ ro.textContent="Kopiert. Jetzt auf Instagram einfügen."; }
-    function fail(){ ro.textContent="Kopieren ging nicht. Schreib mir direkt auf Instagram."; }
+    function ok(){ ro.textContent="Text kopiert. Auf Instagram einfach einfügen und senden."; }
+    function fail(){ ro.textContent="Kopieren ging nicht. Schreib mir direkt auf Instagram @mapq.raw."; }
     try{ navigator.clipboard.writeText(msg()).then(ok,fail); }catch(err){ fail(); }
+    window.open("https://ig.me/m/mapq.raw","_blank","noopener");
   });
 })();
-
 </script>
 </body>
 </html>
