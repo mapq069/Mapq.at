@@ -33,6 +33,9 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth;scroll-padding-top:72px}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.6 var(--f);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 img{display:block;max-width:100%}
@@ -49,6 +52,9 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .kicker{display:flex;align-items:center;gap:.6rem;color:var(--mute)}
 .kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc)}
 
+/* ---------- Scroll-Fortschritt ---------- */
+.progress{position:fixed;inset:0 0 auto;height:2px;background:var(--acc);transform-origin:0 50%;transform:scaleX(0);z-index:30;pointer-events:none}
+
 /* ---------- Kopfzeile ---------- */
 .top{position:fixed;inset:0 0 auto;z-index:20;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
 .top.solid{background:rgba(11,11,13,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
@@ -58,11 +64,17 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .nav{display:flex;gap:clamp(.9rem,2.5vw,2rem);font-size:.95rem;font-weight:500}
 .nav a{text-decoration:none;color:var(--mute);transition:color .2s}
 .nav a:hover{color:var(--fg)}
-@media (max-width:420px){.nav .opt{display:none}}
+@media (max-width:560px){.nav .opt{display:none}}
 
 /* ---------- Hero ---------- */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
-.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 60%;z-index:-2;transform:scale(1.04);animation:settle 2.4s cubic-bezier(.2,.7,.2,1) forwards}
+.hero-bg{position:absolute;inset:0;z-index:-2;will-change:transform}
+.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:30% 60%;transform:scale(1.04);animation:settle 2.4s cubic-bezier(.2,.7,.2,1) forwards}
+.hero .wrap,.exif{will-change:transform,opacity}
+.cue{position:absolute;left:50%;bottom:1.1rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--mute)}
+.cue::after{content:"";width:1px;height:34px;background:linear-gradient(var(--fg),transparent);animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media (max-width:719px){.cue{display:none}}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,11,13,.55) 0%,rgba(11,11,13,0) 28%,rgba(11,11,13,.15) 55%,var(--bg) 100%)}
 @keyframes settle{to{transform:scale(1)}}
 .hero .wrap{width:100%;padding-bottom:clamp(2rem,6vh,4rem)}
@@ -83,6 +95,35 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .ticker span{font-stretch:62%;font-weight:800;font-size:1.35rem;text-transform:uppercase;padding-right:2.2rem}
 .ticker span::after{content:"/";color:var(--acc);padding-left:2.2rem}
 @keyframes run{to{transform:translateX(-50%)}}
+
+/* ---------- Satz, der beim Scrollen aufleuchtet ---------- */
+.say{padding:clamp(6rem,16vw,12rem) 0}
+.say p{font-stretch:75%;font-weight:750;font-size:clamp(2.1rem,6vw,5rem);line-height:1.04;max-width:18ch;letter-spacing:-.01em}
+.say .w{opacity:.16;transition:opacity .25s}
+.say .w.on{opacity:1}
+.say .w.acc{color:var(--acc)}
+
+/* ---------- Saison: waagrecht beim Runterscrollen ---------- */
+.hs{position:relative;border-block:1px solid var(--line);background:var(--bg-2)}
+.hs-pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(1rem,3vh,2rem);padding-top:64px}
+.hs-head{width:100%;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.5rem 2rem}
+.hs-head h2{font-size:clamp(2.6rem,7vw,5.5rem);margin-top:.5rem}
+.hs-month{font-stretch:62%;font-weight:850;font-size:clamp(1.6rem,4vw,2.6rem);text-transform:uppercase;color:var(--acc);line-height:1}
+.track{display:flex;align-items:flex-end;gap:clamp(12px,2vw,24px);padding:0 var(--gx);will-change:transform;width:max-content}
+.hs-card,.chap{flex:none;height:min(58svh,620px)}
+.hs-card{display:flex;flex-direction:column;gap:.6rem;padding:0;border:0;background:none;text-align:left;cursor:zoom-in}
+.hs-card img{height:calc(100% - 2.6rem);width:auto;object-fit:cover;border-radius:4px;background:var(--bg-3);transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.hs-card:hover img{transform:scale(.985)}
+.hs-card span{display:flex;justify-content:space-between;gap:1rem;font-weight:600;font-size:.92rem;line-height:1.3}
+.hs-card span i{font-style:normal;color:var(--mute)}
+.chap{width:min(64vw,340px);display:flex;flex-direction:column;justify-content:space-between;border-top:2px solid var(--acc);padding:1rem 0 0}
+.chap b{font-stretch:62%;font-weight:850;font-size:clamp(2.8rem,6vw,4.4rem);line-height:.9;text-transform:uppercase}
+.chap p{color:var(--mute);max-width:24ch}
+.hs-bar{height:2px;background:var(--line);margin:0 var(--gx)}
+.hs-bar span{display:block;height:100%;background:var(--acc);transform-origin:0 50%;transform:scaleX(0)}
+.hs.static .hs-pin{position:static;height:auto;padding:4rem 0}
+.hs.static .track{width:auto;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:1rem}
+.hs.static .track>*{scroll-snap-align:start}
 
 /* ---------- Abschnitte ---------- */
 .sec{padding:clamp(4rem,10vw,8rem) 0}
@@ -193,10 +234,12 @@ dialog::backdrop{background:rgba(5,5,7,.92)}
 </head>
 <body>
 
+<div class="progress" id="progress" aria-hidden="true"></div>
 <header class="top" id="top">
   <div class="wrap">
     <a class="logo" href="#start" aria-label="mapq.raw, nach oben">mapq<span>.</span>raw</a>
     <nav class="nav" aria-label="Menü">
+      <a class="opt" href="#saison">Saison</a>
       <a href="#bilder">Bilder</a>
       <a class="opt" href="#ueber">Über mich</a>
       <a href="#kontakt">Kontakt</a>
@@ -206,9 +249,9 @@ dialog::backdrop{background:rgba(5,5,7,.92)}
 
 <main>
   <section class="hero" id="start">
-    <img src="bilder/bmw-8er.jpg" alt="Schwarzer BMW 8er Gran Coupé auf einer Straße in der Abenddämmerung" fetchpriority="high">
-    <p class="exif mono" aria-hidden="true">DSC00572<br>08.2026<br>Tirol</p>
-    <div class="wrap">
+    <div class="hero-bg" id="hero-bg"><img src="bilder/bmw-8er.jpg" alt="Schwarzer BMW 8er Gran Coupé auf einer Straße in der Abenddämmerung" fetchpriority="high"></div>
+    <p class="exif mono" id="exif" aria-hidden="true">DSC00572<br>08.2026<br>Tirol</p>
+    <div class="wrap" id="hero-in">
       <p class="kicker mono">Fotografie · Tirol, Österreich</p>
       <h1 class="display">mapq<span>.</span>raw</h1>
       <div class="hero-row">
@@ -219,15 +262,31 @@ dialog::backdrop{background:rgba(5,5,7,.92)}
         </div>
       </div>
     </div>
+    <span class="cue mono" aria-hidden="true">Scrollen</span>
   </section>
 
   <div class="ticker" aria-hidden="true"><div class="ticker-in" id="ticker"></div></div>
+
+  <section class="say" aria-label="Was ich fotografiere">
+    <div class="wrap"><p id="say">Autos, Motorräder und Motorsport. Dazu Landschaften, wenn das *Licht* stimmt.</p></div>
+  </section>
+
+  <section class="hs" id="saison" aria-label="Saison 2026">
+    <div class="hs-pin">
+      <div class="wrap hs-head">
+        <div><p class="kicker mono">Juli bis Oktober</p><h2 class="display">Saison 2026</h2></div>
+        <p class="hs-month" id="hs-month" aria-hidden="true">Juli</p>
+      </div>
+      <div class="track" id="track"></div>
+      <div class="hs-bar" aria-hidden="true"><span id="hs-bar"></span></div>
+    </div>
+  </section>
 
   <section class="sec" id="bilder">
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <p class="kicker mono">Saison 2026 · Juli bis Oktober</p>
+          <p class="kicker mono">Alle 20 Fotos</p>
           <h2 class="display">Bilder</h2>
         </div>
         <div class="filters" role="group" aria-label="Bilder filtern">
@@ -304,7 +363,7 @@ dialog::backdrop{background:rgba(5,5,7,.92)}
   </div>
 </footer>
 
-<dialog class="imp" id="imp" aria-labelledby="imp-h">
+<dialog class="imp" id="imp" aria-labelledby="imp-h" data-lenis-prevent>
   <h2 id="imp-h">Impressum</h2>
   <dl>
     <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
@@ -314,7 +373,7 @@ dialog::backdrop{background:rgba(5,5,7,.92)}
   <form method="dialog"><button class="btn ghost">Schließen</button></form>
 </dialog>
 
-<dialog class="lb" id="lb" aria-label="Bildansicht">
+<dialog class="lb" id="lb" aria-label="Bildansicht" data-lenis-prevent>
   <div class="lb-top">
     <span class="mono mute" id="lb-no"></span>
     <button type="button" class="lb-x" id="lb-x">Schließen ✕</button>
@@ -329,6 +388,7 @@ dialog::backdrop{background:rgba(5,5,7,.92)}
   </div>
 </dialog>
 
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 var PHOTOS=[
   {f:"bmw-8er",t:"BMW 8er Gran Coupé",c:"auto",ar:1.7769,dsc:"DSC00572",m:"August 2026"},
@@ -358,14 +418,101 @@ var PHOTOS=[
   function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
   function pad(n){ return (n<10?"0":"")+n; }
 
-  /* Kopfzeile */
-  var top=$("#top");
-  function onScroll(){ top.classList.toggle("solid",window.scrollY>40); }
-  window.addEventListener("scroll",onScroll,{passive:true}); onScroll();
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function byF(f){ for(var i=0;i<PHOTOS.length;i++) if(PHOTOS[i].f===f) return i; return -1; }
+
+  /* Weiches Scrollen */
+  var lenis=null;
+  if(window.Lenis&&!reduce){ try{ lenis=new window.Lenis({lerp:.1,smoothWheel:true}); }catch(e){ lenis=null; } }
+  function goTo(el){
+    if(!el) return;
+    if(lenis) lenis.scrollTo(el,{offset:el.id==="start"?0:-64,duration:1.4});
+    else el.scrollIntoView({behavior:reduce?"auto":"smooth"});
+  }
+  $$('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click",function(e){
+      var el=document.getElementById(a.getAttribute("href").slice(1));
+      if(el){ e.preventDefault(); goTo(el); }
+    });
+  });
+
+  /* Satz Wort für Wort */
+  var say=$("#say"), words=[], sayText=say.textContent;
+  say.textContent="";
+  sayText.split(" ").forEach(function(w,i){
+    var s=document.createElement("span"), acc=/^\*.*\*$/.test(w);
+    s.className="w"+(acc?" acc":""); s.textContent=acc?w.slice(1,-1):w;
+    if(i) say.appendChild(document.createTextNode(" "));
+    say.appendChild(s); words.push(s);
+  });
+  say.setAttribute("aria-label",words.map(function(w){ return w.textContent; }).join(" "));
+
+  /* Saison-Strecke */
+  var SEASON=[
+    ["Juli","07 / 2026","Die ersten Nächte mit dem BMW.",["bmw-nacht","bmw-heck"]],
+    ["August","08 / 2026","Drift, Regen und Berge.",["bmw-8er","drift-nass","bmw-drift","supermoto-berge"]],
+    ["September","09 / 2026","Slalom, Treffen und ein Wheelie.",["mini-slalom","wheelie","yaris-slalom","golf-1","rennwagen"]],
+    ["Oktober","10 / 2026","Herbstlicht über Tirol.",["supermoto-tal","bmw-abendhimmel","bmw-huegel"]]
+  ];
+  var track=$("#track"), hs=$("#saison"), chaps=[];
+  SEASON.forEach(function(c){
+    var ch=document.createElement("div"); ch.className="chap"; ch.dataset.m=c[0];
+    ch.innerHTML='<span class="mono mute"></span><b></b><p></p>';
+    ch.querySelector("span").textContent=c[1]+" · "+c[3].length+" Bilder"; ch.querySelector("b").textContent=c[0]; ch.querySelector("p").textContent=c[2];
+    track.appendChild(ch); chaps.push(ch);
+    c[3].forEach(function(f){
+      var i=byF(f), p=PHOTOS[i]; if(i<0) return;
+      var b=document.createElement("button"); b.type="button"; b.className="hs-card"; b.setAttribute("aria-label",p.t+" groß ansehen");
+      var img=document.createElement("img"); img.src=(p.ar>1?"bilder/":"bilder/klein/")+p.f+".jpg"; img.alt=p.t; img.loading="lazy"; img.style.aspectRatio=String(p.ar);
+      var cap=document.createElement("span"); cap.textContent=p.t; var it=document.createElement("i"); it.className="mono"; it.textContent=p.dsc; cap.appendChild(it);
+      b.appendChild(img); b.appendChild(cap); b.addEventListener("click",function(){ openLb(i,b); });
+      track.appendChild(b);
+    });
+  });
+  if(reduce) hs.classList.add("static");
+  var hsShift=0;
+  function sizeHs(){
+    if(reduce) return;
+    hsShift=Math.max(0,track.scrollWidth-window.innerWidth);
+    hs.style.height=(hsShift+window.innerHeight)+"px";
+  }
+  sizeHs(); window.addEventListener("resize",sizeHs);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(sizeHs);
+
+  /* Alles, was am Scrollen hängt */
+  var top=$("#top"), bar=$("#progress"), heroBg=$("#hero-bg"), heroIn=$("#hero-in"), exif=$("#exif"),
+      hsBar=$("#hs-bar"), hsMonth=$("#hs-month"), lastY=-1, lastW=-1;
+  function update(){
+    var y=window.scrollY, vh=window.innerHeight;
+    if(y===lastY&&vh===lastW) return; lastY=y; lastW=vh;
+    var max=document.documentElement.scrollHeight-vh;
+    bar.style.transform="scaleX("+(max>0?y/max:0).toFixed(4)+")";
+    top.classList.toggle("solid",y>40);
+    if(!reduce){
+      var h=clamp(y/vh,0,1);
+      heroBg.style.transform="translate3d(0,"+(y*.35).toFixed(1)+"px,0) scale("+(1+h*.08).toFixed(4)+")";
+      heroIn.style.transform="translate3d(0,"+(y*-.12).toFixed(1)+"px,0)";
+      heroIn.style.opacity=clamp(1-h*1.3,0,1).toFixed(3);
+      exif.style.opacity=clamp(1-h*2,0,1).toFixed(3);
+    }
+    var r=say.getBoundingClientRect(), sp=clamp((vh*.85-r.top)/(r.height+vh*.4),0,1), on=Math.round(sp*words.length);
+    for(var i=0;i<words.length;i++) words[i].classList.toggle("on",reduce||i<on);
+    if(!reduce){
+      var hr=hs.getBoundingClientRect(), hp=clamp(-hr.top/Math.max(1,hs.offsetHeight-vh),0,1);
+      track.style.transform="translate3d("+(-hp*hsShift).toFixed(1)+"px,0,0)";
+      hsBar.style.transform="scaleX("+hp.toFixed(4)+")";
+      var m=chaps[0].dataset.m;
+      for(var k=0;k<chaps.length;k++) if(chaps[k].getBoundingClientRect().left<window.innerWidth*.6) m=chaps[k].dataset.m;
+      if(hsMonth.textContent!==m) hsMonth.textContent=m;
+    }
+  }
+  function loop(t){ if(lenis) lenis.raf(t); update(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
 
   /* Laufband */
-  var tk=$("#ticker"), words=PHOTOS.map(function(p){ return p.t; });
-  words.concat(words).forEach(function(w){ var s=document.createElement("span"); s.textContent=w; tk.appendChild(s); });
+  var tk=$("#ticker"), titles=PHOTOS.map(function(p){ return p.t; });
+  titles.concat(titles).forEach(function(w){ var s=document.createElement("span"); s.textContent=w; tk.appendChild(s); });
 
   /* Raster */
   var grid=$("#grid");
@@ -415,16 +562,18 @@ var PHOTOS=[
     $("#lb-no").textContent=pad(i+1)+" / "+pad(PHOTOS.length);
     if(history.replaceState) history.replaceState(null,"","#bild-"+p.f);
   }
-  function step(d){ var v=visible(), k=v.indexOf(cur); if(k<0) k=0; show(v[(k+d+v.length)%v.length]); }
-  function openLb(i){
-    opener=document.getElementById("bild-"+PHOTOS[i].f);
+  function step(d){ var v=visible(); if(v.indexOf(cur)<0) v=PHOTOS.map(function(_,n){ return n; }); var k=v.indexOf(cur); show(v[(k+d+v.length)%v.length]); }
+  function openLb(i,from){
+    opener=from||document.getElementById("bild-"+PHOTOS[i].f);
     show(i);
     if(lb.showModal) lb.showModal(); else lb.setAttribute("open","");
     document.body.style.overflow="hidden";
+    if(lenis) lenis.stop();
   }
   function closeLb(){ if(lb.close) lb.close(); else lb.removeAttribute("open"); }
   lb.addEventListener("close",function(){
     document.body.style.overflow="";
+    if(lenis) lenis.start();
     if(history.replaceState) history.replaceState(null,"",location.pathname+"#bilder");
     if(opener) opener.focus();
   });
@@ -448,7 +597,8 @@ var PHOTOS=[
 
   /* Impressum */
   var imp=$("#imp");
-  $("#imp-open").addEventListener("click",function(){ if(imp.showModal) imp.showModal(); else imp.setAttribute("open",""); });
+  $("#imp-open").addEventListener("click",function(){ if(imp.showModal) imp.showModal(); else imp.setAttribute("open",""); if(lenis) lenis.stop(); });
+  imp.addEventListener("close",function(){ if(lenis) lenis.start(); });
   imp.addEventListener("click",function(e){ if(e.target===imp) imp.close(); });
 
   /* Einblenden beim Scrollen */
