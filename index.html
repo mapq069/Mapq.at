@@ -75,8 +75,10 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .nav{display:flex;align-items:center;gap:clamp(.9rem,2.5vw,2rem);font-size:.95rem;font-weight:500}
 .nav a{text-decoration:none;color:var(--color-muted-foreground);transition:color var(--ease)}
 .nav a:hover{color:var(--color-foreground)}
-.nav-btn{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:0 .95rem;border:1px solid var(--color-border);border-radius:var(--radius-btn);background:transparent;color:var(--color-foreground);font-size:.95rem;font-weight:500;cursor:pointer;transition:border-color var(--ease),background var(--ease)}
-.nav-btn:hover{border-color:var(--color-foreground);background:var(--color-muted)}
+.nav-btn{position:relative;display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:0 1.1rem;border:2px solid var(--color-accent);border-radius:var(--radius-btn);background:var(--color-accent);color:var(--color-on-accent);font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 0 rgba(248,250,252,.55);animation:ping 2.4s ease-out 1s 3;transition:opacity var(--ease),transform var(--ease)}
+.nav-btn .ic{stroke-width:2.4}
+.nav-btn:hover{opacity:.9;transform:translateY(-1px)}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(248,250,252,.55)}70%{box-shadow:0 0 0 12px rgba(248,250,252,0)}100%{box-shadow:0 0 0 0 rgba(248,250,252,0)}}
 @media (max-width:560px){.nav .opt{display:none}}
 @media (max-width:400px){.nav .opt2{display:none}}
 
