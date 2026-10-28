@@ -10,7 +10,7 @@ self.addEventListener('push', e => {
     try { if (self.navigator.setAppBadge) await self.navigator.setAppBadge(); } catch (err) {}
     await self.registration.showNotification(d.title || 'mapq.at', {
       body: d.body || '',
-      icon: '/admin-icon-192.png',
+      icon: '/admin-icon-192.png?v=2',
       tag: d.tag || undefined,
       renotify: !!d.tag,
       data: { url: d.url || '/admin.html#inquiries' }
