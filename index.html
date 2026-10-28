@@ -56,7 +56,7 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
 .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gx)}
-.display,.logo,.ticker span,.say p,.hs-month,.chap b,.stats b,.handles strong,.req h3,.imp h2,.mini-cta p{font-family:var(--font-heading)}
+.display,.logo,.say p,.hs-month,.chap b,.stats b,.handles strong,.req h3,.imp h2,.mini-cta p{font-family:var(--font-heading)}
 .label{font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
 .mute{color:var(--color-muted-foreground)}
 .display{font-stretch:62%;font-weight:850;line-height:.88;letter-spacing:-.01em;text-transform:uppercase}
@@ -81,7 +81,7 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
 .hero-bg{position:absolute;inset:0;z-index:-2;will-change:transform}
 .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:30% 60%;transform:scale(1.04);animation:settle 2.4s cubic-bezier(.2,.7,.2,1) forwards}
-.hero .wrap,.exif{will-change:transform,opacity}
+.hero .wrap{will-change:transform,opacity}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.15) 55%,var(--color-background) 100%)}
 @keyframes settle{to{transform:scale(1)}}
 .cue{position:absolute;left:50%;bottom:1.1rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);color:var(--color-muted-foreground)}
@@ -93,21 +93,12 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .hero-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-lg) var(--space-2xl);margin-top:1.4rem}
 .lede{max-width:34ch;font-size:clamp(1.05rem,1.6vw,1.3rem);line-height:1.45}
 .acts{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
-.exif{position:absolute;top:84px;right:var(--gx);text-align:right;color:rgba(250,250,250,.75);line-height:1.7}
 
 /* ---------- Buttons ---------- */
 .btn{display:inline-flex;align-items:center;gap:var(--space-sm);min-height:46px;padding:12px 24px;border-radius:var(--radius-btn);border:2px solid var(--color-accent);background:var(--color-accent);color:var(--color-on-accent);font-weight:600;font-size:.95rem;text-decoration:none;cursor:pointer;box-shadow:var(--shadow-md);transition:all var(--ease)}
 .btn:hover{opacity:.9;transform:translateY(-1px)}
 .btn.ghost{background:transparent;color:var(--color-foreground);border-color:var(--color-border);box-shadow:none}
 .btn.ghost:hover{opacity:1;border-color:var(--color-foreground)}
-
-/* ---------- Laufband ---------- */
-.ticker{border-block:1px solid var(--color-border);overflow:hidden;white-space:nowrap;padding:.85rem 0;background:var(--color-card)}
-.ticker-in{display:inline-flex;animation:run 60s linear infinite}
-.ticker.paused .ticker-in{animation-play-state:paused}
-.ticker span{font-stretch:62%;font-weight:800;font-size:1.35rem;text-transform:uppercase;padding-right:2.2rem}
-.ticker span::after{content:"/";color:var(--color-muted-foreground);padding-left:2.2rem}
-@keyframes run{to{transform:translateX(-50%)}}
 
 /* ---------- Satz, der beim Scrollen aufleuchtet ---------- */
 .say{padding:clamp(6rem,16vw,12rem) 0}
@@ -124,15 +115,12 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .hs-month{font-stretch:62%;font-weight:850;font-size:clamp(1.6rem,4vw,2.6rem);text-transform:uppercase;line-height:1;color:transparent;-webkit-text-stroke:1.2px var(--color-foreground)}
 .track{display:flex;align-items:flex-end;gap:clamp(12px,2vw,24px);padding:0 var(--gx);will-change:transform;width:max-content}
 .hs-card,.chap{flex:none;height:min(58svh,620px)}
-.hs-card{display:flex;flex-direction:column;gap:.6rem;padding:0;border:0;background:none;text-align:left;cursor:pointer;transition:transform var(--ease)}
+.hs-card{display:block;padding:0;border:0;background:none;text-align:left;cursor:pointer;transition:transform var(--ease)}
 .hs-card:hover{transform:translateY(-2px)}
-.hs-card img{height:calc(100% - 2.6rem);width:auto;object-fit:cover;border-radius:var(--radius-card);background:var(--color-muted);box-shadow:var(--shadow-md);transition:box-shadow var(--ease),filter var(--ease)}
+.hs-card img{height:100%;width:auto;object-fit:cover;border-radius:var(--radius-card);background:var(--color-muted);box-shadow:var(--shadow-md);transition:box-shadow var(--ease),filter var(--ease)}
 .hs-card:hover img{box-shadow:var(--shadow-lg);filter:brightness(1.06)}
-.hs-card span{display:flex;justify-content:space-between;gap:var(--space-md);font-weight:600;font-size:.92rem;line-height:1.3}
-.hs-card span i{font-style:normal;color:var(--color-muted-foreground)}
 .chap{width:min(64vw,340px);display:flex;flex-direction:column;justify-content:space-between;border-top:2px solid var(--color-foreground);padding:var(--space-md) 0 0}
 .chap b{font-stretch:62%;font-weight:850;font-size:clamp(2.8rem,6vw,4.4rem);line-height:.9;text-transform:uppercase}
-.chap p{color:var(--color-muted-foreground);max-width:24ch}
 .chap.cta{text-decoration:none;border-top-style:dashed}
 .chap.cta .btn{align-self:flex-start}
 .hs-bar{height:2px;background:var(--color-border);margin:0 var(--gx)}
@@ -151,7 +139,6 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 /* ---------- Bilder ---------- */
 .filters{display:flex;flex-wrap:wrap;gap:var(--space-sm)}
 .filters button{min-height:44px;padding:.5rem 1rem;border-radius:var(--radius-btn);border:1px solid var(--color-border);background:transparent;color:var(--color-muted-foreground);cursor:pointer;font-size:.92rem;font-weight:500;transition:all var(--ease)}
-.filters button sup{font-size:.68rem;margin-left:.3rem;vertical-align:super;font-variant-numeric:tabular-nums}
 .filters button:hover{color:var(--color-foreground);border-color:var(--color-muted-foreground)}
 .filters button[aria-pressed="true"]{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-on-accent)}
 .grid{columns:2;column-gap:10px}
@@ -160,12 +147,7 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .shot{break-inside:avoid;margin:0 0 10px;position:relative;display:block;width:100%;padding:0;border:0;background:var(--color-muted);cursor:pointer;overflow:hidden;border-radius:var(--radius-card);text-align:left;box-shadow:var(--shadow-md);transition:transform var(--ease),box-shadow var(--ease)}
 @media (min-width:720px){.shot{margin-bottom:14px}}
 .shot img{width:100%;height:auto;transition:filter var(--ease)}
-.shot .meta{position:absolute;inset:auto 0 0;display:flex;justify-content:space-between;gap:var(--space-sm);padding:2.2rem .75rem .65rem;background:linear-gradient(transparent,rgba(0,0,0,.8));opacity:0;transition:opacity var(--ease)}
-.shot .meta b{font-weight:600;font-size:.9rem;line-height:1.25}
-.shot .meta i{font-style:normal;color:var(--color-muted-foreground);white-space:nowrap}
-.shot .no{position:absolute;top:.55rem;left:.7rem;color:rgba(255,255,255,.9);text-shadow:0 1px 4px rgba(0,0,0,.6)}
-@media (hover:hover){.shot:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.shot:hover img{filter:brightness(1.06)}.shot:hover .meta,.shot:focus-visible .meta{opacity:1}}
-@media (hover:none){.shot .meta{opacity:1;padding-top:1.6rem}.shot .meta i{display:none}}
+@media (hover:hover){.shot:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.shot:hover img{filter:brightness(1.06)}}
 .shot.off{display:none}
 .shot.in{animation:pop .5s cubic-bezier(.2,.7,.2,1) both}
 @keyframes pop{from{opacity:0;transform:translateY(14px)}}
@@ -175,7 +157,6 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 @media (min-width:900px){.about{grid-template-columns:5fr 7fr}}
 .about-pic{position:relative;max-width:440px}
 .about-pic img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-card);box-shadow:var(--shadow-xl)}
-.about-pic figcaption{margin-top:.7rem}
 .about h2{font-size:clamp(3rem,9vw,7rem);margin:.6rem 0 var(--space-lg)}
 .about p{max-width:52ch;font-size:clamp(1.05rem,1.4vw,1.2rem)}
 .about p+p{margin-top:var(--space-md)}
@@ -242,7 +223,7 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 .lb-stage{position:relative;min-height:0;display:grid;place-items:center;padding:0 var(--gx)}
 .lb-stage img{max-width:100%;max-height:calc(100dvh - 170px);object-fit:contain;border-radius:var(--radius-btn);box-shadow:var(--shadow-xl);transition:opacity 250ms ease}
 .lb-stage img.load{opacity:.25}
-.lb-cap b{display:block;font-weight:600;font-size:1.05rem}
+.lb-bar{justify-content:center}
 .lb-nav{display:flex;gap:var(--space-sm)}
 .round{width:46px;height:46px;border-radius:50%;border:1px solid var(--color-border);background:var(--color-card);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease)}
 .round .ic{width:20px;height:20px}
@@ -274,7 +255,6 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 <main>
   <section class="hero" id="start">
     <div class="hero-bg" id="hero-bg"><img src="bilder/bmw-8er.jpg" alt="Schwarzer BMW 8er Gran Coupé auf einer Straße in der Abenddämmerung" fetchpriority="high"></div>
-    <p class="exif label" id="exif" aria-hidden="true">DSC00572<br>08.2026<br>Tirol</p>
     <div class="wrap" id="hero-in">
       <p class="kicker label">Fotografie · Tirol, Österreich</p>
       <h1 class="display">mapq<span>.</span>raw</h1>
@@ -288,8 +268,6 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     </div>
     <span class="cue label" aria-hidden="true">Scrollen</span>
   </section>
-
-  <div class="ticker" aria-hidden="true"><div class="ticker-in" id="ticker"></div></div>
 
   <section class="say" aria-label="Was ich fotografiere">
     <div class="wrap"><p id="say">Autos, Motorräder und Motorsport. Dazu Landschaften, wenn das *Licht* stimmt.</p></div>
@@ -314,11 +292,11 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
           <h2 class="display">Bilder</h2>
         </div>
         <div class="filters" role="group" aria-label="Bilder filtern">
-          <button type="button" data-f="alle" aria-pressed="true">Alle<sup></sup></button>
-          <button type="button" data-f="auto" aria-pressed="false">Autos<sup></sup></button>
-          <button type="button" data-f="moto" aria-pressed="false">Motorräder<sup></sup></button>
-          <button type="button" data-f="event" aria-pressed="false">Events<sup></sup></button>
-          <button type="button" data-f="outdoor" aria-pressed="false">Outdoor<sup></sup></button>
+          <button type="button" data-f="alle" aria-pressed="true">Alle</button>
+          <button type="button" data-f="auto" aria-pressed="false">Autos</button>
+          <button type="button" data-f="moto" aria-pressed="false">Motorräder</button>
+          <button type="button" data-f="event" aria-pressed="false">Events</button>
+          <button type="button" data-f="outdoor" aria-pressed="false">Outdoor</button>
         </div>
       </div>
       <div class="grid" id="grid"></div>
@@ -333,7 +311,6 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     <div class="wrap about">
       <figure class="about-pic reveal">
         <img src="bilder/klein/supermoto-berge.jpg" alt="Supermoto vor den Bergen" loading="lazy">
-        <figcaption class="label mute">DSC00810 · Supermoto vor den Bergen</figcaption>
       </figure>
       <div class="reveal">
         <p class="kicker label">Hinter der Kamera</p>
@@ -409,7 +386,6 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
   </div>
   <div class="lb-stage" id="lb-stage"><img id="lb-img" alt=""></div>
   <div class="lb-bar">
-    <div class="lb-cap"><b id="lb-t"></b><span class="label mute" id="lb-m"></span></div>
     <div class="lb-nav">
       <button type="button" class="round" id="lb-p" aria-label="Vorheriges Bild"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
       <button type="button" class="round" id="lb-n" aria-label="Nächstes Bild"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -420,26 +396,26 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 var PHOTOS=[
-  {f:"bmw-8er",t:"BMW 8er Gran Coupé",c:"auto",ar:1.7769,dsc:"DSC00572",m:"August 2026"},
-  {f:"supermoto-tal",t:"Supermoto über dem Tal",c:"moto outdoor",ar:.5628,dsc:"DSC01920",m:"Oktober 2026"},
-  {f:"mini-slalom",t:"Mini beim Slalom",c:"auto event",ar:1.7769,dsc:"DSC06406",m:"September 2026"},
-  {f:"golf-1",t:"Golf 1 beim Treffen",c:"auto event",ar:.5628,dsc:"DSC00281",m:"September 2026"},
-  {f:"bmw-nacht",t:"BMW bei Nacht",c:"auto",ar:.5628,dsc:"DSC06179",m:"Juli 2026"},
-  {f:"wheelie",t:"Wheelie vor den Bergen",c:"moto outdoor",ar:.5626,dsc:"DSC04554",m:"September 2026"},
-  {f:"audi-s3",t:"Audi S3 auf der Wiese",c:"auto outdoor",ar:.5628,dsc:"DSC04862",m:"September 2026"},
-  {f:"peugeot-106",t:"Peugeot 106 am Start",c:"auto event",ar:.5628,dsc:"DSC05515",m:"September 2026"},
-  {f:"supermoto-wald",t:"Supermoto im Wald",c:"moto outdoor",ar:.5628,dsc:"DSC01737",m:"Oktober 2026"},
-  {f:"bmw-e46",t:"BMW E46 am Feldweg",c:"auto",ar:.5628,dsc:"DSC00821",m:"Oktober 2026"},
-  {f:"drift-nass",t:"Drift auf nassem Asphalt",c:"auto event",ar:.5628,dsc:"DSC08608",m:"August 2026"},
-  {f:"traktor",t:"Traktor vor den Bergen",c:"auto outdoor",ar:.5628,dsc:"DSC00236",m:"September 2026"},
-  {f:"yaris-slalom",t:"Toyota GR Yaris beim Slalom",c:"auto event",ar:.5628,dsc:"DSC05966",m:"September 2026"},
-  {f:"bmw-heck",t:"BMW von hinten",c:"auto",ar:.5628,dsc:"DSC06301",m:"Juli 2026"},
-  {f:"supermoto-berge",t:"Supermoto vor den Bergen",c:"moto outdoor",ar:.5628,dsc:"DSC00810",m:"August 2026"},
-  {f:"rennwagen",t:"Rennwagen beim Slalom",c:"auto event",ar:.5625,dsc:"DSC09837",m:"September 2026"},
-  {f:"audi-s3-felge",t:"Audi S3, Felge",c:"auto",ar:.5629,dsc:"DSC04986",m:"September 2026"},
-  {f:"bmw-abendhimmel",t:"BMW unter dem Abendhimmel",c:"auto",ar:.5628,dsc:"DSC02000",m:"Oktober 2026"},
-  {f:"bmw-drift",t:"BMW im Drift",c:"auto event",ar:.5628,dsc:"DSC08367",m:"August 2026"},
-  {f:"bmw-huegel",t:"BMW unter lila Wolken",c:"auto outdoor",ar:.5628,dsc:"DSC00628",m:"Oktober 2026"}
+  {f:"bmw-8er",t:"BMW 8er Gran Coupé",c:"auto",ar:1.7769},
+  {f:"supermoto-tal",t:"Supermoto über dem Tal",c:"moto outdoor",ar:.5628},
+  {f:"mini-slalom",t:"Mini beim Slalom",c:"auto event",ar:1.7769},
+  {f:"golf-1",t:"Golf 1 beim Treffen",c:"auto event",ar:.5628},
+  {f:"bmw-nacht",t:"BMW bei Nacht",c:"auto",ar:.5628},
+  {f:"wheelie",t:"Wheelie vor den Bergen",c:"moto outdoor",ar:.5626},
+  {f:"audi-s3",t:"Audi S3 auf der Wiese",c:"auto outdoor",ar:.5628},
+  {f:"peugeot-106",t:"Peugeot 106 am Start",c:"auto event",ar:.5628},
+  {f:"supermoto-wald",t:"Supermoto im Wald",c:"moto outdoor",ar:.5628},
+  {f:"bmw-e46",t:"BMW E46 am Feldweg",c:"auto",ar:.5628},
+  {f:"drift-nass",t:"Drift auf nassem Asphalt",c:"auto event",ar:.5628},
+  {f:"traktor",t:"Traktor vor den Bergen",c:"auto outdoor",ar:.5628},
+  {f:"yaris-slalom",t:"Toyota GR Yaris beim Slalom",c:"auto event",ar:.5628},
+  {f:"bmw-heck",t:"BMW von hinten",c:"auto",ar:.5628},
+  {f:"supermoto-berge",t:"Supermoto vor den Bergen",c:"moto outdoor",ar:.5628},
+  {f:"rennwagen",t:"Rennwagen beim Slalom",c:"auto event",ar:.5625},
+  {f:"audi-s3-felge",t:"Audi S3, Felge",c:"auto",ar:.5629},
+  {f:"bmw-abendhimmel",t:"BMW unter dem Abendhimmel",c:"auto",ar:.5628},
+  {f:"bmw-drift",t:"BMW im Drift",c:"auto event",ar:.5628},
+  {f:"bmw-huegel",t:"BMW unter lila Wolken",c:"auto outdoor",ar:.5628}
 ];
 (function(){
   "use strict";
@@ -479,23 +455,22 @@ var PHOTOS=[
 
   /* Saison-Strecke */
   var SEASON=[
-    ["Juli","07 / 2026","Die ersten Nächte mit dem BMW.",["bmw-nacht","bmw-heck"]],
-    ["August","08 / 2026","Drift, Regen und Berge.",["bmw-8er","drift-nass","bmw-drift","supermoto-berge"]],
-    ["September","09 / 2026","Slalom, Treffen und ein Wheelie.",["mini-slalom","wheelie","yaris-slalom","golf-1","rennwagen"]],
-    ["Oktober","10 / 2026","Herbstlicht über Tirol.",["supermoto-tal","bmw-abendhimmel","bmw-huegel"]]
+    ["Juli","07 / 2026",["bmw-nacht","bmw-heck"]],
+    ["August","08 / 2026",["bmw-8er","drift-nass","bmw-drift","supermoto-berge"]],
+    ["September","09 / 2026",["mini-slalom","wheelie","yaris-slalom","golf-1","rennwagen"]],
+    ["Oktober","10 / 2026",["supermoto-tal","bmw-abendhimmel","bmw-huegel"]]
   ];
   var track=$("#track"), hs=$("#saison"), chaps=[];
   SEASON.forEach(function(c){
     var ch=document.createElement("div"); ch.className="chap"; ch.dataset.m=c[0];
-    ch.innerHTML='<span class="label mute"></span><b></b><p></p>';
-    ch.querySelector("span").textContent=c[1]+" · "+c[3].length+" Bilder"; ch.querySelector("b").textContent=c[0]; ch.querySelector("p").textContent=c[2];
+    ch.innerHTML='<span class="label mute"></span><b></b>';
+    ch.querySelector("span").textContent=c[1]; ch.querySelector("b").textContent=c[0];
     track.appendChild(ch); chaps.push(ch);
-    c[3].forEach(function(f){
+    c[2].forEach(function(f){
       var i=byF(f), p=PHOTOS[i]; if(i<0) return;
       var b=document.createElement("button"); b.type="button"; b.className="hs-card"; b.setAttribute("aria-label",p.t+" groß ansehen");
       var img=document.createElement("img"); img.src=(p.ar>1?"bilder/":"bilder/klein/")+p.f+".jpg"; img.alt=p.t; img.loading="lazy"; img.style.aspectRatio=String(p.ar);
-      var cap=document.createElement("span"); cap.textContent=p.t; var it=document.createElement("i"); it.className="label"; it.textContent=p.dsc; cap.appendChild(it);
-      b.appendChild(img); b.appendChild(cap); b.addEventListener("click",function(){ openLb(i,b); });
+      b.appendChild(img); b.addEventListener("click",function(){ openLb(i,b); });
       track.appendChild(b);
     });
   });
@@ -514,7 +489,7 @@ var PHOTOS=[
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(sizeHs);
 
   /* Alles, was am Scrollen hängt */
-  var top=$("#top"), bar=$("#progress"), heroBg=$("#hero-bg"), heroIn=$("#hero-in"), exif=$("#exif"),
+  var top=$("#top"), bar=$("#progress"), heroBg=$("#hero-bg"), heroIn=$("#hero-in"),
       hsBar=$("#hs-bar"), hsMonth=$("#hs-month"), lastY=-1, lastW=-1;
   function update(){
     var y=window.scrollY, vh=window.innerHeight;
@@ -527,7 +502,6 @@ var PHOTOS=[
       heroBg.style.transform="translate3d(0,"+(y*.35).toFixed(1)+"px,0)"+(window.innerWidth<720?"":" scale("+(1+h*.08).toFixed(4)+")");
       heroIn.style.transform="translate3d(0,"+(y*-.12).toFixed(1)+"px,0)";
       heroIn.style.opacity=clamp(1-h*1.3,0,1).toFixed(3);
-      exif.style.opacity=clamp(1-h*2,0,1).toFixed(3);
     }
     var r=say.getBoundingClientRect(), sp=clamp((vh*.85-r.top)/(r.height+vh*.4),0,1), on=Math.round(sp*words.length);
     for(var i=0;i<words.length;i++) words[i].classList.toggle("on",reduce||i<on);
@@ -543,10 +517,6 @@ var PHOTOS=[
   function loop(t){ if(lenis) lenis.raf(t); update(); requestAnimationFrame(loop); }
   requestAnimationFrame(loop);
 
-  /* Laufband */
-  var tk=$("#ticker"), titles=PHOTOS.map(function(p){ return p.t; });
-  titles.concat(titles).forEach(function(w){ var s=document.createElement("span"); s.textContent=w; tk.appendChild(s); });
-
   /* Raster */
   var grid=$("#grid");
   PHOTOS.forEach(function(p,i){
@@ -556,12 +526,7 @@ var PHOTOS=[
     var img=document.createElement("img");
     img.src="bilder/klein/"+p.f+".jpg"; img.alt=p.t; img.loading=i<4?"eager":"lazy"; img.decoding="async";
     img.width=p.ar>1?760:428; img.height=Math.round(img.width/p.ar);
-    var no=document.createElement("span"); no.className="no label"; no.textContent=pad(i+1);
-    var meta=document.createElement("span"); meta.className="meta";
-    var bt=document.createElement("b"); bt.textContent=p.t;
-    var it=document.createElement("i"); it.className="label"; it.textContent=p.dsc;
-    meta.appendChild(bt); meta.appendChild(it);
-    b.appendChild(img); b.appendChild(no); b.appendChild(meta);
+    b.appendChild(img);
     b.addEventListener("click",function(){ openLb(i); });
     grid.appendChild(b);
   });
@@ -570,7 +535,6 @@ var PHOTOS=[
   var shots=$$(".shot"), fbtns=$$(".filters button");
   fbtns.forEach(function(btn){
     var f=btn.dataset.f;
-    btn.querySelector("sup").textContent=f==="alle"?PHOTOS.length:PHOTOS.filter(function(p){ return p.c.split(" ").indexOf(f)>-1; }).length;
     btn.addEventListener("click",function(){
       fbtns.forEach(function(x){ x.setAttribute("aria-pressed",String(x===btn)); });
       shots.forEach(function(s){
@@ -590,8 +554,6 @@ var PHOTOS=[
     var pre=new Image();
     pre.onload=function(){ if(cur!==i) return; lbImg.src=pre.src; lbImg.alt=p.t; lbImg.classList.remove("load"); };
     pre.src="bilder/"+p.f+".jpg";
-    $("#lb-t").textContent=p.t;
-    $("#lb-m").textContent=p.dsc+" · "+p.m;
     $("#lb-no").textContent=pad(i+1)+" / "+pad(PHOTOS.length);
     if(history.replaceState) history.replaceState(null,"","#bild-"+p.f);
   }
@@ -633,12 +595,6 @@ var PHOTOS=[
   $("#imp-open").addEventListener("click",function(){ if(imp.showModal) imp.showModal(); else imp.setAttribute("open",""); if(lenis) lenis.stop(); });
   imp.addEventListener("close",function(){ if(lenis) lenis.start(); });
   imp.addEventListener("click",function(e){ if(e.target===imp) imp.close(); });
-
-  /* Laufband nur laufen lassen, solange es zu sehen ist */
-  if("IntersectionObserver" in window){
-    var tkBox=document.querySelector(".ticker");
-    new IntersectionObserver(function(es){ tkBox.classList.toggle("paused",!es[0].isIntersecting); }).observe(tkBox);
-  }
 
   /* Einblenden beim Scrollen */
   if("IntersectionObserver" in window){
