@@ -72,10 +72,13 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .top.solid{background:rgba(0,0,0,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--color-border)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:var(--space-md)}
 .logo{font-stretch:75%;font-weight:800;font-size:1.25rem;text-decoration:none;letter-spacing:.01em}
-.nav{display:flex;gap:clamp(.9rem,2.5vw,2rem);font-size:.95rem;font-weight:500}
+.nav{display:flex;align-items:center;gap:clamp(.9rem,2.5vw,2rem);font-size:.95rem;font-weight:500}
 .nav a{text-decoration:none;color:var(--color-muted-foreground);transition:color var(--ease)}
 .nav a:hover{color:var(--color-foreground)}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:0 .95rem;border:1px solid var(--color-border);border-radius:var(--radius-btn);background:transparent;color:var(--color-foreground);font-size:.95rem;font-weight:500;cursor:pointer;transition:border-color var(--ease),background var(--ease)}
+.nav-btn:hover{border-color:var(--color-foreground);background:var(--color-muted)}
 @media (max-width:560px){.nav .opt{display:none}}
+@media (max-width:400px){.nav .opt2{display:none}}
 
 /* ---------- Hero ---------- */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
@@ -215,6 +218,15 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 .imp dt{color:var(--color-muted-foreground);white-space:nowrap}
 .imp dd{text-align:right;overflow-wrap:anywhere}
 @media (max-width:480px){.imp{padding:var(--space-lg)}.imp dd{font-size:.95rem}}
+.imp .intro{margin-top:-.4rem;font-size:.98rem}
+.folders{list-style:none;margin:var(--space-lg) 0 0;padding:0;border-top:1px solid var(--color-border)}
+.folders a{display:flex;align-items:center;gap:var(--space-md);padding:var(--space-md) 0;border-bottom:1px solid var(--color-border);text-decoration:none;transition:border-color var(--ease)}
+.folders a:hover{border-color:var(--color-foreground)}
+.folders a>.ic:first-child{width:22px;height:22px;color:var(--color-muted-foreground)}
+.folders span{flex:1;min-width:0;display:flex;flex-direction:column;gap:.2rem}
+.folders strong{font-family:var(--font-heading);font-stretch:75%;font-weight:750;font-size:1.25rem;line-height:1.15}
+.folders .go{transition:transform var(--ease)}
+.folders a:hover .go{transform:translate(2px,-2px)}
 .imp form{margin-top:1.4rem}
 
 .lb{width:100vw;height:100dvh;background:rgba(0,0,0,.96)}
@@ -245,9 +257,10 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     <a class="logo" href="#start" aria-label="mapq.raw, nach oben">mapq<span>.</span>raw</a>
     <nav class="nav" aria-label="Menü">
       <a class="opt" href="#highlights">Highlights</a>
-      <a href="#bilder">Bilder</a>
+      <a class="opt2" href="#bilder">Bilder</a>
       <a class="opt" href="#ueber">Über mich</a>
       <a href="#kontakt">Kontakt</a>
+      <button type="button" class="nav-btn" id="ordner-open" aria-haspopup="dialog"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>Ordner</button>
     </nav>
   </div>
 </header>
@@ -377,6 +390,18 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     <div><dt>E-Mail</dt><dd><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com</a></dd></div>
   </dl>
   <form method="dialog"><button class="btn ghost" autofocus>Schließen</button></form>
+</dialog>
+
+<dialog class="imp" id="ordner" aria-labelledby="ordner-h" data-lenis-prevent>
+  <h2 id="ordner-h">Fotoordner</h2>
+  <p class="intro mute">Hier findest du meine aktuellen Bilder. Wähle einen Ordner aus, um ihn in Google Drive zu öffnen.</p>
+  <ul class="folders">
+    <li><a href="https://drive.google.com/drive/folders/17KqME1dj7s9PZuzvMXyUYNQOAs4H8z2r?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Oldtimertreffen Buch</strong><small class="label mute">27.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
+    <li><a href="https://drive.google.com/drive/folders/1woKYOxA5jm77aWxoP__RGTIisRSIf2sI?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Autoslalom Stans HTS</strong><small class="label mute">20.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
+    <li><a href="https://drive.google.com/drive/folders/1jcYJfD6yJl7reeP0U6e3DlL_A5-L_82k?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Oldtimertreffen Aschach</strong><small class="label mute">19.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
+    <li><a href="https://drive.google.com/drive/folders/1jyVHDlOn9tCoSueNOa9N6unC9Cpwh2CO?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Autoslalom Reifen Jais Hall</strong><small class="label mute">13.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
+  </ul>
+  <form method="dialog" style="margin-top:1.4rem"><button class="btn ghost" autofocus>Schließen</button></form>
 </dialog>
 
 <dialog class="lb" id="lb" aria-label="Bildansicht" data-lenis-prevent>
@@ -583,10 +608,15 @@ var PHOTOS=[
   if(m){ for(var j=0;j<PHOTOS.length;j++) if(PHOTOS[j].f===m[1]){ var k=j; setTimeout(function(){ document.getElementById("bilder").scrollIntoView(); openLb(k); },50); break; } }
 
   /* Impressum */
-  var imp=$("#imp");
-  $("#imp-open").addEventListener("click",function(){ if(imp.showModal) imp.showModal(); else imp.setAttribute("open",""); if(lenis) lenis.stop(); });
-  imp.addEventListener("close",function(){ if(lenis) lenis.start(); });
-  imp.addEventListener("click",function(e){ if(e.target===imp) imp.close(); });
+  /* Impressum und Fotoordner */
+  function openDlg(d){ if(d.showModal) d.showModal(); else d.setAttribute("open",""); if(lenis) lenis.stop(); }
+  ["imp","ordner"].forEach(function(id){
+    var d=document.getElementById(id);
+    $("#"+id+"-open").addEventListener("click",function(){ openDlg(d); });
+    d.addEventListener("close",function(){ if(lenis) lenis.start(); });
+    d.addEventListener("click",function(e){ if(e.target===d) d.close(); });
+  });
+  if(location.hash==="#ordner") openDlg($("#ordner"));
 
   /* Einblenden beim Scrollen */
   if("IntersectionObserver" in window){
