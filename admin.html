@@ -1403,6 +1403,7 @@ begin
         'message', split_part(new.name, ' ', 1) || coalesce(' · ' || new.art, ''),
         'tags', jsonb_build_array('camera'),
         'priority', 4,
+        'icon', 'https://mapq.at/push-icon.png',
         'click', 'https://mapq.at/admin.html#inquiries'
       )
     );
@@ -1417,7 +1418,7 @@ create trigger mapq_push after insert on public.anfragen
 async function pushTest() {
   const t = state.extras.topic; if (!t) return;
   try {
-    const r = await fetch(`https://ntfy.sh/${encodeURIComponent(t)}?title=${encodeURIComponent('mapq.at Admin')}&tags=camera`, { method: 'POST', body: 'Test: Push-Benachrichtigungen funktionieren.' });
+    const r = await fetch(`https://ntfy.sh/${encodeURIComponent(t)}?title=${encodeURIComponent('mapq.at Admin')}&tags=camera&icon=${encodeURIComponent('https://mapq.at/push-icon.png')}`, { method: 'POST', body: 'Test: Push-Benachrichtigungen funktionieren.' });
     toast(r.ok ? 'Test gesendet – kommt in ein paar Sekunden aufs Handy.' : 'Senden ging nicht (' + r.status + ').', r.ok ? 'ok' : 'bad');
   } catch { toast('ntfy.sh ist gerade nicht erreichbar.', 'bad'); }
 }
