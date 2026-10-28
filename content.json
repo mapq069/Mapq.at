@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T17:29:28.339Z",
+  "updatedAt": "2026-10-28T17:31:18.339Z",
   "site": {
     "kicker": "Fotografie · Tirol, Österreich",
     "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
@@ -27,15 +27,6 @@
         "auto"
       ],
       "ar": 1.7778,
-      "hl": false
-    },
-    {
-      "f": "dsc06570-fdgq",
-      "t": "",
-      "c": [
-        "auto"
-      ],
-      "ar": 0.5625,
       "hl": false
     },
     {
