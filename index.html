@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#000000">
 <meta property="og:title" content="mapq.raw – Matteo Hanser">
 <meta property="og:description" content="Autos, Motorräder und Motorsport. Fotografiert in Tirol.">
-<meta property="og:image" content="https://mapq.at/bilder/bmw-8er.jpg">
+<meta property="og:image" content="https://mapq.at/fotos/supermoto-strasse.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23FAFAFA' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Space+Grotesk:wght@300..700&display=swap">
-<link rel="preload" as="image" href="bilder/bmw-8er.jpg">
+<link rel="preload" as="image" href="fotos/supermoto-strasse.jpg">
 <style>
 /* Gestaltung nach design-system/mapq-raw/MASTER.md (UI UX Pro Max):
    Scroll-Storytelling, Motion-Driven, reines Schwarz-Weiß, Archivo für Überschriften, Space Grotesk für Text. */
@@ -80,9 +80,9 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 /* ---------- Hero ---------- */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
 .hero-bg{position:absolute;inset:0;z-index:-2;will-change:transform}
-.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:30% 60%;transform:scale(1.04);animation:settle 2.4s cubic-bezier(.2,.7,.2,1) forwards}
+.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:48% 55%;transform:scale(1.04);animation:settle 2.4s cubic-bezier(.2,.7,.2,1) forwards}
 .hero .wrap{will-change:transform,opacity}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.15) 55%,var(--color-background) 100%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 25%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.75) 75%,var(--color-background) 100%)}
 @keyframes settle{to{transform:scale(1)}}
 .cue{position:absolute;left:50%;bottom:1.1rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);color:var(--color-muted-foreground)}
 .cue::after{content:"";width:1px;height:34px;background:linear-gradient(var(--color-foreground),transparent);animation:drip 1.8s ease-in-out infinite}
@@ -107,7 +107,7 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .say .w.on{opacity:1}
 .say .w.acc{color:transparent;-webkit-text-stroke:1.5px var(--color-foreground)}
 
-/* ---------- Saison: waagrecht beim Runterscrollen ---------- */
+/* ---------- Highlights: waagrecht beim Runterscrollen ---------- */
 .hs{position:relative;border-block:1px solid var(--color-border);background:var(--color-card)}
 .hs-pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(1rem,3vh,2rem);padding-top:64px}
 .hs-head{width:100%;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-sm) var(--space-xl)}
@@ -120,7 +120,7 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .hs-card img{height:100%;width:auto;object-fit:cover;border-radius:var(--radius-card);background:var(--color-muted);box-shadow:var(--shadow-md);transition:box-shadow var(--ease),filter var(--ease)}
 .hs-card:hover img{box-shadow:var(--shadow-lg);filter:brightness(1.06)}
 .chap{width:min(64vw,340px);display:flex;flex-direction:column;justify-content:space-between;border-top:2px solid var(--color-foreground);padding:var(--space-md) 0 0}
-.chap b{font-stretch:62%;font-weight:850;font-size:clamp(2.8rem,6vw,4.4rem);line-height:.9;text-transform:uppercase}
+.chap b{font-stretch:62%;font-weight:850;font-size:clamp(2.4rem,5vw,3.6rem);line-height:.9;text-transform:uppercase}
 .chap.cta{text-decoration:none;border-top-style:dashed}
 .chap.cta .btn{align-self:flex-start}
 .hs-bar{height:2px;background:var(--color-border);margin:0 var(--gx)}
@@ -244,7 +244,7 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
   <div class="wrap">
     <a class="logo" href="#start" aria-label="mapq.raw, nach oben">mapq<span>.</span>raw</a>
     <nav class="nav" aria-label="Menü">
-      <a class="opt" href="#saison">Saison</a>
+      <a class="opt" href="#highlights">Highlights</a>
       <a href="#bilder">Bilder</a>
       <a class="opt" href="#ueber">Über mich</a>
       <a href="#kontakt">Kontakt</a>
@@ -254,7 +254,7 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 
 <main>
   <section class="hero" id="start">
-    <div class="hero-bg" id="hero-bg"><img src="bilder/bmw-8er.jpg" alt="Schwarzer BMW 8er Gran Coupé auf einer Straße in der Abenddämmerung" fetchpriority="high"></div>
+    <div class="hero-bg" id="hero-bg"><img src="fotos/supermoto-strasse.jpg" alt="Fahrerin mit Supermoto auf einer Bergstraße" fetchpriority="high"></div>
     <div class="wrap" id="hero-in">
       <p class="kicker label">Fotografie · Tirol, Österreich</p>
       <h1 class="display">mapq<span>.</span>raw</h1>
@@ -273,11 +273,11 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     <div class="wrap"><p id="say">Autos, Motorräder und Motorsport. Dazu Landschaften, wenn das *Licht* stimmt.</p></div>
   </section>
 
-  <section class="hs" id="saison" aria-label="Saison 2026">
+  <section class="hs" id="highlights" aria-label="Highlights">
     <div class="hs-pin">
       <div class="wrap hs-head">
-        <div><p class="kicker label">Juli bis Oktober</p><h2 class="display">Saison 2026</h2></div>
-        <p class="hs-month" id="hs-month" aria-hidden="true">Juli</p>
+        <div><p class="kicker label">Autos bis Tiere</p><h2 class="display">Highlights</h2></div>
+        <p class="hs-month" id="hs-month" aria-hidden="true">Autos</p>
       </div>
       <div class="track" id="track"></div>
       <div class="hs-bar" aria-hidden="true"><span id="hs-bar"></span></div>
@@ -288,15 +288,15 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <p class="kicker label">Alle 20 Fotos</p>
+          <p class="kicker label">Alle <span id="n-all">14</span> Fotos</p>
           <h2 class="display">Bilder</h2>
         </div>
         <div class="filters" role="group" aria-label="Bilder filtern">
           <button type="button" data-f="alle" aria-pressed="true">Alle</button>
           <button type="button" data-f="auto" aria-pressed="false">Autos</button>
           <button type="button" data-f="moto" aria-pressed="false">Motorräder</button>
-          <button type="button" data-f="event" aria-pressed="false">Events</button>
-          <button type="button" data-f="outdoor" aria-pressed="false">Outdoor</button>
+                    <button type="button" data-f="outdoor" aria-pressed="false">Outdoor</button>
+          <button type="button" data-f="tiere" aria-pressed="false">Tiere</button>
         </div>
       </div>
       <div class="grid" id="grid"></div>
@@ -310,7 +310,7 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
   <section class="sec" id="ueber" style="padding-top:0">
     <div class="wrap about">
       <figure class="about-pic reveal">
-        <img src="bilder/klein/supermoto-berge.jpg" alt="Supermoto vor den Bergen" loading="lazy">
+        <img src="fotos/klein/hinter-der-kamera.jpg" alt="Fotografieren am Wasserfall" loading="lazy" style="object-position:30% 70%">
       </figure>
       <div class="reveal">
         <p class="kicker label">Hinter der Kamera</p>
@@ -318,8 +318,8 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
         <p>Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.</p>
         <p>Ich arbeite gern mit Fahrern, Teams und Besitzern zusammen.</p>
         <div class="stats">
-          <div><b id="st-n">20</b><span class="label mute">Bilder online</span></div>
-          <div><b>4</b><span class="label mute">Monate Saison</span></div>
+          <div><b id="st-n">14</b><span class="label mute">Bilder online</span></div>
+          <div><b>4</b><span class="label mute">Bereiche</span></div>
           <div><b>3</b><span class="label mute">Schwerpunkte</span></div>
         </div>
         <dl class="facts">
@@ -396,26 +396,20 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 var PHOTOS=[
-  {f:"bmw-8er",t:"BMW 8er Gran Coupé",c:"auto",ar:1.7769},
-  {f:"supermoto-tal",t:"Supermoto über dem Tal",c:"moto outdoor",ar:.5628},
-  {f:"mini-slalom",t:"Mini beim Slalom",c:"auto event",ar:1.7769},
-  {f:"golf-1",t:"Golf 1 beim Treffen",c:"auto event",ar:.5628},
-  {f:"bmw-nacht",t:"BMW bei Nacht",c:"auto",ar:.5628},
-  {f:"wheelie",t:"Wheelie vor den Bergen",c:"moto outdoor",ar:.5626},
-  {f:"audi-s3",t:"Audi S3 auf der Wiese",c:"auto outdoor",ar:.5628},
-  {f:"peugeot-106",t:"Peugeot 106 am Start",c:"auto event",ar:.5628},
-  {f:"supermoto-wald",t:"Supermoto im Wald",c:"moto outdoor",ar:.5628},
-  {f:"bmw-e46",t:"BMW E46 am Feldweg",c:"auto",ar:.5628},
-  {f:"drift-nass",t:"Drift auf nassem Asphalt",c:"auto event",ar:.5628},
-  {f:"traktor",t:"Traktor vor den Bergen",c:"auto outdoor",ar:.5628},
-  {f:"yaris-slalom",t:"Toyota GR Yaris beim Slalom",c:"auto event",ar:.5628},
-  {f:"bmw-heck",t:"BMW von hinten",c:"auto",ar:.5628},
-  {f:"supermoto-berge",t:"Supermoto vor den Bergen",c:"moto outdoor",ar:.5628},
-  {f:"rennwagen",t:"Rennwagen beim Slalom",c:"auto event",ar:.5625},
-  {f:"audi-s3-felge",t:"Audi S3, Felge",c:"auto",ar:.5629},
-  {f:"bmw-abendhimmel",t:"BMW unter dem Abendhimmel",c:"auto",ar:.5628},
-  {f:"bmw-drift",t:"BMW im Drift",c:"auto event",ar:.5628},
-  {f:"bmw-huegel",t:"BMW unter lila Wolken",c:"auto outdoor",ar:.5628}
+  {f:"audi-a3-feld",t:"Audi A3 am Feld",c:"auto",ar:1.7778},
+  {f:"supermoto-wald",t:"Supermoto im Wald",c:"moto",ar:.5625},
+  {f:"hund",t:"Hund bei Sonnenuntergang",c:"tiere outdoor",ar:.5625},
+  {f:"bmw-e46",t:"Blauer BMW E46",c:"auto",ar:.5625},
+  {f:"wasserfall",t:"Wasserfall in den Bergen",c:"outdoor",ar:.5625},
+  {f:"supermoto-burnout",t:"Supermoto-Burnout",c:"moto",ar:.5625},
+  {f:"felge-wiese",t:"Felge im Gras",c:"auto",ar:.5625},
+  {f:"steinmann",t:"Steinmann im Tal",c:"outdoor",ar:.5625},
+  {f:"supermoto-strasse",t:"Fahrerin mit Supermoto auf einer Bergstraße",c:"moto",ar:1.7778},
+  {f:"cockpit",t:"Blick ins Cockpit",c:"auto",ar:.5625},
+  {f:"audi-a3-weg",t:"Audi A3 am Feldweg",c:"auto",ar:.5625},
+  {f:"wasserfall-portrait",t:"Porträt vor dem Wasserfall",c:"outdoor",ar:.5625},
+  {f:"supermoto-felge",t:"Supermoto-Felge im Detail",c:"moto",ar:.5625},
+  {f:"hinter-der-kamera",t:"Fotografieren am Wasserfall",c:"outdoor",ar:.5625}
 ];
 (function(){
   "use strict";
@@ -453,15 +447,15 @@ var PHOTOS=[
   });
   say.setAttribute("aria-label",words.map(function(w){ return w.textContent; }).join(" "));
 
-  /* Saison-Strecke */
-  var SEASON=[
-    ["Juli","07 / 2026",["bmw-nacht","bmw-heck"]],
-    ["August","08 / 2026",["bmw-8er","drift-nass","bmw-drift","supermoto-berge"]],
-    ["September","09 / 2026",["mini-slalom","wheelie","yaris-slalom","golf-1","rennwagen"]],
-    ["Oktober","10 / 2026",["supermoto-tal","bmw-abendhimmel","bmw-huegel"]]
+  /* Highlights-Strecke */
+  var CHAPTERS=[
+    ["Autos","01 / 04",["audi-a3-feld","bmw-e46","felge-wiese"]],
+    ["Motorräder","02 / 04",["supermoto-burnout","supermoto-wald","supermoto-felge"]],
+    ["Outdoor","03 / 04",["wasserfall","steinmann","wasserfall-portrait"]],
+    ["Tiere","04 / 04",["hund"]]
   ];
-  var track=$("#track"), hs=$("#saison"), chaps=[];
-  SEASON.forEach(function(c){
+  var track=$("#track"), hs=$("#highlights"), chaps=[];
+  CHAPTERS.forEach(function(c){
     var ch=document.createElement("div"); ch.className="chap"; ch.dataset.m=c[0];
     ch.innerHTML='<span class="label mute"></span><b></b>';
     ch.querySelector("span").textContent=c[1]; ch.querySelector("b").textContent=c[0];
@@ -469,13 +463,13 @@ var PHOTOS=[
     c[2].forEach(function(f){
       var i=byF(f), p=PHOTOS[i]; if(i<0) return;
       var b=document.createElement("button"); b.type="button"; b.className="hs-card"; b.setAttribute("aria-label",p.t+" groß ansehen");
-      var img=document.createElement("img"); img.src=(p.ar>1?"bilder/":"bilder/klein/")+p.f+".jpg"; img.alt=p.t; img.loading="lazy"; img.style.aspectRatio=String(p.ar);
+      var img=document.createElement("img"); img.src=(p.ar>1?"fotos/":"fotos/klein/")+p.f+".jpg"; img.alt=p.t; img.loading="lazy"; img.style.aspectRatio=String(p.ar);
       b.appendChild(img); b.addEventListener("click",function(){ openLb(i,b); });
       track.appendChild(b);
     });
   });
   var cta=document.createElement("a"); cta.className="chap cta"; cta.href="#kontakt";
-  cta.innerHTML='<span class="label mute">Nächste Saison</span><b>Dein Fahrzeug?</b><span class="btn">Shooting anfragen <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
+  cta.innerHTML='<span class="label mute">Als Nächstes</span><b>Dein Fahrzeug?</b><span class="btn">Shooting anfragen <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
   cta.addEventListener("click",function(e){ e.preventDefault(); goTo(document.getElementById("kontakt")); });
   track.appendChild(cta);
   if(reduce) hs.classList.add("static");
@@ -517,6 +511,8 @@ var PHOTOS=[
   function loop(t){ if(lenis) lenis.raf(t); update(); requestAnimationFrame(loop); }
   requestAnimationFrame(loop);
 
+  $("#n-all").textContent=$("#st-n").textContent=PHOTOS.length;
+
   /* Raster */
   var grid=$("#grid");
   PHOTOS.forEach(function(p,i){
@@ -524,7 +520,7 @@ var PHOTOS=[
     b.type="button"; b.className="shot"; b.id="bild-"+p.f; b.dataset.c=p.c; b.dataset.i=i;
     b.setAttribute("aria-label",p.t+" groß ansehen");
     var img=document.createElement("img");
-    img.src="bilder/klein/"+p.f+".jpg"; img.alt=p.t; img.loading=i<4?"eager":"lazy"; img.decoding="async";
+    img.src="fotos/klein/"+p.f+".jpg"; img.alt=p.t; img.loading=i<4?"eager":"lazy"; img.decoding="async";
     img.width=p.ar>1?760:428; img.height=Math.round(img.width/p.ar);
     b.appendChild(img);
     b.addEventListener("click",function(){ openLb(i); });
@@ -553,7 +549,7 @@ var PHOTOS=[
     lbImg.classList.add("load");
     var pre=new Image();
     pre.onload=function(){ if(cur!==i) return; lbImg.src=pre.src; lbImg.alt=p.t; lbImg.classList.remove("load"); };
-    pre.src="bilder/"+p.f+".jpg";
+    pre.src="fotos/"+p.f+".jpg";
     $("#lb-no").textContent=pad(i+1)+" / "+pad(PHOTOS.length);
     if(history.replaceState) history.replaceState(null,"","#bild-"+p.f);
   }
