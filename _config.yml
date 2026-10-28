@@ -1,2 +1,3 @@
 exclude:
   - design-system
+  - supabase

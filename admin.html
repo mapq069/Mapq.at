@@ -1277,6 +1277,7 @@ async function loadExtras() {
   catch (e) { state.extras.topic = null; state.extras.missing = /could not find|does not exist|PGRST202|42883/i.test(e.message); }
   state.extras.checked = true;
   if (state.view === 'settings' && !$('#sheetWrap').classList.contains('open')) renderView();
+  loadPushInfo();
 }
 async function loadStats() {
   if (inqMode() !== 'live' || !state.content?.stats) return;
@@ -1322,7 +1323,7 @@ function statsCard() {
     <p class="hint" style="margin:18px 0 0">Ohne Cookies und ohne IP-Adressen. Deine eigenen Besuche zählen nicht.</p>
   </section>`;
 }
-const extrasSql = topic => `-- Zusatzfunktionen für mapq.at: Besucherstatistik + Push bei neuer Anfrage
+const extrasSql = (topic, wp) => `-- Zusatzfunktionen für mapq.at: Besucherstatistik + Push bei neuer Anfrage
 -- (kann gefahrlos mehrmals ausgeführt werden)
 
 -- 1) Besucherstatistik: keine IP, keine Cookies
@@ -1388,25 +1389,71 @@ as $$ select case when public.mapq_ist_admin()
 revoke all on function public.mapq_push_topic() from public, anon;
 grant execute on function public.mapq_push_topic() to authenticated;
 
+-- 3) Benachrichtigungen direkt von der mapq-Admin-App (Web-Push mit eigenem Logo)
+create table if not exists public.push_abos (
+  id uuid primary key default gen_random_uuid(),
+  erstellt timestamptz not null default now(),
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  geraet text
+);
+alter table public.push_abos enable row level security;
+drop policy if exists "admin_abos" on public.push_abos;
+create policy "admin_abos" on public.push_abos for all to authenticated
+  using (public.mapq_ist_admin()) with check (public.mapq_ist_admin());
+revoke all on public.push_abos from anon;
+grant select, insert, update, delete on public.push_abos to authenticated;
+grant select, delete on public.push_abos to service_role;
+grant select on public.mapq_einstellungen to service_role;
+insert into public.mapq_einstellungen (schluessel, wert) values
+  ('vapid_public', '${wp.pub}'),
+  ('vapid_private', '${wp.priv}'),
+  ('vapid_subject', '${wp.subject}'),
+  ('push_secret', '${wp.secret}'),
+  ('push_url', '${wp.url}')
+  on conflict (schluessel) do nothing;
+
+create or replace function public.mapq_push_info()
+returns jsonb language sql stable security definer set search_path = ''
+as $$ select case when public.mapq_ist_admin() then jsonb_build_object(
+  'vapid_public', (select wert from public.mapq_einstellungen where schluessel = 'vapid_public'),
+  'funktion', (select wert from public.mapq_einstellungen where schluessel = 'push_url'),
+  'thema', (select wert from public.mapq_einstellungen where schluessel = 'push_thema')) end $$;
+revoke all on function public.mapq_push_info() from public, anon;
+grant execute on function public.mapq_push_info() to authenticated;
+
+-- Bei neuer Anfrage: an die mapq-Admin-App, sonst (ohne angemeldetes Gerät) an ntfy
 create or replace function public.mapq_push_anfrage()
 returns trigger language plpgsql security definer set search_path = ''
 as $$
-declare thema text;
+declare thema text; ziel text; geheim text;
 begin
-  select wert into thema from public.mapq_einstellungen where schluessel = 'push_thema';
-  if thema is not null then
+  select wert into ziel from public.mapq_einstellungen where schluessel = 'push_url';
+  select wert into geheim from public.mapq_einstellungen where schluessel = 'push_secret';
+  if ziel is not null and geheim is not null and exists (select 1 from public.push_abos) then
     perform net.http_post(
-      url := 'https://ntfy.sh',
-      body := jsonb_build_object(
-        'topic', thema,
-        'title', 'Neue Anfrage auf mapq.at',
-        'message', split_part(new.name, ' ', 1) || coalesce(' · ' || new.art, ''),
-        'tags', jsonb_build_array('camera'),
-        'priority', 4,
-        'icon', 'https://mapq.at/push-icon.png',
-        'click', 'https://mapq.at/admin.html#inquiries'
-      )
+      url := ziel,
+      body := jsonb_build_object('id', new.id, 'name', new.name, 'art', new.art),
+      headers := jsonb_build_object('Content-Type', 'application/json', 'x-mapq-secret', geheim),
+      timeout_milliseconds := 10000
     );
+  else
+    select wert into thema from public.mapq_einstellungen where schluessel = 'push_thema';
+    if thema is not null then
+      perform net.http_post(
+        url := 'https://ntfy.sh',
+        body := jsonb_build_object(
+          'topic', thema,
+          'title', 'Neue Anfrage auf mapq.at',
+          'message', split_part(new.name, ' ', 1) || coalesce(' · ' || new.art, ''),
+          'tags', jsonb_build_array('camera'),
+          'priority', 4,
+          'icon', 'https://mapq.at/push-icon.png',
+          'click', 'https://mapq.at/admin.html#inquiries'
+        )
+      );
+    end if;
   end if;
   return new;
 exception when others then
@@ -1422,26 +1469,158 @@ async function pushTest() {
     toast(r.ok ? 'Test gesendet – kommt in ein paar Sekunden aufs Handy.' : 'Senden ging nicht (' + r.status + ').', r.ok ? 'ok' : 'bad');
   } catch { toast('ntfy.sh ist gerade nicht erreichbar.', 'bad'); }
 }
+
+/* ---------- Web-Push: Benachrichtigungen von der mapq-Admin-App ---------- */
+state.wp = { info: null, loaded: false, devices: [], mine: null, busy: false, draft: null };
+let swReg = null;
+const wpSupported = () => window.isSecureContext && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const bytesToB64u = u8 => bytesToB64(u8).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64uToBytes = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+function deviceLabel() {
+  const ua = navigator.userAgent;
+  if (/iPhone/.test(ua)) return 'iPhone';
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'iPad';
+  if (/Android/.test(ua)) return 'Android';
+  if (/Macintosh/.test(ua)) return 'Mac';
+  if (/Windows/.test(ua)) return 'Windows';
+  return 'Gerät';
+}
+async function wpRegister() {
+  if (!window.isSecureContext || !('serviceWorker' in navigator)) return null;
+  try { swReg = await navigator.serviceWorker.register('admin-sw.js', { scope: './admin' }); } catch (e) { console.warn('Service Worker', e); swReg = null; }
+  return swReg;
+}
+function clearBadge() { try { navigator.clearAppBadge && navigator.clearAppBadge(); } catch {} }
+async function ensureVapidDraft() {
+  let v = store.get('vapidDraft');
+  if (!v) {
+    const kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+    const pub = new Uint8Array(await crypto.subtle.exportKey('raw', kp.publicKey));
+    const jwk = await crypto.subtle.exportKey('jwk', kp.privateKey);
+    v = { pub: bytesToB64u(pub), priv: jwk.d, secret: bytesToB64u(crypto.getRandomValues(new Uint8Array(24))) };
+    store.set('vapidDraft', v);
+  }
+  state.wp.draft = v; return v;
+}
+async function loadPushInfo() {
+  if (inqMode() !== 'live') return;
+  try { state.wp.info = await SB.req('/rpc/mapq_push_info', { method: 'POST', body: '{}' }); } catch { state.wp.info = null; }
+  if (state.wp.info?.vapid_public) {
+    try { state.wp.devices = (await SB.req('/push_abos?select=id,geraet,erstellt,endpoint&order=erstellt.desc')) || []; } catch { state.wp.devices = []; }
+    try {
+      const reg = swReg || (wpSupported() ? await navigator.serviceWorker.getRegistration('./admin') : null);
+      const sub = reg ? await reg.pushManager.getSubscription() : null;
+      state.wp.mine = sub ? sub.endpoint : null;
+    } catch { state.wp.mine = null; }
+  } else { try { await ensureVapidDraft(); } catch {} }
+  state.wp.loaded = true;
+  if (state.view === 'settings' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+async function sbFn(name, body) {
+  if (!SB.loggedIn) throw new Error('Nicht angemeldet.');
+  if (Date.now() > cfg.sbSession.expires_at) await SB.refresh();
+  const r = await fetch(SB.url('/functions/v1/' + name), { method: 'POST', headers: { apikey: cfg.sb.key, Authorization: 'Bearer ' + cfg.sbSession.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+  let j = {}; try { j = await r.json(); } catch {}
+  if (!r.ok) { const e = new Error(j.error || j.message || ('Fehler ' + r.status)); e.status = r.status; throw e; }
+  return j;
+}
+async function wpEnable() {
+  if (!wpSupported() || !state.wp.info?.vapid_public) return;
+  /* Zuerst fragen – das iPhone erlaubt die Frage nur direkt nach dem Tipp */
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') {
+    toast(perm === 'denied' ? 'Benachrichtigungen sind blockiert – erlaube sie in den Einstellungen deines Handys bei „mapq Admin“.' : 'Nicht erlaubt – du kannst es jederzeit nochmal versuchen.', 'warn');
+    renderView(); return;
+  }
+  state.wp.busy = true; renderView();
+  try {
+    const reg = swReg || await wpRegister();
+    if (!reg) throw new Error('Der Hintergrunddienst konnte nicht starten.');
+    await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    const key = sub?.options?.applicationServerKey;
+    if (sub && key && bytesToB64u(new Uint8Array(key)) !== state.wp.info.vapid_public) { await sub.unsubscribe(); sub = null; }
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uToBytes(state.wp.info.vapid_public) });
+    const j = sub.toJSON();
+    await SB.req('/push_abos?on_conflict=endpoint', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify({ endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, geraet: deviceLabel() }) });
+    state.wp.mine = j.endpoint;
+    toast('Benachrichtigungen auf diesem Gerät sind aktiv.', 'ok');
+    await loadPushInfo();
+  } catch (e) { toast('Hat nicht geklappt: ' + e.message, 'bad'); }
+  state.wp.busy = false; renderView();
+}
+async function wpDisable() {
+  state.wp.busy = true; renderView();
+  try {
+    const reg = swReg || (await navigator.serviceWorker.getRegistration('./admin'));
+    const sub = reg ? await reg.pushManager.getSubscription() : null;
+    if (sub) { await SB.req('/push_abos?endpoint=eq.' + encodeURIComponent(sub.endpoint), { method: 'DELETE' }); await sub.unsubscribe(); }
+    state.wp.mine = null; toast('Auf diesem Gerät ausgeschaltet.');
+    await loadPushInfo();
+  } catch (e) { toast('Hat nicht geklappt: ' + e.message, 'bad'); }
+  state.wp.busy = false; renderView();
+}
+async function wpTest() {
+  try {
+    const r = await sbFn('mapq-push', {});
+    toast(r.sent ? `Test gesendet an ${r.sent} Gerät${r.sent > 1 ? 'e' : ''}.` : 'Es ist noch kein Gerät angemeldet.', r.sent ? 'ok' : 'warn');
+    if (r.removed) loadPushInfo();
+  } catch (e) { toast(e.status === 404 ? 'Die Funktion „mapq-push“ ist in Supabase noch nicht eingerichtet.' : 'Test ging nicht: ' + e.message, 'bad'); }
+}
+async function wpRemove(id) {
+  const d = state.wp.devices.find(x => x.id === id); if (!d) return;
+  if (!confirm(`${d.geraet || 'Gerät'} abmelden? Es bekommt dann keine Benachrichtigungen mehr.`)) return;
+  try { await SB.req('/push_abos?id=eq.' + encodeURIComponent(id), { method: 'DELETE' }); await loadPushInfo(); toast('Gerät abgemeldet.'); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+function wpBlock() {
+  const wp = state.wp, info = wp.info;
+  if (!wp.loaded) return `<div class="loading" style="padding:20px 0"><div class="ring"></div></div>`;
+  if (!info?.vapid_public) return `<p class="hint" style="margin:0 0 14px">Noch nicht eingerichtet – siehe „Einrichtung“ weiter unten.</p>`;
+  let main;
+  if (!wpSupported()) {
+    main = platform() === 'ios' && !isStandalone()
+      ? `<div class="banner warn">${ic('info')}<div><b>Nur in der App am Home-Bildschirm</b><p>Öffne das Panel über das Icon „mapq Admin“ auf deinem Home-Bildschirm – nur dort erlaubt das iPhone Benachrichtigungen (ab iOS 16.4).</p></div></div>`
+      : `<p class="hint" style="margin:0 0 14px">Dieser Browser kann keine Benachrichtigungen empfangen.</p>`;
+  } else if (Notification.permission === 'denied') {
+    main = `<div class="banner warn">${ic('alert')}<div><b>Benachrichtigungen sind blockiert</b><p>${platform() === 'ios' ? 'iPhone-Einstellungen → Mitteilungen → mapq Admin → „Mitteilungen erlauben“ einschalten.' : 'In den Browser- bzw. Handy-Einstellungen für mapq Admin erlauben.'}</p></div></div>`;
+  } else if (wp.mine && wp.devices.some(d => d.endpoint === wp.mine)) {
+    main = `<span class="chip ok" style="margin-bottom:12px">Aktiv auf diesem Gerät</span><div class="row-actions" style="margin-bottom:14px">
+      <button class="btn sm" data-action="wp-test" ${wp.busy ? 'disabled' : ''}>${ic('bell', 15)} Test</button>
+      <button class="btn sm" data-action="wp-disable" ${wp.busy ? 'disabled' : ''}>Ausschalten</button></div>`;
+  } else {
+    main = `<button class="btn btn-primary" data-action="wp-enable" ${wp.busy ? 'disabled' : ''} style="margin-bottom:14px">${ic('bell', 18)} ${wp.busy ? 'Einen Moment …' : 'Benachrichtigungen erlauben'}</button>`;
+  }
+  const devs = wp.devices.length ? `<p class="sub-h" style="margin-top:4px">Angemeldete Geräte</p><div class="slist" style="margin-bottom:14px">${wp.devices.map(d => `
+      <div class="srow nothumb"><span class="lbl"><span>${esc(d.geraet || 'Gerät')}${d.endpoint === wp.mine ? ' · dieses' : ''}</span><span class="hint">seit ${esc(new Date(d.erstellt).toLocaleDateString('de-AT', { day: 'numeric', month: 'short' }))}</span></span>
+      <button class="btn sm icon" data-action="wp-remove" data-id="${esc(d.id)}" aria-label="Gerät abmelden">${ic('x', 15)}</button></div>`).join('')}</div>` : '';
+  return main + devs;
+}
 function extrasSection() {
-  const live = inqMode() === 'live', ex = state.extras, c = state.content;
-  const head0 = `<div class="sec-h"><h2>${ic('bell')} Push & Statistik</h2>${ex.topic ? '<span class="chip ok">Eingerichtet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>`;
+  const live = inqMode() === 'live', ex = state.extras, c = state.content, wpOk = !!state.wp.info?.vapid_public;
+  const head0 = `<div class="sec-h"><h2>${ic('bell')} Push & Statistik</h2>${wpOk || ex.topic ? '<span class="chip ok">Eingerichtet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>`;
   if (!live) return `<section class="card sec" id="sec-extra">${head0}<p class="muted" style="margin:0">Richte zuerst oben das Anfragen-Postfach ein – Push und Statistik laufen darüber.</p></section>`;
-  const setup = `<details class="help" ${ex.topic ? '' : 'open'}><summary>${ic('chev', 16)} ${ex.topic ? 'Einrichtungs-Code' : 'Einrichtung (einmalig, 1 Minute)'}</summary><div>
-      <p class="hint" style="margin:0 0 4px">In Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken (Warnung bestätigen). Danach diese Seite neu laden.</p>
-      <div class="code"><pre id="extraSql">${esc(extrasSql(ex.topic || draftTopic()))}</pre><button class="btn sm" data-action="copy" data-target="#extraSql">${ic('copy', 15)} Kopieren</button></div>
-    </div></details>`;
-  const push = ex.topic ? `<p class="sub-h" style="margin-top:6px">Push bei neuer Anfrage</p>
+  const draft = state.wp.draft;
+  const sql = wpOk ? '' : (draft ? extrasSql(ex.topic || draftTopic(), { ...draft, subject: /^[^\s@']+@[^\s@']+$/.test(c.site.email || '') ? 'mailto:' + c.site.email : 'https://mapq.at', url: SB.url('/functions/v1/mapq-push') }) : '');
+  const setup = `<details class="help" ${wpOk ? '' : 'open'}><summary>${ic('chev', 16)} Einrichtung ${wpOk ? '(erledigt)' : '(einmalig, am Computer)'}</summary><div>
+      ${wpOk ? '<p class="hint" style="margin:0 0 8px">Alles eingerichtet. Der Code wird nur gebraucht, wenn du ein neues Supabase-Projekt anlegst.</p>' : ''}
       <ol class="steps">
-        <li>Die kostenlose App <b>ntfy</b> installieren (App Store bzw. Google Play).</li>
-        <li>In der App auf <b>+</b> tippen und dieses Thema eintragen (Server „ntfy.sh“ so lassen):
-          <div class="topic"><code id="pushTopic">${esc(ex.topic)}</code><button class="btn sm" data-action="copy" data-target="#pushTopic">${ic('copy', 15)} Kopieren</button></div>
-          <small class="hint">Das Thema ist wie ein Passwort – gib es nicht weiter.</small></li>
-        <li>Fertig. Zum Ausprobieren: <button class="btn sm" data-action="push-test" style="margin-top:6px">${ic('bell', 15)} Test-Benachrichtigung senden</button></li>
-      </ol>` : '';
+        <li>In Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken (Warnung bestätigen):
+          ${sql ? `<div class="code"><pre id="extraSql">${esc(sql)}</pre><button class="btn sm" data-action="copy" data-target="#extraSql">${ic('copy', 15)} Kopieren</button></div>` : `<p class="hint">Der Code mit deinen Schlüsseln erscheint hier, solange noch nichts eingerichtet ist.</p>`}</li>
+        <li>In Supabase links <b>Edge Functions → Deploy a new function → Via Editor</b>. Name: <b>mapq-push</b>. Den Code von <a href="https://github.com/${esc(cfg.gh.owner)}/${esc(cfg.gh.repo)}/blob/main/supabase/functions/mapq-push/index.ts" target="_blank" rel="noopener">supabase/functions/mapq-push/index.ts</a> einfügen und bereitstellen.</li>
+        <li>Bei der Funktion unter <b>Details</b> die Option <b>„Verify JWT“</b> ausschalten (die Funktion prüft selbst, wer sie aufruft).</li>
+        <li>Diese Seite neu laden.</li>
+      </ol></div></details>`;
+  const ntfy = ex.topic ? `<details class="help"><summary>${ic('chev', 16)} Reserve: ntfy-App</summary><div>
+      <p class="hint" style="margin:0 0 10px">${state.wp.devices.length ? 'Solange oben ein Gerät angemeldet ist, kommen keine ntfy-Nachrichten – die ntfy-App kannst du löschen.' : 'Solange kein Gerät angemeldet ist, kommen Anfragen über die ntfy-App.'}</p>
+      <div class="topic"><code id="pushTopic">${esc(ex.topic)}</code><button class="btn sm" data-action="copy" data-target="#pushTopic">${ic('copy', 15)} Kopieren</button></div>
+      <button class="btn sm" data-action="push-test" style="margin-top:8px">${ic('bell', 15)} ntfy-Test senden</button></div></details>` : '';
   return `<section class="card sec" id="sec-extra">${head0}
-    <p class="muted">Bei jeder neuen Anfrage klingelt dein Handy, und in der Übersicht siehst du, wer mapq.at besucht. Beides läuft über dein Supabase-Postfach.</p>
-    ${setup}${push}
-    <label class="switch-row" style="margin:${ex.topic ? '4px' : '16px'} 0 0"><span><b>Besucherstatistik auf mapq.at</b><small>${c.stats ? 'Aktiv' : 'Ohne Cookies und ohne IP-Adressen. Nach dem Einschalten veröffentlichen.'}</small></span><input type="checkbox" class="switch" id="statsSwitch" ${c.stats ? 'checked' : ''} ${c.inbox ? '' : 'disabled'}></label>
+    <p class="muted">Bei jeder neuen Anfrage meldet sich dein Handy – direkt von der mapq-Admin-App mit deinem Logo. In der Übersicht siehst du außerdem, wer mapq.at besucht.</p>
+    <p class="sub-h">Benachrichtigungen</p>
+    ${wpBlock()}
+    ${setup}${ntfy}
+    <label class="switch-row" style="margin:4px 0 0"><span><b>Besucherstatistik auf mapq.at</b><small>${c.stats ? 'Aktiv' : 'Ohne Cookies und ohne IP-Adressen. Nach dem Einschalten veröffentlichen.'}</small></span><input type="checkbox" class="switch" id="statsSwitch" ${c.stats ? 'checked' : ''} ${c.inbox ? '' : 'disabled'}></label>
     ${c.inbox ? '' : '<p class="hint" style="margin:8px 0 0">Schalte dafür zuerst „Formular auf mapq.at aktivieren“ ein.</p>'}
   </section>`;
 }
@@ -2166,6 +2345,10 @@ const ACTIONS = {
   'inq-tab': el => { state.inqTab = el.dataset.t; renderView(); if (state.inqTab === 'ig' && IG.ready) igLoad(true); },
   'ig-open': el => igOpen(el.dataset.id),
   'push-test': () => pushTest(),
+  'wp-enable': () => wpEnable(),
+  'wp-disable': () => wpDisable(),
+  'wp-test': () => wpTest(),
+  'wp-remove': el => wpRemove(el.dataset.id),
   'stats-refresh': () => { state.stats.data = null; renderView(); loadStats(); },
   'go-extra': () => { go('settings'); setTimeout(() => $('#sec-extra')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); },
   'ig-send': () => igSend(),
@@ -2269,7 +2452,7 @@ document.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefa
 
 window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
 window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== state.view && NAV.some(n => n.id === v)) go(v); });
-document.addEventListener('visibilitychange', () => { if (document.hidden || !state.content) return; if (inqMode() === 'live') { loadInquiries(true); loadStats(); } if (IG.ready) igLoad(true); });
+document.addEventListener('visibilitychange', () => { if (document.hidden || !state.content) return; clearBadge(); if (inqMode() === 'live') { loadInquiries(true); loadStats(); } if (IG.ready) igLoad(true); });
 
 /* =====================================================================
    Start
@@ -2282,6 +2465,7 @@ document.addEventListener('submit', e => {
 
 (async function init() {
   store.set('notrack', true);
+  wpRegister(); clearBadge();
   const h = location.hash.slice(1);
   if (NAV.some(n => n.id === h)) state.view = h;
   AUTH.load();
