@@ -5,7 +5,8 @@ Eine Seite: `index.html`. `bilder.html` leitet nur weiter. Fotos in `bilder/` (g
 
 ## Design-System
 
-Matteo hat ein Design-System hinterlegt: siehe `.claude/design-system.md`.
-Es ist für ein SaaS-/Fintech-Dashboard geschrieben. Die aktuelle Webseite (dunkel, Akzent #ff5a36,
-Archivo + IBM Plex Mono) folgt ihm nicht. Vor einer Umstellung der Webseite auf dieses System
-erst bei Matteo nachfragen, ob das gewollt ist.
+Gültig für mapq.at: `design-system/mapq-raw/MASTER.md` (erstellt mit dem Skill ui-ux-pro-max).
+Seitenspezifische Abweichungen liegen in `design-system/mapq-raw/pages/<seite>.md` und gehen MASTER.md vor.
+Bewusste Abweichung der aktuellen Seite: Akzent #ff5a36 statt reinem Schwarz-Weiß.
+
+`.claude/design-system.md` ist eine Fintech-Dashboard-Vorlage und gilt nicht für mapq.at.
