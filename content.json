@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T15:11:09.731Z",
+  "updatedAt": "2026-10-28T16:04:24.844Z",
   "site": {
     "kicker": "Fotografie · Tirol, Österreich",
     "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
@@ -138,7 +138,18 @@
       "url": "https://drive.google.com/drive/folders/1jyVHDlOn9tCoSueNOa9N6unC9Cpwh2CO?usp=drive_link"
     }
   ],
-  "videos": [],
+  "videos": [
+    {
+      "id": "v_b0mw9ieb",
+      "title": "🌪️",
+      "car": "Bmw e46",
+      "cover": "",
+      "url": "https://www.instagram.com/reel/De4PHmkt_tu/?psln=MXRheGkxc3MzZnpkcw==",
+      "platform": "instagram",
+      "videoId": "De4PHmkt_tu",
+      "short": false
+    }
+  ],
   "packages": [],
   "inbox": {
     "url": "https://hrtmghsuuoqhfwffqvui.supabase.co",
