@@ -142,6 +142,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--muted)
 .seg-b:hover{color:var(--text);border-color:var(--muted)}
 .seg-b.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
 .seg-b .n{opacity:.6;margin-left:6px;font-variant-numeric:tabular-nums}
+.seg-b{display:inline-flex;align-items:center;gap:7px}
 .seg-b.add::before{content:"+ ";opacity:.6}
 .seg-b.add.on::before{content:"✓ ";opacity:1}
 
@@ -291,6 +292,19 @@ body.dragging main{outline:2px dashed var(--accent);outline-offset:-10px;border-
 .st-chip.offen{color:var(--warn);border-color:rgba(251,191,36,.35)}.st-chip.offen::before{background:var(--warn)}
 .st-chip.erledigt{color:var(--ok);border-color:rgba(74,222,128,.35)}.st-chip.erledigt::before{background:var(--ok)}
 .loading{display:grid;place-items:center;gap:14px;padding:80px 0;color:var(--muted)}
+
+/* ---------- Instagram ---------- */
+.thread{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;max-height:56dvh;overflow:auto;padding:2px}
+.bub{max-width:82%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.42;white-space:pre-wrap;word-break:break-word}
+.bub.them{align-self:flex-start;background:var(--muted-bg);border-bottom-left-radius:5px}
+.bub.me{align-self:flex-end;background:var(--accent);color:var(--on-accent);border-bottom-right-radius:5px}
+.bub time{display:block;font-size:11px;opacity:.6;margin-top:3px}
+.bub img{max-width:100%;max-height:280px;border-radius:10px;display:block;margin-bottom:4px}
+.bub a{color:inherit}
+.reply{display:flex;gap:8px;align-items:flex-end}
+.reply textarea{min-height:46px;max-height:140px}
+.igrow .when{color:var(--muted);font-size:12px;white-space:nowrap}
+.inq.new{border-left:3px solid var(--accent)}
 
 /* ---------- Texte & Einstellungen ---------- */
 .sec{margin-bottom:16px}
@@ -463,7 +477,8 @@ const ICONS = {
   tag: '<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
   chev: '<path d="m9 18 6-6-6-6"/>',
   globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
-  user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'
+  user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+  send: '<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>'
 };
 const ic = (n, s = 20, cls = '') => `<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
@@ -800,11 +815,12 @@ async function afterUnlock() {
   state.inquiries = [];
   await loadLive(); render();
   if (inqMode() === 'live') loadInquiries();
+  if (IG.ready) { igLoad(true); igMaybeRefresh(); }
 }
 function logout() {
   if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen verloren. Trotzdem abmelden?')) return;
   AUTH.clear(); SB.logout(); resetPending();
-  state.inquiries = []; state.content = null; state.mode = 'view'; state.view = 'dashboard';
+  state.inquiries = []; state.ig.list = []; state.content = null; state.mode = 'view'; state.view = 'dashboard';
   try { history.replaceState(null, '', location.pathname); } catch {}
   checkGate();
 }
@@ -1007,13 +1023,15 @@ function openSheet(html) {
   if (!w.classList.contains('open')) { w.classList.add('open'); document.body.style.overflow = 'hidden'; }
 }
 function closeSheet() {
+  if (state.ig) state.ig.open = null;
   $('#sheetWrap').classList.remove('open'); $('#sheet').innerHTML = ''; document.body.style.overflow = '';
   renderView(); updateDirty();
 }
 
 function renderChrome() {
   const newCount = state.inquiries.filter(i => i.status === 'neu').length;
-  const cnt = id => id === 'inquiries' && newCount && inqMode() === 'live' ? `<span class="count">${newCount}</span>` : '';
+  const totalNew = (inqMode() === 'live' ? newCount : 0) + (IG.ready ? igNewCount() : 0);
+  const cnt = id => id === 'inquiries' && totalNew ? `<span class="count">${totalNew}</span>` : '';
   const url = siteUrl();
   const chip = state.mode === 'live' ? (state.loadError ? '<span class="chip bad">Fehler</span>' : '<span class="chip ok">Verbunden</span>') : '<span class="chip warn">Nur ansehen</span>';
   $('#sidebar').innerHTML = `
@@ -1059,6 +1077,168 @@ function banner() {
   if (state.contentMissing) return `<div class="banner warn">${ic('info')}<div><b>Noch keine content.json im Repo</b><p>Beim ersten Veröffentlichen wird sie angelegt.</p></div></div>`;
   return '';
 }
+/* =====================================================================
+   Instagram-Postfach (Instagram API mit Instagram-Login)
+   Zugang liegt verschlüsselt im Tresor (vault.ig) und wird automatisch verlängert.
+   ===================================================================== */
+state.ig = { list: [], loading: false, error: null, open: null, msgs: [], msgLoading: false, msgError: null, sending: false };
+const IG = {
+  base: 'https://graph.instagram.com',
+  get info() { return AUTH.s?.vault?.ig || null; },
+  get ready() { return !!this.info?.token; },
+  url(path, params = {}, token) {
+    const u = new URL(this.base + path);
+    Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
+    u.searchParams.set('access_token', token || this.info.token);
+    return u.toString();
+  },
+  async get(path, params, token) {
+    const r = await fetch(this.url(path, params, token), { cache: 'no-store' });
+    let j = {}; try { j = await r.json(); } catch {}
+    if (!r.ok || j.error) throw igError(j.error, r.status);
+    return j;
+  },
+  async post(path, form) {
+    const r = await fetch(this.base + path, { method: 'POST', body: new URLSearchParams({ ...form, access_token: this.info.token }) });
+    let j = {}; try { j = await r.json(); } catch {}
+    if (!r.ok || j.error) throw igError(j.error, r.status);
+    return j;
+  }
+};
+function igError(e, status) {
+  const m = String(e?.message || ''), c = e?.code;
+  let msg = m || ('Instagram-Fehler ' + status);
+  if (c === 190 || /expired|session has been invalidated|invalid oauth/i.test(m)) msg = 'Der Instagram-Zugang ist abgelaufen – unter Einstellungen neu verbinden.';
+  else if (/outside of allowed window|24 hour/i.test(m) || e?.error_subcode === 2534022) msg = 'Antworten geht nur bis 24 Stunden nach der letzten Nachricht. Antworte in der Instagram-App.';
+  else if (c === 10 || c === 200 || c === 230 || /permission/i.test(m)) msg = 'Keine Berechtigung für Nachrichten. Ist in Instagram „Zugriff auf Nachrichten erlauben“ eingeschaltet?';
+  const err = new Error(msg); err.code = c; err.status = status; return err;
+}
+const igSeen = () => store.get('igSeen', {});
+const igIsNew = c => c.last && c.last.from?.username !== IG.info?.username && (!igSeen()[c.id] || igSeen()[c.id] < c.updated);
+const igNewCount = () => state.ig.list.filter(igIsNew).length;
+async function igLoad(quiet) {
+  if (!IG.ready) return;
+  state.ig.loading = true;
+  if (!quiet && state.view === 'inquiries' && state.inqTab === 'ig') renderView();
+  try {
+    let j;
+    try { j = await IG.get('/me/conversations', { platform: 'instagram', fields: 'participants,updated_time,messages.limit(1){message,from,created_time}', limit: 50 }); }
+    catch (e) { if (e.code === 190) throw e; j = await IG.get('/me/conversations', { platform: 'instagram', fields: 'participants,updated_time', limit: 50 }); }
+    const me = IG.info.username;
+    state.ig.list = arr(j.data).map(c => ({
+      id: c.id, updated: c.updated_time || '',
+      other: arr(c.participants?.data).find(p => p.username !== me) || arr(c.participants?.data)[0] || {},
+      last: c.messages?.data?.[0] || null
+    })).sort((a, b) => (b.updated > a.updated ? 1 : -1));
+    state.ig.error = null;
+  } catch (e) { state.ig.error = e.message; }
+  state.ig.loading = false;
+  renderChrome();
+  if (state.view === 'inquiries' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+async function igOpen(id) {
+  const c = state.ig.list.find(x => x.id === id); if (!c) return;
+  state.ig.open = id; state.ig.msgs = []; state.ig.msgError = null; state.ig.msgLoading = true;
+  igThread();
+  try {
+    let msgs;
+    try {
+      const j = await IG.get('/' + id, { fields: 'messages.limit(20){id,created_time,from,message,attachments}' });
+      msgs = arr(j.messages?.data);
+      if (msgs.length && !msgs.some(m => 'message' in m || 'from' in m)) throw new Error('nested');
+    } catch (e) {
+      if (e.code === 190) throw e;
+      const j = await IG.get('/' + id, { fields: 'messages' });
+      msgs = await Promise.all(arr(j.messages?.data).slice(0, 20).map(m => IG.get('/' + m.id, { fields: 'id,created_time,from,message' }).catch(() => ({ id: m.id, created_time: m.created_time }))));
+    }
+    if (state.ig.open !== id) return;
+    state.ig.msgs = msgs.sort((a, b) => (a.created_time > b.created_time ? 1 : -1));
+    const seen = igSeen(); seen[id] = c.updated || new Date().toISOString(); store.set('igSeen', seen);
+    renderChrome();
+  } catch (e) { state.ig.msgError = e.message; }
+  state.ig.msgLoading = false;
+  if (state.ig.open === id) igThread();
+}
+function igAttach(a) {
+  const img = a?.image_data?.url || a?.image_data?.preview_url, vid = a?.video_data?.url, file = a?.file_url;
+  if (img) return `<img src="${esc(img)}" alt="Bild" loading="lazy">`;
+  if (vid) return `<a href="${esc(vid)}" target="_blank" rel="noopener">Video ansehen</a>`;
+  if (file) return `<a href="${esc(file)}" target="_blank" rel="noopener">Anhang öffnen</a>`;
+  return '<i>Anhang</i>';
+}
+function igThread() {
+  const c = state.ig.list.find(x => x.id === state.ig.open); if (!c) return;
+  const me = IG.info.username, user = c.other.username || 'Unbekannt';
+  const lastThem = [...state.ig.msgs].reverse().find(m => m.from?.username && m.from.username !== me);
+  const late = lastThem && Date.now() - new Date(lastThem.created_time).getTime() > 24 * 3600e3;
+  const body = state.ig.msgLoading ? `<div class="loading" style="padding:40px 0"><div class="ring"></div></div>`
+    : state.ig.msgError ? `<div class="banner bad">${ic('alert')}<div><p>${esc(state.ig.msgError)}</p></div></div>`
+    : state.ig.msgs.length ? state.ig.msgs.map(m => {
+        const mine = m.from?.username === me;
+        const att = arr(m.attachments?.data).map(igAttach).join('');
+        const text = m.message ? esc(m.message) : (att ? '' : '<i>Nachricht (in Instagram ansehen)</i>');
+        return `<div class="bub ${mine ? 'me' : 'them'}">${att}${text}<time>${esc(rel(m.created_time))}</time></div>`;
+      }).join('')
+    : `<p class="muted">Keine Nachrichten gefunden.</p>`;
+  openSheet(`
+    <div class="sheet-h"><h3>@${esc(user)}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <div class="thread" id="igThread">${body}</div>
+    ${late ? `<p class="hint" style="margin:0 0 10px">Die letzte Nachricht ist älter als 24 Stunden – Instagram lässt Antworten dann nur noch in der App zu.</p>` : ''}
+    <div class="reply">
+      <textarea id="igText" class="input" rows="1" placeholder="Antwort schreiben …" aria-label="Antwort" ${state.ig.sending ? 'disabled' : ''}></textarea>
+      <button class="btn btn-primary icon" data-action="ig-send" aria-label="Senden" ${state.ig.sending ? 'disabled' : ''}>${ic('send', 18)}</button>
+    </div>
+    <a class="textlink" href="https://ig.me/m/${encodeURIComponent(user)}" target="_blank" rel="noopener">In Instagram öffnen</a>`);
+  const t = $('#igThread'); if (t) t.scrollTop = t.scrollHeight;
+}
+async function igSend() {
+  const box = $('#igText'), text = (box?.value || '').trim();
+  const c = state.ig.list.find(x => x.id === state.ig.open);
+  if (!text || !c || !c.other.id) return;
+  state.ig.sending = true; igThread(); $('#igText').value = text;
+  try {
+    await IG.post('/me/messages', { recipient: JSON.stringify({ id: c.other.id }), message: JSON.stringify({ text }) });
+    state.ig.msgs.push({ id: 'local' + Date.now(), created_time: new Date().toISOString(), from: { username: IG.info.username }, message: text });
+    state.ig.sending = false; igThread();
+    toast('Gesendet.', 'ok');
+    setTimeout(() => igLoad(true), 1500);
+  } catch (e) { state.ig.sending = false; igThread(); $('#igText').value = text; toast(e.message, 'bad'); }
+}
+async function igConnect() {
+  const t = ($('#igToken')?.value || '').trim();
+  if (!t) { toast('Füg zuerst den Instagram-Token ein.', 'warn'); $('#igToken')?.focus(); return; }
+  showProgress('Prüfe Instagram-Zugang …');
+  try {
+    const me = await IG.get('/me', { fields: 'user_id,username,account_type' }, t);
+    if (!me.username) throw new Error('Unerwartete Antwort von Instagram.');
+    const ig = { token: t, id: me.id, user_id: me.user_id || me.id, username: me.username, saved: Date.now(), expires_at: Date.now() + 59 * 864e5 };
+    setProgress('Speichere Zugang …', .6);
+    if (AUTH.hasKey) await saveVault({ ig }, null, 'Admin: Instagram verbunden');
+    else { AUTH.s.vault = { ...(AUTH.s.vault || {}), ig }; AUTH.save(); }
+    hideProgress(); state.inqTab = 'ig'; go('inquiries'); igLoad();
+    toast(`Verbunden mit @${me.username}.`, 'ok');
+  } catch (e) { hideProgress(); toast(e.status === undefined && e instanceof TypeError ? 'Instagram nicht erreichbar.' : e.message, 'bad'); }
+}
+async function igDisconnect() {
+  if (!confirm('Instagram vom Panel trennen? Deine Nachrichten in Instagram bleiben natürlich erhalten.')) return;
+  showProgress('Trenne …');
+  try {
+    const v = { ...(AUTH.s.vault || {}) }; delete v.ig;
+    if (AUTH.hasKey) { AUTH.s.vault = v; await saveVault({}, null, 'Admin: Instagram getrennt'); }
+    else { AUTH.s.vault = v; AUTH.save(); }
+    state.ig.list = []; hideProgress(); renderChrome(); renderView(); toast('Instagram getrennt.');
+  } catch (e) { hideProgress(); toast(ghError(e), 'bad'); }
+}
+/* Zugang läuft 60 Tage – rechtzeitig still verlängern (frühestens 24 h nach dem letzten Mal) */
+async function igMaybeRefresh() {
+  const ig = IG.info; if (!ig?.token || !AUTH.hasKey || state.loadError) return;
+  if (Date.now() - (ig.saved || 0) < 864e5 || (ig.expires_at || 0) - Date.now() > 45 * 864e5) return;
+  try {
+    const j = await IG.get('/refresh_access_token', { grant_type: 'ig_refresh_token' });
+    if (j.access_token) await saveVault({ ig: { ...ig, token: j.access_token, saved: Date.now(), expires_at: Date.now() + (j.expires_in || 5184000) * 1000 } }, null, 'Admin: Instagram-Zugang verlängert');
+  } catch {}
+}
+
 /* ---------- Als App aufs Handy ---------- */
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const platform = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(navigator.userAgent) ? 'android' : 'desktop';
@@ -1089,7 +1269,8 @@ const VIEWS = {};
 VIEWS.dashboard = () => {
   const c = state.content, ph = c.photos, im = inqMode();
   const hl = ph.filter(p => p.hl).length;
-  const newI = im === 'live' ? state.inquiries.filter(i => i.status === 'neu').length : 0;
+  const anyInbox = im === 'live' || IG.ready;
+  const newI = (im === 'live' ? state.inquiries.filter(i => i.status === 'neu').length : 0) + (IG.ready ? igNewCount() : 0);
   const openI = state.inquiries.filter(i => i.status !== 'erledigt');
   const first = (c.site.name || '').trim().split(/\s+/)[0];
   const max = Math.max(1, ...CATS.map(k => ph.filter(p => p.c.includes(k.id)).length));
@@ -1099,7 +1280,7 @@ VIEWS.dashboard = () => {
   return `${banner()}${appHint('dashboard')}
   ${head(esc(date), `Servus${first ? ', ' + esc(first) : ''}`, last && state.mode === 'live' ? 'Zuletzt veröffentlicht ' + esc(rel(last)) + '.' : 'Hier steuerst du alles auf mapq.at.')}
   <div class="stats">
-    <button class="stat ${newI ? 'hot' : ''}" data-action="go" data-view="inquiries"><span class="label">${ic('inbox', 15)} Anfragen</span><b>${im === 'live' ? newI : '–'}</b><span class="sub">${im === 'live' ? (newI === 1 ? 'neue Anfrage' : 'neue Anfragen') : 'Postfach einrichten'}</span></button>
+    <button class="stat ${newI ? 'hot' : ''}" data-action="go" data-view="inquiries"><span class="label">${ic('inbox', 15)} Anfragen</span><b>${anyInbox ? newI : '–'}</b><span class="sub">${anyInbox ? (newI === 1 ? 'neue Nachricht' : 'neue Nachrichten') : 'Postfach einrichten'}</span></button>
     <button class="stat" data-action="go" data-view="photos"><span class="label">${ic('image', 15)} Fotos</span><b>${ph.length}</b><span class="sub">${hl} in den Highlights</span></button>
     <button class="stat" data-action="go" data-view="folders"><span class="label">${ic('folder', 15)} Ordner</span><b>${c.folders.length}</b><span class="sub">${f0 ? esc(f0.t) : 'noch keiner'}</span></button>
     <button class="stat" data-action="go" data-view="videos"><span class="label">${ic('video', 15)} Edits</span><b>${c.videos.length}</b><span class="sub">Video-Edits</span></button>
@@ -1281,16 +1462,38 @@ function inqListHTML() {
   if (!list.length) return emptyState('inbox', state.inquiries.length ? 'Nichts gefunden' : 'Noch keine Anfragen', state.inquiries.length ? 'Probier einen anderen Filter.' : 'Sobald jemand das Formular auf mapq.at abschickt, landet es hier.');
   return list.map(inqCard).join('');
 }
+function inqTabs() {
+  const nf = inqMode() === 'live' ? state.inquiries.filter(i => i.status === 'neu').length : 0, ni = IG.ready ? igNewCount() : 0;
+  return `<div class="seg" style="margin:-8px 0 18px"><button class="seg-b ${state.inqTab !== 'ig' ? 'on' : ''}" data-action="inq-tab" data-t="form">${ic('inbox', 16)} Formular${nf ? `<span class="n">${nf}</span>` : ''}</button><button class="seg-b ${state.inqTab === 'ig' ? 'on' : ''}" data-action="inq-tab" data-t="ig">${ic('insta', 16)} Instagram${ni ? `<span class="n">${ni}</span>` : ''}</button></div>`;
+}
+function igView() {
+  const h = head('Direktnachrichten', 'Anfragen', IG.ready ? `Instagram · @${esc(IG.info.username)}` : 'Deine Instagram-Nachrichten im Panel.', IG.ready ? `<button class="btn" data-action="ig-refresh">${ic('refresh', 18)}<span class="hide-sm">Aktualisieren</span></button>` : '');
+  if (!IG.ready) return `${h}${inqTabs()}<section class="card"><h2 style="margin-bottom:12px">${ic('insta')} Instagram verbinden</h2>
+    <p class="muted" style="margin:0 0 18px">Lies und beantworte deine Instagram-Nachrichten direkt hier. Einmalig ca. 15 Minuten Einrichtung bei Meta – am besten am Computer.</p>
+    <button class="btn btn-primary" data-action="go-ig">${ic('chev', 17)} Zur Einrichtung</button></section>`;
+  const me = IG.info.username, L = state.ig.list;
+  const rows = L.map(c => {
+    const u = c.other.username || 'Unbekannt', mine = c.last?.from?.username === me, nw = igIsNew(c);
+    const snip = c.last ? (mine ? 'Du: ' : '') + (c.last.message || 'Anhang') : 'Unterhaltung öffnen';
+    return `<article class="inq ${nw ? 'new' : ''}"><button class="inq-h igrow" data-action="ig-open" data-id="${esc(c.id)}">
+      <span class="avatar">${esc(initials(u))}</span>
+      <span class="inq-main"><span class="inq-name"><span>@${esc(u)}</span>${nw ? '<i class="newdot"></i>' : ''}</span><span class="inq-sub">${esc(snip)}</span></span>
+      <span class="when">${esc(c.updated ? rel(c.updated) : '')}</span></button></article>`;
+  }).join('');
+  return `${state.ig.error ? `<div class="banner bad">${ic('alert')}<div><b>Instagram konnte nicht geladen werden</b><p>${esc(state.ig.error)}</p><button class="btn sm" data-action="go-ig">Einstellungen</button></div></div>` : ''}${h}${inqTabs()}
+    <div class="inq-list">${state.ig.loading && !L.length ? `<div class="loading"><div class="ring"></div><div>Lade Nachrichten …</div></div>` : rows || emptyState('insta', 'Keine Unterhaltungen', 'Sobald dir jemand auf Instagram schreibt, siehst du es hier.')}</div>`;
+}
 VIEWS.inquiries = () => {
+  if (state.inqTab === 'ig') return igView();
   const im = inqMode(), all = state.inquiries;
-  if (im === 'setup') return `${head('Kontaktformular', 'Anfragen', 'Shooting-Anfragen von deiner Website.')}
+  if (im === 'setup') return `${head('Kontaktformular', 'Anfragen', 'Shooting-Anfragen von deiner Website.')}${inqTabs()}
     <section class="card"><h2 style="margin-bottom:12px">${ic('db')} Postfach einrichten</h2>
     <p class="muted" style="margin:0 0 18px">GitHub Pages kann Formulare nicht selbst speichern. Mit einer kostenlosen Supabase-Datenbank landen Anfragen von mapq.at hier – du siehst sie, setzt einen Status und antwortest per Mail oder Instagram. Dauert ca. 5 Minuten.</p>
     <button class="btn btn-primary" data-action="go-sb">${ic('chev', 17)} Zur Einrichtung</button></section>`;
   const n = { open: all.filter(i => i.status !== 'erledigt').length, neu: all.filter(i => i.status === 'neu').length, erledigt: all.filter(i => i.status === 'erledigt').length, all: all.length };
   return `${im === 'demo' ? `<div class="banner">${ic('info')}<div><b>Beispiel-Anfragen</b><p>So sieht das Postfach aus, sobald es eingerichtet ist. Die Einträge hier sind erfunden.</p><button class="btn sm btn-primary" data-action="go-sb">${ic('db', 16)} Postfach einrichten</button></div></div>` : ''}
   ${state.inqError ? `<div class="banner bad">${ic('alert')}<div><b>Anfragen konnten nicht geladen werden</b><p>${esc(state.inqError)}</p></div></div>` : ''}
-  ${head('Kontaktformular', 'Anfragen', `${n.neu ? n.neu + ' neu · ' : ''}${n.open} offen · ${n.all} gesamt`, im === 'live' ? `<button class="btn" data-action="inq-refresh">${ic('refresh', 18)}<span class="hide-sm">Aktualisieren</span></button>` : '')}
+  ${head('Kontaktformular', 'Anfragen', `${n.neu ? n.neu + ' neu · ' : ''}${n.open} offen · ${n.all} gesamt`, im === 'live' ? `<button class="btn" data-action="inq-refresh">${ic('refresh', 18)}<span class="hide-sm">Aktualisieren</span></button>` : '')}${inqTabs()}
   <div class="inq-tools">
     <div class="seg scroll">${[['open', 'Offen', n.open], ['neu', 'Neu', n.neu], ['erledigt', 'Erledigt', n.erledigt], ['all', 'Alle', n.all]].map(([id, l, c]) => `<button class="seg-b ${state.inqFilter === id ? 'on' : ''}" data-action="ifilter" data-f="${id}">${l}<span class="n">${c}</span></button>`).join('')}</div>
     <div class="search">${ic('search', 18)}<input id="inqSearch" class="input" type="search" placeholder="Suchen …" value="${esc(state.inqQuery)}" autocomplete="off" aria-label="Anfragen durchsuchen"></div>
@@ -1438,6 +1641,24 @@ VIEWS.settings = () => {
          <div class="field"><label for="sbPass">Passwort (aus Schritt 3)</label><div class="pass-wrap"><input id="sbPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"><button class="btn sm icon" data-action="toggle-pass" data-target="#sbPass" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div></div>
          <div class="row-actions" style="margin-bottom:16px"><button class="btn btn-primary" data-action="sb-login">${ic('check', 18)} Speichern & anmelden</button></div>`}
     <label class="switch-row" style="margin:0"><span><b>Formular auf mapq.at aktivieren</b><small>${inbox ? 'Aktiv – Besucher können Anfragen direkt senden.' : SB.ready ? 'Danach veröffentlichen, dann erscheint „Anfrage senden“.' : 'Erst Supabase einrichten.'}</small></span><input type="checkbox" class="switch" id="inboxSwitch" ${inbox ? 'checked' : ''} ${SB.ready || inbox ? '' : 'disabled'}></label>
+  </section>
+
+  <section class="card sec" id="sec-ig">
+    <div class="sec-h"><h2>${ic('insta')} Instagram-Nachrichten</h2>${IG.ready ? `<span class="chip ok">@${esc(IG.info.username)}</span>` : '<span class="chip">Nicht verbunden</span>'}</div>
+    <p class="muted">Deine Instagram-Direktnachrichten im Panel lesen und beantworten. Der Zugang wird mit deinem Passwort verschlüsselt gespeichert und verlängert sich automatisch, wenn du das Panel ab und zu öffnest.</p>
+    ${IG.ready ? `<p class="hint" style="margin:-8px 0 16px">Gültig bis ca. ${esc(new Date(IG.info.expires_at || Date.now()).toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' }))}.</p>` : ''}
+    <details class="help" ${IG.ready ? '' : 'open'}><summary>${ic('chev', 16)} ${IG.ready ? 'Neu verbinden' : 'Einrichtung (ca. 15 Minuten, am besten am Computer)'}</summary><div>
+      <ol class="steps">
+        <li>Instagram-App: <b>Profil → ☰ → Kontotyp und Tools → Zu professionellem Konto wechseln</b> (Creator). Ist es schon eins, überspringen.</li>
+        <li>Instagram-App: <b>Einstellungen → Nachrichten und Story-Antworten → Nachrichtensteuerung</b> → unter „Verbundene Tools“ <b>Zugriff auf Nachrichten erlauben</b> einschalten.</li>
+        <li>Am Computer <b>developers.facebook.com</b> öffnen, mit Facebook anmelden, dann <b>Meine Apps → App erstellen</b>. Als Anwendungsfall <b>„Nachrichten und Inhalte auf Instagram verwalten“</b> wählen, Name z. B. <b>mapq Admin</b>.</li>
+        <li>In der App links <b>Instagram → API-Einrichtung mit Instagram-Login</b>. Bei „Zugriffstoken generieren“ auf <b>Konto hinzufügen</b>, mit <b>mapq.raw</b> anmelden und alles erlauben.</li>
+        <li>Neben deinem Konto auf <b>Token generieren</b>, kopieren und hier einfügen. Die Bezeichnungen können je nach Meta-Version leicht abweichen.</li>
+      </ol>
+      <div class="field"><label for="igToken">Instagram-Token</label><div class="pass-wrap"><input id="igToken" class="input" type="password" placeholder="IGAA…" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#igToken" aria-label="Token anzeigen">${ic('eye', 18)}</button></div></div>
+      <button class="btn btn-primary" data-action="ig-connect">${ic('check', 18)} Verbinden</button>
+    </div></details>
+    ${IG.ready ? `<button class="btn" data-action="ig-disconnect">${ic('logout', 17)} Trennen</button>` : ''}
   </section>
 
   <section class="card sec">
@@ -1732,6 +1953,13 @@ const ACTIONS = {
   'inq-status': el => patchInquiry(el.dataset.id, { status: el.dataset.status }),
   'inq-del': el => deleteInquiry(el.dataset.id),
   'inq-refresh': () => loadInquiries(),
+  'inq-tab': el => { state.inqTab = el.dataset.t; renderView(); if (state.inqTab === 'ig' && IG.ready) igLoad(true); },
+  'ig-open': el => igOpen(el.dataset.id),
+  'ig-send': () => igSend(),
+  'ig-refresh': () => igLoad(),
+  'ig-connect': () => igConnect(),
+  'ig-disconnect': () => igDisconnect(),
+  'go-ig': () => { go('settings'); setTimeout(() => $('#sec-ig')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); },
   ifilter: el => { state.inqFilter = el.dataset.f; renderView(); },
   'pkg-add': () => { state.content.packages.push({ id: 'k_' + uid(), name: '', price: '', description: '', features: [], highlight: false }); renderView(); updateDirty(); $$('.pkg input[data-field="name"]').at(-1)?.focus(); },
   'pkg-del': el => { const k = byKey('packages', el.dataset.id); if (k && confirm(`Paket „${k.name || 'ohne Namen'}“ entfernen?`)) { state.content.packages = state.content.packages.filter(x => x !== k); renderView(); updateDirty(); } },
@@ -1800,6 +2028,8 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'videoUrl') { e.preventDefault(); addVideo(); }
   if (e.key === 'Enter' && e.target.id === 'fU') { e.preventDefault(); addFolder(); }
   if (e.key === 'Enter' && e.target.id === 'sbPass') { e.preventDefault(); sbLogin(); }
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && e.target.id === 'igText') { e.preventDefault(); igSend(); }
+  if (e.key === 'Enter' && e.target.id === 'igToken') { e.preventDefault(); igConnect(); }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.ptile')) { e.preventDefault(); photoSheet(e.target.dataset.id); }
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); publish(); }
 });
@@ -1821,7 +2051,7 @@ document.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefa
 
 window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
 window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== state.view && NAV.some(n => n.id === v)) go(v); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden && inqMode() === 'live') loadInquiries(true); });
+document.addEventListener('visibilitychange', () => { if (document.hidden || !state.content) return; if (inqMode() === 'live') loadInquiries(true); if (IG.ready) igLoad(true); });
 
 /* =====================================================================
    Start
@@ -1839,6 +2069,7 @@ document.addEventListener('submit', e => {
   if (GH.ready) {
     await loadLive(); render();
     if (inqMode() === 'live') loadInquiries();
+    if (IG.ready) { igLoad(true); igMaybeRefresh(); }
   } else await checkGate();
   if (!window.Sortable) window.addEventListener('load', () => { if (window.Sortable && state.view === 'photos' && !$('#sheetWrap').classList.contains('open')) renderView(); }, { once: true });
 })();
