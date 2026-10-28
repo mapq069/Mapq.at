@@ -1,0 +1,17 @@
+{
+  "name": "mapq.raw Admin",
+  "short_name": "mapq Admin",
+  "description": "Fotos, Ordner, Edits, Anfragen und Texte von mapq.at bearbeiten.",
+  "id": "/admin.html",
+  "start_url": "/admin.html",
+  "scope": "/admin",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "de",
+  "icons": [
+    { "src": "/admin-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/admin-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

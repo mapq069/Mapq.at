@@ -6,6 +6,12 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#000000">
 <title>Admin · mapq.raw</title>
+<link rel="manifest" href="admin-manifest.json">
+<link rel="apple-touch-icon" href="admin-icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="mapq Admin">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23FAFAFA' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -309,6 +315,17 @@ details.help>div{padding:4px 14px 8px}
 .code pre{margin:0;max-height:260px;overflow:auto;padding:14px;border-radius:var(--r-btn);background:#050505;border:1px solid var(--line);font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cbd5e1;white-space:pre}
 .code .btn{position:absolute;top:8px;right:8px;background:#000}
 .danger{border-color:rgba(239,68,68,.25)}
+
+/* ---------- Als App installieren ---------- */
+.apphint{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
+.apphint>img{width:52px;height:52px;border-radius:12px;flex:none;border:1px solid var(--line-2)}
+.apphint .body{flex:1;min-width:0}
+.apphint b{display:block;font-weight:600;margin-bottom:2px}
+.apphint p{margin:0;color:var(--muted);font-size:13.5px}
+.apphint ol{margin:10px 0 0;padding-left:20px;color:var(--muted);font-size:13.5px}
+.apphint ol li{margin-bottom:4px}
+.apphint ol b{display:inline;color:var(--text);margin:0}
+.apphint .row-actions{margin-top:12px}
 
 /* ---------- Anmeldung ---------- */
 .gate{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom))}
@@ -1042,6 +1059,26 @@ function banner() {
   if (state.contentMissing) return `<div class="banner warn">${ic('info')}<div><b>Noch keine content.json im Repo</b><p>Beim ersten Veröffentlichen wird sie angelegt.</p></div></div>`;
   return '';
 }
+/* ---------- Als App aufs Handy ---------- */
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const platform = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(navigator.userAgent) ? 'android' : 'desktop';
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (['dashboard', 'settings'].includes(state.view) && state.content) renderView(); });
+window.addEventListener('appinstalled', () => { installEvt = null; store.set('appHintDone', true); toast('App installiert – du findest sie auf deinem Home-Bildschirm.', 'ok'); if (state.content) renderView(); });
+function appHint(where) {
+  if (isStandalone()) return '';
+  if (where === 'dashboard' && store.get('appHintDone')) return '';
+  const pf = platform();
+  const steps = pf === 'ios'
+    ? `<ol><li>In <b>Safari</b> unten auf das <b>Teilen-Symbol</b> (Quadrat mit Pfeil) tippen.</li><li><b>„Zum Home-Bildschirm“</b> wählen und <b>„Hinzufügen“</b> tippen.</li><li>Die App öffnen und einmal mit deinem Passwort anmelden.</li></ol>`
+    : pf === 'android'
+      ? `<ol><li>In <b>Chrome</b> oben rechts auf <b>⋮</b> tippen.</li><li><b>„App installieren“</b> oder <b>„Zum Startbildschirm hinzufügen“</b> wählen.</li><li>Die App öffnen und einmal mit deinem Passwort anmelden.</li></ol>`
+      : `<ol><li>Öffne <b>mapq.at/admin.html</b> am Handy.</li><li>iPhone: in Safari <b>Teilen → Zum Home-Bildschirm</b>. Android: in Chrome <b>⋮ → App installieren</b>.</li></ol>`;
+  return `<div class="card apphint"><img src="admin-icon-192.png" alt=""><div class="body">
+    <b>Als App aufs Handy</b><p>Mit eigenem Icon und ohne Browserleiste – wie eine echte App.</p>${installEvt ? '' : steps}
+    <div class="row-actions">${installEvt ? `<button class="btn sm btn-primary" data-action="app-install">${ic('plus', 16)} App installieren</button>` : ''}${where === 'dashboard' ? `<button class="btn sm" data-action="app-hint-hide">Ausblenden</button>` : ''}</div>
+  </div></div>`;
+}
 const emptyState = (icon, title, text, btn) => `<div class="empty">${ic(icon, 34)}<b>${title}</b><span>${text}</span>${btn ? `<div>${btn}</div>` : ''}</div>`;
 
 /* =====================================================================
@@ -1059,7 +1096,7 @@ VIEWS.dashboard = () => {
   const last = store.get('lastPublish');
   const date = new Date().toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' });
   const f0 = c.folders[0];
-  return `${banner()}
+  return `${banner()}${appHint('dashboard')}
   ${head(esc(date), `Servus${first ? ', ' + esc(first) : ''}`, last && state.mode === 'live' ? 'Zuletzt veröffentlicht ' + esc(rel(last)) + '.' : 'Hier steuerst du alles auf mapq.at.')}
   <div class="stats">
     <button class="stat ${newI ? 'hot' : ''}" data-action="go" data-view="inquiries"><span class="label">${ic('inbox', 15)} Anfragen</span><b>${im === 'live' ? newI : '–'}</b><span class="sub">${im === 'live' ? (newI === 1 ? 'neue Anfrage' : 'neue Anfragen') : 'Postfach einrichten'}</span></button>
@@ -1352,7 +1389,7 @@ VIEWS.settings = () => {
   const g = cfg.gh, s = cfg.sb, inbox = state.content.inbox;
   const ghOk = state.mode === 'live' && !state.loadError;
   const pwf = (id, label, ac) => `<div class="field"><label for="${id}">${label}</label><div class="pass-wrap"><input id="${id}" class="input" type="password" autocomplete="${ac}" autocapitalize="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#${id}" aria-label="Anzeigen">${ic('eye', 18)}</button></div></div>`;
-  return `${head('Zugang & Postfach', 'Einstellungen', '')}
+  return `${head('Zugang & Postfach', 'Einstellungen', '')}${appHint('settings')}
   <section class="card sec" id="sec-gh">
     <div class="sec-h"><h2>${ic('user')} Zugang</h2>${ghOk ? '<span class="chip ok">Angemeldet</span>' : '<span class="chip bad">Problem</span>'}</div>
     <p class="muted">Du meldest dich mit deinem Passwort an. Dahinter steckt ein GitHub-Token, der mit diesem Passwort verschlüsselt in <b>${esc(g.owner)}/${esc(g.repo)}</b> liegt – ohne Passwort kann niemand etwas damit anfangen.</p>
@@ -1698,6 +1735,8 @@ const ACTIONS = {
   ifilter: el => { state.inqFilter = el.dataset.f; renderView(); },
   'pkg-add': () => { state.content.packages.push({ id: 'k_' + uid(), name: '', price: '', description: '', features: [], highlight: false }); renderView(); updateDirty(); $$('.pkg input[data-field="name"]').at(-1)?.focus(); },
   'pkg-del': el => { const k = byKey('packages', el.dataset.id); if (k && confirm(`Paket „${k.name || 'ohne Namen'}“ entfernen?`)) { state.content.packages = state.content.packages.filter(x => x !== k); renderView(); updateDirty(); } },
+  'app-install': async () => { if (!installEvt) return; installEvt.prompt(); try { await installEvt.userChoice; } catch {} installEvt = null; renderView(); },
+  'app-hint-hide': () => { store.set('appHintDone', true); renderView(); toast('Die Anleitung findest du jederzeit unter Einstellungen.'); },
   'pw-change': () => changePassword(),
   'token-renew': () => renewToken(),
   'repo-save': () => saveRepo(),
