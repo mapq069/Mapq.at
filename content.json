@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T17:19:43.156Z",
+  "updatedAt": "2026-10-28T17:22:06.353Z",
   "site": {
     "kicker": "Fotografie · Tirol, Österreich",
     "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
     "say": "Autos, Motorräder und Motorsport. Dazu Landschaften, wenn das *Licht* stimmt.",
-    "heroPhoto": "hinter-der-kamera",
+    "heroPhoto": "dsc06570-fdgq",
     "aboutPhoto": "hinter-der-kamera",
     "aboutPos": "30% 70%",
     "about": "Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.\n\nIch arbeite gern mit Fahrern, Teams und Besitzern zusammen.",
@@ -20,6 +20,15 @@
     "tiktok": ""
   },
   "photos": [
+    {
+      "f": "dsc06570-fdgq",
+      "t": "",
+      "c": [
+        "auto"
+      ],
+      "ar": 0.5625,
+      "hl": false
+    },
     {
       "f": "audi-a3-feld",
       "t": "Audi A3 am Feld",
