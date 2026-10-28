@@ -36,6 +36,7 @@
   --shadow-xl:0 20px 25px rgba(0,0,0,.15);
 }
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;background:var(--bg);scroll-padding-top:80px;scroll-padding-bottom:150px}
 @media(min-width:960px){html{scroll-padding-bottom:110px}}
 body{margin:0;min-height:100dvh;background:var(--bg);color:var(--text);font:400 15px/1.55 var(--font-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -156,7 +157,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--muted)
 
 /* ---------- Seitenkopf ---------- */
 .ph{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:4px 0 24px;flex-wrap:wrap}
-.ph h1{margin:10px 0 0;font-size:clamp(3rem,13vw,5.2rem);overflow-wrap:anywhere}
+.ph h1{margin:10px 0 0;font-size:clamp(3rem,13vw,5.2rem);hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
 .ph>div{min-width:0}
 .ph p{margin:10px 0 0;color:var(--muted);font-size:14.5px}
 .ph-actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -309,6 +310,21 @@ details.help>div{padding:4px 14px 8px}
 .code .btn{position:absolute;top:8px;right:8px;background:#000}
 .danger{border-color:rgba(239,68,68,.25)}
 
+/* ---------- Anmeldung ---------- */
+.gate{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom))}
+body.locked .app,body.locked .tabbar,body.locked .pending{display:none!important}
+.gate-box{width:100%;max-width:420px;margin:auto 0}
+.gate .brand{padding:0;margin-bottom:36px}
+.gate h1{font-size:clamp(2.8rem,14vw,4.6rem);margin:10px 0 14px;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.gate .lead{color:var(--muted);margin:0 0 26px;font-size:15px}
+.gate .err{color:#fca5a5;font-size:14px;min-height:1.4em;margin:-6px 0 14px}
+.gate form .btn-primary{width:100%}
+.gate details.help{margin-top:-6px}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin:0 0 20px}
+.check input{width:20px;height:20px;margin:0;accent-color:#fff}
+.textlink{display:inline-block;background:none;border:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:13.5px;margin-top:18px;padding:10px 0;min-height:44px}
+.textlink:hover{color:var(--text)}
+
 /* ---------- Leiste für ungespeicherte Änderungen ---------- */
 .pending{position:fixed;z-index:29;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:var(--r-card);background:rgba(12,12,12,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line-2);box-shadow:0 20px 50px -10px rgba(0,0,0,.9);animation:up .3s cubic-bezier(.2,.8,.2,1)}
 .pending.show{display:flex}
@@ -366,6 +382,7 @@ details.help>div{padding:4px 14px 8px}
 <div class="sheet-wrap" id="sheetWrap"><div class="sheet-backdrop" data-action="sheet-close"></div><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="progress" id="progress"></div>
+<div class="gate" id="gate" hidden></div>
 <input type="file" id="fileInput" accept="image/*" multiple hidden>
 <input type="file" id="coverInput" accept="image/*" hidden>
 
@@ -585,6 +602,218 @@ const SB = {
 const inqMode = () => (SB.ready && SB.loggedIn) ? 'live' : state.mode === 'view' ? 'demo' : 'setup';
 
 /* =====================================================================
+   Anmeldung mit Passwort
+   Der GitHub-Token (und der Postfach-Zugang) liegen verschlüsselt in
+   admin-key.json im Repo: AES-GCM, Schlüssel aus dem Passwort per
+   PBKDF2-SHA256 (600 000 Runden). Ohne Passwort ist die Datei nutzlos.
+   ===================================================================== */
+const KEYFILE = 'admin-key.json', ITER = 600000;
+const b64d = s => { const bin = atob(s); const b = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return b; };
+const sess = {
+  get(k) { try { const v = sessionStorage.getItem('mapq_admin_' + k); return v ? JSON.parse(v) : null; } catch { return null; } },
+  set(k, v) { try { sessionStorage.setItem('mapq_admin_' + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { sessionStorage.removeItem('mapq_admin_' + k); } catch {} }
+};
+async function deriveRaw(password, salt, iter) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: iter }, base, 256));
+}
+const aesKey = raw => crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
+async function sealVault(vault, raw, salt, iter) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await aesKey(raw), new TextEncoder().encode(JSON.stringify(vault)));
+  return { v: 1, info: 'Verschlüsselter Zugang für admin.html – nicht löschen oder ändern.', kdf: 'PBKDF2-SHA256', iter, salt: bytesToB64(salt), iv: bytesToB64(iv), data: bytesToB64(new Uint8Array(ct)) };
+}
+async function openVault(file, password) {
+  const salt = b64d(file.salt), raw = await deriveRaw(password, salt, file.iter || ITER);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(file.iv) }, await aesKey(raw), b64d(file.data));
+  return { vault: JSON.parse(new TextDecoder().decode(pt)), raw, salt, iter: file.iter || ITER };
+}
+/* Liest admin-key.json: null = gibt es nicht, undefined = keine Verbindung */
+async function fetchKeyFile() {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${encodeURIComponent(cfg.gh.owner)}/${encodeURIComponent(cfg.gh.repo)}/contents/${KEYFILE}?ref=${encodeURIComponent(cfg.gh.branch)}`, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+    if (r.status === 404) return null;
+    if (r.ok) { const j = await r.json(); return JSON.parse(b64ToUtf8(j.content)); }
+  } catch {}
+  let missing = 0;
+  const urls = [GH.raw(KEYFILE)];
+  if (/^https?:$/.test(location.protocol)) urls.unshift(KEYFILE);
+  for (const u of urls) {
+    try { const r = await fetch(u, { cache: 'no-cache' }); if (r.status === 404) { missing++; continue; } if (r.ok) return await r.json(); } catch {}
+  }
+  return missing === urls.length ? null : undefined;
+}
+const AUTH = {
+  s: null, // { token, vault, raw, salt, iter, keep }
+  load() {
+    this.s = store.get('auth') || sess.get('auth');
+    if (!this.s && cfg.gh.token) this.s = { token: cfg.gh.token, vault: { token: cfg.gh.token }, keep: true }; // älterer Stand ohne Passwort
+    this.save();
+  },
+  save() {
+    store.del('auth'); sess.del('auth');
+    if (this.s) (this.s.keep ? store : sess).set('auth', this.s);
+    cfg.gh.token = this.s?.token || '';
+    store.set('gh', { ...cfg.gh, token: '' });
+  },
+  clear() { this.s = null; this.save(); },
+  get hasKey() { return !!(this.s && this.s.raw); }
+};
+/* Tresor neu verschlüsseln und als eigener Commit speichern */
+async function saveVault(patch, newPassword, message) {
+  let raw = AUTH.s?.raw ? b64d(AUTH.s.raw) : null, salt = AUTH.s?.salt ? b64d(AUTH.s.salt) : null, iter = AUTH.s?.iter || ITER;
+  if (newPassword) { salt = crypto.getRandomValues(new Uint8Array(16)); raw = await deriveRaw(newPassword, salt, ITER); iter = ITER; }
+  if (!raw) throw new Error('Lege zuerst ein Passwort fest.');
+  const vault = { ...(AUTH.s?.vault || {}), ...patch };
+  const file = await sealVault(vault, raw, salt, iter);
+  await GH.commit([{ path: KEYFILE, b64: utf8ToB64(JSON.stringify(file, null, 2) + '\n') }], [], message);
+  state.keyFile = file;
+  AUTH.s = { ...(AUTH.s || { keep: true }), vault, token: vault.token, raw: bytesToB64(raw), salt: bytesToB64(salt), iter };
+  AUTH.save();
+}
+function checkNewPassword(p1, p2) {
+  if (p1.length < 10) return 'Das Passwort braucht mindestens 10 Zeichen.';
+  if (p1 !== p2) return 'Die beiden Passwörter sind nicht gleich.';
+  return '';
+}
+
+const tokenSteps = () => `<ol class="steps">
+  <li>Auf GitHub: <b>Profilbild → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li>
+  <li>Name z. B. <b>mapq Admin</b>, Ablauf so lang wie möglich.</li>
+  <li><b>Repository access</b>: „Only select repositories“ → nur <b>${esc(cfg.gh.owner)}/${esc(cfg.gh.repo)}</b>.</li>
+  <li><b>Permissions → Repository permissions → Contents</b>: auf <b>Read and write</b>. Sonst nichts.</li>
+  <li>Token erzeugen, kopieren und hier einfügen. Du brauchst ihn nur dieses eine Mal.</li>
+</ol>`;
+function gateHTML(mode) {
+  const brand = `<div class="brand"><span class="logo">mapq.raw</span><span class="tag">ADMIN</span></div>`;
+  const keep = `<label class="check"><input type="checkbox" id="gKeep" checked> Auf diesem Gerät angemeldet bleiben</label>`;
+  const pw = (id, label, ac, hint = '') => `<div class="field"><label for="${id}">${label}</label><div class="pass-wrap"><input id="${id}" class="input" type="password" autocomplete="${ac}" autocapitalize="off" spellcheck="false"><button type="button" class="btn sm icon" data-action="toggle-pass" data-target="#${id}" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div>${hint ? `<small>${hint}</small>` : ''}</div>`;
+  if (mode === 'login') return `<div class="gate-box">${brand}
+    <p class="kicker label">Admin-Bereich</p><h1 class="display">Anmelden</h1>
+    <form id="gForm" data-gate="login" novalidate>
+      <input type="text" name="username" autocomplete="username" value="mapq.at Admin" hidden>
+      ${pw('gPass', 'Passwort', 'current-password')}
+      <p class="err" id="gErr" role="alert"></p>${keep}
+      <button class="btn btn-primary" type="submit" id="gBtn">Anmelden</button>
+    </form>
+    <button class="textlink" data-action="gate-forgot">Passwort vergessen?</button></div>`;
+  if (mode === 'setup') return `<div class="gate-box">${brand}
+    <p class="kicker label">${state.keyFile ? 'Neues Passwort' : 'Einmalig'}</p><h1 class="display">Passwort einrichten</h1>
+    <p class="lead">${state.keyFile ? 'Das alte Passwort lässt sich nicht wiederherstellen. Mit einem neuen GitHub-Token legst du einfach ein neues fest.' : 'Danach meldest du dich überall – Handy, Laptop – nur noch mit deinem Passwort an.'}</p>
+    <form id="gForm" data-gate="setup" novalidate>
+      <input type="text" name="username" autocomplete="username" value="mapq.at Admin" hidden>
+      <div class="field"><label for="gToken">1 · GitHub-Token</label><div class="pass-wrap"><input id="gToken" class="input" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" class="btn sm icon" data-action="toggle-pass" data-target="#gToken" aria-label="Token anzeigen">${ic('eye', 18)}</button></div></div>
+      <details class="help"><summary>${ic('chev', 16)} So bekommst du den Token (2 Minuten)</summary><div>${tokenSteps()}</div></details>
+      ${pw('gPw1', '2 · Dein Passwort', 'new-password', 'Mindestens 10 Zeichen. Nimm eins, das du sonst nirgends verwendest – z. B. einen kurzen Satz.')}
+      ${pw('gPw2', 'Passwort wiederholen', 'new-password')}
+      <p class="err" id="gErr" role="alert"></p>${keep}
+      <button class="btn btn-primary" type="submit" id="gBtn">Einrichten</button>
+    </form>
+    ${state.keyFile ? `<button class="textlink" data-action="gate-login">Zurück zur Anmeldung</button>` : ''}</div>`;
+  if (mode === 'loading') return `<div class="gate-box">${brand}<div class="ring" style="margin:40px 0"></div></div>`;
+  return `<div class="gate-box">${brand}
+    <p class="kicker label">Admin-Bereich</p><h1 class="display">Keine Verbindung</h1>
+    <p class="lead">GitHub ist gerade nicht erreichbar. Bist du online?</p>
+    <button class="btn btn-primary" data-action="gate-retry" style="width:100%">${ic('refresh', 18)} Nochmal versuchen</button></div>`;
+}
+function showGate(mode) {
+  state.gate = mode;
+  const g = $('#gate'); g.innerHTML = gateHTML(mode); g.hidden = false;
+  document.body.classList.add('locked'); closeSheetQuiet();
+  setTimeout(() => $(mode === 'login' ? '#gPass' : '#gToken')?.focus(), 50);
+}
+function hideGate() { $('#gate').hidden = true; $('#gate').innerHTML = ''; document.body.classList.remove('locked'); state.gate = null; }
+function gateError(msg) { const e = $('#gErr'); if (e) e.textContent = msg; gateBusy(false); }
+function gateBusy(on, text) {
+  const b = $('#gBtn'); if (!b) return;
+  if (on) { b.dataset.label = b.dataset.label || b.textContent; b.disabled = true; b.textContent = text || 'Einen Moment …'; }
+  else { b.disabled = false; if (b.dataset.label) b.textContent = b.dataset.label; }
+}
+function closeSheetQuiet() { $('#sheetWrap').classList.remove('open'); $('#sheet').innerHTML = ''; document.body.style.overflow = ''; }
+async function checkGate() {
+  showGate('loading');
+  const f = await fetchKeyFile();
+  state.keyFile = f || null;
+  showGate(f ? 'login' : f === null ? 'setup' : 'offline');
+}
+async function doUnlock() {
+  const pw = $('#gPass').value, keep = $('#gKeep').checked;
+  if (!pw) { gateError('Bitte gib dein Passwort ein.'); return; }
+  gateBusy(true, 'Prüfe …'); $('#gErr').textContent = '';
+  try {
+    const file = state.keyFile || await fetchKeyFile();
+    if (!file) throw new Error('Kein Passwort eingerichtet.');
+    const o = await openVault(file, pw);
+    AUTH.s = { token: o.vault.token, vault: o.vault, raw: bytesToB64(o.raw), salt: bytesToB64(o.salt), iter: o.iter, keep };
+    AUTH.save();
+    await afterUnlock();
+  } catch (e) {
+    gateError(e.name === 'OperationError' ? 'Falsches Passwort.' : 'Anmelden ging nicht: ' + e.message);
+    $('#gPass')?.select();
+  }
+}
+async function doSetup() {
+  const token = $('#gToken').value.trim(), p1 = $('#gPw1').value, p2 = $('#gPw2').value, keep = $('#gKeep').checked;
+  if (!token) { gateError('Füg zuerst den GitHub-Token ein.'); $('#gToken').focus(); return; }
+  const bad = checkNewPassword(p1, p2); if (bad) { gateError(bad); return; }
+  $('#gErr').textContent = '';
+  gateBusy(true, 'Prüfe Token …');
+  cfg.gh.token = token;
+  try {
+    const info = await GH.repoInfo();
+    if (info.permissions && info.permissions.push === false) throw Object.assign(new Error('x'), { status: 403 });
+    gateBusy(true, 'Verschlüssele …');
+    AUTH.s = { token, vault: { token }, keep };
+    await saveVault({ token }, p1, 'Admin: Passwort eingerichtet');
+    await afterUnlock();
+    toast('Fertig! Ab jetzt reicht dein Passwort.', 'ok');
+  } catch (e) {
+    AUTH.s = null; cfg.gh.token = '';
+    gateError(e.status ? ghError(e) : e.message);
+  }
+}
+async function afterUnlock() {
+  const sbv = AUTH.s?.vault?.sb;
+  if (sbv && sbv.url && sbv.key) {
+    cfg.sb = { url: sbv.url, key: sbv.key, email: sbv.email || '' }; store.set('sb', cfg.sb);
+    if (!SB.loggedIn && sbv.password) { try { await SB.login(sbv.email, sbv.password); } catch {} }
+  }
+  hideGate();
+  state.inquiries = [];
+  await loadLive(); render();
+  if (inqMode() === 'live') loadInquiries();
+}
+function logout() {
+  if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen verloren. Trotzdem abmelden?')) return;
+  AUTH.clear(); SB.logout(); resetPending();
+  state.inquiries = []; state.content = null; state.mode = 'view'; state.view = 'dashboard';
+  try { history.replaceState(null, '', location.pathname); } catch {}
+  checkGate();
+}
+async function changePassword() {
+  const p1 = $('#nPw1').value, p2 = $('#nPw2').value, bad = checkNewPassword(p1, p2);
+  if (bad) { toast(bad, 'warn'); return; }
+  showProgress('Verschlüssele …');
+  try { await saveVault({}, p1, AUTH.hasKey ? 'Admin: Passwort geändert' : 'Admin: Passwort eingerichtet'); hideProgress(); renderView(); toast('Passwort gespeichert.', 'ok'); }
+  catch (e) { hideProgress(); toast(e.status ? ghError(e) : e.message, 'bad'); }
+}
+async function renewToken() {
+  const t = $('#nToken').value.trim();
+  if (!t) { toast('Füg zuerst den neuen Token ein.', 'warn'); return; }
+  if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen beim Neuladen verloren. Weiter?')) return;
+  const old = cfg.gh.token; cfg.gh.token = t;
+  showProgress('Prüfe Token …');
+  try {
+    const info = await GH.repoInfo();
+    if (info.permissions && info.permissions.push === false) throw Object.assign(new Error('x'), { status: 403 });
+    if (AUTH.hasKey) await saveVault({ token: t }, null, 'Admin: Zugang erneuert');
+    else { AUTH.s = { ...(AUTH.s || { keep: true }), token: t, vault: { ...(AUTH.s?.vault || {}), token: t } }; AUTH.save(); }
+    hideProgress(); resetPending(); await loadLive(); render(); toast('Token erneuert.', 'ok');
+  } catch (e) { cfg.gh.token = old; hideProgress(); toast(e.status ? ghError(e) : e.message, 'bad'); }
+}
+
+/* =====================================================================
    Inhalte (Aufbau wie content.json)
    ===================================================================== */
 const defaultSite = () => ({
@@ -797,8 +1026,8 @@ function updateDirty() {
     bar.classList.add('show');
   } else bar.classList.remove('show');
 }
-function render() { renderChrome(); renderView(); }
-function renderView() { $('#view').innerHTML = state.loading ? viewLoading() : (VIEWS[state.view] || VIEWS.dashboard)(); afterRender(); }
+function render() { if (!state.content && !state.loading) return; renderChrome(); renderView(); }
+function renderView() { if (!state.content && !state.loading) return; $('#view').innerHTML = state.loading ? viewLoading() : (VIEWS[state.view] || VIEWS.dashboard)(); afterRender(); }
 function go(view) {
   state.view = NAV.some(n => n.id === view) ? view : 'dashboard';
   try { history.replaceState(null, '', '#' + state.view); } catch {}
@@ -808,6 +1037,7 @@ const viewLoading = () => `<div class="loading"><div class="ring"></div><div>Lad
 const head = (kicker, title, sub, actions = '') => `<div class="ph"><div><p class="kicker label">${kicker}</p><h1 class="display">${title}</h1>${sub ? `<p>${sub}</p>` : ''}</div>${actions ? `<div class="ph-actions">${actions}</div>` : ''}</div>`;
 function banner() {
   if (state.loadError) return `<div class="banner bad">${ic('alert')}<div><b>GitHub-Verbindung fehlgeschlagen</b><p>${esc(state.loadError)}</p><button class="btn sm" data-action="go" data-view="settings">Einstellungen prüfen</button></div></div>`;
+  if (state.mode === 'live' && !AUTH.hasKey) return `<div class="banner warn">${ic('info')}<div><b>Noch kein Passwort festgelegt</b><p>Leg ein Passwort fest, dann meldest du dich auf jedem Gerät nur noch damit an.</p><button class="btn sm btn-primary" data-action="go" data-view="settings">Passwort festlegen</button></div></div>`;
   if (state.mode === 'view') return `<div class="banner">${ic('info')}<div><b>Nur ansehen</b><p>${state.source === 'fallback' ? 'Deine Inhalte konnten gerade nicht geladen werden – das ist der Stand deiner Website vor dem Panel.' : 'Du siehst deine echten Inhalte.'} Zum Bearbeiten einmal dein GitHub-Repo mit einem Token verbinden.</p><button class="btn sm btn-primary" data-action="go" data-view="settings">${ic('github', 16)} Jetzt verbinden</button></div></div>`;
   if (state.contentMissing) return `<div class="banner warn">${ic('info')}<div><b>Noch keine content.json im Repo</b><p>Beim ersten Veröffentlichen wird sie angelegt.</p></div></div>`;
   return '';
@@ -1115,27 +1345,33 @@ grant select, insert, update, delete on public.anfragen to authenticated;`;
 VIEWS.settings = () => {
   const g = cfg.gh, s = cfg.sb, inbox = state.content.inbox;
   const ghOk = state.mode === 'live' && !state.loadError;
-  return `${head('Bleibt nur auf diesem Gerät', 'Einstellungen', '')}
+  const pwf = (id, label, ac) => `<div class="field"><label for="${id}">${label}</label><div class="pass-wrap"><input id="${id}" class="input" type="password" autocomplete="${ac}" autocapitalize="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#${id}" aria-label="Anzeigen">${ic('eye', 18)}</button></div></div>`;
+  return `${head('Zugang & Postfach', 'Einstellungen', '')}
   <section class="card sec" id="sec-gh">
-    <div class="sec-h"><h2>${ic('github')} Website · GitHub</h2>${ghOk ? '<span class="chip ok">Verbunden</span>' : '<span class="chip">Nur ansehen</span>'}</div>
-    <p class="muted">Beim Veröffentlichen speichert das Panel <code>content.json</code> und neue Fotos direkt in <b>${esc(g.owner)}/${esc(g.repo)}</b>. GitHub Pages stellt sie dann in ca. 1 Minute online.</p>
-    <div class="field"><label for="ghToken">Zugangs-Token</label><div class="pass-wrap"><input id="ghToken" class="input" type="password" value="${esc(g.token)}" placeholder="github_pat_…" autocapitalize="off" autocomplete="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#ghToken" aria-label="Token anzeigen">${ic('eye', 18)}</button></div></div>
-    <details class="help" ${g.token ? '' : 'open'}><summary>${ic('chev', 16)} So bekommst du den Token (2 Minuten)</summary><div>
-      <ol class="steps">
-        <li>Auf GitHub: <b>Profilbild → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li>
-        <li>Name z. B. <b>mapq Admin</b>, Ablauf z. B. <b>1 Jahr</b>.</li>
-        <li><b>Repository access</b>: „Only select repositories“ → nur <b>${esc(g.owner)}/${esc(g.repo)}</b>.</li>
-        <li><b>Permissions → Repository permissions → Contents</b>: auf <b>Read and write</b>. Sonst nichts.</li>
-        <li>Token kopieren und oben einfügen. Er bleibt nur in diesem Browser – das Panel nicht auf fremden Geräten nutzen.</li>
-      </ol></div></details>
+    <div class="sec-h"><h2>${ic('user')} Zugang</h2>${ghOk ? '<span class="chip ok">Angemeldet</span>' : '<span class="chip bad">Problem</span>'}</div>
+    <p class="muted">Du meldest dich mit deinem Passwort an. Dahinter steckt ein GitHub-Token, der mit diesem Passwort verschlüsselt in <b>${esc(g.owner)}/${esc(g.repo)}</b> liegt – ohne Passwort kann niemand etwas damit anfangen.</p>
+    ${state.loadError ? `<div class="banner bad">${ic('alert')}<div><b>GitHub-Zugang funktioniert nicht</b><p>${esc(state.loadError)} Erstelle unten einen neuen Token.</p></div></div>` : ''}
+    <details class="help" ${AUTH.hasKey ? '' : 'open'}><summary>${ic('chev', 16)} ${AUTH.hasKey ? 'Passwort ändern' : 'Passwort festlegen'}</summary><div>
+      ${pwf('nPw1', 'Neues Passwort', 'new-password')}${pwf('nPw2', 'Wiederholen', 'new-password')}
+      <p class="hint" style="margin:-6px 0 14px">Mindestens 10 Zeichen. Gilt danach auf allen Geräten.</p>
+      <button class="btn btn-primary" data-action="pw-change">${ic('check', 18)} Passwort speichern</button>
+    </div></details>
+    <details class="help" ${state.loadError ? 'open' : ''}><summary>${ic('chev', 16)} GitHub-Token erneuern</summary><div>
+      <p class="hint" style="margin:0 0 12px">Nötig, wenn der Token abgelaufen ist. Dein Passwort bleibt gleich.</p>
+      ${tokenSteps()}
+      <div class="field"><label for="nToken">Neuer Token</label><div class="pass-wrap"><input id="nToken" class="input" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#nToken" aria-label="Token anzeigen">${ic('eye', 18)}</button></div></div>
+      <button class="btn btn-primary" data-action="token-renew">${ic('check', 18)} Token speichern</button>
+    </div></details>
     <details class="help"><summary>${ic('chev', 16)} Erweitert</summary><div>
       <div class="grid2">
         <div class="field"><label for="ghOwner">GitHub-Name</label><input id="ghOwner" class="input" value="${esc(g.owner)}" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
         <div class="field"><label for="ghRepo">Repository</label><input id="ghRepo" class="input" value="${esc(g.repo)}" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
         <div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" class="input" value="${esc(g.branch)}" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
         <div class="field"><label for="siteUrl">Website-Adresse</label><input id="siteUrl" class="input" value="${esc(cfg.siteUrl)}" inputmode="url" autocapitalize="off" autocomplete="off"></div>
-      </div></div></details>
-    <div class="row-actions"><button class="btn btn-primary" data-action="gh-connect">${ic('check', 18)} ${ghOk ? 'Speichern & neu laden' : 'Verbinden'}</button>${g.token ? `<button class="btn" data-action="gh-disconnect">${ic('logout', 17)} Trennen</button>` : ''}</div>
+      </div>
+      <button class="btn" data-action="repo-save">Speichern & neu laden</button>
+    </div></details>
+    <button class="btn" data-action="logout">${ic('logout', 17)} Abmelden</button>
   </section>
 
   <section class="card sec" id="sec-sb">
@@ -1172,8 +1408,8 @@ VIEWS.settings = () => {
 
   <section class="card sec danger">
     <h2>${ic('alert')} Dieses Gerät</h2>
-    <p class="muted" style="margin-top:10px">Löscht Token und Supabase-Anmeldung aus diesem Browser. Deine Website bleibt unverändert.</p>
-    <button class="btn btn-danger" data-action="reset-all">${ic('trash', 17)} Zugangsdaten entfernen</button>
+    <p class="muted" style="margin-top:10px">Meldet dich ab und löscht alle Einstellungen aus diesem Browser – z. B. bevor du ein Gerät weitergibst. Deine Website und dein Passwort bleiben unverändert.</p>
+    <button class="btn btn-danger" data-action="reset-all">${ic('trash', 17)} Dieses Gerät zurücksetzen</button>
   </section>`;
 };
 
@@ -1367,34 +1603,23 @@ async function deleteInquiry(id) {
 }
 
 /* ---------- Einstellungen ---------- */
-async function ghConnect() {
-  const token = $('#ghToken').value.trim();
-  const owner = ($('#ghOwner')?.value || cfg.gh.owner).trim().replace(/^@/, '');
-  const repo = ($('#ghRepo')?.value || cfg.gh.repo).trim().replace(/^.*github\.com\/[^/]+\//, '').replace(/\.git$/, '');
-  const branch = ($('#ghBranch')?.value || cfg.gh.branch).trim() || 'main';
-  const site = ($('#siteUrl')?.value || cfg.siteUrl).trim();
-  if (!token) { toast('Füg zuerst den Token ein.', 'warn'); $('#ghToken').focus(); return; }
+async function saveRepo() {
+  const owner = $('#ghOwner').value.trim().replace(/^@/, '');
+  const repo = $('#ghRepo').value.trim().replace(/^.*github\.com\/[^/]+\//, '').replace(/\.git$/, '');
+  const branch = $('#ghBranch').value.trim() || 'main', site = $('#siteUrl').value.trim();
+  if (!owner || !repo) { toast('GitHub-Name und Repository ausfüllen.', 'warn'); return; }
   if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen beim Neuladen verloren. Weiter?')) return;
   const prev = { ...cfg.gh };
-  cfg.gh = { owner, repo, branch, token };
-  showProgress('Verbinde mit GitHub …');
+  cfg.gh = { ...cfg.gh, owner, repo, branch };
+  showProgress('Prüfe …');
   try {
     const info = await GH.repoInfo();
-    if (info.permissions && info.permissions.push === false) throw Object.assign(new Error('x'), { status: 403 });
     try { await GH.req(`/git/ref/heads/${encPath(branch)}`); }
     catch (e) { if (e.status === 404) throw new Error(`Den Branch „${branch}“ gibt es nicht (Standard ist „${info.default_branch}“).`); throw e; }
     cfg.gh.owner = info.owner?.login || owner; cfg.gh.repo = info.name || repo;
-    store.set('gh', cfg.gh); cfg.siteUrl = site; store.set('siteUrl', site);
-    hideProgress(); resetPending();
-    if (inqMode() !== 'live') state.inquiries = [];
-    await loadLive(); render();
-    toast(state.loadError || 'Verbunden – du kannst jetzt alles bearbeiten.', state.loadError ? 'bad' : 'ok');
+    AUTH.save(); cfg.siteUrl = site; store.set('siteUrl', site);
+    hideProgress(); resetPending(); await loadLive(); render(); toast('Gespeichert.', 'ok');
   } catch (e) { cfg.gh = prev; hideProgress(); toast(e.status ? ghError(e) : (e.message || ghError(e)), 'bad'); }
-}
-async function ghDisconnect() {
-  if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen verloren. Trotzdem trennen?')) return;
-  cfg.gh = { ...cfg.gh, token: '' }; store.set('gh', cfg.gh);
-  await loadView(); render(); toast('Getrennt. Ab jetzt nur ansehen.');
 }
 function readSb() {
   return {
@@ -1417,6 +1642,12 @@ async function sbLogin() {
   showProgress('Melde an …');
   try {
     await SB.login(s.email, pass);
+    /* Postfach-Zugang mit dem Admin-Passwort verschlüsselt speichern – dann klappt es auf jedem Gerät automatisch */
+    if (AUTH.hasKey) {
+      setProgress('Speichere Zugang …', .5);
+      try { await saveVault({ sb: { url: s.url, key: s.key, email: s.email, password: pass } }, null, 'Admin: Postfach-Zugang gespeichert'); }
+      catch (e) { toast('Postfach verbunden, aber nicht für andere Geräte gespeichert: ' + ghError(e), 'warn'); }
+    }
     setProgress('Lade Anfragen …', .7);
     state.inquiries = [];
     await loadInquiries(true);
@@ -1461,8 +1692,13 @@ const ACTIONS = {
   ifilter: el => { state.inqFilter = el.dataset.f; renderView(); },
   'pkg-add': () => { state.content.packages.push({ id: 'k_' + uid(), name: '', price: '', description: '', features: [], highlight: false }); renderView(); updateDirty(); $$('.pkg input[data-field="name"]').at(-1)?.focus(); },
   'pkg-del': el => { const k = byKey('packages', el.dataset.id); if (k && confirm(`Paket „${k.name || 'ohne Namen'}“ entfernen?`)) { state.content.packages = state.content.packages.filter(x => x !== k); renderView(); updateDirty(); } },
-  'gh-connect': () => ghConnect(),
-  'gh-disconnect': () => ghDisconnect(),
+  'pw-change': () => changePassword(),
+  'token-renew': () => renewToken(),
+  'repo-save': () => saveRepo(),
+  logout: () => logout(),
+  'gate-forgot': () => { if (confirm('Dein Passwort kann niemand wiederherstellen – auch nicht GitHub.\n\nDu kannst aber mit einem neuen GitHub-Token einfach ein neues Passwort festlegen. Weiter?')) showGate('setup'); },
+  'gate-login': () => showGate('login'),
+  'gate-retry': () => checkGate(),
   'sb-login': () => sbLogin(),
   'sb-save': () => { const s = readSb(); if (!checkSb(s)) return; cfg.sb = s; store.set('sb', s); if (state.content.inbox) state.content.inbox = { url: s.url, key: s.key }; updateDirty(); toast('Gespeichert.', 'ok'); loadInquiries(); },
   'sb-logout': () => { SB.logout(); state.inquiries = state.mode === 'view' ? demoInquiries() : []; render(); toast('Abgemeldet.'); },
@@ -1472,7 +1708,7 @@ const ACTIONS = {
     try { await navigator.clipboard.writeText(t); toast('Kopiert.', 'ok'); }
     catch { const r = document.createRange(); r.selectNodeContents(box); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Markiert – jetzt kopieren.'); }
   },
-  'reset-all': () => { if (confirm('Token und Anmeldung von diesem Gerät entfernen?')) { store.clear(); location.hash = ''; location.reload(); } }
+  'reset-all': () => { if (confirm('Dieses Gerät abmelden und alle Einstellungen hier löschen?')) { store.clear(); sess.del('auth'); location.hash = ''; location.reload(); } }
 };
 
 document.addEventListener('click', e => {
@@ -1546,12 +1782,20 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && in
 /* =====================================================================
    Start
    ===================================================================== */
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'gForm') return;
+  e.preventDefault();
+  if (e.target.dataset.gate === 'login') doUnlock(); else doSetup();
+});
+
 (async function init() {
   const h = location.hash.slice(1);
   if (NAV.some(n => n.id === h)) state.view = h;
-  if (GH.ready) await loadLive(); else { state.loading = true; render(); await loadView(); state.loading = false; }
-  render();
-  if (inqMode() === 'live') loadInquiries();
+  AUTH.load();
+  if (GH.ready) {
+    await loadLive(); render();
+    if (inqMode() === 'live') loadInquiries();
+  } else await checkGate();
   if (!window.Sortable) window.addEventListener('load', () => { if (window.Sortable && state.view === 'photos' && !$('#sheetWrap').classList.contains('open')) renderView(); }, { once: true });
 })();
 </script>

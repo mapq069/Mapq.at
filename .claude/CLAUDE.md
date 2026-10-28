@@ -9,6 +9,7 @@ Eine Seite: `index.html`. Google-Drive-Fotoordner: Button „Ordner“ in der Ko
 - `index.html` lädt `content.json` beim Start (`start(C)`). Fehlt die Datei, gelten `FALLBACK_PHOTOS` und die Texte im HTML. Bereiche „Edits“ und „Preise“ erscheinen nur, wenn es Einträge gibt.
 - Matteo pflegt alles über `admin.html` (mapq.at/admin.html, noindex). Das Panel schreibt mit seinem GitHub-Token pro „Veröffentlichen“ einen Commit (`Admin: …`). Inhalte daher in `content.json` ändern, nicht im HTML – sonst überschreibt das Panel sie nicht, aber sie passen nicht mehr zusammen.
 - Anfragen vom Formular landen in Supabase (Tabelle `anfragen`); das SQL dafür zeigt das Panel unter Einstellungen.
+- Anmeldung im Panel nur mit Passwort: `admin-key.json` enthält GitHub-Token und Postfach-Zugang, verschlüsselt (AES-GCM, Schlüssel per PBKDF2-SHA256 aus dem Passwort). Datei nie löschen oder von Hand ändern – sonst kommt Matteo nicht mehr ins Panel.
 
 ## Design-System
 
