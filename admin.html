@@ -306,6 +306,29 @@ body.dragging main{outline:2px dashed var(--accent);outline-offset:-10px;border-
 .igrow .when{color:var(--muted);font-size:12px;white-space:nowrap}
 .inq.new{border-left:3px solid var(--accent)}
 
+/* ---------- Statistik ---------- */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:var(--r-btn);overflow:hidden;margin-bottom:18px}
+.kpis div{background:var(--card);padding:12px 14px}
+.kpis b{display:block;font-family:var(--font-h);font-stretch:62%;font-weight:850;font-size:clamp(2rem,7vw,2.6rem);line-height:1;margin-top:6px;font-variant-numeric:tabular-nums}
+.vchart{display:flex;align-items:flex-end;gap:3px;height:120px;padding-bottom:2px;border-bottom:1px solid var(--line-2)}
+.vchart i{flex:1;min-width:2px;background:var(--text);border-radius:2px 2px 0 0;opacity:.9;transition:opacity var(--ease)}
+.vchart i.zero{background:var(--line-2);height:2px!important;opacity:1}
+.vchart i:hover{opacity:1;background:var(--accent)}
+.vaxis{display:flex;justify-content:space-between;color:var(--dim);font-size:11.5px;margin:6px 0 20px;font-variant-numeric:tabular-nums}
+.sgrid{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:760px){.sgrid{grid-template-columns:1fr 1fr}}
+.slist{display:flex;flex-direction:column;gap:9px}
+.srow{display:grid;grid-template-columns:36px 1fr 34px;align-items:center;gap:10px;font-size:13.5px}
+.srow.nothumb{grid-template-columns:1fr 34px}
+.srow img{width:36px;height:45px;object-fit:cover;border-radius:5px;background:var(--muted-bg)}
+.srow .lbl{min-width:0}
+.srow .lbl span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .lbl i{display:block;height:4px;border-radius:2px;background:var(--text);margin-top:5px;opacity:.85}
+.srow .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.sub-h{font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.topic{display:flex;align-items:center;gap:8px;margin:8px 0 4px}
+.topic code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:10px 12px;font-size:14px;background:#050505;border:1px solid var(--line-2);border-radius:var(--r-btn)}
+
 /* ---------- Texte & Einstellungen ---------- */
 .sec{margin-bottom:16px}
 .sec>h2,.sec-h{margin-bottom:18px}
@@ -478,6 +501,8 @@ const ICONS = {
   chev: '<path d="m9 18 6-6-6-6"/>',
   globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
   user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+  bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+  chart: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
   send: '<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>'
 };
 const ic = (n, s = 20, cls = '') => `<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -814,7 +839,7 @@ async function afterUnlock() {
   hideGate();
   state.inquiries = [];
   await loadLive(); render();
-  if (inqMode() === 'live') loadInquiries();
+  if (inqMode() === 'live') { loadInquiries(); loadExtras(); loadStats(); }
   if (IG.ready) { igLoad(true); igMaybeRefresh(); }
 }
 function logout() {
@@ -1239,6 +1264,187 @@ async function igMaybeRefresh() {
   } catch {}
 }
 
+/* =====================================================================
+   Besucherstatistik & Push (beides über das Supabase-Postfach)
+   ===================================================================== */
+state.stats = { data: null, loading: false, error: null };
+state.extras = { checked: false, topic: null, missing: false };
+const randTopic = () => 'mapq-' + Array.from(crypto.getRandomValues(new Uint8Array(16)), b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+function draftTopic() { let t = store.get('pushDraft'); if (!t) { t = randTopic(); store.set('pushDraft', t); } return t; }
+async function loadExtras() {
+  if (inqMode() !== 'live') return;
+  try { state.extras.topic = await SB.req('/rpc/mapq_push_topic', { method: 'POST', body: '{}' }); state.extras.missing = false; }
+  catch (e) { state.extras.topic = null; state.extras.missing = /could not find|does not exist|PGRST202|42883/i.test(e.message); }
+  state.extras.checked = true;
+  if (state.view === 'settings' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+async function loadStats() {
+  if (inqMode() !== 'live' || !state.content?.stats) return;
+  state.stats.loading = true;
+  try { state.stats.data = await SB.req('/rpc/mapq_statistik', { method: 'POST', body: JSON.stringify({ tage: 30 }) }); state.stats.error = null; }
+  catch (e) { state.stats.error = /could not find|does not exist|PGRST202|42883/i.test(e.message) ? 'Die Statistik ist in Supabase noch nicht eingerichtet (Einstellungen → Push & Statistik).' : e.message; }
+  state.stats.loading = false;
+  if (state.view === 'dashboard' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+function srcLabel(h) {
+  if (!h) return 'Direkt / unbekannt';
+  if (/instagram\./.test(h)) return 'Instagram';
+  if (/(^|\.)google\./.test(h)) return 'Google';
+  if (/facebook\.|fb\./.test(h)) return 'Facebook';
+  if (/tiktok\./.test(h)) return 'TikTok';
+  if (/bing\./.test(h)) return 'Bing';
+  if (/duckduckgo\./.test(h)) return 'DuckDuckGo';
+  if (/whatsapp\./.test(h)) return 'WhatsApp';
+  return h;
+}
+function statsCard() {
+  if (inqMode() !== 'live' || !state.content.stats) return `<section class="card" style="margin-top:16px"><div class="card-h"><h2>${ic('chart')} Besucher</h2></div>
+    <p class="empty-mini">Sieh, wie viele Leute mapq.at besuchen, woher sie kommen und welche Fotos am meisten angeklickt werden – ohne Cookies.</p>
+    <button class="btn sm btn-primary" data-action="go-extra" style="margin-top:14px">${ic('chart', 16)} Statistik einschalten</button></section>`;
+  const st = state.stats, d = st.data;
+  if (st.error) return `<section class="card" style="margin-top:16px"><div class="card-h"><h2>${ic('chart')} Besucher</h2></div><p class="empty-mini">${esc(st.error)}</p></section>`;
+  if (!d) return `<section class="card" style="margin-top:16px"><div class="card-h"><h2>${ic('chart')} Besucher</h2></div><div class="loading" style="padding:30px 0"><div class="ring"></div></div></section>`;
+  const tage = arr(d.tage), max = Math.max(1, ...tage.map(t => t.n));
+  const fmt = iso => { const m = String(iso).match(/^\d{4}-(\d{2})-(\d{2})/); return m ? `${m[2]}.${m[1]}.` : ''; };
+  const q = arr(d.quellen), qmax = Math.max(1, ...q.map(x => x.n)), f = arr(d.fotos), fmax = Math.max(1, ...f.map(x => x.n));
+  const g = d.geraete || {}, gsum = Math.max(1, (g.handy || 0) + (g.tablet || 0) + (g.computer || 0));
+  const pct = n => Math.round((n || 0) / gsum * 100) + ' %';
+  return `<section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>${ic('chart')} Besucher</h2><button class="btn sm icon" data-action="stats-refresh" aria-label="Aktualisieren">${ic('refresh', 16)}</button></div>
+    <div class="kpis"><div><span class="label muted">Heute</span><b>${d.heute || 0}</b></div><div><span class="label muted">7 Tage</span><b>${d.woche || 0}</b></div><div><span class="label muted">30 Tage</span><b>${d.monat || 0}</b></div></div>
+    <div class="vchart" role="img" aria-label="Seitenaufrufe pro Tag, letzte 30 Tage">${tage.map(t => `<i class="${t.n ? '' : 'zero'}" style="height:${Math.max(2, Math.round(t.n / max * 100))}%" title="${esc(fmt(t.tag))}: ${t.n}"></i>`).join('')}</div>
+    <div class="vaxis"><span>${esc(fmt(tage[0]?.tag))}</span><span>${esc(fmt(tage[Math.floor(tage.length / 2)]?.tag))}</span><span>heute</span></div>
+    <div class="sgrid">
+      <div><p class="sub-h">Woher sie kommen</p><div class="slist">${q.length ? q.map(x => `<div class="srow nothumb"><span class="lbl"><span>${esc(srcLabel(x.q))}</span><i style="width:${Math.round(x.n / qmax * 100)}%"></i></span><span class="v">${x.n}</span></div>`).join('') : '<p class="empty-mini">Noch keine Daten.</p>'}</div>
+        <p class="sub-h" style="margin-top:20px">Geräte</p><p class="muted" style="margin:0;font-size:13.5px">Handy ${pct(g.handy)} · Tablet ${pct(g.tablet)} · Computer ${pct(g.computer)}</p></div>
+      <div><p class="sub-h">Meistgeklickte Fotos</p><div class="slist">${f.length ? f.map(x => { const p = photoByF(x.f); return `<div class="srow"><img src="${esc(imgUrl(SMALL(x.f)))}" alt="" loading="lazy"><span class="lbl"><span>${esc(p ? (p.t || p.f) : x.f)}</span><i style="width:${Math.round(x.n / fmax * 100)}%"></i></span><span class="v">${x.n}</span></div>`; }).join('') : '<p class="empty-mini">Noch kein Foto geöffnet.</p>'}</div></div>
+    </div>
+    <p class="hint" style="margin:18px 0 0">Ohne Cookies und ohne IP-Adressen. Deine eigenen Besuche zählen nicht.</p>
+  </section>`;
+}
+const extrasSql = topic => `-- Zusatzfunktionen für mapq.at: Besucherstatistik + Push bei neuer Anfrage
+-- (kann gefahrlos mehrmals ausgeführt werden)
+
+-- 1) Besucherstatistik: keine IP, keine Cookies
+create table if not exists public.besuche (
+  id uuid primary key default gen_random_uuid(),
+  zeit timestamptz not null default now(),
+  art text not null check (art in ('seite', 'foto')),
+  ziel text check (char_length(ziel) <= 120),
+  quelle text check (char_length(quelle) <= 120),
+  geraet text check (geraet in ('handy', 'tablet', 'computer'))
+);
+create index if not exists besuche_zeit on public.besuche (zeit);
+alter table public.besuche enable row level security;
+drop policy if exists "website_zaehlt" on public.besuche;
+create policy "website_zaehlt" on public.besuche for insert to anon
+  with check (zeit > now() - interval '5 minutes' and zeit < now() + interval '5 minutes');
+revoke all on public.besuche from anon, authenticated;
+grant insert on public.besuche to anon;
+
+create or replace function public.mapq_statistik(tage int default 30)
+returns jsonb language plpgsql stable security definer set search_path = ''
+as $$
+declare
+  heute date := (now() at time zone 'Europe/Vienna')::date;
+  ab timestamptz := (heute - (tage - 1))::timestamp at time zone 'Europe/Vienna';
+begin
+  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff'; end if;
+  return jsonb_build_object(
+    'heute', (select count(*) from public.besuche where art = 'seite' and zeit >= heute::timestamp at time zone 'Europe/Vienna'),
+    'woche', (select count(*) from public.besuche where art = 'seite' and zeit >= (heute - 6)::timestamp at time zone 'Europe/Vienna'),
+    'monat', (select count(*) from public.besuche where art = 'seite' and zeit >= ab),
+    'tage', (select coalesce(jsonb_agg(jsonb_build_object('tag', t.tag::date, 'n', coalesce(z.n, 0)) order by t.tag), '[]'::jsonb)
+             from generate_series(heute - (tage - 1), heute, interval '1 day') as t(tag)
+             left join (select (zeit at time zone 'Europe/Vienna')::date as tag, count(*) as n
+                        from public.besuche where art = 'seite' and zeit >= ab group by 1) z on z.tag = t.tag::date),
+    'fotos', (select coalesce(jsonb_agg(jsonb_build_object('f', ziel, 'n', n)), '[]'::jsonb)
+              from (select ziel, count(*) as n from public.besuche
+                    where art = 'foto' and zeit >= ab and ziel is not null
+                    group by ziel order by n desc limit 8) x),
+    'quellen', (select coalesce(jsonb_agg(jsonb_build_object('q', q, 'n', n)), '[]'::jsonb)
+                from (select coalesce(quelle, '') as q, count(*) as n from public.besuche
+                      where art = 'seite' and zeit >= ab group by 1 order by n desc limit 8) x),
+    'geraete', (select coalesce(jsonb_object_agg(coalesce(geraet, '?'), n), '{}'::jsonb)
+                from (select geraet, count(*) as n from public.besuche
+                      where art = 'seite' and zeit >= ab group by 1) x)
+  );
+end $$;
+revoke all on function public.mapq_statistik(int) from public, anon;
+grant execute on function public.mapq_statistik(int) to authenticated;
+
+-- 2) Push bei neuer Anfrage (über ntfy.sh)
+create extension if not exists pg_net;
+create table if not exists public.mapq_einstellungen (schluessel text primary key, wert text not null);
+alter table public.mapq_einstellungen enable row level security;
+revoke all on public.mapq_einstellungen from anon, authenticated;
+insert into public.mapq_einstellungen (schluessel, wert)
+  values ('push_thema', '${topic}') on conflict (schluessel) do nothing;
+
+create or replace function public.mapq_push_topic()
+returns text language sql stable security definer set search_path = ''
+as $$ select case when public.mapq_ist_admin()
+  then (select wert from public.mapq_einstellungen where schluessel = 'push_thema') end $$;
+revoke all on function public.mapq_push_topic() from public, anon;
+grant execute on function public.mapq_push_topic() to authenticated;
+
+create or replace function public.mapq_push_anfrage()
+returns trigger language plpgsql security definer set search_path = ''
+as $$
+declare thema text;
+begin
+  select wert into thema from public.mapq_einstellungen where schluessel = 'push_thema';
+  if thema is not null then
+    perform net.http_post(
+      url := 'https://ntfy.sh',
+      body := jsonb_build_object(
+        'topic', thema,
+        'title', 'Neue Anfrage auf mapq.at',
+        'message', split_part(new.name, ' ', 1) || coalesce(' · ' || new.art, ''),
+        'tags', jsonb_build_array('camera'),
+        'priority', 4,
+        'click', 'https://mapq.at/admin.html#inquiries'
+      )
+    );
+  end if;
+  return new;
+exception when others then
+  return new; -- ein Push-Fehler darf nie eine Anfrage verhindern
+end $$;
+drop trigger if exists mapq_push on public.anfragen;
+create trigger mapq_push after insert on public.anfragen
+  for each row execute function public.mapq_push_anfrage();`;
+async function pushTest() {
+  const t = state.extras.topic; if (!t) return;
+  try {
+    const r = await fetch(`https://ntfy.sh/${encodeURIComponent(t)}?title=${encodeURIComponent('mapq.at Admin')}&tags=camera`, { method: 'POST', body: 'Test: Push-Benachrichtigungen funktionieren.' });
+    toast(r.ok ? 'Test gesendet – kommt in ein paar Sekunden aufs Handy.' : 'Senden ging nicht (' + r.status + ').', r.ok ? 'ok' : 'bad');
+  } catch { toast('ntfy.sh ist gerade nicht erreichbar.', 'bad'); }
+}
+function extrasSection() {
+  const live = inqMode() === 'live', ex = state.extras, c = state.content;
+  const head0 = `<div class="sec-h"><h2>${ic('bell')} Push & Statistik</h2>${ex.topic ? '<span class="chip ok">Eingerichtet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>`;
+  if (!live) return `<section class="card sec" id="sec-extra">${head0}<p class="muted" style="margin:0">Richte zuerst oben das Anfragen-Postfach ein – Push und Statistik laufen darüber.</p></section>`;
+  const setup = `<details class="help" ${ex.topic ? '' : 'open'}><summary>${ic('chev', 16)} ${ex.topic ? 'Einrichtungs-Code' : 'Einrichtung (einmalig, 1 Minute)'}</summary><div>
+      <p class="hint" style="margin:0 0 4px">In Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken (Warnung bestätigen). Danach diese Seite neu laden.</p>
+      <div class="code"><pre id="extraSql">${esc(extrasSql(ex.topic || draftTopic()))}</pre><button class="btn sm" data-action="copy" data-target="#extraSql">${ic('copy', 15)} Kopieren</button></div>
+    </div></details>`;
+  const push = ex.topic ? `<p class="sub-h" style="margin-top:6px">Push bei neuer Anfrage</p>
+      <ol class="steps">
+        <li>Die kostenlose App <b>ntfy</b> installieren (App Store bzw. Google Play).</li>
+        <li>In der App auf <b>+</b> tippen und dieses Thema eintragen (Server „ntfy.sh“ so lassen):
+          <div class="topic"><code id="pushTopic">${esc(ex.topic)}</code><button class="btn sm" data-action="copy" data-target="#pushTopic">${ic('copy', 15)} Kopieren</button></div>
+          <small class="hint">Das Thema ist wie ein Passwort – gib es nicht weiter.</small></li>
+        <li>Fertig. Zum Ausprobieren: <button class="btn sm" data-action="push-test" style="margin-top:6px">${ic('bell', 15)} Test-Benachrichtigung senden</button></li>
+      </ol>` : '';
+  return `<section class="card sec" id="sec-extra">${head0}
+    <p class="muted">Bei jeder neuen Anfrage klingelt dein Handy, und in der Übersicht siehst du, wer mapq.at besucht. Beides läuft über dein Supabase-Postfach.</p>
+    ${setup}${push}
+    <label class="switch-row" style="margin:${ex.topic ? '4px' : '16px'} 0 0"><span><b>Besucherstatistik auf mapq.at</b><small>${c.stats ? 'Aktiv' : 'Ohne Cookies und ohne IP-Adressen. Nach dem Einschalten veröffentlichen.'}</small></span><input type="checkbox" class="switch" id="statsSwitch" ${c.stats ? 'checked' : ''} ${c.inbox ? '' : 'disabled'}></label>
+    ${c.inbox ? '' : '<p class="hint" style="margin:8px 0 0">Schalte dafür zuerst „Formular auf mapq.at aktivieren“ ein.</p>'}
+  </section>`;
+}
+
 /* ---------- Als App aufs Handy ---------- */
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const platform = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(navigator.userAgent) ? 'android' : 'desktop';
@@ -1302,7 +1508,8 @@ VIEWS.dashboard = () => {
         <a class="qa" href="${esc(siteUrl())}" target="_blank" rel="noopener">${ic('arrow')}Website öffnen</a>
       </div>
     </section>
-  </div>`;
+  </div>
+  ${statsCard()}`;
 };
 
 function filteredPhotos() {
@@ -1643,6 +1850,8 @@ VIEWS.settings = () => {
     <label class="switch-row" style="margin:0"><span><b>Formular auf mapq.at aktivieren</b><small>${inbox ? 'Aktiv – Besucher können Anfragen direkt senden.' : SB.ready ? 'Danach veröffentlichen, dann erscheint „Anfrage senden“.' : 'Erst Supabase einrichten.'}</small></span><input type="checkbox" class="switch" id="inboxSwitch" ${inbox ? 'checked' : ''} ${SB.ready || inbox ? '' : 'disabled'}></label>
   </section>
 
+  ${extrasSection()}
+
   <section class="card sec" id="sec-ig">
     <div class="sec-h"><h2>${ic('insta')} Instagram-Nachrichten</h2>${IG.ready ? `<span class="chip ok">@${esc(IG.info.username)}</span>` : '<span class="chip">Nicht verbunden</span>'}</div>
     <p class="muted">Deine Instagram-Direktnachrichten im Panel lesen und beantworten. Der Zugang wird mit deinem Passwort verschlüsselt gespeichert und verlängert sich automatisch, wenn du das Panel ab und zu öffnest.</p>
@@ -1914,7 +2123,7 @@ async function sbLogin() {
     }
     setProgress('Lade Anfragen …', .7);
     state.inquiries = [];
-    await loadInquiries(true);
+    await loadInquiries(true); loadExtras(); loadStats();
     hideProgress(); render();
     toast(state.inqError || 'Postfach verbunden.', state.inqError ? 'bad' : 'ok');
   } catch (e) {
@@ -1955,6 +2164,9 @@ const ACTIONS = {
   'inq-refresh': () => loadInquiries(),
   'inq-tab': el => { state.inqTab = el.dataset.t; renderView(); if (state.inqTab === 'ig' && IG.ready) igLoad(true); },
   'ig-open': el => igOpen(el.dataset.id),
+  'push-test': () => pushTest(),
+  'stats-refresh': () => { state.stats.data = null; renderView(); loadStats(); },
+  'go-extra': () => { go('settings'); setTimeout(() => $('#sec-extra')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); },
   'ig-send': () => igSend(),
   'ig-refresh': () => igLoad(),
   'ig-connect': () => igConnect(),
@@ -2013,6 +2225,11 @@ document.addEventListener('change', e => {
   else if (t.dataset.inqNote) { const q = inqById(t.dataset.inqNote); if (q && (q.notiz || '') !== t.value) patchInquiry(q.id, { notiz: t.value }, 'Notiz gespeichert.'); }
   else if (t.dataset.cfg) { cfg.img[t.dataset.cfg] = Number(t.value); store.set('img', cfg.img); toast('Gespeichert.', 'ok'); }
   else if (t.id === 'sbEmail') { cfg.sb.email = t.value.trim(); store.set('sb', cfg.sb); }
+  else if (t.id === 'statsSwitch') {
+    if (t.checked) state.content.stats = true; else delete state.content.stats;
+    updateDirty(); renderView();
+    toast(t.checked ? 'Wird mit dem nächsten Veröffentlichen aktiv.' : 'Statistik wird mit dem nächsten Veröffentlichen ausgeschaltet.');
+  }
   else if (t.id === 'inboxSwitch') {
     if (t.checked) {
       const s = readSb(); if (!checkSb(s)) { t.checked = false; return; }
@@ -2051,7 +2268,7 @@ document.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefa
 
 window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
 window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== state.view && NAV.some(n => n.id === v)) go(v); });
-document.addEventListener('visibilitychange', () => { if (document.hidden || !state.content) return; if (inqMode() === 'live') loadInquiries(true); if (IG.ready) igLoad(true); });
+document.addEventListener('visibilitychange', () => { if (document.hidden || !state.content) return; if (inqMode() === 'live') { loadInquiries(true); loadStats(); } if (IG.ready) igLoad(true); });
 
 /* =====================================================================
    Start
@@ -2063,12 +2280,13 @@ document.addEventListener('submit', e => {
 });
 
 (async function init() {
+  store.set('notrack', true);
   const h = location.hash.slice(1);
   if (NAV.some(n => n.id === h)) state.view = h;
   AUTH.load();
   if (GH.ready) {
     await loadLive(); render();
-    if (inqMode() === 'live') loadInquiries();
+    if (inqMode() === 'live') { loadInquiries(); loadExtras(); loadStats(); }
     if (IG.ready) { igLoad(true); igMaybeRefresh(); }
   } else await checkGate();
   if (!window.Sortable) window.addEventListener('load', () => { if (window.Sortable && state.view === 'photos' && !$('#sheetWrap').classList.contains('open')) renderView(); }, { once: true });

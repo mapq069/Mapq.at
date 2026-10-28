@@ -3,12 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>mapq.raw – Matteo Hanser</title>
-<meta name="description" content="Matteo Hanser, Fotograf in Tirol. Autos, Motorräder und Motorsport.">
+<title>Autofotograf in Tirol – mapq.raw | Matteo Hanser</title>
+<meta name="description" content="Matteo Hanser (mapq.raw) fotografiert Autos, Motorräder und Motorsport in Tirol: Car-Shootings, Rolling Shots und Events. Jetzt Shooting anfragen.">
+<link rel="canonical" href="https://mapq.at/">
 <meta name="theme-color" content="#000000">
-<meta property="og:title" content="mapq.raw – Matteo Hanser">
-<meta property="og:description" content="Autos, Motorräder und Motorsport. Fotografiert in Tirol.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="mapq.raw">
+<meta property="og:locale" content="de_AT">
+<meta property="og:url" content="https://mapq.at/">
+<meta property="og:title" content="Autofotograf in Tirol – mapq.raw">
+<meta property="og:description" content="Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.">
 <meta property="og:image" content="https://mapq.at/fotos/supermoto-strasse.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta property="og:image:alt" content="Fahrerin mit Supermoto auf einer Bergstraße in Tirol">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://mapq.at/#fotograf",
+      "name": "mapq.raw – Matteo Hanser",
+      "alternateName": "mapq.raw",
+      "description": "Auto-, Motorrad- und Motorsportfotografie in Tirol: Car-Shootings, Rolling Shots und Events.",
+      "url": "https://mapq.at/",
+      "image": "https://mapq.at/fotos/supermoto-strasse.jpg",
+      "email": "Matteohanser8@gmail.com",
+      "areaServed": { "@type": "State", "name": "Tirol" },
+      "address": { "@type": "PostalAddress", "addressRegion": "Tirol", "addressCountry": "AT" },
+      "knowsAbout": ["Autofotografie", "Motorradfotografie", "Motorsportfotografie", "Car-Shooting", "Rolling Shots", "Outdoorfotografie"],
+      "founder": { "@id": "https://mapq.at/#matteo" },
+      "sameAs": ["https://www.instagram.com/mapq.raw"]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://mapq.at/#matteo",
+      "name": "Matteo Hanser",
+      "jobTitle": "Fotograf",
+      "url": "https://mapq.at/",
+      "homeLocation": { "@type": "Place", "name": "Tirol, Österreich" },
+      "sameAs": ["https://www.instagram.com/mapq.raw"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://mapq.at/#website",
+      "url": "https://mapq.at/",
+      "name": "mapq.raw",
+      "inLanguage": "de-AT",
+      "publisher": { "@id": "https://mapq.at/#fotograf" }
+    }
+  ]
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23FAFAFA' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -551,6 +599,25 @@ function start(C){
   var IG=(S&&handleName(S.instagram))||"mapq.raw";
   var FIRST=((S&&str(S.name))||"Matteo").split(/\s+/)[0];
   var nav=$(".nav"), navKontakt=nav.querySelector('a[href="#kontakt"]');
+  /* Besucherstatistik: keine Cookies, keine IP, nichts auf dem Gerät gespeichert.
+     Gezählt werden nur Seitenaufruf, geöffnete Fotos, Herkunft (z. B. instagram.com) und Gerätetyp. */
+  function zaehle(art,ziel){
+    try{
+      var ib=C.inbox;
+      if(!C.stats||!ib||!/^https:\/\//.test(ib.url||"")||!ib.key) return;
+      if(navigator.doNotTrack==="1"||window.doNotTrack==="1"||navigator.globalPrivacyControl) return;
+      try{ if(localStorage.getItem("mapq_admin_notrack")) return; }catch(e){}
+      var src=null;
+      if(art==="seite"&&document.referrer){
+        try{ var rh=new URL(document.referrer).hostname.replace(/^(www|m|l|lm)\./,""); if(rh&&rh!==location.hostname.replace(/^www\./,"")) src=rh.slice(0,120); }catch(e){}
+      }
+      var w=window.innerWidth, hd={apikey:ib.key,"Content-Type":"application/json",Prefer:"return=minimal"};
+      if(/^eyJ/.test(ib.key)) hd.Authorization="Bearer "+ib.key;
+      fetch(ib.url.replace(/\/+$/,"")+"/rest/v1/besuche",{method:"POST",headers:hd,keepalive:true,body:JSON.stringify({
+        art:art, ziel:ziel?String(ziel).slice(0,120):null, quelle:src, geraet:w<720?"handy":w<1100?"tablet":"computer"
+      })}).catch(function(){});
+    }catch(e){}
+  }
   function addNav(href,label,before){ var a=document.createElement("a"); a.className="opt3"; a.href=href; a.textContent=label; nav.insertBefore(a,(before&&nav.querySelector('a[href="'+before+'"]'))||navKontakt); }
 
   if(S){
@@ -793,6 +860,7 @@ function start(C){
   }
   function step(d){ var v=visible(); if(v.indexOf(cur)<0) v=PHOTOS.map(function(_,n){ return n; }); var k=v.indexOf(cur); show(v[(k+d+v.length)%v.length]); }
   function openLb(i,from){
+    zaehle("foto",PHOTOS[i].f);
     opener=from||document.getElementById("bild-"+PHOTOS[i].f);
     show(i);
     if(lb.showModal) lb.showModal(); else lb.setAttribute("open","");
@@ -975,6 +1043,8 @@ function start(C){
       .catch(function(){ ro.textContent="Das hat leider nicht geklappt. Schreib mir gern direkt auf Instagram @"+IG+" oder per E-Mail."; })
       .then(function(){ sending=false; rs.disabled=false; rs.textContent="Anfrage senden"; });
   });
+
+  zaehle("seite");
 }
 </script>
 </body>

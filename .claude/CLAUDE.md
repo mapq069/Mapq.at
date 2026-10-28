@@ -10,6 +10,9 @@ Eine Seite: `index.html`. Google-Drive-Fotoordner: Button „Ordner“ in der Ko
 - Matteo pflegt alles über `admin.html` (mapq.at/admin.html, noindex). Das Panel schreibt mit seinem GitHub-Token pro „Veröffentlichen“ einen Commit (`Admin: …`). Inhalte daher in `content.json` ändern, nicht im HTML – sonst überschreibt das Panel sie nicht, aber sie passen nicht mehr zusammen.
 - Anfragen vom Formular landen in Supabase (Tabelle `anfragen`); das SQL dafür zeigt das Panel unter Einstellungen.
 - Instagram-Direktnachrichten: Reiter „Instagram“ unter Anfragen (Instagram API mit Instagram-Login, graph.instagram.com). Der Token liegt verschlüsselt in `admin-key.json` (`ig`) und wird vom Panel vor Ablauf (60 Tage) automatisch verlängert (Commit „Admin: Instagram-Zugang verlängert“).
+- Besucherstatistik: `index.html` zählt (nur wenn `content.json` `stats: true` und `inbox` hat) Seitenaufrufe und geöffnete Fotos in Supabase-Tabelle `besuche` – ohne Cookies, ohne IP, nicht bei „Do Not Track“ und nicht auf Geräten, auf denen das Panel offen war (`mapq_admin_notrack`). Auswertung per RPC `mapq_statistik` in der Panel-Übersicht.
+- Push bei neuer Anfrage: Supabase-Trigger `mapq_push` → ntfy.sh (Thema in `mapq_einstellungen`, für Matteo im Panel unter Einstellungen → Push & Statistik). Das Thema ist geheim, nie ins Repo schreiben.
+- SEO: Titel/Beschreibung, JSON-LD (ProfessionalService, Person, WebSite), `sitemap.xml`, `robots.txt` (sperrt /admin).
 - Das Panel lässt sich als App aufs Handy legen: `admin-manifest.json` und `admin-icon-*.png` (Ring wie im Favicon, „ADMIN“).
 - Anmeldung im Panel nur mit Passwort: `admin-key.json` enthält GitHub-Token und Postfach-Zugang, verschlüsselt (AES-GCM, Schlüssel per PBKDF2-SHA256 aus dem Passwort). Datei nie löschen oder von Hand ändern – sonst kommt Matteo nicht mehr ins Panel.
 

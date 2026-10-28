@@ -163,5 +163,6 @@
   "inbox": {
     "url": "https://hrtmghsuuoqhfwffqvui.supabase.co",
     "key": "sb_publishable_XvMY8rn4eJMRAaA6ZgSqAg_fPBGbLV-"
-  }
+  },
+  "stats": true
 }
