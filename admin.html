@@ -1311,9 +1311,7 @@ VIEWS.texts = () => {
   </section>`;
 };
 
-const sqlFor = email => {
-  const e = String(email || 'DEINE@EMAIL.AT').replace(/'/g, "''");
-  return `-- Tabelle für Anfragen von mapq.at
+const sqlFor = () => `-- Anfragen von mapq.at (kann gefahrlos mehrmals ausgeführt werden)
 create table if not exists public.anfragen (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -1325,23 +1323,31 @@ create table if not exists public.anfragen (
   status text not null default 'neu',
   notiz text
 );
-
 alter table public.anfragen enable row level security;
 
--- Die Website darf Anfragen nur EINTRAGEN, nicht lesen
-create policy "website_insert" on public.anfragen
-  for insert to anon
-  with check (status = 'neu' and notiz is null);
+-- Admin = der erste Benutzer, den du unter Authentication anlegst
+create or replace function public.mapq_ist_admin()
+returns boolean language sql stable security definer set search_path = ''
+as $$
+  select auth.uid() is not null
+     and auth.uid() = (select id from auth.users order by created_at limit 1);
+$$;
+revoke all on function public.mapq_ist_admin() from public, anon;
+grant execute on function public.mapq_ist_admin() to authenticated;
 
--- Nur du (angemeldet) darfst lesen, bearbeiten und löschen
+-- Die Website darf Anfragen nur EINTRAGEN, nicht lesen
+drop policy if exists "website_insert" on public.anfragen;
+create policy "website_insert" on public.anfragen
+  for insert to anon with check (status = 'neu' and notiz is null);
+
+-- Nur du darfst lesen, bearbeiten und löschen
+drop policy if exists "admin_all" on public.anfragen;
 create policy "admin_all" on public.anfragen
   for all to authenticated
-  using ((auth.jwt() ->> 'email') = '${e}')
-  with check ((auth.jwt() ->> 'email') = '${e}');
+  using (public.mapq_ist_admin()) with check (public.mapq_ist_admin());
 
 grant insert on public.anfragen to anon;
 grant select, insert, update, delete on public.anfragen to authenticated;`;
-};
 VIEWS.settings = () => {
   const g = cfg.gh, s = cfg.sb, inbox = state.content.inbox;
   const ghOk = state.mode === 'live' && !state.loadError;
@@ -1380,10 +1386,9 @@ VIEWS.settings = () => {
     <details class="help" ${SB.ready ? '' : 'open'}><summary>${ic('chev', 16)} Einrichtung (ca. 5 Minuten)</summary><div>
       <ol class="steps">
         <li>Auf <b>supabase.com</b> kostenlos registrieren und ein <b>neues Projekt</b> anlegen (Region: Frankfurt).</li>
-        <li>Deine Admin-E-Mail eintragen:<div class="field" style="margin:8px 0 4px"><input id="sbEmail" class="input" type="email" value="${esc(s.email)}" placeholder="deine@email.at" autocomplete="email"></div>
-          Dann in Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken:
-          <div class="code"><pre id="sqlBox">${esc(sqlFor(s.email))}</pre><button class="btn sm" data-action="copy" data-target="#sqlBox">${ic('copy', 15)} Kopieren</button></div></li>
-        <li><b>Authentication → Users → Add user</b>: dieselbe E-Mail und ein Passwort, „Auto Confirm User“ anhaken. Dann unter <b>Authentication → Sign In / Providers</b> „Allow new users to sign up“ <b>ausschalten</b>.</li>
+        <li>In Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken (eine Warnung einfach bestätigen):
+          <div class="code"><pre id="sqlBox">${esc(sqlFor())}</pre><button class="btn sm" data-action="copy" data-target="#sqlBox">${ic('copy', 15)} Kopieren</button></div></li>
+        <li><b>Authentication → Users → Add user</b>: deine E-Mail und ein Passwort, „Auto Confirm User“ anhaken. Dieser erste Benutzer ist der Admin. Dann unter <b>Authentication → Sign In / Providers</b> „Allow new users to sign up“ <b>ausschalten</b>.</li>
         <li><b>Project Settings → API Keys</b>: <b>Project URL</b> und den <b>publishable</b> (oder „anon“) Key unten einfügen. Nie den „secret“- oder „service_role“-Key.</li>
       </ol></div></details>
     <div class="grid2">
@@ -1392,7 +1397,8 @@ VIEWS.settings = () => {
     </div>
     ${SB.loggedIn
       ? `<div class="row-actions" style="margin-bottom:16px"><span class="muted" style="font-size:14px">Angemeldet als <b style="color:var(--text)">${esc(cfg.sbSession.email || s.email)}</b></span><span style="flex:1"></span><button class="btn sm" data-action="sb-save">Speichern</button><button class="btn sm" data-action="sb-logout">${ic('logout', 16)} Abmelden</button></div>`
-      : `<div class="field"><label for="sbPass">Passwort (aus Schritt 3)</label><div class="pass-wrap"><input id="sbPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"><button class="btn sm icon" data-action="toggle-pass" data-target="#sbPass" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div></div>
+      : `<div class="field"><label for="sbEmail">E-Mail (aus Schritt 3)</label><input id="sbEmail" class="input" type="email" value="${esc(s.email)}" placeholder="deine@email.at" autocomplete="email" autocapitalize="off"></div>
+         <div class="field"><label for="sbPass">Passwort (aus Schritt 3)</label><div class="pass-wrap"><input id="sbPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"><button class="btn sm icon" data-action="toggle-pass" data-target="#sbPass" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div></div>
          <div class="row-actions" style="margin-bottom:16px"><button class="btn btn-primary" data-action="sb-login">${ic('check', 18)} Speichern & anmelden</button></div>`}
     <label class="switch-row" style="margin:0"><span><b>Formular auf mapq.at aktivieren</b><small>${inbox ? 'Aktiv – Besucher können Anfragen direkt senden.' : SB.ready ? 'Danach veröffentlichen, dann erscheint „Anfrage senden“.' : 'Erst Supabase einrichten.'}</small></span><input type="checkbox" class="switch" id="inboxSwitch" ${inbox ? 'checked' : ''} ${SB.ready || inbox ? '' : 'disabled'}></label>
   </section>
@@ -1637,7 +1643,7 @@ function checkSb(s) {
 async function sbLogin() {
   const s = readSb(), pass = $('#sbPass')?.value || '';
   if (!checkSb(s)) return;
-  if (!s.email || !pass) { toast('E-Mail (Schritt 2) und Passwort ausfüllen.', 'warn'); return; }
+  if (!s.email || !pass) { toast('E-Mail und Passwort ausfüllen.', 'warn'); return; }
   cfg.sb = s; store.set('sb', s);
   showProgress('Melde an …');
   try {
@@ -1733,7 +1739,6 @@ document.addEventListener('input', e => {
   const t = e.target;
   if (t.matches('[data-bind],[data-list]') && t.type !== 'checkbox') onBind(t);
   else if (t.id === 'inqSearch') { state.inqQuery = t.value; const l = $('#inqList'); if (l) l.innerHTML = inqListHTML(); }
-  else if (t.id === 'sbEmail') { const b = $('#sqlBox'); if (b) b.textContent = sqlFor(t.value.trim()); }
 });
 document.addEventListener('change', e => {
   const t = e.target;
