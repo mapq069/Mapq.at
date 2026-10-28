@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>Admin · mapq.raw</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23FAFAFA' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Space+Grotesk:wght@300..700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js" defer></script>
+<style>
+/* Admin für mapq.at – Gestaltung nach design-system/mapq-raw/MASTER.md:
+   reines Schwarz-Weiß, Archivo für Überschriften, Space Grotesk für Text. */
+:root{
+  color-scheme:dark;
+  --bg:#000000;
+  --card:#0C0C0C;
+  --muted-bg:#181818;
+  --line:#232327;
+  --line-2:#3F3F46;
+  --text:#FAFAFA;
+  --muted:#94A3B8;
+  --dim:#71717A;
+  --accent:#F8FAFC;
+  --on-accent:#0F172A;
+  --ok:#4ADE80;
+  --warn:#FBBF24;
+  --bad:#EF4444;
+  --r-btn:8px;--r-card:12px;--r-modal:16px;
+  --ease:200ms ease;
+  --font-h:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-b:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+  --shadow-xl:0 20px 25px rgba(0,0,0,.15);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);scroll-padding-top:80px;scroll-padding-bottom:150px}
+@media(min-width:960px){html{scroll-padding-bottom:110px}}
+body{margin:0;min-height:100dvh;background:var(--bg);color:var(--text);font:400 15px/1.55 var(--font-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+a,button,label,summary,select{cursor:pointer}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+::selection{background:var(--accent);color:var(--on-accent)}
+code{font-size:.88em;background:var(--muted-bg);padding:1px 6px;border-radius:5px}
+.ic{flex:none;display:block}
+.ic.fill{fill:currentColor}
+.muted{color:var(--muted)}
+.display{font-family:var(--font-h);font-stretch:62%;font-weight:850;line-height:.9;text-transform:uppercase;letter-spacing:-.01em}
+.label{font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
+.kicker{display:flex;align-items:center;gap:.55rem;color:var(--muted)}
+.kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--text)}
+.logo{font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:20px;letter-spacing:.01em;text-decoration:none}
+
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:minmax(0,1fr);min-height:100dvh}
+.app>div{min-width:0}
+@media(min-width:960px){.app{grid-template-columns:240px minmax(0,1fr)}}
+.sidebar{display:none}
+@media(min-width:960px){.sidebar{display:flex;flex-direction:column;gap:26px;position:sticky;top:0;height:100dvh;padding:22px 14px;border-right:1px solid var(--line)}}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px}
+.brand .tag{font-size:10px;font-weight:600;letter-spacing:.16em;color:var(--muted);border:1px solid var(--line-2);border-radius:5px;padding:3px 6px;line-height:1}
+.snav{display:flex;flex-direction:column;gap:2px}
+.sitem{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0 12px;border:0;border-radius:var(--r-btn);background:none;color:var(--muted);font-size:14.5px;font-weight:500;text-align:left;transition:background var(--ease),color var(--ease)}
+.sitem:hover{background:var(--muted-bg);color:var(--text)}
+.sitem.active{background:var(--accent);color:var(--on-accent);font-weight:600}
+.count{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--text);color:#000;font-size:11px;font-weight:700;display:grid;place-items:center}
+.sitem.active .count{background:#000;color:#fff}
+.sfoot{margin-top:auto;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:0 8px}
+
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;height:calc(60px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 16px 0;background:rgba(0,0,0,.84);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar .spacer{flex:1}
+@media(max-width:959px){#pubBtn{padding:0 13px}}
+@media(max-width:350px){#pubBtn span{display:none}#pubBtn{width:44px;padding:0}}
+@media(min-width:960px){.topbar{padding:0 32px;height:64px}}
+.only-mobile{display:inline-flex}
+@media(min-width:960px){.only-mobile{display:none!important}}
+.only-desk{display:none!important}
+@media(min-width:960px){.only-desk{display:inline-flex!important}}
+main{width:100%;max-width:1120px;margin:0 auto;padding:20px 16px calc(160px + env(safe-area-inset-bottom))}
+@media(min-width:960px){main{padding:32px 32px 140px}}
+
+.tabbar{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);background:rgba(0,0,0,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
+@media(min-width:960px){.tabbar{display:none}}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;justify-content:center;background:none;border:0;color:var(--dim);font-size:10.5px;font-weight:500;position:relative;-webkit-tap-highlight-color:transparent;transition:color var(--ease)}
+.tab.active{color:var(--text)}
+.tab.active::before{content:"";position:absolute;top:-4px;left:28%;right:28%;height:2px;background:var(--text);border-radius:0 0 2px 2px}
+.tab .count{position:absolute;top:3px;left:calc(50% + 5px);min-width:16px;height:16px;padding:0 4px;font-size:9.5px}
+
+/* ---------- Bausteine ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:var(--r-btn);border:1px solid var(--line-2);background:transparent;color:var(--text);font-weight:600;font-size:14px;white-space:nowrap;text-decoration:none;-webkit-tap-highlight-color:transparent;flex:none;transition:border-color var(--ease),background var(--ease),opacity var(--ease),transform var(--ease)}
+.btn:hover{border-color:var(--text)}
+.btn:active{transform:translateY(1px)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:13px;gap:6px}
+.btn.icon{width:44px;padding:0}
+.btn.sm.icon{width:36px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{opacity:.9;border-color:var(--accent)}
+.btn-danger{color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.btn-danger:hover{border-color:var(--bad);background:rgba(239,68,68,.08)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.ping{animation:ping 2.4s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(248,250,252,.5)}70%{box-shadow:0 0 0 10px rgba(248,250,252,0)}100%{box-shadow:0 0 0 0 rgba(248,250,252,0)}}
+@media(max-width:420px){.hide-xs{display:none}}
+@media(max-width:600px){.hide-sm{display:none}}
+
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:18px}
+@media(min-width:760px){.card{padding:22px}}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.field>label,.flabel{font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.field small,.hint{color:var(--dim);font-size:12.5px;line-height:1.45}
+.input{width:100%;min-height:46px;background:#050505;border:1px solid var(--line-2);border-radius:var(--r-btn);color:var(--text);padding:11px 14px;font-size:16px;outline:none;transition:border-color var(--ease),box-shadow var(--ease);-webkit-appearance:none;appearance:none}
+.input::placeholder{color:var(--dim)}
+.input:focus{border-color:var(--text);box-shadow:0 0 0 3px rgba(255,255,255,.14)}
+textarea.input{resize:vertical;min-height:90px;line-height:1.5}
+input[type=date].input{min-height:46px}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7}
+select.input{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 52%,calc(100% - 13px) 52%;background-size:5px 5px;background-repeat:no-repeat;padding-right:36px}
+.pass-wrap{position:relative}
+.pass-wrap .input{padding-right:52px}
+.pass-wrap .btn{position:absolute;right:3px;top:50%;transform:translateY(-50%);border:0}
+.grid2{display:grid;grid-template-columns:1fr;gap:0 14px}
+@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.row{display:flex;gap:10px;align-items:center}
+.row>.input{flex:1;min-width:0}
+.row-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+.seg.scroll::-webkit-scrollbar{display:none}
+@media(min-width:960px){.seg.scroll{margin:0;padding:0;flex-wrap:wrap}}
+.seg-b{flex:none;min-height:40px;padding:0 14px;border-radius:var(--r-btn);border:1px solid var(--line-2);background:transparent;color:var(--muted);font-size:13.5px;font-weight:500;white-space:nowrap;transition:all var(--ease)}
+.seg-b:hover{color:var(--text);border-color:var(--muted)}
+.seg-b.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.seg-b .n{opacity:.6;margin-left:6px;font-variant-numeric:tabular-nums}
+.seg-b.add::before{content:"+ ";opacity:.6}
+.seg-b.add.on::before{content:"✓ ";opacity:1}
+
+.chip{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px;border-radius:999px;border:1px solid var(--line-2);font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--dim)}
+.chip.ok{color:var(--ok);border-color:rgba(74,222,128,.35)}.chip.ok::before{background:var(--ok)}
+.chip.warn{color:var(--warn);border-color:rgba(251,191,36,.35)}.chip.warn::before{background:var(--warn)}
+.chip.bad{color:#fca5a5;border-color:rgba(239,68,68,.4)}.chip.bad::before{background:var(--bad)}
+.chip.white{color:var(--text);border-color:var(--text)}.chip.white::before{background:var(--text)}
+
+.switch{-webkit-appearance:none;appearance:none;flex:none;width:48px;height:28px;border-radius:999px;background:var(--muted-bg);border:1px solid var(--line-2);position:relative;margin:0;transition:background var(--ease),border-color var(--ease)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform 220ms cubic-bezier(.3,.7,.3,1.2),background var(--ease)}
+.switch:checked{background:var(--accent);border-color:var(--accent)}
+.switch:checked::after{transform:translateX(20px);background:#000}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border:1px solid var(--line-2);border-radius:var(--r-btn);margin-bottom:16px;transition:border-color var(--ease)}
+.switch-row:hover{border-color:var(--muted)}
+.switch-row b{display:block;font-weight:600;font-size:14.5px}
+.switch-row small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+
+/* ---------- Seitenkopf ---------- */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:4px 0 24px;flex-wrap:wrap}
+.ph h1{margin:10px 0 0;font-size:clamp(3rem,13vw,5.2rem);overflow-wrap:anywhere}
+.ph>div{min-width:0}
+.ph p{margin:10px 0 0;color:var(--muted);font-size:14.5px}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.banner{display:flex;gap:13px;align-items:flex-start;padding:15px 16px;border-radius:var(--r-card);margin-bottom:20px;border:1px solid var(--line-2);background:var(--card)}
+.banner>.ic{margin-top:2px;color:var(--text)}
+.banner b{display:block;font-weight:600;margin-bottom:2px}
+.banner p{margin:0;color:var(--muted);font-size:13.5px}
+.banner .btn{margin-top:12px}
+.banner.bad{border-color:rgba(239,68,68,.45)}.banner.bad>.ic{color:var(--bad)}
+.banner.warn{border-color:rgba(251,191,36,.4)}.banner.warn>.ic{color:var(--warn)}
+
+/* ---------- Übersicht ---------- */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:var(--r-card);overflow:hidden;margin-bottom:16px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg);border:0;padding:16px 16px 18px;text-align:left;transition:background var(--ease)}
+.stat:hover{background:var(--card)}
+.stat .label{color:var(--muted);display:flex;align-items:center;gap:8px}
+.stat b{display:block;font-family:var(--font-h);font-stretch:62%;font-weight:850;font-size:clamp(2.6rem,9vw,3.6rem);line-height:1;margin-top:12px;font-variant-numeric:tabular-nums}
+.stat span.sub{display:block;color:var(--muted);font-size:13px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat.hot{background:var(--accent);color:var(--on-accent)}
+.stat.hot .label,.stat.hot span.sub{color:#334155}
+.dgrid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:900px){.dgrid{grid-template-columns:1.25fr 1fr}}
+.card h2,.sec-title{margin:0;font-family:var(--font-h);font-stretch:75%;font-weight:750;font-size:22px;line-height:1.1;display:flex;align-items:center;gap:10px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.bars{display:flex;flex-direction:column;gap:13px}
+.bar-row{display:grid;grid-template-columns:96px 1fr 30px;align-items:center;gap:12px;font-size:14px}
+.bar-row .track{height:6px;border-radius:3px;background:var(--muted-bg);overflow:hidden}
+.bar-row .track i{display:block;height:100%;background:var(--text);border-radius:3px}
+.bar-row .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.mini-list{display:flex;flex-direction:column}
+.mini{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border:0;border-top:1px solid var(--line);background:none;text-align:left}
+.mini:first-child{border-top:0;padding-top:0}
+.mini .t{flex:1;min-width:0}
+.mini .t b{display:block;font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .t span{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.qa{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:14px;min-height:92px;padding:14px;border:1px solid var(--line-2);border-radius:var(--r-btn);background:none;font-size:13.5px;font-weight:600;text-align:left;text-decoration:none;transition:border-color var(--ease)}
+.qa:hover{border-color:var(--text)}
+.empty-mini{color:var(--muted);font-size:14px}
+
+/* ---------- Fotos ---------- */
+.toolbar{margin-bottom:16px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+@media(min-width:600px){.pgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}}
+.ptile{position:relative;aspect-ratio:3/4;border-radius:var(--r-btn);overflow:hidden;background:var(--muted-bg);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform var(--ease)}
+.ptile img{width:100%;height:100%;object-fit:cover;display:block;transition:filter var(--ease)}
+@media(hover:hover){.ptile:hover{transform:translateY(-2px)}.ptile:hover img{filter:brightness(1.08)}}
+.ptile::after{content:"";position:absolute;inset:auto 0 0 0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,.7));pointer-events:none}
+.pbadges{position:absolute;top:6px;left:6px;right:6px;z-index:1;display:flex;gap:4px;flex-wrap:wrap;pointer-events:none}
+.pb{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:rgba(0,0,0,.65);color:#fff;line-height:1}
+.pb.w{background:var(--accent);color:var(--on-accent)}
+.pstar{position:absolute;top:6px;right:6px;z-index:1;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#000}
+.pcat{position:absolute;left:8px;right:8px;bottom:7px;z-index:1;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sortable-ghost{opacity:.25}
+.sortable-chosen{box-shadow:0 0 0 2px var(--accent)}
+img.broken{opacity:0}
+.empty{text-align:center;padding:48px 20px;border:1px dashed var(--line-2);border-radius:var(--r-card);color:var(--muted)}
+.empty .ic{margin:0 auto 14px;color:var(--dim)}
+.empty b{display:block;color:var(--text);font-family:var(--font-h);font-stretch:75%;font-weight:750;font-size:22px;margin-bottom:6px}
+.empty .btn{margin-top:18px}
+.tip{display:flex;gap:8px;align-items:flex-start;margin-top:16px;color:var(--dim);font-size:13px}
+.tip .ic{margin-top:1px}
+body.dragging main{outline:2px dashed var(--accent);outline-offset:-10px;border-radius:20px}
+
+.pprev{border-radius:var(--r-btn);overflow:hidden;background:#050505;margin-bottom:18px;display:grid;place-items:center}
+.pprev img{max-width:100%;max-height:44dvh;display:block;object-fit:contain}
+.meta{font-size:12px;color:var(--dim);word-break:break-all;margin-top:14px}
+.rolebar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+@media(min-width:600px){.pick{grid-template-columns:repeat(4,1fr)}}
+.pick button{position:relative;aspect-ratio:3/4;border-radius:var(--r-btn);overflow:hidden;border:2px solid transparent;padding:0;background:var(--muted-bg)}
+.pick button img{width:100%;height:100%;object-fit:cover;display:block}
+.pick button.on{border-color:var(--accent)}
+.pick button.on::after{content:"✓";position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#000;font-weight:700;font-size:12px;display:grid;place-items:center}
+.photo-field{display:flex;align-items:center;gap:14px;padding:10px;border:1px solid var(--line-2);border-radius:var(--r-btn);margin-bottom:16px}
+.photo-field img{width:56px;height:70px;object-fit:cover;border-radius:6px;background:var(--muted-bg);flex:none}
+.photo-field .t{flex:1;min-width:0}
+.photo-field .t b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-field .t span{display:block;font-size:12px;color:var(--muted)}
+
+/* ---------- Listen (Ordner, Edits, Pakete) ---------- */
+.list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.litem{display:flex;gap:14px;align-items:flex-start}
+.litem .body{flex:1;min-width:0}
+.litem .field{margin-bottom:10px}
+.litem .input{min-height:42px;padding:9px 12px}
+.lfoot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.lfoot .grow{flex:1}
+.fold-ic{flex:none;width:44px;height:44px;border-radius:var(--r-btn);border:1px solid var(--line-2);display:grid;place-items:center;color:var(--muted)}
+.vthumb{flex:none;position:relative;width:84px;aspect-ratio:9/16;border-radius:var(--r-btn);overflow:hidden;background:var(--muted-bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--dim)}
+@media(min-width:640px){.vthumb{width:116px}}
+.vthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vthumb .plat{position:absolute;left:5px;bottom:5px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 5px;border-radius:4px;background:rgba(0,0,0,.7);color:#fff;line-height:1}
+.vurl{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;margin-bottom:10px;text-decoration:none}
+.vurl:hover{color:var(--text)}
+
+/* ---------- Anfragen ---------- */
+.inq-tools{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+@media(min-width:760px){.inq-tools{flex-direction:row;align-items:center}.inq-tools .seg{flex:1}.inq-tools .search{width:280px}}
+.search{position:relative}
+.search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none}
+.search .input{padding-left:40px}
+.inq-list{display:flex;flex-direction:column;gap:8px}
+.inq{border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);overflow:hidden;transition:border-color var(--ease)}
+.inq.open{border-color:var(--line-2)}
+.inq.st-neu{border-left:3px solid var(--accent)}
+.inq-h{display:flex;align-items:center;gap:12px;width:100%;padding:14px;background:none;border:0;text-align:left}
+.avatar{flex:none;width:40px;height:40px;border-radius:var(--r-btn);display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:15px}
+.inq-main{flex:1;min-width:0}
+.inq-name{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.inq-name span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.newdot{width:7px;height:7px;border-radius:50%;background:var(--text);flex:none}
+.inq-sub{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.inq-body{padding:0 14px 16px}
+.msg{margin:0 0 14px;padding:14px;border-radius:var(--r-btn);background:#050505;border:1px solid var(--line);font-size:14.5px;white-space:pre-wrap;word-break:break-word}
+.kv{display:flex;flex-direction:column;gap:9px;margin-bottom:16px;font-size:14px}
+.kv>div{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.kv a,.kv b{color:var(--text);font-weight:500}
+.kv a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+.kv .ic{color:var(--dim)}
+.st-chip.neu{color:var(--text);border-color:var(--text)}.st-chip.neu::before{background:var(--text)}
+.st-chip.offen{color:var(--warn);border-color:rgba(251,191,36,.35)}.st-chip.offen::before{background:var(--warn)}
+.st-chip.erledigt{color:var(--ok);border-color:rgba(74,222,128,.35)}.st-chip.erledigt::before{background:var(--ok)}
+.loading{display:grid;place-items:center;gap:14px;padding:80px 0;color:var(--muted)}
+
+/* ---------- Texte & Einstellungen ---------- */
+.sec{margin-bottom:16px}
+.sec>h2,.sec-h{margin-bottom:18px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sec p.muted{margin:-8px 0 18px;font-size:14px}
+.pkgs{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:900px){.pkgs{grid-template-columns:repeat(2,1fr)}}
+.pkg.hl{border-color:var(--accent)}
+.pkg .field{margin-bottom:12px}
+.steps{margin:0 0 6px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 16px 38px;color:var(--muted);font-size:14px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:12.5px}
+.steps li b{color:var(--text);font-weight:600}
+details.help{margin:0 0 18px;border:1px solid var(--line-2);border-radius:var(--r-btn)}
+details.help>summary{padding:13px 14px;font-size:14px;font-weight:600;list-style:none;display:flex;align-items:center;gap:10px;min-height:44px}
+details.help>summary::-webkit-details-marker{display:none}
+details.help>summary .ic{transition:transform var(--ease)}
+details.help[open]>summary .ic{transform:rotate(90deg)}
+details.help>div{padding:4px 14px 8px}
+.code{position:relative;margin:10px 0 14px}
+.code pre{margin:0;max-height:260px;overflow:auto;padding:14px;border-radius:var(--r-btn);background:#050505;border:1px solid var(--line);font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cbd5e1;white-space:pre}
+.code .btn{position:absolute;top:8px;right:8px;background:#000}
+.danger{border-color:rgba(239,68,68,.25)}
+
+/* ---------- Leiste für ungespeicherte Änderungen ---------- */
+.pending{position:fixed;z-index:29;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:var(--r-card);background:rgba(12,12,12,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line-2);box-shadow:0 20px 50px -10px rgba(0,0,0,.9);animation:up .3s cubic-bezier(.2,.8,.2,1)}
+.pending.show{display:flex}
+.pending .t{flex:1;min-width:0;font-size:13.5px}
+.pending .t b{display:block;font-weight:600}
+.pending .t span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:960px){.pending{left:auto;right:28px;bottom:28px;width:480px}}
+
+/* ---------- Dialog ---------- */
+.sheet-wrap{position:fixed;inset:0;z-index:60;display:none}
+.sheet-wrap.open{display:block}
+.sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92dvh;overflow:auto;background:var(--card);border:1px solid var(--line-2);border-bottom:0;border-radius:var(--r-modal) var(--r-modal) 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,.8,.2,1);overscroll-behavior:contain}
+.sheet::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line-2);margin:0 auto 12px}
+@media(min-width:700px){
+  .sheet{left:50%;top:50%;bottom:auto;width:min(580px,92vw);max-height:88dvh;transform:translate(-50%,-50%);border-radius:var(--r-modal);border-bottom:1px solid var(--line-2);padding:28px;box-shadow:var(--shadow-xl);animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+  .sheet::before{display:none}
+}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.sheet-h h3{margin:0;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:26px;line-height:1.05}
+.sheet-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sheet-actions .grow{flex:1}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pop{from{transform:translate(-50%,-47%);opacity:0}to{transform:translate(-50%,-50%);opacity:1}}
+@keyframes fade{from{opacity:0}}
+
+/* ---------- Meldungen ---------- */
+.toasts{position:fixed;z-index:80;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;width:min(440px,calc(100vw - 24px));pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r-btn);background:var(--accent);color:var(--on-accent);font-weight:600;font-size:14px;box-shadow:var(--shadow-xl);animation:drop .25s ease}
+.toast.bad{background:#2a0b0b;color:#fecaca;border:1px solid rgba(239,68,68,.5)}
+.toast.warn{background:#1f1706;color:#fde68a;border:1px solid rgba(251,191,36,.4)}
+.toast.out{opacity:0;transform:translateY(-8px);transition:.3s}
+@keyframes drop{from{opacity:0;transform:translateY(-10px)}}
+.progress{position:fixed;inset:0;z-index:90;display:none;place-items:center;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.progress.show{display:grid}
+.prog-card{width:min(340px,86vw);padding:26px 22px;border-radius:var(--r-modal);background:var(--card);border:1px solid var(--line-2);text-align:center}
+.ring{width:42px;height:42px;margin:0 auto 18px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--text);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prog-t{font-size:14.5px;margin-bottom:16px}
+.pbar{height:3px;border-radius:2px;background:var(--line-2);overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--text);transition:width .3s}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div>
+    <header class="topbar" id="topbar"></header>
+    <main id="view"></main>
+  </div>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Navigation"></nav>
+<div class="pending" id="pending" role="status"></div>
+<div class="sheet-wrap" id="sheetWrap"><div class="sheet-backdrop" data-action="sheet-close"></div><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="progress" id="progress"></div>
+<input type="file" id="fileInput" accept="image/*" multiple hidden>
+<input type="file" id="coverInput" accept="image/*" hidden>
+
+<script>
+'use strict';
+/* =====================================================================
+   mapq.raw · Admin
+   Bearbeitet content.json + Fotos direkt im GitHub-Repo (ein Commit pro
+   „Veröffentlichen“). index.html liest content.json beim Laden.
+   Anfragen vom Kontaktformular liegen in Supabase.
+   ===================================================================== */
+
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 5);
+const arr = a => Array.isArray(a) ? a : [];
+const clone = o => JSON.parse(JSON.stringify(o));
+
+const store = {
+  k: k => 'mapq_admin_' + k,
+  get(k, d = null) { try { const v = localStorage.getItem(this.k(k)); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(this.k(k), JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(this.k(k)); } catch {} },
+  clear() { try { Object.keys(localStorage).filter(k => k.startsWith('mapq_admin_')).forEach(k => localStorage.removeItem(k)); } catch {} }
+};
+
+/* ---------- Icons (Lucide) ---------- */
+const ICONS = {
+  dash: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  video: '<path d="m16 13 5.22 3.48a.5.5 0 0 0 .78-.42V7.94a.5.5 0 0 0-.76-.43L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/>',
+  inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  type: '<path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>',
+  sliders: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+  star: '<path d="M11.5 2.3a.5.5 0 0 1 .9 0l2.3 4.7a2 2 0 0 0 1.6 1.1l5.2.8a.5.5 0 0 1 .3.9l-3.8 3.7a2 2 0 0 0-.6 1.9l.9 5.2a.5.5 0 0 1-.8.6l-4.6-2.5a2 2 0 0 0-2 0L5.6 21.2a.5.5 0 0 1-.8-.6l.9-5.2a2 2 0 0 0-.6-1.9L1.4 9.8a.5.5 0 0 1 .3-.9l5.2-.8a2 2 0 0 0 1.6-1.1z"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>',
+  left: '<path d="m15 18-6-6 6-6"/>', right: '<path d="m9 18 6-6-6-6"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', check: '<path d="M20 6 9 17l-5-5"/>',
+  arrow: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  refresh: '<path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  insta: '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/>',
+  phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  cloud: '<path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  github: '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
+  db: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
+  eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+  undo: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>',
+  play: '<polygon points="7 4 20 12 7 20 7 4"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/>',
+  reply: '<path d="m9 17-5-5 5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+  tag: '<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
+  chev: '<path d="m9 18 6-6-6-6"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'
+};
+const ic = (n, s = 20, cls = '') => `<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+/* ---------- Konstanten (passend zu index.html) ---------- */
+const CATS = [{ id: 'auto', label: 'Autos' }, { id: 'moto', label: 'Motorräder' }, { id: 'outdoor', label: 'Outdoor' }, { id: 'tiere', label: 'Tiere' }];
+const catLabel = id => (CATS.find(c => c.id === id) || { label: id }).label;
+const STATUS = { neu: 'Neu', offen: 'In Arbeit', erledigt: 'Erledigt' };
+const NAV = [
+  { id: 'dashboard', label: 'Start', long: 'Übersicht', icon: 'dash' },
+  { id: 'photos', label: 'Fotos', icon: 'image' },
+  { id: 'folders', label: 'Ordner', long: 'Fotoordner', icon: 'folder' },
+  { id: 'videos', label: 'Edits', long: 'Video-Edits', icon: 'video' },
+  { id: 'inquiries', label: 'Anfragen', icon: 'inbox' },
+  { id: 'texts', label: 'Texte', long: 'Texte & Preise', icon: 'type' },
+  { id: 'settings', label: 'Einstellungen', icon: 'sliders' }
+];
+const BIG = f => `fotos/${f}.jpg`, SMALL = f => `fotos/klein/${f}.jpg`;
+const MANAGED_PREFIXES = ['fotos/'];
+const SMALL_EDGE = 760;
+
+/* ---------- Konfiguration (nur auf diesem Gerät) ---------- */
+const cfg = {
+  gh: Object.assign({ owner: 'mapq069', repo: 'mapq.at', branch: 'main', token: '' }, store.get('gh', {})),
+  sb: Object.assign({ url: '', key: '', email: '' }, store.get('sb', {})),
+  sbSession: store.get('sbSession', null),
+  siteUrl: store.get('siteUrl', 'https://mapq.at'),
+  img: Object.assign({ max: 1600, q: 0.82 }, store.get('img', {}))
+};
+
+/* ---------- Zustand ---------- */
+const state = {
+  view: 'dashboard',
+  mode: 'view',              // 'view' = nur ansehen, 'live' = mit Token
+  loading: false, loadError: null, source: '',
+  content: null, originalJSON: '', contentSha: null, contentMissing: false,
+  uploads: new Map(),        // Repo-Pfad -> { b64 }
+  deletes: new Set(),        // Repo-Pfade, die beim Veröffentlichen gelöscht werden
+  previews: new Map(),       // Repo-Pfad -> blob-URL (noch nicht veröffentlicht)
+  inquiries: [], inqLoading: false, inqError: null, inqFilter: 'open', inqQuery: '', openInq: null,
+  photoFilter: 'all', coverTarget: null
+};
+
+/* ---------- Base64 ---------- */
+function bytesToB64(bytes) { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
+const utf8ToB64 = str => bytesToB64(new TextEncoder().encode(str));
+function b64ToUtf8(b64) { const bin = atob(String(b64).replace(/\s/g, '')); const b = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return new TextDecoder().decode(b); }
+const blobToB64 = async blob => bytesToB64(new Uint8Array(await blob.arrayBuffer()));
+const encPath = p => p.split('/').map(encodeURIComponent).join('/');
+
+/* =====================================================================
+   GitHub
+   ===================================================================== */
+const GH = {
+  get known() { return !!(cfg.gh.owner && cfg.gh.repo); },
+  get ready() { return this.known && !!cfg.gh.token; },
+  base() { return `https://api.github.com/repos/${encodeURIComponent(cfg.gh.owner)}/${encodeURIComponent(cfg.gh.repo)}`; },
+  raw(path) { return `https://raw.githubusercontent.com/${encodeURIComponent(cfg.gh.owner)}/${encodeURIComponent(cfg.gh.repo)}/${encPath(cfg.gh.branch || 'main')}/${encPath(path)}`; },
+  async req(path, opts = {}) {
+    const headers = { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + cfg.gh.token, 'X-GitHub-Api-Version': '2022-11-28', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) };
+    const res = await fetch(this.base() + path, { ...opts, headers, cache: 'no-store' });
+    if (!res.ok) { let msg = 'HTTP ' + res.status; try { const j = await res.json(); if (j.message) msg = j.message; } catch {} const e = new Error(msg); e.status = res.status; throw e; }
+    return res.status === 204 ? null : res.json();
+  },
+  repoInfo() { return this.req(''); },
+  async file(path) {
+    try { return await this.req(`/contents/${encPath(path)}?ref=${encodeURIComponent(cfg.gh.branch)}`); }
+    catch (e) { if (e.status === 404) return null; throw e; }
+  },
+  async text(meta) {
+    if (meta.content) return b64ToUtf8(meta.content);
+    const blob = await this.req(`/git/blobs/${meta.sha}`); return b64ToUtf8(blob.content);
+  },
+  async readContent() {
+    const meta = await this.file('content.json');
+    if (!meta) return { data: null, sha: null };
+    return { data: JSON.parse(await this.text(meta)), sha: meta.sha };
+  },
+  async head() {
+    const ref = await this.req(`/git/ref/heads/${encPath(cfg.gh.branch)}`);
+    const commit = await this.req(`/git/commits/${ref.object.sha}`);
+    return { sha: ref.object.sha, tree: commit.tree.sha };
+  },
+  /* Alles als EIN Commit: Fotos + content.json + Löschungen */
+  async commit(files, deletes, message, onProgress) {
+    const h = await this.head();
+    let del = [...deletes];
+    if (del.length) {
+      const t = await this.req(`/git/trees/${h.tree}?recursive=1`);
+      const existing = new Set(arr(t.tree).map(x => x.path));
+      del = del.filter(p => existing.has(p));
+      /* Dateien, die index.html direkt verwendet (z. B. Vorschaubild für Links), bleiben liegen */
+      try { const idx = await this.file('index.html'); if (idx) { const html = await this.text(idx); del = del.filter(p => !html.includes(p)); } } catch {}
+    }
+    const entries = [];
+    for (let i = 0; i < files.length; i++) {
+      onProgress?.(files.length > 1 ? `Lade hoch … ${i + 1} von ${files.length}` : 'Lade hoch …', (i + 1) / (files.length + 2));
+      const blob = await this.req('/git/blobs', { method: 'POST', body: JSON.stringify({ content: files[i].b64, encoding: 'base64' }) });
+      entries.push({ path: files[i].path, mode: '100644', type: 'blob', sha: blob.sha });
+    }
+    for (const p of del) entries.push({ path: p, mode: '100644', type: 'blob', sha: null });
+    onProgress?.('Speichere …', (files.length + 1) / (files.length + 2));
+    const tree = await this.req('/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: h.tree, tree: entries }) });
+    const commit = await this.req('/git/commits', { method: 'POST', body: JSON.stringify({ message, tree: tree.sha, parents: [h.sha] }) });
+    await this.req(`/git/refs/heads/${encPath(cfg.gh.branch)}`, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha }) });
+    return commit;
+  }
+};
+function ghError(e) {
+  if (e.status === 401) return 'Token ungültig oder abgelaufen.';
+  if (e.status === 403) return 'Kein Zugriff – der Token braucht „Contents: Read and write“ für dieses Repo.';
+  if (e.status === 404) return 'Repo nicht gefunden (oder der Token hat keinen Zugriff darauf).';
+  if (e.status === 409) return 'Das Repo ist gerade gesperrt oder leer.';
+  if (e.status === 422) return 'GitHub hat die Änderung abgelehnt: ' + e.message;
+  if (e instanceof TypeError) return 'Keine Verbindung zu GitHub. Bist du online?';
+  return e.message || 'Unbekannter Fehler';
+}
+
+/* =====================================================================
+   Supabase (Anfragen)
+   ===================================================================== */
+function jwtRole(key) { try { return JSON.parse(atob(key.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).role || ''; } catch { return ''; } }
+const isSecretKey = k => /^sb_secret_/.test(k) || jwtRole(k) === 'service_role';
+const SB = {
+  get ready() { return !!(cfg.sb.url && cfg.sb.key); },
+  get loggedIn() { return !!(cfg.sbSession && cfg.sbSession.access_token); },
+  url(p) { return cfg.sb.url.replace(/\/+$/, '') + p; },
+  async auth(grant, body) {
+    const r = await fetch(this.url('/auth/v1/token?grant_type=' + grant), { method: 'POST', headers: { apikey: cfg.sb.key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let j = {}; try { j = await r.json(); } catch {}
+    if (!r.ok) throw new Error(j.error_description || j.msg || j.message || ('Anmeldung fehlgeschlagen (' + r.status + ')'));
+    cfg.sbSession = { access_token: j.access_token, refresh_token: j.refresh_token, email: j.user?.email || cfg.sb.email, expires_at: Date.now() + (j.expires_in || 3600) * 1000 - 60000 };
+    store.set('sbSession', cfg.sbSession);
+  },
+  login(email, password) { return this.auth('password', { email, password }); },
+  refresh() { return this.auth('refresh_token', { refresh_token: cfg.sbSession?.refresh_token }); },
+  logout() { cfg.sbSession = null; store.del('sbSession'); },
+  async req(path, opts = {}, retry = true) {
+    if (!this.loggedIn) throw new Error('Nicht angemeldet.');
+    if (Date.now() > cfg.sbSession.expires_at) { try { await this.refresh(); } catch { this.logout(); throw new Error('Sitzung abgelaufen – bitte neu anmelden.'); } }
+    const r = await fetch(this.url('/rest/v1' + path), { ...opts, headers: { apikey: cfg.sb.key, Authorization: 'Bearer ' + cfg.sbSession.access_token, 'Content-Type': 'application/json', ...(opts.headers || {}) } });
+    if (r.status === 401 && retry) { try { await this.refresh(); } catch { this.logout(); throw new Error('Sitzung abgelaufen – bitte neu anmelden.'); } return this.req(path, opts, false); }
+    const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch {}
+    if (!r.ok) {
+      if (j?.code === '42P01' || j?.code === 'PGRST205' || /does not exist|could not find the table/i.test(j?.message || '')) throw new Error('Die Tabelle „anfragen“ fehlt – hast du den SQL-Code in Supabase ausgeführt?');
+      throw new Error(j?.message || j?.hint || ('Fehler ' + r.status));
+    }
+    return j;
+  },
+  list() { return this.req('/anfragen?select=*&order=created_at.desc'); },
+  update(id, patch) { return this.req('/anfragen?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(patch) }); },
+  remove(id) { return this.req('/anfragen?id=eq.' + encodeURIComponent(id), { method: 'DELETE' }); }
+};
+const inqMode = () => (SB.ready && SB.loggedIn) ? 'live' : state.mode === 'view' ? 'demo' : 'setup';
+
+/* =====================================================================
+   Inhalte (Aufbau wie content.json)
+   ===================================================================== */
+const defaultSite = () => ({
+  kicker: 'Fotografie · Tirol, Österreich',
+  lede: 'Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.',
+  say: 'Autos, Motorräder und Motorsport. Dazu Landschaften, wenn das *Licht* stimmt.',
+  heroPhoto: 'supermoto-strasse', aboutPhoto: 'hinter-der-kamera', aboutPos: '30% 70%',
+  about: 'Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.\n\nIch arbeite gern mit Fahrern, Teams und Besitzern zusammen.',
+  name: 'Matteo Hanser', focus: 'Automotive, Action, Outdoor', region: 'Tirol, Österreich', offer: 'Shootings und Zusammenarbeit',
+  contactIntro: 'Am schnellsten erreichst du mich auf Instagram.',
+  instagram: 'mapq.raw', instagramPrivate: 'matzeqp', email: 'Matteohanser8@gmail.com', tiktok: ''
+});
+/* Stand der Website vor dem Panel – nur falls content.json nicht erreichbar ist */
+function fallbackContent() {
+  const P = (f, t, c, ar, hl) => ({ f, t, c, ar, hl });
+  return {
+    version: 1, site: defaultSite(),
+    photos: [
+      P('audi-a3-feld', 'Audi A3 am Feld', ['auto'], 1.7778, true), P('hund', 'Hund bei Sonnenuntergang', ['tiere', 'outdoor'], .5625, true),
+      P('supermoto-burnout', 'Supermoto-Burnout', ['moto'], .5625, true), P('wasserfall', 'Wasserfall in den Bergen', ['outdoor'], .5625, true),
+      P('bmw-e46', 'Blauer BMW E46', ['auto'], .5625, true), P('steinmann', 'Steinmann im Tal', ['outdoor'], .5625, true),
+      P('supermoto-strasse', 'Fahrerin mit Supermoto auf einer Bergstraße', ['moto'], 1.7778, false), P('cockpit', 'Blick ins Cockpit', ['auto'], .5625, true),
+      P('supermoto-felge', 'Supermoto-Felge im Detail', ['moto'], .5625, true), P('hinter-der-kamera', 'Fotografieren am Wasserfall', ['outdoor'], .5625, false)
+    ],
+    folders: [
+      { id: 'f1', t: 'Oldtimertreffen Buch', d: '2026-09-27', url: 'https://drive.google.com/drive/folders/17KqME1dj7s9PZuzvMXyUYNQOAs4H8z2r?usp=drive_link' },
+      { id: 'f2', t: 'Autoslalom Stans HTS', d: '2026-09-20', url: 'https://drive.google.com/drive/folders/1woKYOxA5jm77aWxoP__RGTIisRSIf2sI?usp=drive_link' },
+      { id: 'f3', t: 'Oldtimertreffen Aschach', d: '2026-09-19', url: 'https://drive.google.com/drive/folders/1jcYJfD6yJl7reeP0U6e3DlL_A5-L_82k?usp=drive_link' },
+      { id: 'f4', t: 'Autoslalom Reifen Jais Hall', d: '2026-09-13', url: 'https://drive.google.com/drive/folders/1jyVHDlOn9tCoSueNOa9N6unC9Cpwh2CO?usp=drive_link' }
+    ],
+    videos: [], packages: [], inbox: null
+  };
+}
+function normCats(c) {
+  const list = (Array.isArray(c) ? c : String(c || '').split(/\s+/)).filter(x => CATS.some(k => k.id === x));
+  return list.length ? [...new Set(list)] : ['auto'];
+}
+function normalize(d) {
+  const c = (d && typeof d === 'object') ? clone(d) : {};
+  c.version = 1;
+  c.site = { ...defaultSite(), ...(c.site || {}) };
+  c.photos = arr(c.photos).filter(p => p && p.f).map(p => ({ ...p, f: String(p.f), t: p.t || '', c: normCats(p.c), ar: Number(p.ar) || 1, hl: !!p.hl }));
+  c.folders = arr(c.folders).filter(x => x && x.url).map(x => ({ ...x, id: x.id || 'f_' + uid(), t: x.t || '', d: x.d || '', url: x.url }));
+  c.videos = arr(c.videos).filter(v => v && v.url).map(v => ({ ...v, id: v.id || 'v_' + uid(), title: v.title || '', car: v.car || '', cover: v.cover || '', ...parseVideo(v.url) }));
+  c.packages = arr(c.packages).map(k => ({ ...k, id: k.id || 'k_' + uid(), name: k.name || '', price: k.price || '', description: k.description || '', features: arr(k.features), highlight: !!k.highlight }));
+  c.inbox = (c.inbox && c.inbox.url && c.inbox.key) ? { url: c.inbox.url, key: c.inbox.key } : null;
+  return c;
+}
+function demoInquiries() {
+  const h = 3600e3, t = Date.now(), iso = ms => new Date(t - ms).toISOString();
+  return [
+    { id: 'd1', created_at: iso(2 * h), name: 'Beispiel: Lukas', kontakt: 'lukas@example.com', art: 'Auto-Shooting', zeit: 'Abends', nachricht: 'Servus! Ich hätte gern ein Shooting von meinem Auto, am liebsten am Kühtai. Was würde das kosten?', status: 'neu', notiz: '' },
+    { id: 'd2', created_at: iso(27 * h), name: 'Beispiel: Sarah', kontakt: '@beispiel.sarah', art: 'Motorrad-Shooting', zeit: 'Tagsüber', nachricht: 'Hi, hättest du im Frühling Zeit für Fotos von meiner Supermoto?', status: 'neu', notiz: '' },
+    { id: 'd3', created_at: iso(76 * h), name: 'Beispiel: Team Racing', kontakt: 'team@example.com', art: 'Event oder Rennen', zeit: 'Egal', nachricht: 'Wir fahren beim Autoslalom mit und bräuchten Fotos fürs Team.', status: 'offen', notiz: 'Angebot geschickt' }
+  ];
+}
+
+/* ---------- Video-Links ---------- */
+function parseVideo(url) {
+  const u = String(url || '').trim(); let m;
+  if ((m = u.match(/tiktok\.com\/@([\w.-]+)\/video\/(\d+)/))) return { url: u, platform: 'tiktok', videoId: m[2], short: false };
+  if (/vm\.tiktok\.com|vt\.tiktok\.com|tiktok\.com\/t\//.test(u)) return { url: u, platform: 'tiktok', videoId: '', short: true };
+  if ((m = u.match(/instagram\.com\/(?:reels?|p)\/([\w-]+)/))) return { url: u, platform: 'instagram', videoId: m[1], short: false };
+  if ((m = u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/))([\w-]{11})/))) return { url: u, platform: 'youtube', videoId: m[1], short: false };
+  return { url: u, platform: 'link', videoId: '', short: false };
+}
+
+/* ---------- Helfer ---------- */
+const hasChanges = () => !!state.content && (state.uploads.size > 0 || state.deletes.size > 0 || JSON.stringify(state.content) !== state.originalJSON);
+const isDirty = () => state.mode === 'live' && !state.loadError && hasChanges();
+function changeSummary() {
+  const up = [...state.uploads.keys()].filter(p => !p.startsWith('fotos/klein/')).length;
+  const del = [...state.deletes].filter(p => !p.startsWith('fotos/klein/')).length;
+  const parts = [];
+  if (up) parts.push(`${up} neue${up === 1 ? 's' : ''} Bild${up === 1 ? '' : 'er'}`);
+  if (del) parts.push(`${del} gelöscht`);
+  if (JSON.stringify(state.content) !== state.originalJSON) parts.push('Inhalte geändert');
+  return parts;
+}
+function imgUrl(path) {
+  if (!path) return '';
+  if (/^(https?:|data:|blob:)/.test(path)) return path;
+  if (state.previews.has(path)) return state.previews.get(path);
+  return GH.known ? GH.raw(path) : path;
+}
+const siteUrl = () => cfg.siteUrl || 'https://mapq.at';
+function rel(ts) {
+  const d = (new Date(ts).getTime() - Date.now()) / 1000, a = Math.abs(d);
+  const rtf = new Intl.RelativeTimeFormat('de', { numeric: 'auto' });
+  if (a < 60) return 'gerade eben';
+  if (a < 3600) return rtf.format(Math.round(d / 60), 'minute');
+  if (a < 86400) return rtf.format(Math.round(d / 3600), 'hour');
+  if (a < 86400 * 30) return rtf.format(Math.round(d / 86400), 'day');
+  return new Date(ts).toLocaleDateString('de-AT', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+const shortDate = iso => { const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}.${m[2]}.${m[1].slice(2)}` : String(iso || ''); };
+const todayISO = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const initials = n => (String(n || '?').replace(/^Beispiel:\s*/, '').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('') || '?').toUpperCase();
+function slug(s) {
+  return String(s).toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+}
+function niceTitle(filename) {
+  const base = String(filename).split('/').pop().replace(/\.[^.]+$/, '');
+  if (/^(img|dsc|_dsc|dscf|pxl|photo|image|mvimg|screenshot|whatsapp|edited|ilce|a7|c\d{4})[\s_-]*\d*/i.test(base) || /^[\d\s_-]+$/.test(base)) return '';
+  return base.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/^./, c => c.toUpperCase());
+}
+const keyOf = x => x.id || x.f;
+const photoByF = f => state.content.photos.find(p => p.f === f);
+const byKey = (list, k) => arr(state.content[list]).find(x => keyOf(x) === k);
+const inqById = id => state.inquiries.find(q => String(q.id) === String(id));
+function moveIn(list, k, dir) {
+  const i = list.findIndex(x => keyOf(x) === k); if (i < 0) return;
+  const j = dir === 'first' ? 0 : dir === 'last' ? list.length - 1 : i + (dir === 'up' ? -1 : 1);
+  if (j < 0 || j >= list.length || j === i) return;
+  const [it] = list.splice(i, 1); list.splice(j, 0, it);
+}
+function setPath(obj, path, val) { const ks = path.split('.'); let o = obj; ks.slice(0, -1).forEach(k => o = o[k]); o[ks.at(-1)] = val; }
+const getPath = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj);
+function dropFile(path) {
+  if (!path || /^(data:|blob:|https?:)/.test(path)) return;
+  if (state.uploads.has(path)) { state.uploads.delete(path); const u = state.previews.get(path); if (u) URL.revokeObjectURL(u); state.previews.delete(path); }
+  else if (MANAGED_PREFIXES.some(p => path.startsWith(p))) state.deletes.add(path);
+}
+function contactOf(k) {
+  k = String(k || '').trim();
+  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(k)) return { type: 'mail', href: 'mailto:' + k, label: k, icon: 'mail' };
+  if (/^\+?[\d\s/()-]{6,}$/.test(k)) return { type: 'tel', href: 'tel:' + k.replace(/[^\d+]/g, ''), label: k, icon: 'phone' };
+  const h = k.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, '');
+  if (/^[\w.]{1,30}$/.test(h)) return { type: 'ig', href: 'https://ig.me/m/' + h, label: '@' + h, icon: 'insta' };
+  return { type: 'text', href: '', label: k, icon: 'user' };
+}
+
+/* ---------- Bilder im Browser verkleinern ---------- */
+async function loadBitmap(file) {
+  if ('createImageBitmap' in window) { try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch {} }
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(u); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(u); rej(new Error('Bild konnte nicht gelesen werden')); };
+    img.src = u;
+  });
+}
+async function resize(src, max, quality) {
+  const w = src.naturalWidth || src.width, h = src.naturalHeight || src.height;
+  const s = Math.min(1, max / Math.max(w, h)), cw = Math.round(w * s), ch = Math.round(h * s);
+  const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+  const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(src, 0, 0, cw, ch);
+  const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('Export fehlgeschlagen')), 'image/jpeg', quality));
+  return { blob, w: cw, h: ch };
+}
+
+/* =====================================================================
+   Grundgerüst
+   ===================================================================== */
+function toast(msg, kind = '') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.innerHTML = ic(kind === 'bad' || kind === 'warn' ? 'alert' : kind === 'ok' ? 'check' : 'info', 18) + `<span>${esc(msg)}</span>`;
+  const box = $('#toasts'); box.appendChild(el);
+  while (box.children.length > 2) box.firstElementChild.remove();
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 320); }, kind === 'bad' ? 5500 : 3200);
+}
+function showProgress(t) {
+  $('#progress').innerHTML = `<div class="prog-card"><div class="ring"></div><div class="prog-t" id="progT">${esc(t)}</div><div class="pbar"><i id="progB" style="width:6%"></i></div></div>`;
+  $('#progress').classList.add('show');
+}
+function setProgress(t, p) { const a = $('#progT'), b = $('#progB'); if (a) a.textContent = t; if (b && p != null) b.style.width = Math.max(6, Math.round(p * 100)) + '%'; }
+function hideProgress() { $('#progress').classList.remove('show'); }
+function openSheet(html) {
+  $('#sheet').innerHTML = html;
+  const w = $('#sheetWrap');
+  if (!w.classList.contains('open')) { w.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+function closeSheet() {
+  $('#sheetWrap').classList.remove('open'); $('#sheet').innerHTML = ''; document.body.style.overflow = '';
+  renderView(); updateDirty();
+}
+
+function renderChrome() {
+  const newCount = state.inquiries.filter(i => i.status === 'neu').length;
+  const cnt = id => id === 'inquiries' && newCount && inqMode() === 'live' ? `<span class="count">${newCount}</span>` : '';
+  const url = siteUrl();
+  const chip = state.mode === 'live' ? (state.loadError ? '<span class="chip bad">Fehler</span>' : '<span class="chip ok">Verbunden</span>') : '<span class="chip warn">Nur ansehen</span>';
+  $('#sidebar').innerHTML = `
+    <div class="brand"><span class="logo">mapq.raw</span><span class="tag">ADMIN</span></div>
+    <nav class="snav">${NAV.map(n => `<button class="sitem ${state.view === n.id ? 'active' : ''}" data-action="go" data-view="${n.id}">${ic(n.icon)}<span>${n.long || n.label}</span>${cnt(n.id)}</button>`).join('')}</nav>
+    <div class="sfoot">${chip}<a class="btn sm" href="${esc(url)}" target="_blank" rel="noopener">${ic('arrow', 15)} Website ansehen</a></div>`;
+  $('#topbar').innerHTML = `
+    <span class="logo only-mobile">mapq.raw</span>
+    <span class="spacer"></span>
+    <a class="btn sm only-desk" href="${esc(url)}" target="_blank" rel="noopener">${ic('arrow', 15)} Website</a>
+    <button class="btn icon only-mobile" data-action="go" data-view="settings" aria-label="Einstellungen" ${state.view === 'settings' ? 'style="border-color:var(--text)"' : ''}>${ic('sliders')}</button>
+    <button class="btn" id="pubBtn" data-action="publish">${ic('cloud', 18)}<span>Veröffentlichen</span></button>`;
+  $('#tabbar').innerHTML = NAV.slice(0, 6).map(n => `<button class="tab ${state.view === n.id ? 'active' : ''}" data-action="go" data-view="${n.id}" aria-label="${n.long || n.label}">${ic(n.icon, 21)}<span>${n.label}</span>${cnt(n.id)}</button>`).join('');
+  updateDirty();
+}
+function updateDirty() {
+  const btn = $('#pubBtn'), bar = $('#pending');
+  if (btn) btn.className = 'btn ' + (isDirty() ? 'btn-primary ping' : '');
+  if (isDirty()) {
+    bar.innerHTML = `<div class="t"><b>Noch nicht online</b><span>${esc(changeSummary().join(' · '))}</span></div>
+      <button class="btn sm icon" data-action="discard" aria-label="Änderungen verwerfen" title="Verwerfen">${ic('undo', 17)}</button>
+      <button class="btn sm btn-primary" data-action="publish">${ic('cloud', 16)} Veröffentlichen</button>`;
+    bar.classList.add('show');
+  } else if (state.mode === 'view' && hasChanges()) {
+    bar.innerHTML = `<div class="t"><b>Nur Vorschau</b><span>Zum Speichern einmal GitHub verbinden</span></div>
+      <button class="btn sm btn-primary" data-action="go" data-view="settings">Verbinden</button>`;
+    bar.classList.add('show');
+  } else bar.classList.remove('show');
+}
+function render() { renderChrome(); renderView(); }
+function renderView() { $('#view').innerHTML = state.loading ? viewLoading() : (VIEWS[state.view] || VIEWS.dashboard)(); afterRender(); }
+function go(view) {
+  state.view = NAV.some(n => n.id === view) ? view : 'dashboard';
+  try { history.replaceState(null, '', '#' + state.view); } catch {}
+  render(); window.scrollTo({ top: 0 });
+}
+const viewLoading = () => `<div class="loading"><div class="ring"></div><div>Lade deine Inhalte …</div></div>`;
+const head = (kicker, title, sub, actions = '') => `<div class="ph"><div><p class="kicker label">${kicker}</p><h1 class="display">${title}</h1>${sub ? `<p>${sub}</p>` : ''}</div>${actions ? `<div class="ph-actions">${actions}</div>` : ''}</div>`;
+function banner() {
+  if (state.loadError) return `<div class="banner bad">${ic('alert')}<div><b>GitHub-Verbindung fehlgeschlagen</b><p>${esc(state.loadError)}</p><button class="btn sm" data-action="go" data-view="settings">Einstellungen prüfen</button></div></div>`;
+  if (state.mode === 'view') return `<div class="banner">${ic('info')}<div><b>Nur ansehen</b><p>${state.source === 'fallback' ? 'Deine Inhalte konnten gerade nicht geladen werden – das ist der Stand deiner Website vor dem Panel.' : 'Du siehst deine echten Inhalte.'} Zum Bearbeiten einmal dein GitHub-Repo mit einem Token verbinden.</p><button class="btn sm btn-primary" data-action="go" data-view="settings">${ic('github', 16)} Jetzt verbinden</button></div></div>`;
+  if (state.contentMissing) return `<div class="banner warn">${ic('info')}<div><b>Noch keine content.json im Repo</b><p>Beim ersten Veröffentlichen wird sie angelegt.</p></div></div>`;
+  return '';
+}
+const emptyState = (icon, title, text, btn) => `<div class="empty">${ic(icon, 34)}<b>${title}</b><span>${text}</span>${btn ? `<div>${btn}</div>` : ''}</div>`;
+
+/* =====================================================================
+   Ansichten
+   ===================================================================== */
+const VIEWS = {};
+
+VIEWS.dashboard = () => {
+  const c = state.content, ph = c.photos, im = inqMode();
+  const hl = ph.filter(p => p.hl).length;
+  const newI = im === 'live' ? state.inquiries.filter(i => i.status === 'neu').length : 0;
+  const openI = state.inquiries.filter(i => i.status !== 'erledigt');
+  const first = (c.site.name || '').trim().split(/\s+/)[0];
+  const max = Math.max(1, ...CATS.map(k => ph.filter(p => p.c.includes(k.id)).length));
+  const last = store.get('lastPublish');
+  const date = new Date().toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' });
+  const f0 = c.folders[0];
+  return `${banner()}
+  ${head(esc(date), `Servus${first ? ', ' + esc(first) : ''}`, last && state.mode === 'live' ? 'Zuletzt veröffentlicht ' + esc(rel(last)) + '.' : 'Hier steuerst du alles auf mapq.at.')}
+  <div class="stats">
+    <button class="stat ${newI ? 'hot' : ''}" data-action="go" data-view="inquiries"><span class="label">${ic('inbox', 15)} Anfragen</span><b>${im === 'live' ? newI : '–'}</b><span class="sub">${im === 'live' ? (newI === 1 ? 'neue Anfrage' : 'neue Anfragen') : 'Postfach einrichten'}</span></button>
+    <button class="stat" data-action="go" data-view="photos"><span class="label">${ic('image', 15)} Fotos</span><b>${ph.length}</b><span class="sub">${hl} in den Highlights</span></button>
+    <button class="stat" data-action="go" data-view="folders"><span class="label">${ic('folder', 15)} Ordner</span><b>${c.folders.length}</b><span class="sub">${f0 ? esc(f0.t) : 'noch keiner'}</span></button>
+    <button class="stat" data-action="go" data-view="videos"><span class="label">${ic('video', 15)} Edits</span><b>${c.videos.length}</b><span class="sub">Video-Edits</span></button>
+  </div>
+  <div class="dgrid">
+    <section class="card">
+      <div class="card-h"><h2>Offene Anfragen</h2><button class="btn sm" data-action="go" data-view="inquiries">Alle ${ic('chev', 15)}</button></div>
+      ${im === 'live'
+        ? (openI.length ? `<div class="mini-list">${openI.slice(0, 4).map(q => `<button class="mini" data-action="inq-jump" data-id="${esc(q.id)}"><span class="avatar">${esc(initials(q.name))}</span><span class="t"><b>${esc(q.name)}</b><span>${esc(q.art || 'Anfrage')} · ${esc(rel(q.created_at))}</span></span><span class="chip st-chip ${esc(q.status)}">${STATUS[q.status] || esc(q.status)}</span></button>`).join('')}</div>`
+          : `<p class="empty-mini">Keine offenen Anfragen. Alles erledigt.</p>`)
+        : `<p class="empty-mini">Damit Anfragen von deinem Kontaktformular hier landen, richte einmal das Postfach ein (ca. 5 Minuten).</p><button class="btn sm btn-primary" data-action="go-sb" style="margin-top:14px">${ic('db', 16)} Postfach einrichten</button>`}
+    </section>
+    <section class="card">
+      <div class="card-h"><h2>Portfolio</h2><span class="label muted">${ph.length} Fotos</span></div>
+      <div class="bars">${CATS.map(k => { const n = ph.filter(p => p.c.includes(k.id)).length; return `<div class="bar-row"><span>${k.label}</span><span class="track"><i style="width:${Math.round(n / max * 100)}%"></i></span><span class="v">${n}</span></div>`; }).join('')}</div>
+      <div class="quick">
+        <button class="qa" data-action="upload">${ic('upload')}Fotos hochladen</button>
+        <button class="qa" data-action="go" data-view="folders">${ic('plus')}Ordner hinzufügen</button>
+        <a class="qa" href="${esc(siteUrl())}" target="_blank" rel="noopener">${ic('arrow')}Website öffnen</a>
+      </div>
+    </section>
+  </div>`;
+};
+
+function filteredPhotos() {
+  const f = state.photoFilter, ph = state.content.photos;
+  if (f === 'hl') return ph.filter(p => p.hl);
+  if (CATS.some(c => c.id === f)) return ph.filter(p => p.c.includes(f));
+  return ph;
+}
+VIEWS.photos = () => {
+  const ph = state.content.photos, list = filteredPhotos(), s = state.content.site;
+  const filters = [['all', 'Alle', ph.length], ...CATS.map(c => [c.id, c.label, ph.filter(p => p.c.includes(c.id)).length]), ['hl', 'Highlights', ph.filter(p => p.hl).length]];
+  return `${state.mode === 'view' ? banner() : ''}
+  ${head('Alle ' + ph.length + ' Fotos', 'Bilder', 'Tippen zum Bearbeiten' + (window.Sortable ? ', gedrückt halten zum Verschieben.' : '.'), `<button class="btn btn-primary" data-action="upload">${ic('upload', 18)} Hochladen</button>`)}
+  <div class="toolbar"><div class="seg scroll">${filters.map(([id, l, n]) => `<button class="seg-b ${state.photoFilter === id ? 'on' : ''}" data-action="pfilter" data-f="${id}">${l}<span class="n">${n}</span></button>`).join('')}</div></div>
+  ${list.length ? `<div class="pgrid" id="pgrid">${list.map(p => `
+    <div class="ptile" data-action="photo-open" data-id="${esc(p.f)}" role="button" tabindex="0" aria-label="${esc(p.t || p.f)} bearbeiten">
+      <img src="${esc(imgUrl(SMALL(p.f)))}" data-fallback="${esc(imgUrl(BIG(p.f)))}" alt="" loading="lazy" draggable="false">
+      <div class="pbadges">${state.uploads.has(BIG(p.f)) ? '<span class="pb w">Neu</span>' : ''}${s.heroPhoto === p.f ? '<span class="pb">Titelbild</span>' : ''}${s.aboutPhoto === p.f ? '<span class="pb">Über mich</span>' : ''}</div>
+      ${p.hl ? `<span class="pstar" title="In den Highlights">${ic('star', 13, 'fill')}</span>` : ''}
+      <span class="pcat">${p.c.map(catLabel).join(' · ')}</span>
+    </div>`).join('')}</div>`
+    : emptyState('image', ph.length ? 'Keine Fotos hier' : 'Noch keine Fotos', ph.length ? 'Wähle oben einen anderen Filter.' : 'Lade deine besten Shots hoch – sie werden automatisch fürs Web verkleinert.', ph.length ? '' : `<button class="btn btn-primary" data-action="upload">${ic('upload', 18)} Fotos hochladen</button>`)}
+  <p class="tip">${ic('info', 15)}<span>Jedes Motiv nur einmal – kein Fahrzeug doppelt, auch nicht aus einer anderen Perspektive.</span></p>`;
+};
+function photoSheet(f) {
+  const p = photoByF(f); if (!p) return closeSheet();
+  const s = state.content.site, idx = state.content.photos.indexOf(p), n = state.content.photos.length;
+  const primary = p.c[0], extra = p.c.slice(1);
+  openSheet(`
+    <div class="sheet-h"><h3>Foto bearbeiten</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <div class="pprev"><img src="${esc(imgUrl(BIG(p.f)))}" alt=""></div>
+    <div class="field"><label for="ptitle">Beschreibung</label><input id="ptitle" class="input" data-list="photos" data-id="${esc(p.f)}" data-field="t" value="${esc(p.t)}" placeholder="z. B. Blauer BMW E46" autocomplete="off"><small>Wird für Blinde und Google vorgelesen.</small></div>
+    <div class="field"><label>Kategorie</label><div class="seg">${CATS.map(c => `<button class="seg-b ${primary === c.id ? 'on' : ''}" data-action="photo-cat" data-id="${esc(p.f)}" data-cat="${c.id}">${c.label}</button>`).join('')}</div></div>
+    <div class="field"><label>Zusätzlich zeigen unter</label><div class="seg">${CATS.filter(c => c.id !== primary).map(c => `<button class="seg-b add ${extra.includes(c.id) ? 'on' : ''}" data-action="photo-xcat" data-id="${esc(p.f)}" data-cat="${c.id}">${c.label}</button>`).join('')}</div></div>
+    <label class="switch-row"><span><b>In den Highlights</b><small>Erscheint im Kapitel „${esc(catLabel(primary))}“ der waagrechten Strecke.</small></span><input type="checkbox" class="switch" data-list="photos" data-id="${esc(p.f)}" data-field="hl" ${p.hl ? 'checked' : ''}></label>
+    <div class="field"><label>Verwenden als</label><div class="rolebar">
+      <button class="seg-b add ${s.heroPhoto === p.f ? 'on' : ''}" data-action="photo-role" data-id="${esc(p.f)}" data-role="hero">Titelbild</button>
+      <button class="seg-b add ${s.aboutPhoto === p.f ? 'on' : ''}" data-action="photo-role" data-id="${esc(p.f)}" data-role="about">Über-mich-Bild</button>
+    </div></div>
+    <div class="field"><label>Reihenfolge · ${idx + 1} von ${n}</label><div class="sheet-actions">
+      <button class="btn sm" data-action="photo-move" data-id="${esc(p.f)}" data-dir="first" ${idx === 0 ? 'disabled' : ''}>Ganz nach vorne</button>
+      <button class="btn sm icon" data-action="photo-move" data-id="${esc(p.f)}" data-dir="up" ${idx === 0 ? 'disabled' : ''} aria-label="Eins nach vorne">${ic('left', 17)}</button>
+      <button class="btn sm icon" data-action="photo-move" data-id="${esc(p.f)}" data-dir="down" ${idx === n - 1 ? 'disabled' : ''} aria-label="Eins nach hinten">${ic('right', 17)}</button>
+      <button class="btn sm" data-action="photo-move" data-id="${esc(p.f)}" data-dir="last" ${idx === n - 1 ? 'disabled' : ''}>Ganz nach hinten</button>
+    </div></div>
+    <div class="sheet-actions" style="margin-top:8px"><button class="btn btn-danger" data-action="photo-del" data-id="${esc(p.f)}">${ic('trash', 17)} Löschen</button><span class="grow"></span><button class="btn btn-primary" data-action="sheet-close">Fertig</button></div>
+    <p class="meta">${p.ar > 1 ? 'Querformat' : 'Hochformat'} · ${esc(BIG(p.f))}</p>`);
+}
+function pickSheet(role) {
+  const s = state.content.site, cur = role === 'hero' ? s.heroPhoto : s.aboutPhoto;
+  openSheet(`
+    <div class="sheet-h"><h3>${role === 'hero' ? 'Titelbild wählen' : 'Über-mich-Bild wählen'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <p class="muted" style="margin:0 0 14px;font-size:14px">${role === 'hero' ? 'Das große Bild ganz oben. Querformat wirkt am besten.' : 'Das Bild neben „Über mich“.'}</p>
+    <div class="pick">${state.content.photos.map(p => `<button class="${cur === p.f ? 'on' : ''}" data-action="pick" data-role="${role}" data-id="${esc(p.f)}" aria-label="${esc(p.t || p.f)}"><img src="${esc(imgUrl(SMALL(p.f)))}" data-fallback="${esc(imgUrl(BIG(p.f)))}" alt="" loading="lazy"></button>`).join('')}</div>`);
+}
+
+VIEWS.folders = () => {
+  const fs = state.content.folders;
+  return `${state.mode === 'view' ? banner() : ''}
+  ${head('Button „Ordner“ auf der Website', 'Fotoordner', 'Google-Drive-Ordner von Events und Shootings. Der oberste steht ganz oben.')}
+  <section class="card">
+    <h2 style="margin-bottom:16px">Neuer Ordner</h2>
+    <div class="field"><label for="fT">Name</label><input id="fT" class="input" placeholder="z. B. Autoslalom Stans" autocomplete="off"></div>
+    <div class="grid2">
+      <div class="field"><label for="fD">Datum</label><input id="fD" class="input" type="date" value="${todayISO()}"></div>
+      <div class="field"><label for="fU">Google-Drive-Link</label><input id="fU" class="input" inputmode="url" placeholder="https://drive.google.com/…" autocapitalize="off" autocomplete="off"></div>
+    </div>
+    <button class="btn btn-primary" data-action="folder-add">${ic('plus', 18)} Hinzufügen</button>
+  </section>
+  ${fs.length ? `<div class="list">${fs.map((x, i) => `
+    <article class="card litem">
+      <span class="fold-ic">${ic('folder', 20)}</span>
+      <div class="body">
+        <div class="field"><input class="input" data-list="folders" data-id="${esc(x.id)}" data-field="t" value="${esc(x.t)}" aria-label="Name" placeholder="Name"></div>
+        <div class="grid2">
+          <div class="field"><input class="input" type="date" data-list="folders" data-id="${esc(x.id)}" data-field="d" value="${esc(x.d)}" aria-label="Datum"></div>
+          <div class="field"><input class="input" data-list="folders" data-id="${esc(x.id)}" data-field="url" value="${esc(x.url)}" aria-label="Link" inputmode="url" autocapitalize="off"></div>
+        </div>
+        <div class="lfoot">
+          <a class="btn sm" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${ic('arrow', 15)} Öffnen</a><span class="grow"></span>
+          <button class="btn sm icon" data-action="list-move" data-list="folders" data-id="${esc(x.id)}" data-dir="up" ${i === 0 ? 'disabled' : ''} aria-label="Nach oben">${ic('up', 16)}</button>
+          <button class="btn sm icon" data-action="list-move" data-list="folders" data-id="${esc(x.id)}" data-dir="down" ${i === fs.length - 1 ? 'disabled' : ''} aria-label="Nach unten">${ic('down', 16)}</button>
+          <button class="btn sm icon btn-danger" data-action="folder-del" data-id="${esc(x.id)}" aria-label="Löschen">${ic('trash', 16)}</button>
+        </div>
+      </div>
+    </article>`).join('')}</div>`
+    : `<div style="margin-top:16px">${emptyState('folder', 'Keine Ordner', 'Ohne Ordner wird der Button auf der Website ausgeblendet.')}</div>`}`;
+};
+
+VIEWS.videos = () => {
+  const vs = state.content.videos;
+  return `${state.mode === 'view' ? banner() : ''}
+  ${head('Eigener Bereich auf der Website', 'Edits', 'Deine Auto-Edits von TikTok, Instagram oder YouTube. Der Bereich erscheint, sobald ein Video drin ist.')}
+  <section class="card">
+    <div class="field" style="margin:0"><label for="videoUrl">Neues Video</label>
+      <div class="row"><input id="videoUrl" class="input" placeholder="Link, z. B. tiktok.com/@…/video/…" inputmode="url" autocapitalize="off" autocomplete="off">
+      <button class="btn btn-primary" data-action="video-add">${ic('plus', 18)}<span class="hide-xs">Hinzufügen</span></button></div>
+      <small>Tipp: Ein eigenes Cover (Standbild aus dem Edit) sieht auf der Website am besten aus.</small>
+    </div>
+  </section>
+  ${vs.length ? `<div class="list">${vs.map((v, i) => {
+    const thumb = v.cover ? imgUrl(v.cover) : v.platform === 'youtube' && v.videoId ? `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg` : '';
+    return `<article class="card litem">
+      <div class="vthumb">${thumb ? `<img src="${esc(thumb)}" alt="">` : ic('play', 24)}<span class="plat">${esc(v.platform)}</span></div>
+      <div class="body">
+        <a class="vurl" href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.url.replace(/^https?:\/\/(www\.)?/, ''))}</a>
+        ${v.short ? `<div class="banner warn" style="padding:10px 12px;margin-bottom:10px">${ic('alert', 16)}<div><p>Kurzlink – öffne das Video und kopiere den vollen Link aus dem Browser.</p></div></div>` : ''}
+        <div class="field"><input class="input" data-list="videos" data-id="${esc(v.id)}" data-field="title" value="${esc(v.title)}" placeholder="Titel, z. B. Night Run" aria-label="Titel"></div>
+        <div class="field"><input class="input" data-list="videos" data-id="${esc(v.id)}" data-field="car" value="${esc(v.car)}" placeholder="Fahrzeug, z. B. BMW E46" aria-label="Fahrzeug"></div>
+        <div class="lfoot">
+          <button class="btn sm" data-action="video-cover" data-id="${esc(v.id)}">${ic('image', 15)} ${v.cover ? 'Cover ändern' : 'Cover'}</button><span class="grow"></span>
+          <button class="btn sm icon" data-action="list-move" data-list="videos" data-id="${esc(v.id)}" data-dir="up" ${i === 0 ? 'disabled' : ''} aria-label="Nach oben">${ic('up', 16)}</button>
+          <button class="btn sm icon" data-action="list-move" data-list="videos" data-id="${esc(v.id)}" data-dir="down" ${i === vs.length - 1 ? 'disabled' : ''} aria-label="Nach unten">${ic('down', 16)}</button>
+          <button class="btn sm icon btn-danger" data-action="video-del" data-id="${esc(v.id)}" aria-label="Löschen">${ic('trash', 16)}</button>
+        </div>
+      </div></article>`; }).join('')}</div>`
+    : `<div style="margin-top:16px">${emptyState('video', 'Noch keine Edits', 'Füg oben den Link zu deinem ersten Edit ein.')}</div>`}`;
+};
+
+function inqVisible() {
+  const q = state.inqQuery.trim().toLowerCase();
+  return state.inquiries.filter(i => {
+    if (state.inqFilter === 'open' && i.status === 'erledigt') return false;
+    if (state.inqFilter === 'neu' && i.status !== 'neu') return false;
+    if (state.inqFilter === 'erledigt' && i.status !== 'erledigt') return false;
+    return !q || [i.name, i.kontakt, i.art, i.nachricht, i.notiz].some(x => String(x || '').toLowerCase().includes(q));
+  });
+}
+function inqCard(q) {
+  const open = String(state.openInq) === String(q.id), k = contactOf(q.kontakt);
+  const first = String(q.name || '').replace(/^Beispiel:\s*/, '').split(/\s+/)[0];
+  let reply = '';
+  if (k.type === 'mail') reply = `<a class="btn btn-primary" href="${esc(`mailto:${q.kontakt}?subject=${encodeURIComponent('Re: Deine Anfrage – ' + (q.art || 'mapq.raw'))}&body=${encodeURIComponent(`Hi ${first},\n\ndanke für deine Anfrage!\n\n`)}`)}">${ic('reply', 17)} Per Mail antworten</a>`;
+  else if (k.type === 'ig') reply = `<a class="btn btn-primary" href="${esc(k.href)}" target="_blank" rel="noopener">${ic('insta', 17)} Auf Instagram antworten</a>`;
+  else if (k.type === 'tel') reply = `<a class="btn btn-primary" href="${esc(k.href)}">${ic('phone', 17)} Anrufen</a>`;
+  return `<article class="inq ${open ? 'open' : ''} st-${esc(q.status)}">
+    <button class="inq-h" data-action="inq-toggle" data-id="${esc(q.id)}" aria-expanded="${open}">
+      <span class="avatar">${esc(initials(q.name))}</span>
+      <span class="inq-main"><span class="inq-name"><span>${esc(q.name)}</span>${q.status === 'neu' ? '<i class="newdot"></i>' : ''}</span><span class="inq-sub">${esc(q.art || 'Anfrage')} · ${esc(rel(q.created_at))}</span></span>
+      <span class="chip st-chip ${esc(q.status)}">${STATUS[q.status] || esc(q.status)}</span>
+    </button>
+    ${open ? `<div class="inq-body">
+      <p class="msg">${esc(q.nachricht || '(keine Nachricht)')}</p>
+      <div class="kv">
+        <div>${ic(k.icon, 16)}${k.href ? `<a href="${esc(k.href)}" ${k.type === 'ig' ? 'target="_blank" rel="noopener"' : ''}>${esc(k.label)}</a>` : `<b>${esc(k.label)}</b>`}</div>
+        ${q.zeit && q.zeit !== 'Egal' ? `<div>${ic('clock', 16)}<span>Am liebsten <b>${esc(q.zeit.toLowerCase())}</b></span></div>` : ''}
+      </div>
+      <div class="field"><label>Status</label><div class="seg">${Object.entries(STATUS).map(([s, l]) => `<button class="seg-b ${q.status === s ? 'on' : ''}" data-action="inq-status" data-id="${esc(q.id)}" data-status="${s}">${l}</button>`).join('')}</div></div>
+      <div class="field"><label>Notiz (nur für dich)</label><textarea class="input" rows="2" data-inq-note="${esc(q.id)}" placeholder="z. B. Termin fixiert, Location Kühtai">${esc(q.notiz || '')}</textarea></div>
+      <div class="row-actions">${reply}<span style="flex:1"></span><button class="btn btn-danger" data-action="inq-del" data-id="${esc(q.id)}">${ic('trash', 17)}<span class="hide-xs">Löschen</span></button></div>
+    </div>` : ''}
+  </article>`;
+}
+function inqListHTML() {
+  if (state.inqLoading && !state.inquiries.length) return `<div class="loading"><div class="ring"></div><div>Lade Anfragen …</div></div>`;
+  const list = inqVisible();
+  if (!list.length) return emptyState('inbox', state.inquiries.length ? 'Nichts gefunden' : 'Noch keine Anfragen', state.inquiries.length ? 'Probier einen anderen Filter.' : 'Sobald jemand das Formular auf mapq.at abschickt, landet es hier.');
+  return list.map(inqCard).join('');
+}
+VIEWS.inquiries = () => {
+  const im = inqMode(), all = state.inquiries;
+  if (im === 'setup') return `${head('Kontaktformular', 'Anfragen', 'Shooting-Anfragen von deiner Website.')}
+    <section class="card"><h2 style="margin-bottom:12px">${ic('db')} Postfach einrichten</h2>
+    <p class="muted" style="margin:0 0 18px">GitHub Pages kann Formulare nicht selbst speichern. Mit einer kostenlosen Supabase-Datenbank landen Anfragen von mapq.at hier – du siehst sie, setzt einen Status und antwortest per Mail oder Instagram. Dauert ca. 5 Minuten.</p>
+    <button class="btn btn-primary" data-action="go-sb">${ic('chev', 17)} Zur Einrichtung</button></section>`;
+  const n = { open: all.filter(i => i.status !== 'erledigt').length, neu: all.filter(i => i.status === 'neu').length, erledigt: all.filter(i => i.status === 'erledigt').length, all: all.length };
+  return `${im === 'demo' ? `<div class="banner">${ic('info')}<div><b>Beispiel-Anfragen</b><p>So sieht das Postfach aus, sobald es eingerichtet ist. Die Einträge hier sind erfunden.</p><button class="btn sm btn-primary" data-action="go-sb">${ic('db', 16)} Postfach einrichten</button></div></div>` : ''}
+  ${state.inqError ? `<div class="banner bad">${ic('alert')}<div><b>Anfragen konnten nicht geladen werden</b><p>${esc(state.inqError)}</p></div></div>` : ''}
+  ${head('Kontaktformular', 'Anfragen', `${n.neu ? n.neu + ' neu · ' : ''}${n.open} offen · ${n.all} gesamt`, im === 'live' ? `<button class="btn" data-action="inq-refresh">${ic('refresh', 18)}<span class="hide-sm">Aktualisieren</span></button>` : '')}
+  <div class="inq-tools">
+    <div class="seg scroll">${[['open', 'Offen', n.open], ['neu', 'Neu', n.neu], ['erledigt', 'Erledigt', n.erledigt], ['all', 'Alle', n.all]].map(([id, l, c]) => `<button class="seg-b ${state.inqFilter === id ? 'on' : ''}" data-action="ifilter" data-f="${id}">${l}<span class="n">${c}</span></button>`).join('')}</div>
+    <div class="search">${ic('search', 18)}<input id="inqSearch" class="input" type="search" placeholder="Suchen …" value="${esc(state.inqQuery)}" autocomplete="off" aria-label="Anfragen durchsuchen"></div>
+  </div>
+  <div class="inq-list" id="inqList">${inqListHTML()}</div>`;
+};
+
+const fld = (label, path, ph = '', type = 'text', hint = '') => `<div class="field"><label>${label}</label><input class="input" type="${type}" data-bind="${path}" value="${esc(getPath(state.content, path))}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<small>${hint}</small>` : ''}</div>`;
+const area = (label, path, rows = 3, ph = '', hint = '') => `<div class="field"><label>${label}</label><textarea class="input" rows="${rows}" data-bind="${path}" placeholder="${esc(ph)}">${esc(getPath(state.content, path))}</textarea>${hint ? `<small>${hint}</small>` : ''}</div>`;
+function photoField(label, role) {
+  const s = state.content.site, f = role === 'hero' ? s.heroPhoto : s.aboutPhoto, p = photoByF(f);
+  return `<div class="field"><label>${label}</label><div class="photo-field">
+    <img src="${esc(imgUrl(SMALL(f)))}" data-fallback="${esc(imgUrl(BIG(f)))}" alt="">
+    <span class="t"><b>${esc(p ? (p.t || p.f) : 'Kein Bild')}</b><span>${p ? (p.ar > 1 ? 'Querformat' : 'Hochformat') : 'Bitte auswählen'}</span></span>
+    <button class="btn sm" data-action="pick-open" data-role="${role}">Ändern</button></div></div>`;
+}
+VIEWS.texts = () => {
+  const ks = state.content.packages;
+  return `${state.mode === 'view' ? banner() : ''}
+  ${head('Alles ohne Code', 'Texte', 'Was auf mapq.at steht – von oben nach unten.')}
+  <section class="card sec"><h2>Ganz oben</h2>
+    ${photoField('Titelbild', 'hero')}
+    ${fld('Zeile über dem Logo', 'site.kicker', 'Fotografie · Tirol, Österreich')}
+    ${area('Text unter dem Logo', 'site.lede', 2)}
+    ${area('Großer Satz beim Scrollen', 'site.say', 2, '', 'Ein Wort in *Sternchen* erscheint als Umriss-Schrift.')}
+  </section>
+  <section class="card sec"><h2>Über mich</h2>
+    ${photoField('Bild', 'about')}
+    ${area('Text', 'site.about', 6, '', 'Leerzeile = neuer Absatz.')}
+    <div class="grid2">${fld('Name', 'site.name')}${fld('Schwerpunkte', 'site.focus')}${fld('Region', 'site.region')}${fld('Angebot', 'site.offer')}</div>
+  </section>
+  <section class="sec">
+    <div class="sec-h"><h2 class="sec-title">Preise</h2><button class="btn sm btn-primary" data-action="pkg-add">${ic('plus', 16)} Paket</button></div>
+    <p class="muted">Der Bereich „Preise“ erscheint auf der Website, sobald mindestens ein Paket angelegt ist.</p>
+    ${ks.length ? `<div class="pkgs">${ks.map((k, i) => `
+      <article class="card pkg ${k.highlight ? 'hl' : ''}">
+        <div class="grid2">
+          <div class="field"><label>Name</label><input class="input" data-list="packages" data-id="${esc(k.id)}" data-field="name" value="${esc(k.name)}" placeholder="z. B. Auto-Shooting"></div>
+          <div class="field"><label>Preis</label><input class="input" data-list="packages" data-id="${esc(k.id)}" data-field="price" value="${esc(k.price)}" placeholder="z. B. ab 150 €"></div>
+        </div>
+        <div class="field"><label>Kurzbeschreibung</label><input class="input" data-list="packages" data-id="${esc(k.id)}" data-field="description" value="${esc(k.description)}" placeholder="Für wen ist das Paket?"></div>
+        <div class="field"><label>Leistungen · eine pro Zeile</label><textarea class="input" rows="4" data-list="packages" data-id="${esc(k.id)}" data-field="features" placeholder="1 Stunde Shooting&#10;20 bearbeitete Fotos">${esc(k.features.join('\n'))}</textarea></div>
+        <label class="switch-row"><span><b>Hervorheben</b><small>Markierung „Beliebt“ auf der Website</small></span><input type="checkbox" class="switch" data-list="packages" data-id="${esc(k.id)}" data-field="highlight" ${k.highlight ? 'checked' : ''}></label>
+        <div class="lfoot">
+          <button class="btn sm icon" data-action="list-move" data-list="packages" data-id="${esc(k.id)}" data-dir="up" ${i === 0 ? 'disabled' : ''} aria-label="Nach vorne">${ic('up', 16)}</button>
+          <button class="btn sm icon" data-action="list-move" data-list="packages" data-id="${esc(k.id)}" data-dir="down" ${i === ks.length - 1 ? 'disabled' : ''} aria-label="Nach hinten">${ic('down', 16)}</button>
+          <button class="btn sm btn-danger" data-action="pkg-del" data-id="${esc(k.id)}">${ic('trash', 16)} Entfernen</button>
+        </div>
+      </article>`).join('')}</div>`
+      : emptyState('tag', 'Noch keine Preise', 'Leg deine Shooting-Pakete an – oder lass den Bereich einfach weg.', `<button class="btn btn-primary" data-action="pkg-add">${ic('plus', 18)} Erstes Paket</button>`)}
+  </section>
+  <section class="card sec"><h2>Kontakt</h2>
+    ${fld('Satz unter „Kontakt“', 'site.contactIntro')}
+    <div class="grid2">${fld('E-Mail', 'site.email', '', 'email')}${fld('Instagram', 'site.instagram', 'mapq.raw', 'text', 'Ohne @')}${fld('Instagram privat', 'site.instagramPrivate', '', 'text', 'Leer lassen zum Ausblenden')}${fld('TikTok', 'site.tiktok', '', 'text', 'Optional, ohne @')}</div>
+  </section>`;
+};
+
+const sqlFor = email => {
+  const e = String(email || 'DEINE@EMAIL.AT').replace(/'/g, "''");
+  return `-- Tabelle für Anfragen von mapq.at
+create table if not exists public.anfragen (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name text not null check (char_length(name) between 1 and 120),
+  kontakt text not null check (char_length(kontakt) between 3 and 200),
+  art text check (char_length(art) <= 80),
+  zeit text check (char_length(zeit) <= 80),
+  nachricht text check (char_length(nachricht) <= 4000),
+  status text not null default 'neu',
+  notiz text
+);
+
+alter table public.anfragen enable row level security;
+
+-- Die Website darf Anfragen nur EINTRAGEN, nicht lesen
+create policy "website_insert" on public.anfragen
+  for insert to anon
+  with check (status = 'neu' and notiz is null);
+
+-- Nur du (angemeldet) darfst lesen, bearbeiten und löschen
+create policy "admin_all" on public.anfragen
+  for all to authenticated
+  using ((auth.jwt() ->> 'email') = '${e}')
+  with check ((auth.jwt() ->> 'email') = '${e}');
+
+grant insert on public.anfragen to anon;
+grant select, insert, update, delete on public.anfragen to authenticated;`;
+};
+VIEWS.settings = () => {
+  const g = cfg.gh, s = cfg.sb, inbox = state.content.inbox;
+  const ghOk = state.mode === 'live' && !state.loadError;
+  return `${head('Bleibt nur auf diesem Gerät', 'Einstellungen', '')}
+  <section class="card sec" id="sec-gh">
+    <div class="sec-h"><h2>${ic('github')} Website · GitHub</h2>${ghOk ? '<span class="chip ok">Verbunden</span>' : '<span class="chip">Nur ansehen</span>'}</div>
+    <p class="muted">Beim Veröffentlichen speichert das Panel <code>content.json</code> und neue Fotos direkt in <b>${esc(g.owner)}/${esc(g.repo)}</b>. GitHub Pages stellt sie dann in ca. 1 Minute online.</p>
+    <div class="field"><label for="ghToken">Zugangs-Token</label><div class="pass-wrap"><input id="ghToken" class="input" type="password" value="${esc(g.token)}" placeholder="github_pat_…" autocapitalize="off" autocomplete="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#ghToken" aria-label="Token anzeigen">${ic('eye', 18)}</button></div></div>
+    <details class="help" ${g.token ? '' : 'open'}><summary>${ic('chev', 16)} So bekommst du den Token (2 Minuten)</summary><div>
+      <ol class="steps">
+        <li>Auf GitHub: <b>Profilbild → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li>
+        <li>Name z. B. <b>mapq Admin</b>, Ablauf z. B. <b>1 Jahr</b>.</li>
+        <li><b>Repository access</b>: „Only select repositories“ → nur <b>${esc(g.owner)}/${esc(g.repo)}</b>.</li>
+        <li><b>Permissions → Repository permissions → Contents</b>: auf <b>Read and write</b>. Sonst nichts.</li>
+        <li>Token kopieren und oben einfügen. Er bleibt nur in diesem Browser – das Panel nicht auf fremden Geräten nutzen.</li>
+      </ol></div></details>
+    <details class="help"><summary>${ic('chev', 16)} Erweitert</summary><div>
+      <div class="grid2">
+        <div class="field"><label for="ghOwner">GitHub-Name</label><input id="ghOwner" class="input" value="${esc(g.owner)}" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label for="ghRepo">Repository</label><input id="ghRepo" class="input" value="${esc(g.repo)}" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" class="input" value="${esc(g.branch)}" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label for="siteUrl">Website-Adresse</label><input id="siteUrl" class="input" value="${esc(cfg.siteUrl)}" inputmode="url" autocapitalize="off" autocomplete="off"></div>
+      </div></div></details>
+    <div class="row-actions"><button class="btn btn-primary" data-action="gh-connect">${ic('check', 18)} ${ghOk ? 'Speichern & neu laden' : 'Verbinden'}</button>${g.token ? `<button class="btn" data-action="gh-disconnect">${ic('logout', 17)} Trennen</button>` : ''}</div>
+  </section>
+
+  <section class="card sec" id="sec-sb">
+    <div class="sec-h"><h2>${ic('db')} Anfragen · Supabase</h2>${SB.loggedIn ? '<span class="chip ok">Angemeldet</span>' : SB.ready ? '<span class="chip warn">Abgemeldet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>
+    <p class="muted">GitHub Pages kann keine Formulare speichern. Das Formular auf mapq.at schickt Anfragen deshalb an eine kostenlose Supabase-Datenbank – hier liest und bearbeitest du sie.</p>
+    <details class="help" ${SB.ready ? '' : 'open'}><summary>${ic('chev', 16)} Einrichtung (ca. 5 Minuten)</summary><div>
+      <ol class="steps">
+        <li>Auf <b>supabase.com</b> kostenlos registrieren und ein <b>neues Projekt</b> anlegen (Region: Frankfurt).</li>
+        <li>Deine Admin-E-Mail eintragen:<div class="field" style="margin:8px 0 4px"><input id="sbEmail" class="input" type="email" value="${esc(s.email)}" placeholder="deine@email.at" autocomplete="email"></div>
+          Dann in Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken:
+          <div class="code"><pre id="sqlBox">${esc(sqlFor(s.email))}</pre><button class="btn sm" data-action="copy" data-target="#sqlBox">${ic('copy', 15)} Kopieren</button></div></li>
+        <li><b>Authentication → Users → Add user</b>: dieselbe E-Mail und ein Passwort, „Auto Confirm User“ anhaken. Dann unter <b>Authentication → Sign In / Providers</b> „Allow new users to sign up“ <b>ausschalten</b>.</li>
+        <li><b>Project Settings → API Keys</b>: <b>Project URL</b> und den <b>publishable</b> (oder „anon“) Key unten einfügen. Nie den „secret“- oder „service_role“-Key.</li>
+      </ol></div></details>
+    <div class="grid2">
+      <div class="field"><label for="sbUrl">Project URL</label><input id="sbUrl" class="input" value="${esc(s.url)}" placeholder="https://xxxx.supabase.co" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="sbKey">Publishable / anon Key</label><input id="sbKey" class="input" value="${esc(s.key)}" placeholder="sb_publishable_… oder eyJ…" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
+    </div>
+    ${SB.loggedIn
+      ? `<div class="row-actions" style="margin-bottom:16px"><span class="muted" style="font-size:14px">Angemeldet als <b style="color:var(--text)">${esc(cfg.sbSession.email || s.email)}</b></span><span style="flex:1"></span><button class="btn sm" data-action="sb-save">Speichern</button><button class="btn sm" data-action="sb-logout">${ic('logout', 16)} Abmelden</button></div>`
+      : `<div class="field"><label for="sbPass">Passwort (aus Schritt 3)</label><div class="pass-wrap"><input id="sbPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"><button class="btn sm icon" data-action="toggle-pass" data-target="#sbPass" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div></div>
+         <div class="row-actions" style="margin-bottom:16px"><button class="btn btn-primary" data-action="sb-login">${ic('check', 18)} Speichern & anmelden</button></div>`}
+    <label class="switch-row" style="margin:0"><span><b>Formular auf mapq.at aktivieren</b><small>${inbox ? 'Aktiv – Besucher können Anfragen direkt senden.' : SB.ready ? 'Danach veröffentlichen, dann erscheint „Anfrage senden“.' : 'Erst Supabase einrichten.'}</small></span><input type="checkbox" class="switch" id="inboxSwitch" ${inbox ? 'checked' : ''} ${SB.ready || inbox ? '' : 'disabled'}></label>
+  </section>
+
+  <section class="card sec">
+    <h2>${ic('image')} Foto-Upload</h2>
+    <p class="muted" style="margin-top:10px">Fotos werden vor dem Hochladen im Browser verkleinert – wie die bisherigen: groß (1600 px) und klein (760 px).</p>
+    <div class="grid2">
+      <div class="field"><label for="imgMax">Große Version · lange Kante</label><select id="imgMax" class="input" data-cfg="max">${[[1600, '1600 px · wie bisher'], [2048, '2048 px'], [2560, '2560 px']].map(([v, l]) => `<option value="${v}" ${cfg.img.max === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label for="imgQ">JPEG-Qualität</label><select id="imgQ" class="input" data-cfg="q">${[[0.76, '76 % · kleiner'], [0.82, '82 % · empfohlen'], [0.9, '90 % · schärfer']].map(([v, l]) => `<option value="${v}" ${cfg.img.q === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+    </div>
+  </section>
+
+  <section class="card sec danger">
+    <h2>${ic('alert')} Dieses Gerät</h2>
+    <p class="muted" style="margin-top:10px">Löscht Token und Supabase-Anmeldung aus diesem Browser. Deine Website bleibt unverändert.</p>
+    <button class="btn btn-danger" data-action="reset-all">${ic('trash', 17)} Zugangsdaten entfernen</button>
+  </section>`;
+};
+
+function afterRender() {
+  const grid = $('#pgrid');
+  if (grid && window.Sortable) {
+    Sortable.create(grid, {
+      animation: 180, delay: 260, delayOnTouchOnly: true, touchStartThreshold: 6,
+      ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
+      onEnd: e => { if (e.oldIndex !== e.newIndex) reorderFromDom(); }
+    });
+  }
+}
+function reorderFromDom() {
+  const ids = $$('#pgrid .ptile').map(el => el.dataset.id), all = state.content.photos;
+  const slots = all.map((p, i) => ids.includes(p.f) ? i : -1).filter(i => i >= 0);
+  const by = Object.fromEntries(all.map(p => [p.f, p]));
+  ids.forEach((f, k) => { all[slots[k]] = by[f]; });
+  updateDirty();
+}
+
+/* =====================================================================
+   Laden & Veröffentlichen
+   ===================================================================== */
+function resetPending() { state.previews.forEach(u => URL.revokeObjectURL(u)); state.previews.clear(); state.uploads.clear(); state.deletes.clear(); }
+async function loadView() {
+  state.mode = 'view'; state.loadError = null; state.contentMissing = false; state.contentSha = null;
+  resetPending();
+  let data = null;
+  const tries = [];
+  if (/^https?:$/.test(location.protocol) && !/^(raw\.githubusercontent|.*claude)/.test(location.hostname)) tries.push('content.json');
+  if (GH.known) tries.push(GH.raw('content.json'));
+  for (const u of tries) { try { const r = await fetch(u, { cache: 'no-cache' }); if (r.ok) { data = await r.json(); break; } } catch {} }
+  state.source = data ? 'repo' : 'fallback';
+  state.content = normalize(data || fallbackContent());
+  state.originalJSON = JSON.stringify(state.content);
+  if (inqMode() === 'demo') state.inquiries = demoInquiries();
+}
+async function loadLive() {
+  state.mode = 'live'; state.loading = true; render();
+  try {
+    const { data, sha } = await GH.readContent();
+    state.content = normalize(data || fallbackContent());
+    state.contentSha = sha; state.contentMissing = !data;
+    state.originalJSON = data ? JSON.stringify(state.content) : '';
+    state.loadError = null; state.source = 'repo';
+  } catch (e) {
+    state.loadError = ghError(e);
+    state.content = normalize(fallbackContent());
+    state.originalJSON = JSON.stringify(state.content);
+  }
+  state.loading = false;
+}
+async function publish() {
+  if (state.mode !== 'live') { toast('Verbinde zuerst GitHub – dann geht’s live.', 'warn'); go('settings'); return; }
+  if (state.loadError) { toast('Erst die GitHub-Verbindung reparieren.', 'bad'); go('settings'); return; }
+  if (!isDirty()) { toast('Alles ist schon online.', 'ok'); return; }
+  const s = state.content.site;
+  if (!photoByF(s.heroPhoto) || !photoByF(s.aboutPhoto)) { toast('Bitte zuerst ein Titelbild und ein Über-mich-Bild wählen.', 'warn'); go('texts'); return; }
+  const summary = changeSummary();
+  showProgress('Prüfe …');
+  try {
+    const meta = await GH.file('content.json');
+    if ((meta ? meta.sha : null) !== state.contentSha) {
+      hideProgress();
+      if (!confirm('content.json wurde inzwischen auf GitHub geändert (z. B. von einem anderen Gerät).\n\nMit deiner Version überschreiben?')) return;
+      showProgress('Veröffentliche …');
+    }
+    state.content.updatedAt = new Date().toISOString();
+    const files = [...state.uploads].map(([path, u]) => ({ path, b64: u.b64 }));
+    files.push({ path: 'content.json', b64: utf8ToB64(JSON.stringify(state.content, null, 2) + '\n') });
+    await GH.commit(files, state.deletes, 'Admin: ' + (summary.join(', ') || 'Inhalte aktualisiert'), setProgress);
+    setProgress('Fertig!', 1);
+    const m = await GH.file('content.json');
+    state.contentSha = m ? m.sha : null;
+    state.uploads.clear(); state.deletes.clear();
+    state.originalJSON = JSON.stringify(state.content); state.contentMissing = false;
+    store.set('lastPublish', Date.now());
+    hideProgress(); render();
+    toast('Veröffentlicht! In ca. 1 Minute auf mapq.at.', 'ok');
+  } catch (e) { hideProgress(); toast('Veröffentlichen fehlgeschlagen: ' + ghError(e), 'bad'); }
+}
+function discard() {
+  if (!confirm('Alle Änderungen seit dem letzten Veröffentlichen verwerfen?')) return;
+  resetPending();
+  state.content = state.originalJSON ? normalize(JSON.parse(state.originalJSON)) : normalize(fallbackContent());
+  toast('Änderungen verworfen.'); render();
+}
+
+/* ---------- Fotos ---------- */
+async function processFiles(files) {
+  const list = [...files].filter(f => (f.type || '').startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|avif)$/i.test(f.name));
+  if (!list.length) return;
+  const cat = CATS.some(c => c.id === state.photoFilter) ? state.photoFilter : 'auto';
+  const added = [];
+  showProgress('Bereite Fotos vor …');
+  for (let i = 0; i < list.length; i++) {
+    const file = list[i];
+    setProgress(`Optimiere Foto ${i + 1} von ${list.length} …`, i / list.length);
+    try {
+      const bmp = await loadBitmap(file);
+      const big = await resize(bmp, cfg.img.max, cfg.img.q);
+      const small = await resize(bmp, SMALL_EDGE, 0.8);
+      if (bmp.close) bmp.close();
+      let f = (slug(file.name.replace(/\.[^.]+$/, '')) || 'foto') + '-' + uid().slice(-4);
+      while (photoByF(f)) f += 'x';
+      state.uploads.set(BIG(f), { b64: await blobToB64(big.blob) });
+      state.uploads.set(SMALL(f), { b64: await blobToB64(small.blob) });
+      state.previews.set(BIG(f), URL.createObjectURL(big.blob));
+      state.previews.set(SMALL(f), URL.createObjectURL(small.blob));
+      added.push({ f, t: niceTitle(file.name), c: [cat], ar: Math.round(big.w / big.h * 10000) / 10000, hl: false });
+    } catch (err) { console.error(err); toast(`„${file.name}“ konnte nicht gelesen werden.`, 'bad'); }
+  }
+  hideProgress();
+  if (!added.length) return;
+  state.content.photos.unshift(...added);
+  state.view = 'photos'; render();
+  toast(`${added.length} Foto${added.length > 1 ? 's' : ''} hinzugefügt – Beschreibung und Kategorie per Tippen anpassen.`, 'ok');
+}
+function removePhoto(f) {
+  const s = state.content.site;
+  if (s.heroPhoto === f) { toast('Das ist gerade dein Titelbild – wähle unter „Texte“ zuerst ein anderes.', 'warn'); return false; }
+  if (s.aboutPhoto === f) { toast('Das ist gerade dein Über-mich-Bild – wähle unter „Texte“ zuerst ein anderes.', 'warn'); return false; }
+  const list = state.content.photos, i = list.findIndex(p => p.f === f); if (i < 0) return false;
+  dropFile(BIG(f)); dropFile(SMALL(f)); list.splice(i, 1);
+  return true;
+}
+
+/* ---------- Ordner & Edits ---------- */
+function addFolder() {
+  const t = $('#fT').value.trim(), d = $('#fD').value, raw = $('#fU').value.trim();
+  if (!t) { toast('Gib dem Ordner einen Namen.', 'warn'); $('#fT').focus(); return; }
+  const url = /^https?:\/\//i.test(raw) ? raw : raw ? 'https://' + raw : '';
+  try { new URL(url); } catch { toast('Füg den Link zum Ordner ein.', 'warn'); $('#fU').focus(); return; }
+  state.content.folders.unshift({ id: 'f_' + uid(), t, d, url });
+  renderView(); updateDirty(); toast('Ordner hinzugefügt.', 'ok');
+}
+async function addVideo() {
+  const inp = $('#videoUrl'), raw = (inp?.value || '').trim();
+  if (!raw) { toast('Füg zuerst einen Link ein.', 'warn'); inp?.focus(); return; }
+  const url = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+  try { new URL(url); } catch { toast('Das sieht nicht nach einem Link aus.', 'bad'); return; }
+  if (state.content.videos.some(v => v.url === url)) { toast('Dieses Video ist schon drin.', 'warn'); return; }
+  const v = { id: 'v_' + uid(), title: '', car: '', cover: '', ...parseVideo(url) };
+  state.content.videos.unshift(v);
+  renderView(); updateDirty();
+  toast(v.short ? 'Hinzugefügt – bitte aber den vollen Link verwenden.' : 'Video hinzugefügt.', v.short ? 'warn' : 'ok');
+  if (v.platform === 'tiktok' && v.videoId) {
+    try { const r = await fetch('https://www.tiktok.com/oembed?url=' + encodeURIComponent(url)); if (r.ok) { const j = await r.json(); if (j.title && !v.title) { v.title = j.title.slice(0, 80); if (state.view === 'videos') renderView(); updateDirty(); } } } catch {}
+  }
+}
+async function setVideoCover(file) {
+  const v = byKey('videos', state.coverTarget); state.coverTarget = null;
+  if (!v || !file) return;
+  showProgress('Bereite Cover vor …');
+  try {
+    const bmp = await loadBitmap(file), r = await resize(bmp, 1280, 0.8); if (bmp.close) bmp.close();
+    if (v.cover) dropFile(v.cover);
+    const path = `fotos/edits/${v.id}-${uid().slice(-4)}.jpg`;
+    state.uploads.set(path, { b64: await blobToB64(r.blob) });
+    state.previews.set(path, URL.createObjectURL(r.blob));
+    v.cover = path;
+    hideProgress(); renderView(); updateDirty();
+  } catch { hideProgress(); toast('Bild konnte nicht gelesen werden.', 'bad'); }
+}
+
+/* ---------- Anfragen ---------- */
+async function loadInquiries(quiet) {
+  if (inqMode() !== 'live') return;
+  state.inqLoading = true;
+  if (!quiet && state.view === 'inquiries') renderView();
+  try { state.inquiries = (await SB.list()) || []; state.inqError = null; }
+  catch (e) { state.inqError = e.message; if (!SB.loggedIn) state.inquiries = []; }
+  state.inqLoading = false;
+  renderChrome();
+  if (['inquiries', 'dashboard'].includes(state.view) && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+async function patchInquiry(id, patch, okMsg) {
+  const q = inqById(id); if (!q) return;
+  const prev = { ...q }; Object.assign(q, patch);
+  renderChrome(); if (state.view === 'inquiries') renderView();
+  if (inqMode() !== 'live') return;
+  try { await SB.update(q.id, patch); if (okMsg) toast(okMsg, 'ok'); }
+  catch (e) { Object.assign(q, prev); renderChrome(); if (state.view === 'inquiries') renderView(); toast('Speichern fehlgeschlagen: ' + e.message, 'bad'); }
+}
+async function deleteInquiry(id) {
+  const q = inqById(id); if (!q || !confirm(`Anfrage von ${q.name} endgültig löschen?`)) return;
+  if (inqMode() === 'live') { try { await SB.remove(q.id); } catch (e) { toast('Löschen fehlgeschlagen: ' + e.message, 'bad'); return; } }
+  state.inquiries = state.inquiries.filter(x => x !== q);
+  renderChrome(); renderView(); toast('Anfrage gelöscht.');
+}
+
+/* ---------- Einstellungen ---------- */
+async function ghConnect() {
+  const token = $('#ghToken').value.trim();
+  const owner = ($('#ghOwner')?.value || cfg.gh.owner).trim().replace(/^@/, '');
+  const repo = ($('#ghRepo')?.value || cfg.gh.repo).trim().replace(/^.*github\.com\/[^/]+\//, '').replace(/\.git$/, '');
+  const branch = ($('#ghBranch')?.value || cfg.gh.branch).trim() || 'main';
+  const site = ($('#siteUrl')?.value || cfg.siteUrl).trim();
+  if (!token) { toast('Füg zuerst den Token ein.', 'warn'); $('#ghToken').focus(); return; }
+  if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen beim Neuladen verloren. Weiter?')) return;
+  const prev = { ...cfg.gh };
+  cfg.gh = { owner, repo, branch, token };
+  showProgress('Verbinde mit GitHub …');
+  try {
+    const info = await GH.repoInfo();
+    if (info.permissions && info.permissions.push === false) throw Object.assign(new Error('x'), { status: 403 });
+    try { await GH.req(`/git/ref/heads/${encPath(branch)}`); }
+    catch (e) { if (e.status === 404) throw new Error(`Den Branch „${branch}“ gibt es nicht (Standard ist „${info.default_branch}“).`); throw e; }
+    cfg.gh.owner = info.owner?.login || owner; cfg.gh.repo = info.name || repo;
+    store.set('gh', cfg.gh); cfg.siteUrl = site; store.set('siteUrl', site);
+    hideProgress(); resetPending();
+    if (inqMode() !== 'live') state.inquiries = [];
+    await loadLive(); render();
+    toast(state.loadError || 'Verbunden – du kannst jetzt alles bearbeiten.', state.loadError ? 'bad' : 'ok');
+  } catch (e) { cfg.gh = prev; hideProgress(); toast(e.status ? ghError(e) : (e.message || ghError(e)), 'bad'); }
+}
+async function ghDisconnect() {
+  if (isDirty() && !confirm('Nicht veröffentlichte Änderungen gehen verloren. Trotzdem trennen?')) return;
+  cfg.gh = { ...cfg.gh, token: '' }; store.set('gh', cfg.gh);
+  await loadView(); render(); toast('Getrennt. Ab jetzt nur ansehen.');
+}
+function readSb() {
+  return {
+    url: ($('#sbUrl')?.value || '').trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, ''),
+    key: ($('#sbKey')?.value || '').trim(),
+    email: ($('#sbEmail')?.value || cfg.sb.email || '').trim()
+  };
+}
+function checkSb(s) {
+  if (!/^https:\/\/[^/]+$/.test(s.url)) { toast('Die Project URL sieht so aus: https://xxxx.supabase.co', 'warn'); return false; }
+  if (!s.key) { toast('Bitte den publishable/anon Key einfügen.', 'warn'); return false; }
+  if (isSecretKey(s.key)) { toast('Das ist der geheime Key – bitte den publishable/anon Key nehmen.', 'bad'); return false; }
+  return true;
+}
+async function sbLogin() {
+  const s = readSb(), pass = $('#sbPass')?.value || '';
+  if (!checkSb(s)) return;
+  if (!s.email || !pass) { toast('E-Mail (Schritt 2) und Passwort ausfüllen.', 'warn'); return; }
+  cfg.sb = s; store.set('sb', s);
+  showProgress('Melde an …');
+  try {
+    await SB.login(s.email, pass);
+    setProgress('Lade Anfragen …', .7);
+    state.inquiries = [];
+    await loadInquiries(true);
+    hideProgress(); render();
+    toast(state.inqError || 'Postfach verbunden.', state.inqError ? 'bad' : 'ok');
+  } catch (e) {
+    hideProgress();
+    toast(/invalid login/i.test(e.message) ? 'E-Mail oder Passwort falsch.' : e instanceof TypeError ? 'Supabase nicht erreichbar – stimmt die Project URL?' : e.message, 'bad');
+  }
+}
+
+/* =====================================================================
+   Aktionen
+   ===================================================================== */
+const ACTIONS = {
+  go: el => go(el.dataset.view),
+  'go-sb': () => { go('settings'); setTimeout(() => $('#sec-sb')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); },
+  publish: () => publish(),
+  discard: () => discard(),
+  upload: () => $('#fileInput').click(),
+  'sheet-close': () => closeSheet(),
+  pfilter: el => { state.photoFilter = el.dataset.f; renderView(); },
+  'photo-open': el => photoSheet(el.dataset.id),
+  'photo-cat': el => { const p = photoByF(el.dataset.id); if (!p) return; p.c = [el.dataset.cat, ...p.c.slice(1).filter(c => c !== el.dataset.cat)]; updateDirty(); photoSheet(p.f); },
+  'photo-xcat': el => { const p = photoByF(el.dataset.id); if (!p) return; const c = el.dataset.cat; p.c = p.c.includes(c) ? p.c.filter(x => x !== c) : [...p.c, c]; updateDirty(); photoSheet(p.f); },
+  'photo-role': el => { const s = state.content.site, f = el.dataset.id; if (el.dataset.role === 'hero') s.heroPhoto = f; else if (s.aboutPhoto !== f) { s.aboutPhoto = f; s.aboutPos = '50% 50%'; } updateDirty(); photoSheet(f); },
+  'photo-move': el => { moveIn(state.content.photos, el.dataset.id, el.dataset.dir); updateDirty(); photoSheet(el.dataset.id); },
+  'photo-del': el => { if (confirm('Dieses Foto von der Website löschen?') && removePhoto(el.dataset.id)) { closeSheet(); toast('Foto entfernt.'); } },
+  'pick-open': el => pickSheet(el.dataset.role),
+  pick: el => { const s = state.content.site, f = el.dataset.id; if (el.dataset.role === 'hero') s.heroPhoto = f; else if (s.aboutPhoto !== f) { s.aboutPhoto = f; s.aboutPos = '50% 50%'; } closeSheet(); },
+  'list-move': el => { moveIn(state.content[el.dataset.list], el.dataset.id, el.dataset.dir); renderView(); updateDirty(); },
+  'folder-add': () => addFolder(),
+  'folder-del': el => { const x = byKey('folders', el.dataset.id); if (x && confirm(`Ordner „${x.t}“ von der Website nehmen?`)) { state.content.folders = state.content.folders.filter(y => y !== x); renderView(); updateDirty(); } },
+  'video-add': () => addVideo(),
+  'video-del': el => { const v = byKey('videos', el.dataset.id); if (v && confirm('Dieses Video entfernen?')) { dropFile(v.cover); state.content.videos = state.content.videos.filter(x => x !== v); renderView(); updateDirty(); } },
+  'video-cover': el => { state.coverTarget = el.dataset.id; $('#coverInput').click(); },
+  'inq-toggle': el => { state.openInq = String(state.openInq) === el.dataset.id ? null : el.dataset.id; const l = $('#inqList'); if (l) l.innerHTML = inqListHTML(); },
+  'inq-jump': el => { state.openInq = el.dataset.id; state.inqFilter = 'all'; go('inquiries'); },
+  'inq-status': el => patchInquiry(el.dataset.id, { status: el.dataset.status }),
+  'inq-del': el => deleteInquiry(el.dataset.id),
+  'inq-refresh': () => loadInquiries(),
+  ifilter: el => { state.inqFilter = el.dataset.f; renderView(); },
+  'pkg-add': () => { state.content.packages.push({ id: 'k_' + uid(), name: '', price: '', description: '', features: [], highlight: false }); renderView(); updateDirty(); $$('.pkg input[data-field="name"]').at(-1)?.focus(); },
+  'pkg-del': el => { const k = byKey('packages', el.dataset.id); if (k && confirm(`Paket „${k.name || 'ohne Namen'}“ entfernen?`)) { state.content.packages = state.content.packages.filter(x => x !== k); renderView(); updateDirty(); } },
+  'gh-connect': () => ghConnect(),
+  'gh-disconnect': () => ghDisconnect(),
+  'sb-login': () => sbLogin(),
+  'sb-save': () => { const s = readSb(); if (!checkSb(s)) return; cfg.sb = s; store.set('sb', s); if (state.content.inbox) state.content.inbox = { url: s.url, key: s.key }; updateDirty(); toast('Gespeichert.', 'ok'); loadInquiries(); },
+  'sb-logout': () => { SB.logout(); state.inquiries = state.mode === 'view' ? demoInquiries() : []; render(); toast('Abgemeldet.'); },
+  'toggle-pass': el => { const i = $(el.dataset.target); if (i) i.type = i.type === 'password' ? 'text' : 'password'; },
+  copy: async el => {
+    const box = $(el.dataset.target), t = box?.textContent || '';
+    try { await navigator.clipboard.writeText(t); toast('Kopiert.', 'ok'); }
+    catch { const r = document.createRange(); r.selectNodeContents(box); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Markiert – jetzt kopieren.'); }
+  },
+  'reset-all': () => { if (confirm('Token und Anmeldung von diesem Gerät entfernen?')) { store.clear(); location.hash = ''; location.reload(); } }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el || el.disabled) return;
+  const fn = ACTIONS[el.dataset.action];
+  if (fn) { e.preventDefault(); fn(el, e); }
+});
+function onBind(el) {
+  if (!state.content) return;
+  const val = el.type === 'checkbox' ? el.checked : el.value;
+  if (el.dataset.bind) setPath(state.content, el.dataset.bind, val);
+  else if (el.dataset.list) {
+    const item = byKey(el.dataset.list, el.dataset.id); if (!item) return;
+    const f = el.dataset.field;
+    item[f] = f === 'features' ? val.split('\n').map(s => s.trim()).filter(Boolean) : val;
+    if (el.dataset.list === 'packages' && f === 'highlight') el.closest('.pkg')?.classList.toggle('hl', val);
+  }
+  updateDirty();
+}
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.matches('[data-bind],[data-list]') && t.type !== 'checkbox') onBind(t);
+  else if (t.id === 'inqSearch') { state.inqQuery = t.value; const l = $('#inqList'); if (l) l.innerHTML = inqListHTML(); }
+  else if (t.id === 'sbEmail') { const b = $('#sqlBox'); if (b) b.textContent = sqlFor(t.value.trim()); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.matches('[data-bind],[data-list]')) onBind(t);
+  else if (t.dataset.inqNote) { const q = inqById(t.dataset.inqNote); if (q && (q.notiz || '') !== t.value) patchInquiry(q.id, { notiz: t.value }, 'Notiz gespeichert.'); }
+  else if (t.dataset.cfg) { cfg.img[t.dataset.cfg] = Number(t.value); store.set('img', cfg.img); toast('Gespeichert.', 'ok'); }
+  else if (t.id === 'sbEmail') { cfg.sb.email = t.value.trim(); store.set('sb', cfg.sb); }
+  else if (t.id === 'inboxSwitch') {
+    if (t.checked) {
+      const s = readSb(); if (!checkSb(s)) { t.checked = false; return; }
+      cfg.sb = { ...cfg.sb, ...s }; store.set('sb', cfg.sb);
+      state.content.inbox = { url: s.url, key: s.key };
+    } else state.content.inbox = null;
+    updateDirty(); renderView();
+    toast(state.mode === 'live' ? 'Wird mit dem nächsten Veröffentlichen aktiv.' : 'Zum Speichern GitHub verbinden.');
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('#sheetWrap').classList.contains('open')) closeSheet();
+  if (e.key === 'Enter' && e.target.id === 'videoUrl') { e.preventDefault(); addVideo(); }
+  if (e.key === 'Enter' && e.target.id === 'fU') { e.preventDefault(); addFolder(); }
+  if (e.key === 'Enter' && e.target.id === 'sbPass') { e.preventDefault(); sbLogin(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.ptile')) { e.preventDefault(); photoSheet(e.target.dataset.id); }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); publish(); }
+});
+$('#fileInput').addEventListener('change', e => { processFiles(e.target.files); e.target.value = ''; });
+$('#coverInput').addEventListener('change', e => { setVideoCover(e.target.files[0]); e.target.value = ''; });
+document.addEventListener('error', e => {
+  const img = e.target; if (img.tagName !== 'IMG') return;
+  if (img.dataset.fallback && !img.dataset.fb && img.src !== img.dataset.fallback) { img.dataset.fb = '1'; img.src = img.dataset.fallback; }
+  else img.classList.add('broken');
+}, true);
+
+/* Fotos per Drag & Drop (am Computer) */
+let dragDepth = 0;
+const hasFiles = e => [...(e.dataTransfer?.types || [])].includes('Files');
+document.addEventListener('dragenter', e => { if (!hasFiles(e)) return; dragDepth++; document.body.classList.add('dragging'); });
+document.addEventListener('dragleave', e => { if (!hasFiles(e)) return; if (--dragDepth <= 0) { dragDepth = 0; document.body.classList.remove('dragging'); } });
+document.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+document.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging'); processFiles(e.dataTransfer.files); });
+
+window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== state.view && NAV.some(n => n.id === v)) go(v); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && inqMode() === 'live') loadInquiries(true); });
+
+/* =====================================================================
+   Start
+   ===================================================================== */
+(async function init() {
+  const h = location.hash.slice(1);
+  if (NAV.some(n => n.id === h)) state.view = h;
+  if (GH.ready) await loadLive(); else { state.loading = true; render(); await loadView(); state.loading = false; }
+  render();
+  if (inqMode() === 'live') loadInquiries();
+  if (!window.Sortable) window.addEventListener('load', () => { if (window.Sortable && state.view === 'photos' && !$('#sheetWrap').classList.contains('open')) renderView(); }, { once: true });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-28T12:00:00.000Z",
+  "site": {
+    "kicker": "Fotografie · Tirol, Österreich",
+    "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
+    "say": "Autos, Motorräder und Motorsport. Dazu Landschaften, wenn das *Licht* stimmt.",
+    "heroPhoto": "supermoto-strasse",
+    "aboutPhoto": "hinter-der-kamera",
+    "aboutPos": "30% 70%",
+    "about": "Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.\n\nIch arbeite gern mit Fahrern, Teams und Besitzern zusammen.",
+    "name": "Matteo Hanser",
+    "focus": "Automotive, Action, Outdoor",
+    "region": "Tirol, Österreich",
+    "offer": "Shootings und Zusammenarbeit",
+    "contactIntro": "Am schnellsten erreichst du mich auf Instagram.",
+    "instagram": "mapq.raw",
+    "instagramPrivate": "matzeqp",
+    "email": "Matteohanser8@gmail.com",
+    "tiktok": ""
+  },
+  "photos": [
+    {
+      "f": "audi-a3-feld",
+      "t": "Audi A3 am Feld",
+      "c": [
+        "auto"
+      ],
+      "ar": 1.7778,
+      "hl": true
+    },
+    {
+      "f": "hund",
+      "t": "Hund bei Sonnenuntergang",
+      "c": [
+        "tiere",
+        "outdoor"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "supermoto-burnout",
+      "t": "Supermoto-Burnout",
+      "c": [
+        "moto"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "wasserfall",
+      "t": "Wasserfall in den Bergen",
+      "c": [
+        "outdoor"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "bmw-e46",
+      "t": "Blauer BMW E46",
+      "c": [
+        "auto"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "steinmann",
+      "t": "Steinmann im Tal",
+      "c": [
+        "outdoor"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "supermoto-strasse",
+      "t": "Fahrerin mit Supermoto auf einer Bergstraße",
+      "c": [
+        "moto"
+      ],
+      "ar": 1.7778,
+      "hl": false
+    },
+    {
+      "f": "cockpit",
+      "t": "Blick ins Cockpit",
+      "c": [
+        "auto"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "supermoto-felge",
+      "t": "Supermoto-Felge im Detail",
+      "c": [
+        "moto"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
+    {
+      "f": "hinter-der-kamera",
+      "t": "Fotografieren am Wasserfall",
+      "c": [
+        "outdoor"
+      ],
+      "ar": 0.5625,
+      "hl": false
+    }
+  ],
+  "folders": [
+    {
+      "id": "f1",
+      "t": "Oldtimertreffen Buch",
+      "d": "2026-09-27",
+      "url": "https://drive.google.com/drive/folders/17KqME1dj7s9PZuzvMXyUYNQOAs4H8z2r?usp=drive_link"
+    },
+    {
+      "id": "f2",
+      "t": "Autoslalom Stans HTS",
+      "d": "2026-09-20",
+      "url": "https://drive.google.com/drive/folders/1woKYOxA5jm77aWxoP__RGTIisRSIf2sI?usp=drive_link"
+    },
+    {
+      "id": "f3",
+      "t": "Oldtimertreffen Aschach",
+      "d": "2026-09-19",
+      "url": "https://drive.google.com/drive/folders/1jcYJfD6yJl7reeP0U6e3DlL_A5-L_82k?usp=drive_link"
+    },
+    {
+      "id": "f4",
+      "t": "Autoslalom Reifen Jais Hall",
+      "d": "2026-09-13",
+      "url": "https://drive.google.com/drive/folders/1jyVHDlOn9tCoSueNOa9N6unC9Cpwh2CO?usp=drive_link"
+    }
+  ],
+  "videos": [],
+  "packages": [],
+  "inbox": null
+}

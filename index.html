@@ -49,6 +49,7 @@ body{margin:0;background:var(--color-background);color:var(--color-foreground);f
 a{color:inherit}
 a,button,label,summary{cursor:pointer}
 img{display:block;max-width:100%}
+[hidden]{display:none!important}
 button,input,textarea{font:inherit;color:inherit}
 h1,h2,h3,p,dl,dd,figure{margin:0}
 :focus-visible{outline:2px solid var(--color-ring);outline-offset:3px}
@@ -81,6 +82,7 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(248,250,252,.55)}70%{box-shadow:0 0 0 12px rgba(248,250,252,0)}100%{box-shadow:0 0 0 0 rgba(248,250,252,0)}}
 @media (max-width:560px){.nav .opt{display:none}}
 @media (max-width:400px){.nav .opt2{display:none}}
+@media (max-width:900px){.nav .opt3{display:none}}
 
 /* ---------- Hero ---------- */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
@@ -172,6 +174,32 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .stats{display:flex;flex-wrap:wrap;gap:var(--space-xl) var(--space-2xl);margin-top:2.2rem}
 .stats b{display:block;font-stretch:62%;font-weight:850;font-size:clamp(2.6rem,6vw,4rem);line-height:1;font-variant-numeric:tabular-nums}
 
+/* ---------- Edits (Videos) ---------- */
+.edits{display:grid;grid-auto-flow:column;grid-auto-columns:min(62vw,260px);gap:clamp(10px,2vw,16px);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:var(--space-md)}
+@media (min-width:900px){.edits{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}}
+.edit{scroll-snap-align:start;display:flex;flex-direction:column;gap:.75rem;text-decoration:none}
+.edit-pic{position:relative;aspect-ratio:9/16;border-radius:var(--radius-card);overflow:hidden;background:var(--color-card);border:1px solid var(--color-border);box-shadow:var(--shadow-md);transition:transform var(--ease),box-shadow var(--ease)}
+.edit-pic img{width:100%;height:100%;object-fit:cover;transition:filter var(--ease)}
+.edit-ph{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;font-family:var(--font-heading);font-stretch:62%;font-weight:850;font-size:clamp(2rem,6vw,2.6rem);line-height:.9;text-transform:uppercase;color:transparent;-webkit-text-stroke:1.2px var(--color-foreground);overflow-wrap:anywhere}
+.edit-play{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.edit-play .ic{width:20px;height:20px;fill:currentColor;stroke:none;margin-left:3px}
+.edit-src{position:absolute;left:10px;bottom:10px;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.65)}
+.edit strong{display:block;font-family:var(--font-heading);font-stretch:75%;font-weight:750;font-size:1.25rem;line-height:1.15}
+@media (hover:hover){.edit:hover .edit-pic{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.edit:hover img{filter:brightness(1.06)}}
+
+/* ---------- Preise ---------- */
+.prices{display:grid;gap:clamp(14px,2vw,20px)}
+@media (min-width:760px){.prices{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+.price{position:relative;display:flex;flex-direction:column;gap:var(--space-md);background:var(--color-card);border:1px solid var(--color-border);border-radius:var(--radius-card);padding:clamp(1.25rem,3vw,var(--space-xl));box-shadow:var(--shadow-md)}
+.price.top{border-color:var(--color-foreground)}
+.price .badge{position:absolute;top:-12px;left:clamp(1.25rem,3vw,2rem);padding:4px 10px;border-radius:999px;background:var(--color-accent);color:var(--color-on-accent);font-weight:700}
+.price h3{font-family:var(--font-heading);font-stretch:75%;font-weight:750;font-size:1.5rem;line-height:1.1}
+.price .amount{font-family:var(--font-heading);font-stretch:62%;font-weight:850;font-size:clamp(2.4rem,5vw,3.2rem);line-height:1;text-transform:uppercase}
+.price ul{list-style:none;margin:0;padding:var(--space-md) 0 0;border-top:1px solid var(--color-border);display:flex;flex-direction:column;gap:.55rem}
+.price li{display:flex;gap:.6rem;align-items:flex-start}
+.price li .ic{margin-top:.3em}
+.price .btn{margin-top:auto;align-self:flex-start}
+
 /* ---------- Kontakt ---------- */
 .contact{background:var(--color-card);border-top:1px solid var(--color-border)}
 .contact-grid{display:grid;gap:clamp(2.5rem,5vw,5rem)}
@@ -204,6 +232,8 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .fld textarea::placeholder{color:var(--color-muted-foreground)}
 .req .acts{margin-top:1.25rem}
 .out{display:block;min-height:1.5em;margin-top:.9rem;font-size:.92rem}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn[disabled]{opacity:.6;pointer-events:none}
 
 /* ---------- Fußzeile ---------- */
 footer{border-top:1px solid var(--color-border);padding:1.6rem 0 calc(1.6rem + env(safe-area-inset-bottom,0px))}
@@ -285,12 +315,12 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
 
 <main>
   <section class="hero" id="start">
-    <div class="hero-bg" id="hero-bg"><img src="fotos/supermoto-strasse.jpg" alt="Fahrerin mit Supermoto auf einer Bergstraße" fetchpriority="high"></div>
+    <div class="hero-bg" id="hero-bg"><img id="hero-img" src="fotos/supermoto-strasse.jpg" alt="Fahrerin mit Supermoto auf einer Bergstraße" fetchpriority="high"></div>
     <div class="wrap" id="hero-in">
-      <p class="kicker label">Fotografie · Tirol, Österreich</p>
+      <p class="kicker label" id="c-kicker">Fotografie · Tirol, Österreich</p>
       <h1 class="display">mapq<span>.</span>raw</h1>
       <div class="hero-row">
-        <p class="lede">Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.</p>
+        <p class="lede" id="c-lede">Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.</p>
         <div class="acts">
           <a class="btn" href="#bilder">Bilder ansehen</a>
           <a class="btn ghost" href="#kontakt">Shooting anfragen <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
@@ -307,7 +337,7 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
   <section class="hs" id="highlights" aria-label="Highlights">
     <div class="hs-pin">
       <div class="wrap hs-head">
-        <div><p class="kicker label">Autos bis Tiere</p><h2 class="display">Highlights</h2></div>
+        <div><p class="kicker label" id="hs-kicker">Autos bis Tiere</p><h2 class="display">Highlights</h2></div>
         <p class="hs-month" id="hs-month" aria-hidden="true">Autos</p>
       </div>
       <div class="track" id="track"></div>
@@ -338,29 +368,55 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
     </div>
   </section>
 
+  <section class="sec" id="edits" style="padding-top:0" hidden>
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="kicker label">Video-Edits</p>
+          <h2 class="display">Edits</h2>
+        </div>
+      </div>
+      <div class="edits" id="edits-list"></div>
+    </div>
+  </section>
+
   <section class="sec" id="ueber" style="padding-top:0">
     <div class="wrap about">
       <figure class="about-pic reveal">
-        <img src="fotos/klein/hinter-der-kamera.jpg" alt="Fotografieren am Wasserfall" loading="lazy" style="object-position:30% 70%">
+        <img id="about-img" src="fotos/klein/hinter-der-kamera.jpg" alt="Fotografieren am Wasserfall" loading="lazy" style="object-position:30% 70%">
       </figure>
       <div class="reveal">
         <p class="kicker label">Hinter der Kamera</p>
         <h2 class="display">Über mich</h2>
-        <p>Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.</p>
-        <p>Ich arbeite gern mit Fahrern, Teams und Besitzern zusammen.</p>
+        <div id="c-about">
+          <p>Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.</p>
+          <p>Ich arbeite gern mit Fahrern, Teams und Besitzern zusammen.</p>
+        </div>
         <div class="stats">
           <div><b id="st-n">10</b><span class="label mute">Bilder online</span></div>
-          <div><b>4</b><span class="label mute">Bereiche</span></div>
+          <div><b id="st-cat">4</b><span class="label mute">Bereiche</span></div>
           <div><b>3</b><span class="label mute">Schwerpunkte</span></div>
         </div>
         <dl class="facts">
-          <div><dt class="label">Name</dt><dd>Matteo Hanser</dd></div>
-          <div><dt class="label">Schwerpunkte</dt><dd>Automotive, Action, Outdoor</dd></div>
-          <div><dt class="label">Region</dt><dd>Tirol, Österreich</dd></div>
-          <div><dt class="label">Angebot</dt><dd>Shootings und Zusammenarbeit</dd></div>
+          <div><dt class="label">Name</dt><dd id="c-name">Matteo Hanser</dd></div>
+          <div><dt class="label">Schwerpunkte</dt><dd id="c-focus">Automotive, Action, Outdoor</dd></div>
+          <div><dt class="label">Region</dt><dd id="c-region">Tirol, Österreich</dd></div>
+          <div><dt class="label">Angebot</dt><dd id="c-offer">Shootings und Zusammenarbeit</dd></div>
         </dl>
         <div class="acts" style="margin-top:var(--space-xl)"><a class="btn ghost" href="#kontakt">Zusammenarbeit anfragen <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
       </div>
+    </div>
+  </section>
+
+  <section class="sec" id="preise" style="padding-top:0" hidden>
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="kicker label">Shootings</p>
+          <h2 class="display">Preise</h2>
+        </div>
+      </div>
+      <div class="prices" id="prices"></div>
     </div>
   </section>
 
@@ -369,11 +425,12 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
       <div class="reveal">
         <p class="kicker label">Shooting anfragen</p>
         <h2 class="display">Kontakt</h2>
-        <p class="mute">Am schnellsten erreichst du mich auf Instagram.</p>
+        <p class="mute" id="c-contact">Am schnellsten erreichst du mich auf Instagram.</p>
         <div class="handles">
-          <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener"><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>@mapq.raw</strong><small class="label">Instagram <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
-          <a href="https://www.instagram.com/matzeqp" target="_blank" rel="noopener"><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>@matzeqp</strong><small class="label">Privat <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
-          <a href="mailto:Matteohanser8@gmail.com"><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>Matteohanser8@gmail.com</strong><small class="label">E-Mail <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
+          <a id="h-ig" href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener"><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg><span class="h-t">@mapq.raw</span></strong><small class="label">Instagram <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
+          <a id="h-ig2" href="https://www.instagram.com/matzeqp" target="_blank" rel="noopener"><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg><span class="h-t">@matzeqp</span></strong><small class="label">Privat <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
+          <a id="h-tt" href="https://www.tiktok.com/" target="_blank" rel="noopener" hidden><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span class="h-t">TikTok</span></strong><small class="label">TikTok <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
+          <a id="h-mail" href="mailto:Matteohanser8@gmail.com"><strong><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span class="h-t">Matteohanser8@gmail.com</span></strong><small class="label">E-Mail <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></small></a>
         </div>
       </div>
       <form class="req reveal" id="req" novalidate>
@@ -381,8 +438,11 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
         <fieldset><legend class="label mute">Worum geht es?</legend><div class="opts" id="o-art"></div></fieldset>
         <fieldset><legend class="label mute">Wann am liebsten?</legend><div class="opts" id="o-zeit"></div></fieldset>
         <label class="fld" for="rn"><span class="label mute">Dein Name</span><input id="rn" autocomplete="name"></label>
+        <label class="fld" for="rk" id="rk-wrap" hidden><span class="label mute">E-Mail oder Instagram</span><input id="rk" autocomplete="email" placeholder="Damit ich dir antworten kann"></label>
         <label class="fld" for="rm"><span class="label mute">Nachricht</span><textarea id="rm" placeholder="Fahrzeug, Ort, Wunschtermin"></textarea></label>
+        <label class="hp" aria-hidden="true">Bitte leer lassen <input id="rw" tabindex="-1" autocomplete="off"></label>
         <div class="acts">
+          <button type="submit" class="btn" id="rs" hidden>Anfrage senden</button>
           <button type="button" class="btn" id="rc">Text kopieren &amp; Instagram öffnen</button>
           <a class="btn ghost" id="rmail" href="mailto:Matteohanser8@gmail.com">Per E-Mail senden</a>
         </div>
@@ -395,7 +455,7 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
 <footer>
   <div class="wrap">
     <span>© 2026 Matteo Hanser</span>
-    <span class="label">Stand: Oktober 2026</span>
+    <span class="label" id="c-stand">Stand: Oktober 2026</span>
     <button type="button" class="link" id="imp-open">Impressum</button>
   </div>
 </footer>
@@ -403,9 +463,9 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
 <dialog class="imp" id="imp" aria-labelledby="imp-h" data-lenis-prevent>
   <h2 id="imp-h">Impressum</h2>
   <dl>
-    <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
-    <div><dt>Ort</dt><dd>Tirol, Österreich</dd></div>
-    <div><dt>E-Mail</dt><dd><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com</a></dd></div>
+    <div><dt>Name</dt><dd id="imp-name">Matteo Hanser</dd></div>
+    <div><dt>Ort</dt><dd id="imp-ort">Tirol, Österreich</dd></div>
+    <div><dt>E-Mail</dt><dd><a id="imp-mail" href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com</a></dd></div>
   </dl>
   <form method="dialog"><button class="btn ghost" autofocus>Schließen</button></form>
 </dialog>
@@ -413,7 +473,7 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
 <dialog class="imp" id="ordner" aria-labelledby="ordner-h" data-lenis-prevent>
   <h2 id="ordner-h">Fotoordner</h2>
   <p class="intro mute">Hier findest du meine aktuellen Bilder. Wähle einen Ordner aus, um ihn in Google Drive zu öffnen.</p>
-  <ul class="folders">
+  <ul class="folders" id="folders">
     <li><a href="https://drive.google.com/drive/folders/17KqME1dj7s9PZuzvMXyUYNQOAs4H8z2r?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Oldtimertreffen Buch</strong><small class="label mute">27.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
     <li><a href="https://drive.google.com/drive/folders/1woKYOxA5jm77aWxoP__RGTIisRSIf2sI?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Autoslalom Stans HTS</strong><small class="label mute">20.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
     <li><a href="https://drive.google.com/drive/folders/1jcYJfD6yJl7reeP0U6e3DlL_A5-L_82k?usp=drive_link" target="_blank" rel="noopener noreferrer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span><strong>Oldtimertreffen Aschach</strong><small class="label mute">19.09.26 · Google Drive</small></span><svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></li>
@@ -438,19 +498,33 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
 
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
-var PHOTOS=[
-  {f:"audi-a3-feld",t:"Audi A3 am Feld",c:"auto",ar:1.7778},
-  {f:"hund",t:"Hund bei Sonnenuntergang",c:"tiere outdoor",ar:.5625},
-  {f:"supermoto-burnout",t:"Supermoto-Burnout",c:"moto",ar:.5625},
-  {f:"wasserfall",t:"Wasserfall in den Bergen",c:"outdoor",ar:.5625},
-  {f:"bmw-e46",t:"Blauer BMW E46",c:"auto",ar:.5625},
-  {f:"steinmann",t:"Steinmann im Tal",c:"outdoor",ar:.5625},
-  {f:"supermoto-strasse",t:"Fahrerin mit Supermoto auf einer Bergstraße",c:"moto",ar:1.7778},
-  {f:"cockpit",t:"Blick ins Cockpit",c:"auto",ar:.5625},
-  {f:"supermoto-felge",t:"Supermoto-Felge im Detail",c:"moto",ar:.5625},
-  {f:"hinter-der-kamera",t:"Fotografieren am Wasserfall",c:"outdoor",ar:.5625}
+/* Inhalte stehen in content.json und werden über admin.html gepflegt.
+   Fehlt die Datei, gilt dieser Stand (und die Texte direkt im HTML). */
+var FALLBACK_PHOTOS=[
+  {f:"audi-a3-feld",t:"Audi A3 am Feld",c:["auto"],ar:1.7778,hl:true},
+  {f:"hund",t:"Hund bei Sonnenuntergang",c:["tiere","outdoor"],ar:.5625,hl:true},
+  {f:"supermoto-burnout",t:"Supermoto-Burnout",c:["moto"],ar:.5625,hl:true},
+  {f:"wasserfall",t:"Wasserfall in den Bergen",c:["outdoor"],ar:.5625,hl:true},
+  {f:"bmw-e46",t:"Blauer BMW E46",c:["auto"],ar:.5625,hl:true},
+  {f:"steinmann",t:"Steinmann im Tal",c:["outdoor"],ar:.5625,hl:true},
+  {f:"supermoto-strasse",t:"Fahrerin mit Supermoto auf einer Bergstraße",c:["moto"],ar:1.7778,hl:false},
+  {f:"cockpit",t:"Blick ins Cockpit",c:["auto"],ar:.5625,hl:true},
+  {f:"supermoto-felge",t:"Supermoto-Felge im Detail",c:["moto"],ar:.5625,hl:true},
+  {f:"hinter-der-kamera",t:"Fotografieren am Wasserfall",c:["outdoor"],ar:.5625,hl:false}
 ];
 (function(){
+  "use strict";
+  var booted=false;
+  function boot(c){ if(booted) return; booted=true; start(c&&typeof c==="object"?c:{}); }
+  try{
+    fetch("content.json",{cache:"no-cache"})
+      .then(function(r){ return r.ok?r.json():null; })
+      .then(boot,function(){ boot(null); });
+  }catch(e){ boot(null); }
+  setTimeout(function(){ boot(null); },3500);
+})();
+
+function start(C){
   "use strict";
   function $(s){ return document.querySelector(s); }
   function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
@@ -458,7 +532,114 @@ var PHOTOS=[
 
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Inhalte aus content.json ---------- */
+  var S=C.site||null;
+  function str(v){ return typeof v==="string"&&v.trim()?v.trim():""; }
+  function handleName(v){ return str(v).replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\//i,"").replace(/^@/,"").replace(/[\/?#].*$/,""); }
+  function setText(id,v){ var el=document.getElementById(id); if(el&&str(v)) el.textContent=str(v); }
+  var ARROW='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+  var CATN={auto:"Autos",moto:"Motorräder",outdoor:"Outdoor",tiere:"Tiere"}, ORDER=["auto","moto","outdoor","tiere"];
+
+  var PHOTOS=(Array.isArray(C.photos)&&C.photos.length?C.photos:FALLBACK_PHOTOS).filter(function(p){ return p&&p.f; }).map(function(p){
+    var c=(Array.isArray(p.c)?p.c:String(p.c||"").split(" ")).filter(function(x){ return CATN[x]; });
+    return {f:String(p.f),t:p.t||"",c:(c.length?c:["auto"]).join(" "),ar:+p.ar||1,hl:!!p.hl};
+  });
   function byF(f){ for(var i=0;i<PHOTOS.length;i++) if(PHOTOS[i].f===f) return i; return -1; }
+
+  var EMAIL=(S&&str(S.email))||"Matteohanser8@gmail.com";
+  var IG=(S&&handleName(S.instagram))||"mapq.raw";
+  var FIRST=((S&&str(S.name))||"Matteo").split(/\s+/)[0];
+  var nav=$(".nav"), navKontakt=nav.querySelector('a[href="#kontakt"]');
+  function addNav(href,label,before){ var a=document.createElement("a"); a.className="opt3"; a.href=href; a.textContent=label; nav.insertBefore(a,(before&&nav.querySelector('a[href="'+before+'"]'))||navKontakt); }
+
+  if(S){
+    setText("c-kicker",S.kicker); setText("c-lede",S.lede); setText("say",S.say);
+    setText("c-name",S.name); setText("c-focus",S.focus); setText("c-region",S.region); setText("c-offer",S.offer);
+    setText("imp-name",S.name); setText("imp-ort",S.region); setText("c-contact",S.contactIntro);
+    var hi=byF(S.heroPhoto), heroImg=$("#hero-img");
+    if(hi>-1){ var hs0="fotos/"+PHOTOS[hi].f+".jpg"; if(heroImg.getAttribute("src")!==hs0) heroImg.src=hs0; heroImg.alt=PHOTOS[hi].t; }
+    var ai=byF(S.aboutPhoto), aboutImg=$("#about-img");
+    if(ai>-1){ var as0="fotos/klein/"+PHOTOS[ai].f+".jpg"; if(aboutImg.getAttribute("src")!==as0) aboutImg.src=as0; aboutImg.alt=PHOTOS[ai].t; aboutImg.style.objectPosition=str(S.aboutPos)||"50% 50%"; }
+    if(str(S.about)){
+      var ab=$("#c-about"); ab.textContent="";
+      S.about.split(/\n\s*\n/).forEach(function(t){ t=t.trim(); if(!t) return; var p=document.createElement("p"); p.textContent=t; ab.appendChild(p); });
+    }
+    var handles=[["h-ig","https://www.instagram.com/"+IG,"@"+IG],["h-ig2",null,null],["h-tt",null,null],["h-mail","mailto:"+EMAIL,EMAIL]];
+    var ig2=handleName(S.instagramPrivate), tt=handleName(S.tiktok);
+    handles[1][1]=ig2?"https://www.instagram.com/"+ig2:null; handles[1][2]="@"+ig2;
+    handles[2][1]=tt?"https://www.tiktok.com/@"+tt:null; handles[2][2]="@"+tt;
+    handles.forEach(function(h){
+      var a=document.getElementById(h[0]); if(!a) return;
+      if(!h[1]){ a.hidden=true; return; }
+      a.hidden=false; a.href=h[1]; a.querySelector(".h-t").textContent=h[2];
+    });
+    var im=$("#imp-mail"); im.href="mailto:"+EMAIL; im.textContent=EMAIL;
+  }
+  if(C.updatedAt){
+    var d=new Date(C.updatedAt);
+    if(!isNaN(d)) $("#c-stand").textContent="Stand: "+d.toLocaleDateString("de-AT",{month:"long",year:"numeric"});
+  }
+
+  /* Fotoordner (Button „Ordner“) */
+  if(Array.isArray(C.folders)){
+    var ul=$("#folders"), FOLD='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
+        GO='<svg class="ic go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>';
+    ul.textContent="";
+    C.folders.forEach(function(x){
+      if(!x||!/^https?:\/\//.test(x.url||"")) return;
+      var m=String(x.d||"").match(/^(\d{4})-(\d{2})-(\d{2})/), date=m?m[3]+"."+m[2]+"."+m[1].slice(2):str(x.d), host="Link";
+      try{ host=new URL(x.url).hostname.indexOf("drive.google")>-1?"Google Drive":new URL(x.url).hostname.replace(/^www\./,""); }catch(e){}
+      var li=document.createElement("li"), a=document.createElement("a");
+      a.href=x.url; a.target="_blank"; a.rel="noopener noreferrer";
+      a.innerHTML=FOLD+'<span><strong></strong><small class="label mute"></small></span>'+GO;
+      a.querySelector("strong").textContent=x.t||"Ordner";
+      a.querySelector("small").textContent=(date?date+" · ":"")+host;
+      li.appendChild(a); ul.appendChild(li);
+    });
+    if(!ul.children.length) $("#ordner-open").hidden=true;
+  }
+
+  /* Edits (Videos) */
+  var VIDEOS=(Array.isArray(C.videos)?C.videos:[]).filter(function(v){ return v&&/^https?:\/\//.test(v.url||""); });
+  if(VIDEOS.length){
+    var el=$("#edits-list"), PLAY='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"/></svg>',
+        PL={tiktok:"TikTok",instagram:"Instagram",youtube:"YouTube"};
+    VIDEOS.forEach(function(v){
+      var a=document.createElement("a"); a.className="edit reveal"; a.href=v.url; a.target="_blank"; a.rel="noopener";
+      var pic=document.createElement("span"); pic.className="edit-pic";
+      var cover=str(v.cover)?v.cover:(v.platform==="youtube"&&v.videoId?"https://i.ytimg.com/vi/"+v.videoId+"/hqdefault.jpg":"");
+      if(cover){ var img=document.createElement("img"); img.src=cover; img.alt=""; img.loading="lazy"; pic.appendChild(img); }
+      else { var ph=document.createElement("span"); ph.className="edit-ph"; ph.setAttribute("aria-hidden","true"); ph.textContent=v.car||v.title||"Edit"; pic.appendChild(ph); }
+      pic.insertAdjacentHTML("beforeend",'<span class="edit-play">'+PLAY+'</span><span class="edit-src label"></span>');
+      pic.querySelector(".edit-src").textContent=PL[v.platform]||"Video";
+      var cap=document.createElement("span"), t=document.createElement("strong"), s=document.createElement("span");
+      t.textContent=v.title||v.car||"Edit"; s.className="label mute"; s.textContent=v.title&&v.car?v.car:(PL[v.platform]||"Video")+" ansehen";
+      cap.appendChild(t); cap.appendChild(s);
+      a.setAttribute("aria-label",(v.title||v.car||"Edit")+" auf "+(PL[v.platform]||"der Plattform")+" ansehen");
+      a.appendChild(pic); a.appendChild(cap); el.appendChild(a);
+    });
+    $("#edits").hidden=false; addNav("#edits","Edits","#ueber");
+  }
+
+  /* Preise */
+  var PACKS=(Array.isArray(C.packages)?C.packages:[]).filter(function(k){ return k&&str(k.name); });
+  if(PACKS.length){
+    var box=$("#prices"), CHECK='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+    PACKS.forEach(function(k){
+      var c=document.createElement("article"); c.className="price reveal"+(k.highlight?" top":"");
+      if(k.highlight) c.insertAdjacentHTML("beforeend",'<span class="badge label">Beliebt</span>');
+      var h=document.createElement("h3"); h.textContent=k.name; c.appendChild(h);
+      if(str(k.price)){ var b=document.createElement("p"); b.className="amount"; b.textContent=k.price; c.appendChild(b); }
+      if(str(k.description)){ var p=document.createElement("p"); p.className="mute"; p.textContent=k.description; c.appendChild(p); }
+      var fs=(Array.isArray(k.features)?k.features:[]).filter(str);
+      if(fs.length){ var ul2=document.createElement("ul"); fs.forEach(function(f){ var li=document.createElement("li"); li.innerHTML=CHECK; li.appendChild(document.createTextNode(f)); ul2.appendChild(li); }); c.appendChild(ul2); }
+      var a=document.createElement("a"); a.className="btn"+(k.highlight?"":" ghost"); a.href="#kontakt"; a.innerHTML="Anfragen "+ARROW;
+      a.addEventListener("click",function(){ var rm=$("#rm"); if(!rm.value.trim()){ rm.value="Interesse an: "+k.name; syncMail(); } });
+      c.appendChild(a); box.appendChild(c);
+    });
+    $("#preise").hidden=false; addNav("#preise","Preise");
+  }
 
   /* Weiches Scrollen */
   var lenis=null;
@@ -489,13 +670,16 @@ var PHOTOS=[
   say.setAttribute("aria-label",words.map(function(w){ return w.textContent; }).join(" "));
 
   /* Highlights-Strecke */
-  var CHAPTERS=[
-    ["Autos","01 / 04",["audi-a3-feld","bmw-e46","cockpit"]],
-    ["Motorräder","02 / 04",["supermoto-burnout","supermoto-felge"]],
-    ["Outdoor","03 / 04",["wasserfall","steinmann"]],
-    ["Tiere","04 / 04",["hund"]]
-  ];
+  /* Ein Kapitel je Kategorie; ein Foto landet im Kapitel seiner ersten Kategorie */
+  var CHAPTERS=[];
+  ORDER.forEach(function(k){
+    var list=PHOTOS.filter(function(p){ return p.hl&&p.c.split(" ")[0]===k; }).map(function(p){ return p.f; });
+    if(list.length) CHAPTERS.push([CATN[k],"",list]);
+  });
+  CHAPTERS.forEach(function(c,i){ c[1]=pad(i+1)+" / "+pad(CHAPTERS.length); });
   var track=$("#track"), hs=$("#highlights"), chaps=[];
+  if(CHAPTERS.length) $("#hs-kicker").textContent=CHAPTERS.length>1?CHAPTERS[0][0]+" bis "+CHAPTERS[CHAPTERS.length-1][0]:CHAPTERS[0][0];
+  else { hs.hidden=true; var hl=nav.querySelector('a[href="#highlights"]'); if(hl) hl.hidden=true; }
   CHAPTERS.forEach(function(c){
     var ch=document.createElement("div"); ch.className="chap"; ch.dataset.m=c[0];
     ch.innerHTML='<span class="label mute"></span><b></b>';
@@ -540,7 +724,7 @@ var PHOTOS=[
     }
     var r=say.getBoundingClientRect(), sp=clamp((vh*.85-r.top)/(r.height+vh*.4),0,1), on=Math.round(sp*words.length);
     for(var i=0;i<words.length;i++) words[i].classList.toggle("on",reduce||i<on);
-    if(!reduce){
+    if(!reduce&&chaps.length){
       var hr=hs.getBoundingClientRect(), hp=clamp(-hr.top/Math.max(1,hs.offsetHeight-vh),0,1);
       track.style.transform="translate3d("+(-hp*hsShift).toFixed(1)+"px,0,0)";
       hsBar.style.transform="scaleX("+hp.toFixed(4)+")";
@@ -564,6 +748,7 @@ var PHOTOS=[
   requestAnimationFrame(loop);
 
   $("#n-all").textContent=$("#st-n").textContent=PHOTOS.length;
+  $("#st-cat").textContent=ORDER.filter(function(k){ return PHOTOS.some(function(p){ return p.c.split(" ").indexOf(k)>-1; }); }).length;
 
   /* Raster */
   var grid=$("#grid");
@@ -583,6 +768,7 @@ var PHOTOS=[
   var shots=$$(".shot"), fbtns=$$(".filters button");
   fbtns.forEach(function(btn){
     var f=btn.dataset.f;
+    if(f!=="alle"&&!PHOTOS.some(function(p){ return p.c.split(" ").indexOf(f)>-1; })) btn.hidden=true;
     btn.addEventListener("click",function(){
       fbtns.forEach(function(x){ x.setAttribute("aria-pressed",String(x===btn)); });
       shots.forEach(function(s){
@@ -751,24 +937,45 @@ var PHOTOS=[
   }
   opts($("#o-art"),"art",ART,ART[0]); opts($("#o-zeit"),"zeit",ZEIT,"Egal");
   var form=$("#req"), ro=$("#ro"), mail=$("#rmail");
-  form.addEventListener("submit",function(e){ e.preventDefault(); });
   function msg(){
     var a=form.querySelector('input[name="art"]:checked').value, z=form.querySelector('input[name="zeit"]:checked').value;
     var nm=$("#rn").value.trim(), t=$("#rm").value.trim();
-    return "Hallo Matteo, ich interessiere mich für: "+a+"."+(z!=="Egal"?" Am liebsten "+z.toLowerCase()+".":"")+(t?"\n\n"+t:"")+(nm?"\n\nLiebe Grüße, "+nm:"");
+    return "Hallo "+FIRST+", ich interessiere mich für: "+a+"."+(z!=="Egal"?" Am liebsten "+z.toLowerCase()+".":"")+(t?"\n\n"+t:"")+(nm?"\n\nLiebe Grüße, "+nm:"");
   }
   function syncMail(){
     var a=form.querySelector('input[name="art"]:checked').value;
-    mail.href="mailto:Matteohanser8@gmail.com?subject="+encodeURIComponent("Anfrage: "+a)+"&body="+encodeURIComponent(msg());
+    mail.href="mailto:"+EMAIL+"?subject="+encodeURIComponent("Anfrage: "+a)+"&body="+encodeURIComponent(msg());
   }
   form.addEventListener("input",syncMail); form.addEventListener("change",syncMail); syncMail();
   $("#rc").addEventListener("click",function(){
     function ok(){ ro.textContent="Text kopiert. Auf Instagram einfach einfügen und senden."; }
-    function fail(){ ro.textContent="Kopieren ging nicht. Schreib mir direkt auf Instagram @mapq.raw."; }
+    function fail(){ ro.textContent="Kopieren ging nicht. Schreib mir direkt auf Instagram @"+IG+"."; }
     try{ navigator.clipboard.writeText(msg()).then(ok,fail); }catch(err){ fail(); }
-    window.open("https://ig.me/m/mapq.raw","_blank","noopener");
+    window.open("https://ig.me/m/"+IG,"_blank","noopener");
   });
-})();
+
+  /* Anfrage direkt senden (landet im Postfach von admin.html) */
+  var INBOX=C.inbox&&/^https:\/\//.test(C.inbox.url||"")&&C.inbox.key?C.inbox:null, rs=$("#rs"), rk=$("#rk"), sending=false;
+  if(INBOX){ rs.hidden=false; $("#rk-wrap").hidden=false; $("#rc").classList.add("ghost"); }
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    if(!INBOX||sending) return;
+    var nm=$("#rn").value.trim(), k=rk.value.trim();
+    if(!nm||k.length<3){ ro.textContent="Bitte gib deinen Namen und deine E-Mail oder Instagram an, damit ich dir antworten kann."; (nm?rk:$("#rn")).focus(); return; }
+    function done(){ ro.textContent="Danke, "+nm.split(/\s+/)[0]+"! Deine Anfrage ist angekommen – ich melde mich bald."; $("#rn").value=""; rk.value=""; $("#rm").value=""; syncMail(); }
+    if($("#rw").value){ done(); return; }
+    sending=true; rs.disabled=true; rs.textContent="Wird gesendet …"; ro.textContent="";
+    var h={apikey:INBOX.key,"Content-Type":"application/json",Prefer:"return=minimal"};
+    if(/^eyJ/.test(INBOX.key)) h.Authorization="Bearer "+INBOX.key;
+    fetch(INBOX.url.replace(/\/+$/,"")+"/rest/v1/anfragen",{method:"POST",headers:h,body:JSON.stringify({
+      name:nm.slice(0,120), kontakt:k.slice(0,200),
+      art:form.querySelector('input[name="art"]:checked').value, zeit:form.querySelector('input[name="zeit"]:checked').value,
+      nachricht:$("#rm").value.trim().slice(0,4000)
+    })}).then(function(r){ if(!r.ok) throw new Error(r.status); done(); })
+      .catch(function(){ ro.textContent="Das hat leider nicht geklappt. Schreib mir gern direkt auf Instagram @"+IG+" oder per E-Mail."; })
+      .then(function(){ sending=false; rs.disabled=false; rs.textContent="Anfrage senden"; });
+  });
+}
 </script>
 </body>
 </html>
