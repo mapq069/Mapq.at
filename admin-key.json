@@ -1,0 +1,9 @@
+{
+  "v": 1,
+  "info": "Verschlüsselter Zugang für admin.html – nicht löschen oder ändern.",
+  "kdf": "PBKDF2-SHA256",
+  "iter": 600000,
+  "salt": "LbvA3lmY4xKZCfFR6u/BJQ==",
+  "iv": "LEv9v+JUB744MLBa",
+  "data": "sGYiMOx9RiphSdjKNmGqAEvd9cWraCnmuK4n8z3nap2pqiuG+udrhfbV85hV3dTypQIP5QvAPTBnH8X7cYWJ2vCTA8Zm+78ZsXmmhRGI5aRMbgiQ0cbXu+0Nn2/SWVkHZ0U4XTqe2XyeRzwPMnX9MPrmarg9k9l/Tg=="
+}
