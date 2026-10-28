@@ -288,7 +288,7 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <p class="kicker label">Alle <span id="n-all">14</span> Fotos</p>
+          <p class="kicker label">Alle <span id="n-all">10</span> Fotos</p>
           <h2 class="display">Bilder</h2>
         </div>
         <div class="filters" role="group" aria-label="Bilder filtern">
@@ -318,7 +318,7 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
         <p>Ich bin Matteo und fotografiere in Tirol vor allem Autos, Motorräder und Motorsport. Dazu kommen Landschaften, wenn das Licht stimmt.</p>
         <p>Ich arbeite gern mit Fahrern, Teams und Besitzern zusammen.</p>
         <div class="stats">
-          <div><b id="st-n">14</b><span class="label mute">Bilder online</span></div>
+          <div><b id="st-n">10</b><span class="label mute">Bilder online</span></div>
           <div><b>4</b><span class="label mute">Bereiche</span></div>
           <div><b>3</b><span class="label mute">Schwerpunkte</span></div>
         </div>
@@ -397,17 +397,13 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 <script>
 var PHOTOS=[
   {f:"audi-a3-feld",t:"Audi A3 am Feld",c:"auto",ar:1.7778},
-  {f:"supermoto-wald",t:"Supermoto im Wald",c:"moto",ar:.5625},
   {f:"hund",t:"Hund bei Sonnenuntergang",c:"tiere outdoor",ar:.5625},
-  {f:"bmw-e46",t:"Blauer BMW E46",c:"auto",ar:.5625},
-  {f:"wasserfall",t:"Wasserfall in den Bergen",c:"outdoor",ar:.5625},
   {f:"supermoto-burnout",t:"Supermoto-Burnout",c:"moto",ar:.5625},
-  {f:"felge-wiese",t:"Felge im Gras",c:"auto",ar:.5625},
+  {f:"wasserfall",t:"Wasserfall in den Bergen",c:"outdoor",ar:.5625},
+  {f:"bmw-e46",t:"Blauer BMW E46",c:"auto",ar:.5625},
   {f:"steinmann",t:"Steinmann im Tal",c:"outdoor",ar:.5625},
   {f:"supermoto-strasse",t:"Fahrerin mit Supermoto auf einer Bergstraße",c:"moto",ar:1.7778},
   {f:"cockpit",t:"Blick ins Cockpit",c:"auto",ar:.5625},
-  {f:"audi-a3-weg",t:"Audi A3 am Feldweg",c:"auto",ar:.5625},
-  {f:"wasserfall-portrait",t:"Porträt vor dem Wasserfall",c:"outdoor",ar:.5625},
   {f:"supermoto-felge",t:"Supermoto-Felge im Detail",c:"moto",ar:.5625},
   {f:"hinter-der-kamera",t:"Fotografieren am Wasserfall",c:"outdoor",ar:.5625}
 ];
@@ -449,9 +445,9 @@ var PHOTOS=[
 
   /* Highlights-Strecke */
   var CHAPTERS=[
-    ["Autos","01 / 04",["audi-a3-feld","bmw-e46","felge-wiese"]],
-    ["Motorräder","02 / 04",["supermoto-burnout","supermoto-wald","supermoto-felge"]],
-    ["Outdoor","03 / 04",["wasserfall","steinmann","wasserfall-portrait"]],
+    ["Autos","01 / 04",["audi-a3-feld","bmw-e46","cockpit"]],
+    ["Motorräder","02 / 04",["supermoto-burnout","supermoto-felge"]],
+    ["Outdoor","03 / 04",["wasserfall","steinmann"]],
     ["Tiere","04 / 04",["hund"]]
   ];
   var track=$("#track"), hs=$("#highlights"), chaps=[];

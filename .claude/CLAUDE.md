@@ -1,7 +1,7 @@
 # mapq.at
 
 Fotografie-Webseite von Matteo Hanser (mapq.raw), ausgeliefert über GitHub Pages von `main`.
-Eine Seite: `index.html`. `bilder.html` leitet nur weiter. Fotos in `bilder/` (groß) und `bilder/klein/`.
+Eine Seite: `index.html`. `bilder.html` leitet nur weiter. Fotos in `fotos/` (groß) und `fotos/klein/`. Jedes Motiv nur einmal: kein Fahrzeug (oder anderes Motiv) doppelt, auch nicht aus anderer Perspektive.
 
 ## Design-System
 
