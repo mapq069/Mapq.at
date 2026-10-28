@@ -9,3 +9,17 @@ Gültig für mapq.at: `design-system/mapq-raw/MASTER.md` (erstellt mit dem Skill
 Seitenspezifische Abweichungen liegen in `design-system/mapq-raw/pages/<seite>.md` und gehen MASTER.md vor.
 
 `.claude/design-system.md` ist eine Fintech-Dashboard-Vorlage und gilt nicht für mapq.at.
+
+## Versteckte Extras (nicht entfernen, Besuchern nicht verraten)
+
+Im Skript-Block „Versteckte Extras“ in `index.html`. Alle respektieren „Bewegung reduzieren“.
+- Konami-Code (↑ ↑ ↓ ↓ ← → ← → B A): RAW-Modus, alle Fotos schwarz-weiß mit Filmkorn, nochmal = aus.
+- „brumm“ oder „vroom“ tippen: Motorsound.
+- „drift“ tippen: Seite driftet kurz quer.
+- 5x schnell aufs Logo: Motorsound und Burnout-Rauch.
+- Sehr schnell scrollen: Blitzer (Blitz + „Geblitzt! … km/h“), höchstens alle 30 s, nicht bei Menü-Klicks.
+- Doppelklick aufs große Foto in der Großansicht: Kamera-Auslöser mit Blitz.
+- Tab im Hintergrund: Titel „Motor läuft noch …“.
+- Besuch zwischen 0 und 4 Uhr: Hinweis „Nachtschicht?“ (einmal pro Sitzung).
+- Browser-Konsole: Begrüßung mit Tipp zum Konami-Code.
+Tippen in Formularfeldern löst nichts aus.

@@ -245,6 +245,20 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 .lb-x{display:inline-flex;align-items:center;gap:.4rem;background:none;border:1px solid var(--color-border);border-radius:var(--radius-btn);padding:.5rem 1rem;cursor:pointer;min-height:44px;transition:border-color var(--ease)}
 .lb-x:hover{border-color:var(--color-foreground)}
 
+/* ---------- Versteckte Extras ---------- */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:66;max-width:calc(100vw - 32px);padding:12px 18px;border-radius:var(--radius-btn);background:var(--color-accent);color:var(--color-on-accent);font-weight:600;font-size:.95rem;text-align:center;box-shadow:var(--shadow-xl);opacity:0;transform:translate(-50%,16px);pointer-events:none;transition:opacity 250ms ease,transform 250ms ease}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.flash{position:fixed;inset:0;z-index:70;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash 500ms ease-out}
+@keyframes flash{0%{opacity:.85}100%{opacity:0}}
+.smoke{position:fixed;inset:0;width:100%;height:100%;z-index:64;pointer-events:none}
+html.rawmode img{filter:grayscale(1) contrast(1.15)}
+html.rawmode body::after{content:"";position:fixed;inset:0;z-index:65;pointer-events:none;opacity:.12;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
+@keyframes drift{30%{transform:translateX(-2%) rotate(-1.2deg) skewX(4deg)}60%{transform:translateX(1.5%) rotate(.8deg) skewX(-3deg)}}
+.lb-stage img.snap{animation:snap 380ms ease-out}
+@keyframes snap{0%{filter:brightness(2.4)}}
+
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
 .reveal.seen{opacity:1;transform:none}
 @media (max-width:719px){.reveal{transform:translateY(12px)}}
@@ -254,6 +268,8 @@ dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-bac
 <body>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <header class="top" id="top">
   <div class="wrap">
     <a class="logo" href="#start" aria-label="mapq.raw, nach oben">mapq<span>.</span>raw</a>
@@ -447,8 +463,10 @@ var PHOTOS=[
   /* Weiches Scrollen */
   var lenis=null;
   if(window.Lenis&&!reduce){ try{ lenis=new window.Lenis({lerp:.1,smoothWheel:true}); }catch(e){ lenis=null; } }
+  var autoUntil=2500;
   function goTo(el){
     if(!el) return;
+    autoUntil=performance.now()+1800;
     if(lenis) lenis.scrollTo(el,{offset:el.id==="start"?0:-64,duration:1.4});
     else el.scrollIntoView({behavior:reduce?"auto":"smooth"});
   }
@@ -531,7 +549,18 @@ var PHOTOS=[
       if(hsMonth.textContent!==m) hsMonth.textContent=m;
     }
   }
-  function loop(t){ if(lenis) lenis.raf(t); update(); requestAnimationFrame(loop); }
+  var vY=0, prevY=window.scrollY, prevT=0, lastBlitz=-1e9;
+  function blitzer(t){
+    var dt=t-prevT;
+    if(prevT&&dt>0&&dt<100){
+      vY=vY*.8+Math.abs(window.scrollY-prevY)/dt*.2;
+      if(vY>5&&t>autoUntil&&t-lastBlitz>30000&&!document.querySelector("dialog[open]")){
+        lastBlitz=t; flash(); toast("Geblitzt! "+Math.round(vY*24)+" km/h – erlaubt sind 50.");
+      }
+    }
+    prevY=window.scrollY; prevT=t;
+  }
+  function loop(t){ if(lenis) lenis.raf(t); update(); blitzer(t); requestAnimationFrame(loop); }
   requestAnimationFrame(loop);
 
   $("#n-all").textContent=$("#st-n").textContent=PHOTOS.length;
@@ -625,6 +654,90 @@ var PHOTOS=[
     var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("seen"); io.unobserve(e.target); } }); },{threshold:.15});
     $$(".reveal").forEach(function(el){ io.observe(el); });
   } else $$(".reveal").forEach(function(el){ el.classList.add("seen"); });
+
+  /* Versteckte Extras (Liste in .claude/CLAUDE.md) */
+  var toastEl=$("#toast"), flashEl=$("#flash"), toastT=0, ac=null;
+  function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove("on"); },3400); }
+  function replay(el,cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+  function flash(){ if(!reduce) replay(flashEl,"go"); }
+  function audio(){
+    try{ var C=window.AudioContext||window.webkitAudioContext; if(!C) return null; ac=ac||new C(); if(ac.state==="suspended") ac.resume(); return ac; }catch(e){ return null; }
+  }
+  function rev(){
+    var a=audio(); if(!a) return;
+    var t=a.currentTime, g=a.createGain(), f=a.createBiquadFilter();
+    f.type="lowpass"; f.frequency.setValueAtTime(500,t); f.frequency.exponentialRampToValueAtTime(1800,t+.9); f.frequency.exponentialRampToValueAtTime(400,t+1.7);
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.09,t+.1); g.gain.setValueAtTime(.09,t+1.1); g.gain.exponentialRampToValueAtTime(.0001,t+1.8);
+    f.connect(g); g.connect(a.destination);
+    [["sawtooth",1],["square",.5]].forEach(function(o){
+      var osc=a.createOscillator(); osc.type=o[0];
+      osc.frequency.setValueAtTime(42*o[1],t); osc.frequency.exponentialRampToValueAtTime(210*o[1],t+.95); osc.frequency.exponentialRampToValueAtTime(60*o[1],t+1.8);
+      osc.connect(f); osc.start(t); osc.stop(t+1.85);
+    });
+  }
+  function shutter(){
+    var a=audio(); if(!a) return;
+    var len=Math.floor(a.sampleRate*.05), buf=a.createBuffer(1,len,a.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+    [0,.085].forEach(function(o){
+      var src=a.createBufferSource(), h=a.createBiquadFilter(), g=a.createGain();
+      src.buffer=buf; h.type="highpass"; h.frequency.value=1200; g.gain.value=.35;
+      src.connect(h); h.connect(g); g.connect(a.destination); src.start(a.currentTime+o);
+    });
+  }
+  function smoke(){
+    if(reduce) return;
+    var c=document.createElement("canvas"), x=c.getContext("2d"), dpr=Math.min(2,window.devicePixelRatio||1), ps=[], t0=performance.now();
+    c.className="smoke"; c.setAttribute("aria-hidden","true"); c.width=innerWidth*dpr; c.height=innerHeight*dpr; document.body.appendChild(c);
+    var W=c.width, H=c.height;
+    function frame(now){
+      var el=now-t0;
+      if(el<2500) for(var k=0;k<2;k++) ps.push({x:W*(.05+Math.random()*.35),y:H+30*dpr,vx:(Math.random()*2.2-.4)*dpr,vy:-(Math.random()*3+1.5)*dpr,r:(30+Math.random()*40)*dpr,a:.32});
+      x.clearRect(0,0,W,H);
+      for(var i=ps.length-1;i>=0;i--){
+        var p=ps[i]; p.x+=p.vx; p.y+=p.vy; p.r+=1.2*dpr; p.a-=.0026;
+        if(p.a<=0){ ps.splice(i,1); continue; }
+        var gr=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+        gr.addColorStop(0,"rgba(225,225,230,"+p.a+")"); gr.addColorStop(1,"rgba(225,225,230,0)");
+        x.fillStyle=gr; x.beginPath(); x.arc(p.x,p.y,p.r,0,6.2832); x.fill();
+      }
+      if(el<2500||ps.length) requestAnimationFrame(frame); else c.remove();
+    }
+    requestAnimationFrame(frame);
+  }
+  /* 5x schnell aufs Logo: Burnout */
+  var taps=[];
+  $(".logo").addEventListener("click",function(){
+    var n=performance.now(); taps=taps.filter(function(t){ return n-t<2000; }); taps.push(n);
+    if(taps.length>=5){ taps=[]; rev(); smoke(); toast("Burnout! Der Hinterreifen ist hinüber."); }
+  });
+  /* Tastatur: Konami-Code, "brumm" und "drift" */
+  var KONAMI="arrowup,arrowup,arrowdown,arrowdown,arrowleft,arrowright,arrowleft,arrowright,b,a", keys=[], typed="";
+  document.addEventListener("keydown",function(e){
+    var tg=e.target; if(tg&&(tg.tagName==="INPUT"||tg.tagName==="TEXTAREA"||tg.isContentEditable)) return;
+    var k=(e.key||"").toLowerCase();
+    keys.push(k); keys=keys.slice(-10);
+    if(keys.join()===KONAMI){ keys=[]; var on=document.documentElement.classList.toggle("rawmode"); toast(on?"Konami-Code geknackt: RAW-Modus an":"RAW-Modus aus"); return; }
+    if(k.length!==1) return;
+    typed=(typed+k).slice(-12);
+    if(/(brumm|vroom)$/.test(typed)){ typed=""; rev(); toast("Brumm brumm. Schön warmgefahren."); }
+    else if(/drift$/.test(typed)){ typed=""; if(!reduce) replay($("main"),"drift"); toast("Quer durch die Kurve!"); }
+  });
+  $("main").addEventListener("animationend",function(e){ if(e.animationName==="drift") e.currentTarget.classList.remove("drift"); });
+  /* Doppelklick aufs große Foto: Auslöser */
+  lbImg.addEventListener("dblclick",function(){ shutter(); if(!reduce) replay(lbImg,"snap"); });
+  /* Tab im Hintergrund */
+  var title=document.title;
+  document.addEventListener("visibilitychange",function(){ document.title=document.hidden?"Motor läuft noch … | mapq.raw":title; });
+  /* Nachtschicht */
+  if(new Date().getHours()<4){
+    try{ if(!sessionStorage.getItem("mq-nacht")){ sessionStorage.setItem("mq-nacht","1"); setTimeout(function(){ toast("Nachtschicht? Die besten Fotos entstehen eh im Dunkeln."); },2500); } }catch(e){}
+  }
+  /* Für alle, die unter die Haube schauen */
+  try{
+    console.log("%cmapq.raw","font:800 28px Archivo,Arial,sans-serif;color:#fafafa;background:#000;padding:8px 14px;border-radius:6px");
+    console.log("Na, schaust du unter die Haube? Hier sind ein paar Extras versteckt. Tipp zum Start: ↑ ↑ ↓ ↓ ← → ← → B A");
+  }catch(e){}
 
   /* Anfrage */
   var ART=["Auto-Shooting","Motorrad-Shooting","Event oder Rennen","Outdoor und Landschaft","Etwas anderes"],
