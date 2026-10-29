@@ -89,7 +89,7 @@ code{font-size:.88em;background:var(--muted-bg);padding:1px 6px;border-radius:5p
 main{width:100%;max-width:1120px;margin:0 auto;padding:20px 16px calc(160px + env(safe-area-inset-bottom))}
 @media(min-width:960px){main{padding:32px 32px 140px}}
 
-.tabbar{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);background:rgba(0,0,0,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
+.tabbar{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:rgba(0,0,0,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
 @media(min-width:960px){.tabbar{display:none}}
 .tab{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;justify-content:center;background:none;border:0;color:var(--dim);font-size:10.5px;font-weight:500;position:relative;-webkit-tap-highlight-color:transparent;transition:color var(--ease)}
 .tab.active{color:var(--text)}
@@ -421,6 +421,36 @@ body.locked .app,body.locked .tabbar,body.locked .pending{display:none!important
 .pbar{height:3px;border-radius:2px;background:var(--line-2);overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--text);transition:width .3s}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* ---------- Familie ---------- */
+.famprev{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:2px;padding:8px 4px;margin:0 0 16px;border:1px solid var(--line-2);border-radius:var(--r-btn);background:#0a0a0c}
+.famprev span{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;font-size:10.5px;color:var(--muted);text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.famprev i{width:30px;height:18px;border-radius:9px;background:color-mix(in srgb,var(--f) 22%,transparent);box-shadow:inset 0 0 0 2px var(--f)}
+.famtabs{display:flex;flex-direction:column;gap:10px}
+.famtab{padding:12px;border:1px solid var(--line-2);border-radius:var(--r-btn);transition:opacity var(--ease)}
+.famtab.off{opacity:.5}
+.famtab .row .input{min-height:40px;padding:8px 12px}
+.famfix{flex:none;width:48px;text-align:center;font-size:11.5px;color:var(--dim)}
+.farben{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.farben button{width:26px;height:26px;border-radius:50%;border:2px solid transparent;background:var(--f);background-clip:padding-box;padding:0}
+.farben button.on{border-color:var(--text);box-shadow:inset 0 0 0 2px #000}
+.famrow{align-items:center}
+.famrow .btn{flex:none}
+.fthumb{flex:none;width:44px;height:44px;border-radius:6px;overflow:hidden;background:var(--muted-bg)}
+.fthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.fdev{padding:14px 0;border-top:1px solid var(--line)}
+.fdev:first-of-type{border-top:0;padding-top:0}
+.fdev.off{opacity:.55}
+.fdev-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.fdev-h .t{flex:1;min-width:0}
+.fdev-h b{display:block;font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.fdev-h .t span{display:block;color:var(--muted);font-size:12.5px}
+.fdev .field{margin-bottom:10px}
+.fdev .input{min-height:42px;padding:9px 12px}
+.dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--dim)}
+.dot.on{background:#FFC107;box-shadow:0 0 8px rgba(255,193,7,.6)}
+.dot.bad{background:var(--bad)}
+.chk{display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13.5px;color:var(--muted)}
+.chk input{width:18px;height:18px;accent-color:#fff}
 </style>
 </head>
 <body>
@@ -519,6 +549,7 @@ const NAV = [
   { id: 'folders', label: 'Ordner', long: 'Fotoordner', icon: 'folder' },
   { id: 'videos', label: 'Edits', long: 'Video-Edits', icon: 'video' },
   { id: 'inquiries', label: 'Anfragen', icon: 'inbox' },
+  { id: 'familie', label: 'Familie', long: 'Familien-App', icon: 'home' },
   { id: 'texts', label: 'Texte', long: 'Texte & Preise', icon: 'type' },
   { id: 'settings', label: 'Einstellungen', icon: 'sliders' }
 ];
@@ -649,7 +680,7 @@ const SB = {
     if (r.status === 401 && retry) { try { await this.refresh(); } catch { this.logout(); throw new Error('Sitzung abgelaufen – bitte neu anmelden.'); } return this.req(path, opts, false); }
     const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch {}
     if (!r.ok) {
-      if (j?.code === '42P01' || j?.code === 'PGRST205' || /does not exist|could not find the table/i.test(j?.message || '')) throw new Error('Die Tabelle „anfragen“ fehlt – hast du den SQL-Code in Supabase ausgeführt?');
+      if (j?.code === '42P01' || j?.code === 'PGRST205' || /does not exist|could not find the table/i.test(j?.message || '')) throw new Error(path.startsWith('/familie_') ? 'Die Familien-Tabellen fehlen – führ das SQL unter Familie → Übersicht → Einrichtung aus.' : 'Die Tabelle „anfragen“ fehlt – hast du den SQL-Code in Supabase ausgeführt?');
       throw new Error(j?.message || j?.hint || ('Fehler ' + r.status));
     }
     return j;
@@ -1071,7 +1102,7 @@ function renderChrome() {
     <a class="btn sm only-desk" href="${esc(url)}" target="_blank" rel="noopener">${ic('arrow', 15)} Website</a>
     <button class="btn icon only-mobile" data-action="go" data-view="settings" aria-label="Einstellungen" ${state.view === 'settings' ? 'style="border-color:var(--text)"' : ''}>${ic('sliders')}</button>
     <button class="btn" id="pubBtn" data-action="publish">${ic('cloud', 18)}<span>Veröffentlichen</span></button>`;
-  $('#tabbar').innerHTML = NAV.slice(0, 6).map(n => `<button class="tab ${state.view === n.id ? 'active' : ''}" data-action="go" data-view="${n.id}" aria-label="${n.long || n.label}">${ic(n.icon, 21)}<span>${n.label}</span>${cnt(n.id)}</button>`).join('');
+  $('#tabbar').innerHTML = NAV.slice(0, 7).map(n => `<button class="tab ${state.view === n.id ? 'active' : ''}" data-action="go" data-view="${n.id}" aria-label="${n.long || n.label}">${ic(n.icon, 21)}<span>${n.label}</span>${cnt(n.id)}</button>`).join('');
   updateDirty();
 }
 function updateDirty() {
@@ -1638,7 +1669,7 @@ async function loadFamilie() {
   try { state.fam.status = await SB.req('/rpc/mapq_familie_status', { method: 'POST', body: '{}' }); state.fam.missing = false; }
   catch (e) { state.fam.status = null; state.fam.missing = /could not find|does not exist|PGRST202|42883/i.test(e.message); }
   state.fam.loaded = true;
-  if (state.view === 'settings' && !$('#sheetWrap').classList.contains('open')) renderView();
+  if ((state.view === 'settings' || (state.view === 'familie' && state.famTab === 'uebersicht')) && !$('#sheetWrap').classList.contains('open')) renderView();
 }
 async function famPasswort() {
   const el = $('#famPass'), pw = el ? el.value : '';
@@ -1658,7 +1689,7 @@ async function famShare() {
 }
 function familieSection() {
   const live = inqMode() === 'live', f = state.fam, st = f.status;
-  const head = `<div class="sec-h"><h2>${ic('home')} Familien-App</h2>${st?.passwort ? '<span class="chip ok">Eingerichtet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>
+  const head = `<div class="sec-h"><h2>${ic('home')} Zugang</h2>${st?.passwort ? '<span class="chip ok">Eingerichtet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>
     <p class="muted">Eine eigene App für deine Familie auf <b style="color:var(--text)">mapq.at/familie</b>: Einkaufsliste & To-dos, Kalender, Fotos und Pinnwand – mit Benachrichtigungen. Alle melden sich mit einem gemeinsamen Familien-Passwort an.</p>`;
   if (!live) return `<section class="card sec" id="sec-fam">${head}<p class="hint" style="margin:0">Richte zuerst oben das Anfragen-Postfach ein.</p></section>`;
   if (!f.loaded) return `<section class="card sec" id="sec-fam">${head}<div class="loading" style="padding:24px 0"><div class="ring"></div></div></section>`;
@@ -1667,7 +1698,8 @@ function familieSection() {
       <ol class="steps">
         <li>In Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken (Warnung bestätigen):
           <div class="code"><pre id="famSql">${esc(FAMILY_SQL)}</pre><button class="btn sm" data-action="copy" data-target="#famSql">${ic('copy', 15)} Kopieren</button></div></li>
-        <li>In Supabase links <b>Edge Functions → mapq-push → Code</b>: alles durch die neue Version von <a href="https://github.com/${esc(cfg.gh.owner)}/${esc(cfg.gh.repo)}/blob/main/supabase/functions/mapq-push/index.ts" target="_blank" rel="noopener">supabase/functions/mapq-push/index.ts</a> ersetzen und <b>Deploy</b> drücken. „Verify JWT“ bleibt aus.</li>
+        <li>In Supabase links <b>Edge Functions → mapq-push → Code</b>: die Code-Zeile durch diese ersetzen und <b>Deploy</b> drücken, danach unter <b>Details</b> „Verify JWT“ wieder ausschalten:
+          <div class="code"><pre id="famFn">import "https://raw.githubusercontent.com/${esc(cfg.gh.owner)}/${esc(cfg.gh.repo)}/main/supabase/functions/mapq-push/index.ts?v=${FN_VERSION}";</pre><button class="btn sm" data-action="copy" data-target="#famFn">${ic('copy', 15)} Kopieren</button></div></li>
         <li>Diese Seite neu laden und unten das Familien-Passwort festlegen.</li>
       </ol></div></details>`;
   if (!st) return `<section class="card sec" id="sec-fam">${head}${setup}</section>`;
@@ -1680,10 +1712,305 @@ function familieSection() {
     ${st.passwort ? `<p class="sub-h">Familie</p>
       <p class="muted" style="margin:0 0 14px;font-size:14px">${m.length ? m.map(n => `<span class="chip white" style="margin:0 6px 6px 0">${esc(n)}</span>`).join('') : 'Noch niemand angemeldet.'}</p>
       <p class="hint" style="margin:0 0 16px">${st.geraete || 0} Handy${st.geraete === 1 ? '' : 's'} mit Benachrichtigungen · ${st.fotos || 0} Foto${st.fotos === 1 ? '' : 's'}</p>
-      <div class="row-actions" style="margin-bottom:16px"><a class="btn" href="/familie/" target="_blank" rel="noopener">${ic('arrow', 17)} App öffnen</a><button class="btn" data-action="fam-share">${ic('share', 17)} Einladung teilen</button></div>` : ''}
+      <div class="row-actions" style="margin-bottom:16px"><button class="btn btn-primary" data-action="fam-open">${ic('arrow', 17)} Als Admin öffnen</button><button class="btn" data-action="fam-share">${ic('share', 17)} Einladung teilen</button></div>
+      <p class="hint" style="margin:-6px 0 16px">„Als Admin öffnen“ meldet dich ohne Familien-Passwort an – du siehst alles wie die Familie.</p>` : ''}
     ${setup}
   </section>`;
 }
+
+/* =====================================================================
+   Bereich „Familie“: die Familien-App verwalten
+   Übersicht (Passwort, Einladen, als Admin öffnen), Aussehen (content.json → familie,
+   wird mit „Veröffentlichen“ live), Inhalte (Tabellen familie_* direkt in Supabase)
+   und Zuhause (Smart Home über mapq-push, Aktionen smart-…).
+   ===================================================================== */
+const FN_VERSION = 4; // ?v= der Code-Zeile von mapq-push in Supabase
+const FAM_FARBEN = { indigo: '#7986CB', amber: '#FFC107', orange: '#FF7043', pink: '#F06292', green: '#66BB6A', teal: '#26A69A', purple: '#BA68C8', blue: '#42A5F5', sky: '#4FC3F7', red: '#EF5350', lime: '#9CCC65', grey: '#B0BEC5' };
+const FAM_TABS = [['start', 'Start', 'indigo'], ['listen', 'Listen', 'amber'], ['kalender', 'Kalender', 'orange'], ['fotos', 'Fotos', 'pink'], ['pinnwand', 'Pinnwand', 'green'], ['zuhause', 'Zuhause', 'teal'], ['mehr', 'Mehr', 'purple']];
+const FAM_MEHR = [['essen', 'Essensplan'], ['rezepte', 'Rezepte'], ['putzplan', 'Putzplan', 'Unter „Listen“ und als Kachel'], ['countdowns', 'Countdowns'], ['infos', 'Wichtige Infos']];
+const FAM_START = [['wetter', 'Wetter'], ['schnell', 'Schnell-Knöpfe', 'Einkauf, Termin, Foto, Nachricht'], ['leiste', 'Geburtstage & Countdowns'], ['kacheln', 'Kacheln', 'Einkauf, To-dos, Essen, nächster Termin, Fotos'], ['zuhause', 'Zuhause-Geräte'], ['putzplan', 'Heute dran', 'Putzplan'], ['pinnwand', 'Pinnwand'], ['termine', 'Heute & morgen'], ['familie', 'Familie', 'Wer ist wo'], ['fotos', 'Neueste Fotos']];
+const FAM_SEG = [['uebersicht', 'Übersicht'], ['aussehen', 'Aussehen'], ['inhalte', 'Inhalte'], ['zuhause', 'Zuhause']];
+Object.assign(state, { famTab: 'uebersicht', famInh: 'eintraege', famRows: {}, famErr: {}, famQuery: '', famUrls: {}, famSmart: null, famSmartErr: null });
+
+/* ---------- Aussehen & Bereiche (content.json → familie) ---------- */
+const famDefaults = () => ({
+  titel: 'Familie',
+  tabs: FAM_TABS.map(([id, label, farbe]) => ({ id, label, farbe, an: true })),
+  mehr: Object.fromEntries(FAM_MEHR.map(m => [m[0], true])),
+  start: Object.fromEntries(FAM_START.map(m => [m[0], true]))
+});
+function famCfg() {
+  const d = famDefaults(), f = state.content?.familie || {}, eig = arr(f.tabs).filter(t => t && FAM_TABS.some(x => x[0] === t.id));
+  return {
+    titel: typeof f.titel === 'string' ? f.titel : d.titel,
+    tabs: [...eig.map(t => ({ ...d.tabs.find(x => x.id === t.id), ...t })), ...d.tabs.filter(t => !eig.some(x => x.id === t.id))],
+    mehr: { ...d.mehr, ...(f.mehr || {}) },
+    start: { ...d.start, ...(f.start || {}) }
+  };
+}
+function famEdit(fn) { const f = famCfg(); fn(f); state.content.familie = f; updateDirty(); }
+const famPrevHTML = () => famCfg().tabs.filter(t => t.an !== false).map(t => `<span style="--f:${FAM_FARBEN[t.farbe] || '#fff'}"><i></i>${esc(t.label)}</span>`).join('');
+function famBind(el) {
+  const [a, b, c] = el.dataset.fam.split(':'), val = el.type === 'checkbox' ? el.checked : el.value;
+  famEdit(f => {
+    if (a === 'titel') f.titel = String(val).slice(0, 24);
+    else if (a === 'tab') { const t = f.tabs.find(x => x.id === b); if (t) t[c] = c === 'label' ? String(val).slice(0, 12) : !!val; }
+    else if (a === 'mehr' || a === 'start') f[a][b] = !!val;
+  });
+  if (el.type === 'checkbox' && a === 'tab') el.closest('.famtab')?.classList.toggle('off', !val);
+  const p = $('#famPrev'); if (p) p.innerHTML = famPrevHTML();
+}
+const famSwitch = (key, l, d, on) => `<label class="switch-row"><span><b>${l}</b>${d ? `<small>${d}</small>` : ''}</span><input type="checkbox" class="switch" data-fam="${key}" ${on !== false ? 'checked' : ''}></label>`;
+function famAussehen() {
+  const f = famCfg();
+  return `<section class="card sec"><h2>App</h2>
+    <div class="field"><label for="famTitel">Name oben in der App</label><input id="famTitel" class="input" data-fam="titel" value="${esc(f.titel)}" maxlength="24" placeholder="Familie"></div>
+    <p class="hint" style="margin:-6px 0 0">Alles hier wird mit <b style="color:var(--text)">Veröffentlichen</b> live – in der App nach ein paar Minuten, am Handy die App einmal neu öffnen.</p>
+  </section>
+  <section class="card sec"><div class="sec-h"><h2>Bereiche unten</h2>${state.content.familie ? `<button class="btn sm" data-action="fam-reset">${ic('undo', 15)} Standard</button>` : ''}</div>
+    <div class="famprev" id="famPrev" aria-hidden="true">${famPrevHTML()}</div>
+    <div class="famtabs">${f.tabs.map((t, i) => `<div class="famtab ${t.an === false ? 'off' : ''}">
+      <div class="row"><input class="input" data-fam="tab:${t.id}:label" value="${esc(t.label)}" maxlength="12" aria-label="Name des Bereichs ${esc(t.label)}">
+        <button class="btn sm icon" data-action="famtab-move" data-id="${t.id}" data-dir="-1" ${i === 0 ? 'disabled' : ''} aria-label="Nach links">${ic('up', 16)}</button>
+        <button class="btn sm icon" data-action="famtab-move" data-id="${t.id}" data-dir="1" ${i === f.tabs.length - 1 ? 'disabled' : ''} aria-label="Nach rechts">${ic('down', 16)}</button>
+        ${t.id === 'start' || t.id === 'mehr' ? '<span class="famfix">immer</span>' : `<input type="checkbox" class="switch" data-fam="tab:${t.id}:an" ${t.an !== false ? 'checked' : ''} aria-label="${esc(t.label)} zeigen">`}</div>
+      <div class="farben">${Object.entries(FAM_FARBEN).map(([k, h]) => `<button class="${t.farbe === k ? 'on' : ''}" style="--f:${h}" data-action="famtab-farbe" data-id="${t.id}" data-f="${k}" aria-label="Farbe ${k}"></button>`).join('')}</div>
+    </div>`).join('')}</div>
+    <p class="hint" style="margin:12px 0 0">„Start“ und „Mehr“ bleiben immer. Ein ausgeblendeter Bereich verschwindet auch von der Startseite.</p>
+  </section>
+  <section class="card sec"><h2>Unter „Mehr“</h2>${FAM_MEHR.map(([k, l, d]) => famSwitch(`mehr:${k}`, l, d, f.mehr[k])).join('')}</section>
+  <section class="card sec"><h2>Startseite</h2>${FAM_START.map(([k, l, d]) => famSwitch(`start:${k}`, l, d, f.start[k])).join('')}</section>`;
+}
+
+/* ---------- Inhalte (Tabellen familie_* – der Admin darf alles) ---------- */
+const famArt = r => r.liste === 'einkauf' ? 'Einkauf' : 'To-do';
+const FAM_RHY = { taeglich: 'täglich', woechentlich: 'wöchentlich', zweiwoechentlich: 'alle 2 Wochen', monatlich: 'monatlich' };
+const FAM_INH = {
+  eintraege: { t: 'familie_eintraege', name: 'Einkauf & To-dos', order: 'erstellt.desc', titel: r => (r.menge ? r.menge + ' ' : '') + r.text, sub: r => [famArt(r), r.erledigt ? 'erledigt' : 'offen', r.fuer ? 'für ' + r.fuer : '', r.von, rel(r.erstellt)], felder: [['text', 'Text'], ['menge', 'Menge'], ['erledigt', 'Erledigt', 'bool']] },
+  termine: { t: 'familie_termine', name: 'Termine', order: 'datum.desc', titel: r => r.titel, sub: r => [shortDate(r.datum) + (r.zeit ? ' ' + r.zeit.slice(0, 5) : ''), r.jaehrlich ? 'jedes Jahr' : '', r.ort, r.fuer ? 'für ' + r.fuer : '', r.von], felder: [['titel', 'Titel'], ['datum', 'Datum', 'date'], ['zeit', 'Uhrzeit', 'time'], ['ort', 'Ort'], ['notiz', 'Notiz', 'area'], ['jaehrlich', 'Jedes Jahr (Geburtstag)', 'bool']] },
+  fotos: { t: 'familie_fotos', name: 'Fotos & Videos', order: 'erstellt.desc', bild: r => r.klein, titel: r => r.text || (r.typ === 'video' ? 'Video' : 'Foto'), sub: r => [r.typ === 'video' ? 'Video' : 'Foto', r.von, rel(r.erstellt)], felder: [['text', 'Beschreibung']], dateien: r => [r.pfad, r.klein] },
+  nachrichten: { t: 'familie_nachrichten', name: 'Pinnwand', order: 'erstellt.desc', titel: r => r.text, sub: r => [r.optionen ? 'Umfrage' : '', r.von, rel(r.erstellt)], felder: [['text', 'Text', 'area']] },
+  kommentare: { t: 'familie_kommentare', name: 'Antworten', order: 'erstellt.desc', titel: r => r.text, sub: r => [r.ziel_typ === 'foto' ? 'zu einem Foto' : 'Pinnwand', r.von, rel(r.erstellt)], felder: [['text', 'Text', 'area']] },
+  mitglieder: { t: 'familie_mitglieder', key: 'name', name: 'Mitglieder', order: 'name', bild: r => r.bild, titel: r => r.name, sub: r => [r.farbe ? 'Farbe ' + r.farbe : '', r.status ? 'Status: ' + r.status : '', 'seit ' + shortDate(r.erstellt)], felder: [['farbe', 'Farbe', 'farbe']], dateien: r => [r.bild] },
+  aufgaben: { t: 'familie_aufgaben', name: 'Putzplan', order: 'titel', titel: r => r.titel, sub: r => [FAM_RHY[r.rhythmus] || r.rhythmus, arr(r.personen).join(', ') || 'alle', r.erinnerung ? 'mit Erinnerung' : ''], felder: [['titel', 'Aufgabe'], ['erinnerung', 'Erinnerung am Morgen', 'bool']] },
+  essen: { t: 'familie_essen', key: 'datum', name: 'Essensplan', order: 'datum.desc', titel: r => r.gericht, sub: r => [shortDate(r.datum), r.koch ? r.koch + ' kocht' : ''], felder: [['gericht', 'Gericht'], ['koch', 'Wer kocht'], ['notiz', 'Notiz', 'area']] },
+  rezepte: { t: 'familie_rezepte', name: 'Rezepte', order: 'titel', bild: r => r.klein, titel: r => r.titel, sub: r => [r.portionen ? r.portionen + ' Portionen' : '', r.dauer ? r.dauer + ' Min.' : '', r.von], felder: [['titel', 'Titel'], ['zutaten', 'Zutaten (eine pro Zeile)', 'area'], ['anleitung', 'Anleitung', 'area']], dateien: r => [r.bild, r.klein] },
+  countdowns: { t: 'familie_countdowns', name: 'Countdowns', order: 'datum', titel: r => (r.emoji ? r.emoji + ' ' : '') + r.titel, sub: r => [shortDate(r.datum), r.von], felder: [['titel', 'Titel'], ['datum', 'Datum', 'date'], ['emoji', 'Emoji']] },
+  infos: { t: 'familie_infos', name: 'Wichtige Infos', order: 'titel', titel: r => r.titel, sub: r => [r.art, r.von], felder: [['titel', 'Titel'], ['inhalt', 'Inhalt', 'area']] }
+};
+const famKey = (k, r) => String(r[FAM_INH[k].key || 'id']);
+async function sbStorage(path, opts = {}) {
+  if (!SB.loggedIn) throw new Error('Nicht angemeldet.');
+  if (Date.now() > cfg.sbSession.expires_at) await SB.refresh();
+  const r = await fetch(SB.url('/storage/v1' + path), { ...opts, headers: { apikey: cfg.sb.key, Authorization: 'Bearer ' + cfg.sbSession.access_token, 'Content-Type': 'application/json', ...(opts.headers || {}) } });
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error(j?.message || j?.error || ('Speicher: Fehler ' + r.status));
+  return j;
+}
+async function famSign(paths) {
+  const neu = [...new Set(paths.filter(Boolean))].filter(p => !state.famUrls[p]);
+  for (let i = 0; i < neu.length; i += 100) {
+    const r = await sbStorage('/object/sign/familie', { method: 'POST', body: JSON.stringify({ expiresIn: 3600, paths: neu.slice(i, i + 100) }) }).catch(() => []);
+    for (const x of arr(r)) if (x.signedURL) state.famUrls[x.path] = SB.url('/storage/v1' + x.signedURL);
+  }
+}
+async function famLoad(k) {
+  const d = FAM_INH[k];
+  try {
+    const rows = await SB.req(`/${d.t}?select=*&order=${d.order}&limit=300`);
+    state.famRows[k] = arr(rows); state.famErr[k] = null;
+    if (d.bild) await famSign(state.famRows[k].map(d.bild));
+  } catch (e) { state.famErr[k] = e.message; }
+  if (state.view === 'familie' && state.famTab === 'inhalte' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+function famZeile(k, r) {
+  const d = FAM_INH[k], id = esc(famKey(k, r)), b = d.bild ? d.bild(r) : null, u = b && state.famUrls[b];
+  return `<div class="mini famrow">${d.bild ? `<span class="fthumb">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ''}</span>` : ''}
+    <span class="t"><b>${esc(d.titel(r) || '–')}</b><span>${esc(d.sub(r).filter(Boolean).join(' · '))}</span></span>
+    <button class="btn sm icon" data-action="fam-edit" data-k="${k}" data-id="${id}" aria-label="Bearbeiten">${ic('type', 16)}</button>
+    <button class="btn sm icon btn-danger" data-action="fam-del" data-k="${k}" data-id="${id}" aria-label="Löschen">${ic('trash', 16)}</button></div>`;
+}
+const famListHTML = () => {
+  const k = state.famInh, d = FAM_INH[k], rows = state.famRows[k], err = state.famErr[k], q = state.famQuery.trim().toLowerCase();
+  if (err) return `<p class="muted" style="margin:0">${esc(err)}</p>`;
+  if (!rows) return '<div class="loading" style="padding:24px 0"><div class="ring"></div></div>';
+  const l = rows.filter(r => !q || (d.titel(r) + ' ' + d.sub(r).join(' ')).toLowerCase().includes(q));
+  return l.length ? `<div class="mini-list">${l.map(r => famZeile(k, r)).join('')}</div>` : `<p class="empty-mini" style="margin:0">${q ? 'Nichts gefunden.' : 'Noch nichts eingetragen.'}</p>`;
+};
+function famInhalte() {
+  if (inqMode() !== 'live') return famBrauchtPostfach();
+  const k = state.famInh;
+  if (!state.famRows[k] && !state.famErr[k]) famLoad(k);
+  return `<div class="seg scroll" style="margin-bottom:14px">${Object.entries(FAM_INH).map(([id, x]) => `<button class="seg-b ${k === id ? 'on' : ''}" data-action="fam-inh" data-k="${id}">${x.name}${state.famRows[id] ? `<span class="n">${state.famRows[id].length}</span>` : ''}</button>`).join('')}</div>
+    <div class="toolbar row"><div class="search" style="flex:1">${ic('search', 17)}<input class="input" id="famSuche" placeholder="In ${esc(FAM_INH[k].name)} suchen …" value="${esc(state.famQuery)}" autocomplete="off"></div><button class="btn icon" data-action="fam-reload" aria-label="Neu laden">${ic('refresh', 18)}</button></div>
+    <section class="card" id="famListe">${famListHTML()}</section>
+    ${state.famRows[k]?.length >= 300 ? '<p class="hint">Es werden die neuesten 300 Einträge gezeigt.</p>' : ''}`;
+}
+function famEditSheet(k, id) {
+  const d = FAM_INH[k], r = arr(state.famRows[k]).find(x => famKey(k, x) === id); if (!r) return;
+  const feld = ([f, l, typ]) => {
+    const v = r[f];
+    if (typ === 'bool') return `<label class="switch-row"><span><b>${l}</b></span><input type="checkbox" class="switch" data-ff="${f}" ${v ? 'checked' : ''}></label>`;
+    if (typ === 'area') return `<div class="field"><label>${l}</label><textarea class="input" rows="5" data-ff="${f}">${esc(v ?? '')}</textarea></div>`;
+    if (typ === 'farbe') return `<div class="field"><label>${l}</label><select class="input" data-ff="${f}"><option value="">automatisch</option>${Object.keys(FAM_FARBEN).filter(x => x !== 'indigo' && x !== 'grey').map(x => `<option ${v === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div>`;
+    return `<div class="field"><label>${l}</label><input class="input" type="${typ || 'text'}" data-ff="${f}" value="${esc(typ === 'time' ? String(v ?? '').slice(0, 5) : v ?? '')}"></div>`;
+  };
+  const b = d.bild ? d.bild(r) : null;
+  openSheet(`<div class="sheet-h"><h3>${esc(d.name)}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    ${b && state.famUrls[b] ? `<div class="pprev" style="margin-bottom:16px"><img src="${esc(state.famUrls[b])}" alt=""></div>` : ''}
+    <form id="famForm" data-k="${k}" data-id="${esc(id)}">${d.felder.map(feld).join('')}
+      <div class="sheet-actions"><button type="button" class="btn btn-danger" data-action="fam-del" data-k="${k}" data-id="${esc(id)}">${ic('trash', 16)} Löschen</button><span class="grow"></span><button class="btn btn-primary">${ic('check', 17)} Speichern</button></div>
+    </form>
+    <p class="meta">${esc(d.sub(r).filter(Boolean).join(' · '))}</p>`);
+}
+async function famSave(form) {
+  const k = form.dataset.k, id = form.dataset.id, d = FAM_INH[k], patch = {};
+  form.querySelectorAll('[data-ff]').forEach(el => {
+    const f = el.dataset.ff, typ = (d.felder.find(x => x[0] === f) || [])[2];
+    patch[f] = el.type === 'checkbox' ? el.checked : (el.value.trim() === '' && typ !== 'area' && f !== 'text' && f !== 'titel' && f !== 'gericht') ? null : el.value;
+  });
+  try {
+    const r = await SB.req(`/${d.t}?${d.key || 'id'}=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(patch) });
+    const neu = arr(r)[0]; if (neu) state.famRows[k] = state.famRows[k].map(x => famKey(k, x) === id ? neu : x);
+    closeSheet(); toast('Gespeichert – die Familie sieht es gleich.', 'ok');
+  } catch (e) { toast(e.message, 'bad'); }
+}
+async function famDel(k, id) {
+  const d = FAM_INH[k], r = arr(state.famRows[k]).find(x => famKey(k, x) === id); if (!r) return;
+  if (!confirm(`„${String(d.titel(r) || 'Eintrag').slice(0, 60)}“ wirklich löschen? Das lässt sich nicht rückgängig machen.`)) return;
+  try {
+    await SB.req(`/${d.t}?${d.key || 'id'}=eq.${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const files = d.dateien ? d.dateien(r).filter(Boolean) : [];
+    if (files.length) await sbStorage('/object/familie', { method: 'DELETE', body: JSON.stringify({ prefixes: files }) }).catch(() => {});
+    state.famRows[k] = state.famRows[k].filter(x => famKey(k, x) !== id);
+    if ($('#sheetWrap').classList.contains('open')) closeSheet(); else renderView();
+    toast('Gelöscht.', 'ok');
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+/* ---------- Zuhause (Smart Home über mapq-push) ---------- */
+const SM_ANB = { govee: 'Govee', shelly: 'Shelly', tuya: 'Smart Life' };
+const SM_ART = { licht: 'Licht', schalter: 'Steckdose', rollo: 'Rollladen', sensor: 'Sensor', geraet: 'Gerät' };
+const smStartStd = d => d.art === 'licht' || d.art === 'schalter' || d.art === 'rollo';
+let famQ = Promise.resolve();
+const famQueue = fn => (famQ = famQ.then(fn, fn)); // Einstellungen nacheinander speichern – jede baut auf der vorigen auf
+async function famSmartLoad(frisch) {
+  try { state.famSmart = await sbFn('mapq-push', { aktion: 'smart-status', frisch: !!frisch }); state.famSmartErr = null; }
+  catch (e) { state.famSmartErr = e.status === 401 ? `Die Funktion „mapq-push“ in Supabase ist noch nicht auf dem neuesten Stand – Code-Zeile mit ?v=${FN_VERSION} bereitstellen und „Verify JWT“ ausschalten.` : e.message; }
+  if (state.view === 'familie' && state.famTab === 'zuhause' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+function famSmStatus(d) {
+  if (!d.online) return 'offline';
+  if (d.art === 'sensor') return [d.temp != null ? String(d.temp).replace('.', ',') + ' °C' : '', d.feuchte != null ? Math.round(d.feuchte) + ' %' : ''].filter(Boolean).join(' · ');
+  if (d.art === 'rollo') return d.position != null ? d.position + ' % offen' : '';
+  return d.an == null ? '' : d.an ? 'an' + (d.hell != null && d.art === 'licht' ? ' · ' + d.hell + ' %' : '') : 'aus';
+}
+function famDevRow(d, x) {
+  const id = esc(d.id), st = famSmStatus(d);
+  return `<div class="fdev ${x.aus ? 'off' : ''}">
+    <div class="fdev-h"><span class="dot ${!d.online ? 'bad' : d.an ? 'on' : ''}"></span><span class="t"><b>${esc(x.name || d.name)}</b><span>${esc([SM_ANB[d.anbieter], d.konto, SM_ART[d.art], st].filter(Boolean).join(' · '))}</span></span>
+      ${d.kann?.an && d.online ? `<button class="btn sm" data-action="fs-toggle" data-id="${id}">${d.an ? 'Aus' : 'Ein'}</button>` : ''}</div>
+    <div class="grid2"><div class="field"><label>Name</label><input class="input" data-fsd="name" data-id="${id}" value="${esc(x.name || '')}" placeholder="${esc(d.name)}" maxlength="40"></div>
+      <div class="field"><label>Raum</label><input class="input" list="fsRaeume" data-fsd="raum" data-id="${id}" value="${esc(x.raum || '')}" placeholder="Ohne Raum" maxlength="30"></div></div>
+    <div class="row-actions"><label class="chk"><input type="checkbox" data-fsd="start" data-id="${id}" ${(x.start ?? smStartStd(d)) ? 'checked' : ''}> Auf der Startseite</label><label class="chk"><input type="checkbox" data-fsd="aus" data-id="${id}" ${x.aus ? 'checked' : ''}> Ausblenden</label></div>
+  </div>`;
+}
+function famZuhause() {
+  if (inqMode() !== 'live') return famBrauchtPostfach();
+  const sm = state.famSmart;
+  if (!sm && !state.famSmartErr) famSmartLoad();
+  if (state.famSmartErr) return `<section class="card sec"><h2>Zuhause</h2><p class="muted">${esc(state.famSmartErr)}</p><button class="btn" data-action="fs-reload">${ic('refresh', 16)} Nochmal</button></section>`;
+  if (!sm) return '<div class="loading"><div class="ring"></div></div>';
+  const a = sm.anbieter || {}, g = arr(sm.geraete), e = sm.einst || {};
+  const raeume = [...new Set([...g.map(d => e[d.id]?.raum), ...arr(state.fam.status?.mitglieder)].filter(Boolean))].sort((x, y) => x.localeCompare(y, 'de'));
+  const sorted = [...g].sort((x, y) => (e[x.id]?.raum || '~').localeCompare(e[y.id]?.raum || '~', 'de') || (e[x.id]?.name || x.name).localeCompare(e[y.id]?.name || y.name, 'de'));
+  const chip = k => a[k]?.aktiv ? `<span class="chip ${a[k].fehler ? 'bad' : 'ok'}">${a[k].fehler ? 'Fehler' : 'Verbunden'}</span>` : '<span class="chip">Nicht verbunden</span>';
+  const fehler = k => a[k]?.fehler ? `<p class="hint" style="color:#fca5a5;margin:0 0 14px">${esc(a[k].fehler)}</p>` : '';
+  const geheim = (id, l, ph = '') => `<div class="field"><label for="${id}">${l}</label><input id="${id}" class="input" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(ph)}"></div>`;
+  return `<datalist id="fsRaeume">${raeume.map(r => `<option value="${esc(r)}">`).join('')}</datalist>
+  <section class="card sec"><div class="sec-h"><h2>Geräte</h2><button class="btn sm" data-action="fs-reload">${ic('refresh', 15)} Aktualisieren</button></div>
+    <p class="muted">Name, Raum und Anzeige gelten für alle in der Familie. Ein Raum entsteht, sobald ein Gerät ihm zugeordnet ist.</p>
+    ${sorted.length ? sorted.map(d => famDevRow(d, e[d.id] || {})).join('') : '<p class="empty-mini" style="margin:0">Noch keine Geräte – verbinde unten einen Anbieter.</p>'}
+  </section>
+  <section class="card sec"><div class="sec-h"><h2>Govee</h2>${chip('govee')}</div>${fehler('govee')}
+    ${arr(a.govee?.konten).length ? `<div class="mini-list" style="margin-bottom:14px">${a.govee.konten.map(k => `<div class="mini"><span class="t"><b>${esc(k.name)}</b><span>${k.anzahl} Gerät${k.anzahl === 1 ? '' : 'e'}${k.raum ? ' · Raum ' + esc(k.raum) : ''}</span></span><button class="btn sm icon btn-danger" data-action="fs-govee-weg" data-k="${esc(k.id)}" data-n="${esc(k.name)}" aria-label="Konto ${esc(k.name)} entfernen">${ic('trash', 15)}</button></div>`).join('')}</div>` : ''}
+    <details class="help" style="margin:0"><summary>${ic('chev', 16)} ${arr(a.govee?.konten).length ? 'Weiteres Konto hinzufügen' : 'Konto verbinden'}</summary><div style="padding:0 14px 14px">
+      <div class="grid2"><div class="field"><label for="fsGName">Name</label><input id="fsGName" class="input" placeholder="z. B. Matteo" maxlength="30"></div><div class="field"><label for="fsGRaum">Raum (optional)</label><input id="fsGRaum" class="input" list="fsRaeume" maxlength="30"></div></div>
+      ${geheim('fsGKey', 'API-Schlüssel', 'z. B. 1a2b3c4d-…')}
+      <p class="hint" style="margin:-6px 0 14px">Govee Home → Profil → Zahnrad → „API-Schlüssel beantragen“ – kommt per E-Mail.</p>
+      <button class="btn btn-primary" data-action="fs-einrichten" data-a="govee">${ic('check', 17)} Verbinden</button></div></details>
+  </section>
+  <section class="card sec"><div class="sec-h"><h2>Shelly</h2>${chip('shelly')}</div>${fehler('shelly')}
+    ${a.shelly?.aktiv ? `<p class="muted">${esc(a.shelly.host || '')} · ${arr(a.shelly.ids).length} Geräte-ID${arr(a.shelly.ids).length === 1 ? '' : 's'}</p>` : ''}
+    <details class="help" style="margin:0"><summary>${ic('chev', 16)} ${a.shelly?.aktiv ? 'Ändern' : 'Verbinden'}</summary><div style="padding:0 14px 14px">
+      <div class="field"><label for="fsSHost">Server</label><input id="fsSHost" class="input" value="${esc(a.shelly?.host || '')}" placeholder="shelly-103-eu.shelly.cloud" autocapitalize="off" spellcheck="false"></div>
+      ${geheim('fsSKey', 'Cloud-Schlüssel', a.shelly?.aktiv ? 'Leer lassen = unverändert' : 'Authorization cloud key')}
+      <div class="field"><label for="fsSIds">Geräte-IDs (eine pro Zeile)</label><textarea id="fsSIds" class="input" rows="4" autocapitalize="off" spellcheck="false">${esc(arr(a.shelly?.ids).join('\n'))}</textarea></div>
+      <div class="sheet-actions">${a.shelly?.aktiv ? `<button class="btn btn-danger" data-action="fs-trennen" data-a="shelly">Trennen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" data-action="fs-einrichten" data-a="shelly">${ic('check', 17)} Speichern</button></div></div></details>
+  </section>
+  <section class="card sec"><div class="sec-h"><h2>Smart Life / Tuya</h2>${chip('tuya')}</div>${fehler('tuya')}
+    <details class="help" style="margin:0"><summary>${ic('chev', 16)} ${a.tuya?.aktiv ? 'Ändern' : 'Verbinden'}</summary><div style="padding:0 14px 14px">
+      <div class="field"><label for="fsTReg">Rechenzentrum</label><select id="fsTReg" class="input">${[['eu', 'Mitteleuropa'], ['eu-w', 'Westeuropa'], ['us', 'USA West'], ['us-e', 'USA Ost'], ['in', 'Indien'], ['cn', 'China']].map(([v, t]) => `<option value="${v}" ${(a.tuya?.region || 'eu') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="fsTId">Access ID</label><input id="fsTId" class="input" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+      ${geheim('fsTSec', 'Access Secret')}
+      <p class="hint" style="margin:-6px 0 14px">Aus dem Cloud-Projekt auf iot.tuya.com (Anleitung in der Familien-App unter Zuhause → Zahnrad).</p>
+      <div class="sheet-actions">${a.tuya?.aktiv ? `<button class="btn btn-danger" data-action="fs-trennen" data-a="tuya">Trennen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" data-action="fs-einrichten" data-a="tuya">${ic('check', 17)} Speichern</button></div></div></details>
+  </section>`;
+}
+async function famSmartGeraet(el) {
+  const id = el.dataset.id, f = el.dataset.fsd, d = arr(state.famSmart?.geraete).find(x => x.id === id); if (!d) return;
+  let v = el.type === 'checkbox' ? el.checked : el.value.trim();
+  if (f === 'start') v = v === smStartStd(d) ? null : v;
+  if (f === 'name' && v === d.name) v = '';
+  famQueue(async () => {
+    try { const j = await sbFn('mapq-push', { aktion: 'smart-geraet', id, [f]: v }); state.famSmart.einst = j.einst; toast('Gespeichert.', 'ok'); }
+    catch (e) { toast(e.message, 'bad'); }
+    if (f === 'aus') el.closest('.fdev')?.classList.toggle('off', !!v);
+  });
+}
+async function famSmartToggle(id) {
+  const d = arr(state.famSmart?.geraete).find(x => x.id === id); if (!d) return;
+  try { const j = await sbFn('mapq-push', { aktion: 'smart-set', id, befehl: { an: !d.an } }); arr(j.geraete).forEach(g => Object.assign(d, g)); renderView(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+async function famSmartEinrichten(k) {
+  const v = id => ($('#' + id)?.value || '').trim();
+  const body = k === 'govee' ? { name: v('fsGName'), raum: v('fsGRaum'), key: v('fsGKey') }
+    : k === 'shelly' ? { host: v('fsSHost'), key: v('fsSKey'), ids: v('fsSIds') }
+    : { region: v('fsTReg'), id: v('fsTId'), secret: v('fsTSec') };
+  showProgress('Prüfe den Zugang …');
+  try {
+    const j = await sbFn('mapq-push', { aktion: 'smart-einrichten', anbieter: k, ...body });
+    hideProgress(); toast(`${SM_ANB[k]} verbunden – ${j.anzahl} Gerät${j.anzahl === 1 ? '' : 'e'}${j.unbekannt?.length ? ' (nicht gefunden: ' + j.unbekannt.join(', ') + ')' : ''}.`, 'ok');
+    await famSmartLoad(true);
+  } catch (e) { hideProgress(); toast(e.message, 'bad'); }
+}
+async function famSmartTrennen(k, konto, name) {
+  if (!confirm(konto ? `Govee-Konto „${name}“ entfernen?` : `${SM_ANB[k]} trennen? Die Zugangsdaten werden gelöscht.`)) return;
+  try { await sbFn('mapq-push', { aktion: 'smart-einrichten', anbieter: k, trennen: true, ...(konto ? { konto } : {}) }); toast('Entfernt.', 'ok'); await famSmartLoad(true); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+
+/* ---------- Familien-App als Admin öffnen ---------- */
+async function famOpen() {
+  const sbv = AUTH.s?.vault?.sb;
+  if (inqMode() !== 'live' || !sbv?.password || !sbv.email) {
+    toast('Zum direkten Öffnen braucht das Panel deinen gespeicherten Postfach-Zugang – es öffnet sich die normale Anmeldung.', 'warn');
+    window.open('/familie/', '_blank', 'noopener'); return;
+  }
+  const w = window.open('', '_blank'); // gleich im Tipp öffnen, sonst blockiert Safari das Fenster
+  try {
+    // eigene, frische Sitzung nur für die Familien-App – die Sitzung des Panels bleibt unberührt
+    const r = await fetch(SB.url('/auth/v1/token?grant_type=password'), { method: 'POST', headers: { apikey: cfg.sb.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: sbv.email, password: sbv.password }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.access_token) throw new Error(j.error_description || j.msg || 'Anmeldung ging nicht.');
+    const p = btoa(JSON.stringify({ a: j.access_token, r: j.refresh_token })).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const url = '/familie/#admin=' + p;
+    if (w) w.location.href = url; else location.href = url;
+  } catch (e) { if (w) w.close(); toast('Öffnen ging nicht: ' + e.message, 'bad'); }
+}
+
+const famBrauchtPostfach = () => `<section class="card sec"><h2>Erst das Postfach verbinden</h2><p class="muted" style="margin:0 0 14px">Die Familien-App liegt in Supabase. Verbinde dafür zuerst unter Einstellungen das Anfragen-Postfach.</p><button class="btn" data-action="go" data-view="settings">${ic('sliders', 17)} Zu den Einstellungen</button></section>`;
 
 /* ---------- Als App aufs Handy ---------- */
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
@@ -1711,6 +2038,13 @@ const emptyState = (icon, title, text, btn) => `<div class="empty">${ic(icon, 34
    Ansichten
    ===================================================================== */
 const VIEWS = {};
+VIEWS.familie = () => {
+  const t = state.famTab;
+  return `${state.mode === 'view' ? banner() : ''}
+  ${head('mapq.at/familie', 'Familie', 'Die Familien-App verwalten: Aussehen, Inhalte und Zuhause.', `<button class="btn" data-action="fam-open">${ic('arrow', 17)} <span>Als Admin öffnen</span></button>`)}
+  <div class="seg scroll" style="margin-bottom:18px">${FAM_SEG.map(([id, l]) => `<button class="seg-b ${t === id ? 'on' : ''}" data-action="fam-tab" data-t="${id}">${l}</button>`).join('')}</div>
+  ${t === 'aussehen' ? famAussehen() : t === 'inhalte' ? famInhalte() : t === 'zuhause' ? famZuhause() : familieSection()}`;
+};
 
 VIEWS.dashboard = () => {
   const c = state.content, ph = c.photos, im = inqMode();
@@ -2092,7 +2426,9 @@ VIEWS.settings = () => {
 
   ${extrasSection()}
 
-  ${familieSection()}
+  <section class="card sec" id="sec-fam"><div class="sec-h"><h2>${ic('home')} Familien-App</h2></div>
+    <p class="muted">Passwort, Aussehen, Inhalte und Zuhause der Familien-App findest du jetzt im eigenen Bereich „Familie“.</p>
+    <button class="btn" data-action="go" data-view="familie">${ic('home', 17)} Zur Familien-App</button></section>
 
   <section class="card sec" id="sec-ig">
     <div class="sec-h"><h2>${ic('insta')} Instagram-Nachrichten</h2>${IG.ready ? `<span class="chip ok">@${esc(IG.info.username)}</span>` : '<span class="chip">Nicht verbunden</span>'}</div>
@@ -2413,6 +2749,20 @@ const ACTIONS = {
   'wp-remove': el => wpRemove(el.dataset.id),
   'fam-pass': () => famPasswort(),
   'fam-share': () => famShare(),
+  'fam-open': () => famOpen(),
+  'fam-tab': el => { state.famTab = el.dataset.t; state.famQuery = ''; renderView(); if (state.famTab === 'uebersicht' && !state.fam.loaded) loadFamilie(); },
+  'fam-reset': () => { if (!confirm('Aussehen der Familien-App auf Standard zurücksetzen?')) return; delete state.content.familie; updateDirty(); renderView(); },
+  'famtab-move': el => { famEdit(f => { const i = f.tabs.findIndex(t => t.id === el.dataset.id), j = i + Number(el.dataset.dir); if (i < 0 || j < 0 || j >= f.tabs.length) return; [f.tabs[i], f.tabs[j]] = [f.tabs[j], f.tabs[i]]; }); renderView(); },
+  'famtab-farbe': el => { famEdit(f => { const t = f.tabs.find(x => x.id === el.dataset.id); if (t) t.farbe = el.dataset.f; }); el.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); const p = $('#famPrev'); if (p) p.innerHTML = famPrevHTML(); },
+  'fam-inh': el => { state.famInh = el.dataset.k; state.famQuery = ''; renderView(); },
+  'fam-reload': () => { state.famRows[state.famInh] = null; state.famErr[state.famInh] = null; state.famUrls = {}; renderView(); },
+  'fam-edit': el => famEditSheet(el.dataset.k, el.dataset.id),
+  'fam-del': el => famDel(el.dataset.k, el.dataset.id),
+  'fs-reload': () => { state.famSmartErr = null; state.famSmart = null; renderView(); famSmartLoad(true); },
+  'fs-toggle': el => famSmartToggle(el.dataset.id),
+  'fs-einrichten': el => famSmartEinrichten(el.dataset.a),
+  'fs-trennen': el => famSmartTrennen(el.dataset.a),
+  'fs-govee-weg': el => famSmartTrennen('govee', el.dataset.k, el.dataset.n),
   'stats-refresh': () => { state.stats.data = null; renderView(); loadStats(); },
   'go-extra': () => { go('settings'); setTimeout(() => $('#sec-extra')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); },
   'ig-send': () => igSend(),
@@ -2465,11 +2815,15 @@ function onBind(el) {
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.matches('[data-bind],[data-list]') && t.type !== 'checkbox') onBind(t);
+  else if (t.dataset.fam && t.type !== 'checkbox') famBind(t);
+  else if (t.id === 'famSuche') { state.famQuery = t.value; const l = $('#famListe'); if (l) l.innerHTML = famListHTML(); }
   else if (t.id === 'inqSearch') { state.inqQuery = t.value; const l = $('#inqList'); if (l) l.innerHTML = inqListHTML(); }
 });
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.matches('[data-bind],[data-list]')) onBind(t);
+  else if (t.dataset.fam && t.type === 'checkbox') famBind(t);
+  else if (t.dataset.fsd) famSmartGeraet(t);
   else if (t.dataset.inqNote) { const q = inqById(t.dataset.inqNote); if (q && (q.notiz || '') !== t.value) patchInquiry(q.id, { notiz: t.value }, 'Notiz gespeichert.'); }
   else if (t.dataset.cfg) { cfg.img[t.dataset.cfg] = Number(t.value); store.set('img', cfg.img); toast('Gespeichert.', 'ok'); }
   else if (t.id === 'sbEmail') { cfg.sb.email = t.value.trim(); store.set('sb', cfg.sb); }
@@ -2522,6 +2876,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden || !st
    Start
    ===================================================================== */
 document.addEventListener('submit', e => {
+  if (e.target.id === 'famForm') { e.preventDefault(); famSave(e.target); return; }
   if (e.target.id !== 'gForm') return;
   e.preventDefault();
   if (e.target.dataset.gate === 'login') doUnlock(); else doSetup();

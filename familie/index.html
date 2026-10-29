@@ -547,7 +547,7 @@ details.dev-set[open]>summary{margin-bottom:10px}
 </head>
 <body>
 <div id="app" hidden>
-  <header class="topbar"><a class="brand" href="#start" aria-label="Familie – Start"><img src="/familie/mark.png?v=3" alt=""><b>Familie</b></a><span class="spacer"></span><button class="me-btn" id="meBtn" data-action="go" data-tab="ich" aria-label="Mein Profil"></button></header>
+  <header class="topbar"><a class="brand" href="#start" aria-label="Start"><img src="/familie/mark.png?v=3" alt=""><b id="brandName">Familie</b></a><span class="spacer"></span><button class="me-btn" id="meBtn" data-action="go" data-tab="ich" aria-label="Mein Profil"></button></header>
   <main id="view"></main>
   <nav class="tabbar" id="tabbar" aria-label="Bereiche"></nav>
 </div>
@@ -645,7 +645,7 @@ const ICONS = {
 };
 const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
-const TABS = [
+const TABS_STD = [
   { id: 'start', label: 'Start', icon: 'home', c: 'indigo' },
   { id: 'listen', label: 'Listen', icon: 'list', c: 'amber' },
   { id: 'kalender', label: 'Kalender', icon: 'cal', c: 'orange' },
@@ -655,7 +655,31 @@ const TABS = [
   { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
 const SUB = ['essen', 'rezepte', 'countdowns', 'infos', 'ich'];
-const ALL_TABS = [...TABS.map(t => t.id), ...SUB];
+let TABS = TABS_STD.slice(), ALL_TABS = [...TABS.map(t => t.id), ...SUB];
+/* Aussehen & Bereiche – stellt Matteo im Admin-Panel ein (content.json → familie) */
+let DESIGN = { titel: 'Familie', mehr: {}, start: {} };
+const zeigeMehr = k => DESIGN.mehr[k] !== false;
+const zeigeStart = k => DESIGN.start[k] !== false;
+const bereich = id => (SUB.includes(id) || id === 'putzplan') ? (id === 'ich' || zeigeMehr(id)) : TABS.some(t => t.id === id);
+function applyDesign(f) {
+  if (!f || typeof f !== 'object') return;
+  const std = Object.fromEntries(TABS_STD.map(t => [t.id, t])), farben = [...PALETTE, 'indigo', 'grey'];
+  const conf = (Array.isArray(f.tabs) ? f.tabs : []).filter((t, i, a) => t && std[t.id] && a.findIndex(x => x?.id === t.id) === i);
+  TABS = [...conf, ...TABS_STD.filter(t => !conf.some(x => x.id === t.id))].map(t => ({
+    ...std[t.id],
+    label: typeof t.label === 'string' && t.label.trim() ? t.label.trim().slice(0, 12) : std[t.id].label,
+    c: farben.includes(t.farbe) ? t.farbe : std[t.id].c,
+    an: t.an !== false || t.id === 'start' || t.id === 'mehr'
+  })).filter(t => t.an);
+  DESIGN = {
+    titel: typeof f.titel === 'string' && f.titel.trim() ? f.titel.trim().slice(0, 24) : 'Familie',
+    mehr: f.mehr && typeof f.mehr === 'object' ? f.mehr : {},
+    start: f.start && typeof f.start === 'object' ? f.start : {}
+  };
+  ALL_TABS = [...TABS.map(t => t.id), ...SUB.filter(bereich)];
+  const b = $('#brandName'); if (b) b.textContent = DESIGN.titel;
+  document.title = DESIGN.titel + ' · mapq';
+}
 const tabOf = t => SUB.includes(t) ? 'mehr' : t;
 const LISTS = [['einkauf', 'Einkauf', 'cart', 'amber'], ['todo', 'To-dos', 'todo', 'blue'], ['putzplan', 'Putzplan', 'sparkles', 'sky']];
 const LIST_C = Object.fromEntries(LISTS.map(l => [l[0], l[3]]));
@@ -847,8 +871,23 @@ async function boot() {
     const c = await fetch('/content.json', { cache: 'no-cache' }).then(r => r.json());
     if (!c.inbox?.url || !c.inbox?.key) throw new Error('nicht eingerichtet');
     API.url = c.inbox.url.replace(/\/+$/, ''); API.key = c.inbox.key;
+    applyDesign(c.familie);
   } catch {
     return gate(`<h1>Familie</h1><p class="lead">Die Familien-App ist noch nicht eingerichtet.</p>`);
+  }
+  // Aus dem Admin-Panel geöffnet: eigene Admin-Sitzung kommt im Adress-Anker mit (#admin=…) und wird sofort erneuert
+  const ho = location.hash.match(/^#admin=([A-Za-z0-9_-]+)$/);
+  if (ho) {
+    history.replaceState(null, '', location.pathname + '#start');
+    try {
+      const j = JSON.parse(atob(ho[1].replace(/-/g, '+').replace(/_/g, '/')));
+      if (j.a && j.r) {
+        API.sess = { access_token: j.a, refresh_token: j.r, expires_at: Date.now() + 5 * 60e3 };
+        store.set('session', API.sess);
+        await API.refresh();
+        toast('Als Admin angemeldet.', 'ok');
+      }
+    } catch (e) { if (!e.silent) toast('Anmeldung aus dem Panel ging nicht – bitte mit dem Familien-Passwort anmelden.', 'warn'); }
   }
   if (!API.on) return showLogin();
   if (!state.me) return showWho();
@@ -921,6 +960,7 @@ function startApp() {
 }
 function renderTabbar() {
   const u = unread(), cur = tabOf(state.tab);
+  $('#tabbar').style.gridTemplateColumns = `repeat(${TABS.length},minmax(0,1fr))`;
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab c-${t.c} ${cur === t.id ? 'active' : ''}" data-action="go" data-tab="${t.id}" aria-label="${t.label}" ${cur === t.id ? 'aria-current="page"' : ''}><span class="pill">${ic(t.icon, 22)}</span><span>${t.label}</span>${t.id === 'pinnwand' && u ? `<span class="badge">${u > 9 ? '9+' : u}</span>` : ''}</button>`).join('');
 }
 const LOADERS = {
@@ -930,6 +970,7 @@ const LOADERS = {
   zuhause: q => loadSmart(q)
 };
 function go(tab, replace) {
+  if (!ALL_TABS.includes(tab)) tab = 'start';
   state.tab = tab;
   if (location.hash.slice(1) !== tab) history[replace ? 'replaceState' : 'pushState'](null, '', '#' + tab);
   renderTabbar(); renderView(); window.scrollTo(0, 0);
@@ -1044,47 +1085,43 @@ function fillDash() {
   const smartAn = smartAktiv() ? lichterAn() : [], smartStart = smartAktiv() ? startGeraete() : [];
   const cds = (state.countdowns || []).filter(c => c.datum >= todayIso()).slice(0, 4), bdays = nextBirthdays(21).filter(o => o.iso !== todayIso() || true).slice(0, 2);
   const chips = [
-    w ? `<button class="dchip" data-action="refresh-weather"><span class="shape c-${wc[2]}">${ic(wc[1], 17)}</span>${Math.round(w.now.temperature_2m)}°</button>` : '',
-    smartAn.length ? `<button class="dchip" data-action="go" data-tab="zuhause"><span class="shape c-amber">${ic('bulb', 16)}</span>${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an</button>` : '',
-    `<button class="dchip" data-action="go" data-tab="listen" data-liste="einkauf"><span class="shape c-amber">${ic('cart', 16)}</span>${ein.length ? ein.length + ' kaufen' : 'Nichts kaufen'}</button>`,
-    myTasks.length ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="putzplan"><span class="shape c-sky">${ic('sparkles', 16)}</span>${myTasks.length} dran</button>` : '',
-    `<button class="dchip" data-action="go" data-tab="listen" data-liste="todo"><span class="shape c-blue">${ic('todo', 16)}</span>${mine.length ? mine.length + ' für dich' : todo.length ? todo.length + ' To-dos' : 'Keine To-dos'}</button>`,
-    `<button class="dchip" data-action="go" data-tab="kalender"><span class="shape c-orange">${ic('cal', 16)}</span>${heute.length ? heute.length + ' heute' : 'Heute frei'}</button>`,
-    u ? `<button class="dchip" data-action="go" data-tab="pinnwand"><span class="shape c-green">${ic('chat', 16)}</span>${u} neu</button>` : ''
+    w && zeigeStart('wetter') ? `<button class="dchip" data-action="refresh-weather"><span class="shape c-${wc[2]}">${ic(wc[1], 17)}</span>${Math.round(w.now.temperature_2m)}°</button>` : '',
+    smartAn.length && bereich('zuhause') ? `<button class="dchip" data-action="go" data-tab="zuhause"><span class="shape c-amber">${ic('bulb', 16)}</span>${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an</button>` : '',
+    bereich('listen') ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="einkauf"><span class="shape c-amber">${ic('cart', 16)}</span>${ein.length ? ein.length + ' kaufen' : 'Nichts kaufen'}</button>` : '',
+    myTasks.length && bereich('listen') && bereich('putzplan') ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="putzplan"><span class="shape c-sky">${ic('sparkles', 16)}</span>${myTasks.length} dran</button>` : '',
+    bereich('listen') ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="todo"><span class="shape c-blue">${ic('todo', 16)}</span>${mine.length ? mine.length + ' für dich' : todo.length ? todo.length + ' To-dos' : 'Keine To-dos'}</button>` : '',
+    bereich('kalender') ? `<button class="dchip" data-action="go" data-tab="kalender"><span class="shape c-orange">${ic('cal', 16)}</span>${heute.length ? heute.length + ' heute' : 'Heute frei'}</button>` : '',
+    u && bereich('pinnwand') ? `<button class="dchip" data-action="go" data-tab="pinnwand"><span class="shape c-green">${ic('chat', 16)}</span>${u} neu</button>` : ''
   ].join('');
   const nextTxt = next ? esc(next.t.titel) : 'Nichts geplant';
   const nextSub = next ? `${esc(dayLabel(next.iso)[0])}${next.t.zeit ? ', ' + esc(next.t.zeit.slice(0, 5)) : ''}${next.t.ort ? ' · ' + esc(next.t.ort) : ''}` : 'Die nächsten 30 Tage sind frei.';
   const agenda = occ.filter(o => o.iso <= isoDay(addDays(new Date(), 1)));
-  const strip = [...bdays.map(o => { const n = dayDiff(new Date(), parseDay(o.iso)); return `<button class="tile c-pink" data-action="go" data-tab="kalender"><span class="e">🎂</span><span><b>${esc(o.t.titel)}</b><small>${n === 0 ? 'Heute!' : inDays(n)}${o.jahre > 0 ? ` · ${o.jahre} Jahre` : ''}</small></span></button>`; }),
-    ...cds.map(c => { const n = dayDiff(new Date(), parseDay(c.datum)); return `<button class="tile c-purple" data-action="go" data-tab="countdowns"><span class="top"><span class="e">${esc(c.emoji || '⏳')}</span><span class="num">${n}</span></span><span><b>${esc(c.titel)}</b><small>${n === 0 ? 'Heute! 🎉' : n === 1 ? 'Morgen' : 'Tage'}</small></span></button>`; })].join('');
+  const quickB = [['listen', 'amber', 'einkauf', 'cart', 'Einkauf'], ['kalender', 'orange', 'termin', 'cal', 'Termin'], ['fotos', 'pink', 'foto', 'camera', 'Foto'], ['pinnwand', 'green', 'nachricht', 'chat', 'Nachricht']].filter(q => bereich(q[0]));
+  const strip = [...(bereich('kalender') ? bdays : []).map(o => { const n = dayDiff(new Date(), parseDay(o.iso)); return `<button class="tile c-pink" data-action="go" data-tab="kalender"><span class="e">🎂</span><span><b>${esc(o.t.titel)}</b><small>${n === 0 ? 'Heute!' : inDays(n)}${o.jahre > 0 ? ` · ${o.jahre} Jahre` : ''}</small></span></button>`; }),
+    ...(bereich('countdowns') ? cds : []).map(c => { const n = dayDiff(new Date(), parseDay(c.datum)); return `<button class="tile c-purple" data-action="go" data-tab="countdowns"><span class="top"><span class="e">${esc(c.emoji || '⏳')}</span><span class="num">${n}</span></span><span><b>${esc(c.titel)}</b><small>${n === 0 ? 'Heute! 🎉' : n === 1 ? 'Morgen' : 'Tage'}</small></span></button>`; })].join('');
   box.innerHTML = `<div class="chips">${chips}</div>
-    ${weatherCard()}
-    <div class="quick">
-      <button class="qb c-amber" data-action="quick" data-q="einkauf"><span class="shape">${ic('cart')}</span>Einkauf</button>
-      <button class="qb c-orange" data-action="quick" data-q="termin"><span class="shape">${ic('cal')}</span>Termin</button>
-      <button class="qb c-pink" data-action="quick" data-q="foto"><span class="shape">${ic('camera')}</span>Foto</button>
-      <button class="qb c-green" data-action="quick" data-q="nachricht"><span class="shape">${ic('chat')}</span>Nachricht</button>
-    </div>
-    ${strip ? `<div class="cdstrip">${strip}</div>` : ''}
-    <div class="tiles">
-      <button class="tile c-amber" data-action="go" data-tab="listen" data-liste="einkauf"><span class="top"><span class="shape">${ic('cart')}</span><span class="num">${ein.length}</span></span><span><b>Einkaufsliste</b><small>${ein.length ? ein.slice(0, 4).map(i => esc(i.text)).join(', ') : 'Alles da'}</small></span><i class="bar"></i></button>
-      <button class="tile c-blue" data-action="go" data-tab="listen" data-liste="todo"><span class="top"><span class="shape">${ic('todo')}</span><span class="num">${todo.length}</span></span><span><b>To-dos</b><small>${mine.length ? `${mine.length} für dich: ${esc(mine[0].text)}` : todo.length ? esc(todo[0].text) : 'Alles erledigt'}</small></span><i class="bar"></i></button>
-      <button class="tile wide c-lime" data-action="go" data-tab="essen"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic('utensils')}</span><span style="min-width:0"><b>${essen ? 'Heute: ' + esc(essen.gericht) : 'Was essen wir heute?'}</b><small>${essen ? (essen.koch ? esc(essen.koch) + ' kocht' : 'Essensplan') : 'Tipp hier und plan die Woche'}</small></span></span>${essen?.koch ? av(essen.koch, 'sm') : ''}</span><i class="bar"></i></button>
-      <button class="tile wide c-orange" data-action="go" data-tab="kalender"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic(next?.t.jaehrlich ? 'cake' : 'cal')}</span><span style="min-width:0"><b>${nextTxt}</b><small>${nextSub}</small></span></span>${next && next.iso === todayIso() ? '<span class="chip c-orange">Heute</span>' : ''}</span><i class="bar"></i></button>
-      ${foto ? `<button class="tile wide photo c-pink" data-action="go" data-tab="fotos" style="background-image:url('${esc(fotoUrl || '')}')"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'} · zuletzt ${foto.von ? 'von ' + esc(foto.von) + ' ' : ''}${esc(rel(foto.erstellt))}</small></span></button>`
+    ${zeigeStart('wetter') ? weatherCard() : ''}
+    ${zeigeStart('schnell') && quickB.length ? `<div class="quick" style="grid-template-columns:repeat(${quickB.length},1fr)">${quickB.map(([, c, q, i, l]) => `<button class="qb c-${c}" data-action="quick" data-q="${q}"><span class="shape">${ic(i)}</span>${l}</button>`).join('')}</div>` : ''}
+    ${strip && zeigeStart('leiste') ? `<div class="cdstrip">${strip}</div>` : ''}
+    ${!zeigeStart('kacheln') ? '' : `<div class="tiles">
+      ${!bereich('listen') ? '' : `<button class="tile c-amber" data-action="go" data-tab="listen" data-liste="einkauf"><span class="top"><span class="shape">${ic('cart')}</span><span class="num">${ein.length}</span></span><span><b>Einkaufsliste</b><small>${ein.length ? ein.slice(0, 4).map(i => esc(i.text)).join(', ') : 'Alles da'}</small></span><i class="bar"></i></button>
+      <button class="tile c-blue" data-action="go" data-tab="listen" data-liste="todo"><span class="top"><span class="shape">${ic('todo')}</span><span class="num">${todo.length}</span></span><span><b>To-dos</b><small>${mine.length ? `${mine.length} für dich: ${esc(mine[0].text)}` : todo.length ? esc(todo[0].text) : 'Alles erledigt'}</small></span><i class="bar"></i></button>`}
+      ${!bereich('essen') ? '' : `<button class="tile wide c-lime" data-action="go" data-tab="essen"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic('utensils')}</span><span style="min-width:0"><b>${essen ? 'Heute: ' + esc(essen.gericht) : 'Was essen wir heute?'}</b><small>${essen ? (essen.koch ? esc(essen.koch) + ' kocht' : 'Essensplan') : 'Tipp hier und plan die Woche'}</small></span></span>${essen?.koch ? av(essen.koch, 'sm') : ''}</span><i class="bar"></i></button>`}
+      ${!bereich('kalender') ? '' : `<button class="tile wide c-orange" data-action="go" data-tab="kalender"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic(next?.t.jaehrlich ? 'cake' : 'cal')}</span><span style="min-width:0"><b>${nextTxt}</b><small>${nextSub}</small></span></span>${next && next.iso === todayIso() ? '<span class="chip c-orange">Heute</span>' : ''}</span><i class="bar"></i></button>`}
+      ${!bereich('fotos') ? '' : foto ? `<button class="tile wide photo c-pink" data-action="go" data-tab="fotos" style="background-image:url('${esc(fotoUrl || '')}')"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'} · zuletzt ${foto.von ? 'von ' + esc(foto.von) + ' ' : ''}${esc(rel(foto.erstellt))}</small></span></button>`
         : `<button class="tile wide c-pink" data-action="quick" data-q="foto"><span class="top"><span style="display:flex;align-items:center;gap:12px"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>Teil das erste Familienfoto</small></span></span></span><i class="bar"></i></button>`}
-    </div>
-    ${smartStart.length ? `<div class="sec-h"><span class="shape sm c-teal">${ic('hplug', 16)}</span><b>Zuhause</b><small>${smartAn.length ? `${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an` : 'Alle Lichter aus'}</small><button class="btn sm" data-action="go" data-tab="zuhause" data-raum="">Räume</button></div>
+    </div>`}
+    ${smartStart.length && zeigeStart('zuhause') && bereich('zuhause') ? `<div class="sec-h"><span class="shape sm c-teal">${ic('hplug', 16)}</span><b>Zuhause</b><small>${smartAn.length ? `${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an` : 'Alle Lichter aus'}</small><button class="btn sm" data-action="go" data-tab="zuhause" data-raum="">Räume</button></div>
       <div class="devs">${smartStart.map(devTile).join('')}</div>` : ''}
-    ${tasks.length ? `<section class="card c-sky"><div class="card-h"><span class="shape">${ic('sparkles')}</span><span class="t"><b>Heute dran</b><small>Putzplan</small></span><button class="btn sm" data-action="go" data-tab="listen" data-liste="putzplan">Alle</button></div>
+    ${tasks.length && zeigeStart('putzplan') && bereich('putzplan') && bereich('listen') ? `<section class="card c-sky"><div class="card-h"><span class="shape">${ic('sparkles')}</span><span class="t"><b>Heute dran</b><small>Putzplan</small></span><button class="btn sm" data-action="go" data-tab="listen" data-liste="putzplan">Alle</button></div>
       <div class="items" style="background:var(--card-2)">${tasks.map(aufgabeRow).join('')}</div></section>` : ''}
-    <section class="card c-green"><div class="card-h"><span class="shape">${ic('chat')}</span><span class="t"><b>Pinnwand</b><small>${lastMsg ? (u ? u + ' neue Nachricht' + (u > 1 ? 'en' : '') : 'zuletzt ' + esc(rel(lastMsg.erstellt))) : 'Noch keine Nachrichten'}</small></span><button class="btn sm" data-action="go" data-tab="pinnwand">Öffnen</button></div>
-      ${lastMsg ? `<div class="msgs-mini">${state.msgs.slice(0, 2).map(m => `<div class="m">${av(m.von, 'sm')}<div style="min-width:0"><small>${esc(m.von || 'Jemand')} · ${esc(relShort(m.erstellt))}</small><p>${m.optionen ? '📊 ' : ''}${esc(m.text)}</p></div></div>`).join('')}</div>` : ''}</section>
-    <section class="card c-orange"><div class="card-h"><span class="shape">${ic('cal')}</span><span class="t"><b>Heute & morgen</b><small>${agenda.length ? agenda.length + ' Termin' + (agenda.length > 1 ? 'e' : '') : 'Nichts eingetragen'}</small></span><button class="btn sm" data-action="quick" data-q="termin">${ic('plus', 15)} Termin</button></div>
-      ${agenda.length ? `<div class="evs" style="background:var(--card-2)">${agenda.map(evRow).join('')}</div>` : ''}</section>
-    <section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>Tipp auf dich, um deinen Status zu setzen</small></span></div>
-      <div class="people">${people.map(n => { const s = statusOf(n); return `<div class="person ${n === state.me ? 'me-p' : ''}" ${n === state.me ? 'data-action="status" role="button" tabindex="0"' : ''}>${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b>${s ? `<span class="st">${s.emoji} ${esc(s.label)}</span>` : `<small>${n === state.me ? 'Status setzen' : act[n] ? esc(relShort(act[n])) : '–'}</small>`}</div>`; }).join('')}</div></section>
-    ${(state.fotos || []).length > 1 ? `<p class="sub-h">Neueste Fotos</p><div class="strip">${state.fotos.slice(0, 12).map((f, i) => `<button data-action="open-foto" data-i="${i}" aria-label="Foto öffnen"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}`;
+    ${!zeigeStart('pinnwand') || !bereich('pinnwand') ? '' : `<section class="card c-green"><div class="card-h"><span class="shape">${ic('chat')}</span><span class="t"><b>Pinnwand</b><small>${lastMsg ? (u ? u + ' neue Nachricht' + (u > 1 ? 'en' : '') : 'zuletzt ' + esc(rel(lastMsg.erstellt))) : 'Noch keine Nachrichten'}</small></span><button class="btn sm" data-action="go" data-tab="pinnwand">Öffnen</button></div>
+      ${lastMsg ? `<div class="msgs-mini">${state.msgs.slice(0, 2).map(m => `<div class="m">${av(m.von, 'sm')}<div style="min-width:0"><small>${esc(m.von || 'Jemand')} · ${esc(relShort(m.erstellt))}</small><p>${m.optionen ? '📊 ' : ''}${esc(m.text)}</p></div></div>`).join('')}</div>` : ''}</section>`}
+    ${!zeigeStart('termine') || !bereich('kalender') ? '' : `<section class="card c-orange"><div class="card-h"><span class="shape">${ic('cal')}</span><span class="t"><b>Heute & morgen</b><small>${agenda.length ? agenda.length + ' Termin' + (agenda.length > 1 ? 'e' : '') : 'Nichts eingetragen'}</small></span><button class="btn sm" data-action="quick" data-q="termin">${ic('plus', 15)} Termin</button></div>
+      ${agenda.length ? `<div class="evs" style="background:var(--card-2)">${agenda.map(evRow).join('')}</div>` : ''}</section>`}
+    ${!zeigeStart('familie') ? '' : `<section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>Tipp auf dich, um deinen Status zu setzen</small></span></div>
+      <div class="people">${people.map(n => { const s = statusOf(n); return `<div class="person ${n === state.me ? 'me-p' : ''}" ${n === state.me ? 'data-action="status" role="button" tabindex="0"' : ''}>${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b>${s ? `<span class="st">${s.emoji} ${esc(s.label)}</span>` : `<small>${n === state.me ? 'Status setzen' : act[n] ? esc(relShort(act[n])) : '–'}</small>`}</div>`; }).join('')}</div></section>`}
+    ${(state.fotos || []).length > 1 && zeigeStart('fotos') && bereich('fotos') ? `<p class="sub-h">Neueste Fotos</p><div class="strip">${state.fotos.slice(0, 12).map((f, i) => `<button data-action="open-foto" data-i="${i}" aria-label="Foto öffnen"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}`;
 }
 function statusSheet() {
   const cur = state.mem[state.me]?.status;
@@ -1141,7 +1178,9 @@ function parseMenge(raw) {
   const menge = !unit || /^(x|×)$/i.test(unit) ? `${num}×` : `${num} ${unit}`;
   return { text: text.trim(), menge };
 }
+const listsAn = () => LISTS.filter(l => l[0] !== 'putzplan' || bereich('putzplan'));
 function listenShell() {
+  if (!listsAn().some(l => l[0] === state.liste)) state.liste = 'einkauf';
   const l = LISTS.find(x => x[0] === state.liste) || LISTS[0], c = l[3];
   const add = state.liste === 'putzplan'
     ? `<div class="addbar c-sky"><button class="btn btn-primary" style="width:auto;padding:0 18px;flex:1" data-action="new-aufgabe">${ic('plus', 18)} Neue Aufgabe</button></div>`
@@ -1155,7 +1194,7 @@ function listenShell() {
 function fillSeg() {
   const n = l => l === 'putzplan' ? aufgabenAm(todayIso()).filter(t => !t.done).length : (state.items || []).filter(i => i.liste === l && !i.erledigt).length;
   const s = $('#seg'); if (!s) return;
-  s.innerHTML = LISTS.map(([id, l, i, c]) => `<button class="seg-b c-${c} ${state.liste === id ? 'on' : ''}" data-action="liste" data-liste="${id}">${ic(i, 17)}${l}${n(id) ? ` <span class="n">${n(id)}</span>` : ''}</button>`).join('');
+  s.innerHTML = listsAn().map(([id, l, i, c]) => `<button class="seg-b c-${c} ${state.liste === id ? 'on' : ''}" data-action="liste" data-liste="${id}">${ic(i, 17)}${l}${n(id) ? ` <span class="n">${n(id)}</span>` : ''}</button>`).join('');
   const sub = $('#phSub'); if (!sub) return;
   const k = n(state.liste);
   sub.textContent = state.liste === 'todo' ? (k ? `${k} offen` : 'Alles erledigt') : state.liste === 'putzplan' ? (k ? `${k} heute fällig` : 'Heute nichts fällig') : (k ? `${k} ${k === 1 ? 'Sache' : 'Sachen'} zu kaufen` : 'Nichts zu kaufen');
@@ -1876,11 +1915,11 @@ function fillHub() {
   const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
   const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
   box.innerHTML = `<div class="tiles hub">
-    ${tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
-    ${tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte')}
-    ${tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"')}
-    ${tile('countdowns', 'purple', ic('hourglass'), 'Countdowns', cd ? `${esc(cd.titel)} ${inDays(dayDiff(new Date(), parseDay(cd.datum)))}` : 'Worauf freut ihr euch?')}
-    ${tile('infos', 'red', ic('siren'), 'Wichtige Infos', state.infos ? `${state.infos.length} Einträge` : 'Notfall, Arzt, WLAN …')}
+    ${!bereich('essen') ? '' : tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
+    ${bereich('rezepte') ? tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte') : ''}
+    ${bereich('putzplan') && bereich('listen') ? tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"') : ''}
+    ${bereich('countdowns') ? tile('countdowns', 'purple', ic('hourglass'), 'Countdowns', cd ? `${esc(cd.titel)} ${inDays(dayDiff(new Date(), parseDay(cd.datum)))}` : 'Worauf freut ihr euch?') : ''}
+    ${bereich('infos') ? tile('infos', 'red', ic('siren'), 'Wichtige Infos', state.infos ? `${state.infos.length} Einträge` : 'Notfall, Arzt, WLAN …') : ''}
     ${tile('ich', colorOf(state.me), av(state.me, 'sm'), 'Mein Profil', 'Foto, Farbe, Status, Benachrichtigungen')}
   </div>`;
 }
