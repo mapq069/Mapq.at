@@ -10,7 +10,7 @@ self.addEventListener('push', e => {
     try { if (self.navigator.setAppBadge) await self.navigator.setAppBadge(); } catch (err) {}
     await self.registration.showNotification(d.title || 'Familie', {
       body: d.body || '',
-      icon: '/familie/icon-192.png',
+      icon: '/familie/icon-192.png?v=2',
       tag: d.tag || undefined,
       renotify: !!d.tag,
       data: { url: d.url || '/familie/' }
