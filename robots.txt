@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /familie
+Disallow: /pcon
 
 Sitemap: https://mapq.at/sitemap.xml

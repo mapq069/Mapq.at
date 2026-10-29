@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Nicht gefunden · mapq.raw</title>
+<script>
+// GitHub Pages unterscheidet Groß- und Kleinschreibung: mapq.at/Pcon, /PCON, /Familie … → richtige Seite
+(function () {
+  var ziele = { '/pcon': '/pcon/', '/familie': '/familie/', '/admin': '/admin.html', '/bilder': '/#ordner', '/ordner': '/#ordner' };
+  var p = location.pathname.toLowerCase().replace(/\/+$/, '').replace(/\.html$/, '');
+  var z = ziele[p];
+  if (z && z !== location.pathname) location.replace(z + location.search + (z.indexOf('#') < 0 ? location.hash : ''));
+})();
+</script>
+<style>
+html,body{margin:0;min-height:100%;background:#000;color:#FAFAFA;font:400 16px/1.55 "Space Grotesk","Helvetica Neue",Arial,sans-serif}
+main{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:18px;max-width:560px;margin:0 auto;padding:32px 20px}
+h1{margin:0;font:850 64px/.9 "Archivo","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+p{margin:0;color:#94A3B8}
+a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:8px;background:#F8FAFC;color:#0F172A;font-weight:600;text-decoration:none;align-self:flex-start}
+</style>
+</head>
+<body>
+<main>
+  <h1>404</h1>
+  <p>Diese Seite gibt es nicht.</p>
+  <a href="/">Zu mapq.at</a>
+</main>
+</body>
+</html>

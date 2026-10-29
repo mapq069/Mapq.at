@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>PC · mapq</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="/admin-icon-180.png?v=2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PC">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000'/%3E%3Cpath d='M16 7v9M22.4 10.6a9 9 0 1 1-12.8 0' fill='none' stroke='%23FAFAFA' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Space+Grotesk:wght@300..700&display=swap">
+<style>
+/* mapq.at/pcon – PC fernsteuern. Gestaltung wie das Admin-Panel (design-system/mapq-raw/MASTER.md):
+   reines Schwarz-Weiß, Archivo für Überschriften, Space Grotesk für Text. */
+:root{
+  color-scheme:dark;
+  --bg:#000;--card:#0C0C0C;--muted-bg:#181818;--line:#232327;--line-2:#3F3F46;
+  --text:#FAFAFA;--muted:#94A3B8;--dim:#71717A;--accent:#F8FAFC;--on-accent:#0F172A;
+  --ok:#4ADE80;--warn:#FBBF24;--bad:#EF4444;
+  --r-btn:8px;--r-card:12px;--ease:200ms ease;
+  --font-h:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-b:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{margin:0;min-height:100dvh;background:var(--bg);color:var(--text);font:400 15px/1.55 var(--font-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button,summary,select,label{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+code{font-size:.88em;background:var(--muted-bg);padding:1px 6px;border-radius:5px;word-break:break-all}
+.ic{flex:none;display:block}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;height:calc(58px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 16px 0;background:rgba(0,0,0,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:20px;letter-spacing:.01em;text-decoration:none}
+.tag{font-size:10px;font-weight:600;letter-spacing:.16em;color:var(--muted);border:1px solid var(--line-2);border-radius:5px;padding:3px 6px;line-height:1}
+.sp{flex:1}
+main{width:100%;max-width:560px;margin:0 auto;padding:20px 16px calc(48px + env(safe-area-inset-bottom))}
+h1{font-family:var(--font-h);font-stretch:62%;font-weight:850;line-height:.92;text-transform:uppercase;letter-spacing:-.01em;font-size:44px;margin:4px 0 18px}
+h2{font-family:var(--font-h);font-stretch:75%;font-weight:750;font-size:19px;margin:0 0 6px;letter-spacing:.005em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:18px}
+.card+.card,.card+details,details+details{margin-top:12px}
+#setupBox:not(:empty){margin-top:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:var(--r-btn);border:1px solid var(--line-2);background:transparent;color:var(--text);font-weight:600;font-size:14px;white-space:nowrap;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:border-color var(--ease),background var(--ease),opacity var(--ease),transform var(--ease)}
+.btn:hover{border-color:var(--text)}
+.btn:active{transform:translateY(1px)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:13px;gap:6px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{opacity:.9;border-color:var(--accent)}
+.btn-danger{color:#fca5a5;border-color:rgba(239,68,68,.45)}
+.btn-danger:hover{border-color:var(--bad);background:rgba(239,68,68,.08)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.w100{width:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.field{display:flex;flex-direction:column;gap:6px;margin:0 0 14px}
+.field label{font-size:13px;font-weight:500;color:var(--muted)}
+.input{width:100%;min-height:46px;padding:0 14px;border-radius:var(--r-btn);border:1px solid var(--line-2);background:#050505;font-size:16px}
+.input:focus{border-color:var(--text);outline:none}
+.check{display:flex;gap:10px;align-items:center;margin:0 0 16px;font-size:14px;color:var(--muted)}
+.check input{width:18px;height:18px;accent-color:#fff}
+.err{color:#fca5a5;font-size:14px;min-height:1.4em;margin:0 0 12px}
+
+/* Status */
+.status{display:flex;gap:16px;align-items:center}
+.pcicon{position:relative;flex:none;width:64px;height:64px;border-radius:16px;display:grid;place-items:center;background:var(--muted-bg);border:1px solid var(--line)}
+.pcicon .dot{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:var(--dim);border:3px solid var(--card)}
+.status.an .dot{background:var(--ok);box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:puls 2.4s infinite}
+.status.warte .dot{background:var(--warn)}
+@keyframes puls{70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.status .t{min-width:0}
+.status .name{font-family:var(--font-h);font-stretch:75%;font-weight:750;font-size:21px;line-height:1.15;overflow-wrap:anywhere}
+.status .zust{font-size:15px;font-weight:600;margin-top:2px}
+.status.an .zust{color:var(--ok)}
+.status.warte .zust{color:var(--warn)}
+.status .sub{font-size:13px;color:var(--muted)}
+.meldung{margin:14px 0 0;padding:10px 12px;border-radius:var(--r-btn);background:var(--muted-bg);font-size:14px;display:flex;gap:10px;align-items:center}
+.meldung .grow{flex:1;min-width:0}
+.aktionen{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.akt{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:14px;min-height:96px;padding:14px;border-radius:var(--r-card);border:1px solid var(--line);background:var(--card);color:var(--text);text-align:left;font-weight:600;font-size:15px;-webkit-tap-highlight-color:transparent;transition:border-color var(--ease),background var(--ease),transform var(--ease)}
+.akt:hover{border-color:var(--line-2)}
+.akt:active{transform:translateY(1px)}
+.akt small{display:block;font-weight:400;font-size:12.5px;color:var(--muted)}
+.akt.rot{border-color:rgba(239,68,68,.35)}
+.akt.rot .ic{color:#fca5a5}
+.akt.gross{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start;min-height:72px;background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.akt.gross small{color:#334155}
+.akt[disabled]{opacity:.35;pointer-events:none}
+
+/* Einrichten */
+details.card{padding:0}
+details.card>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:16px 18px;font-weight:600}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary .chev{margin-left:auto;transition:transform var(--ease);color:var(--muted)}
+details.card[open]>summary .chev{transform:rotate(180deg)}
+details.card>.inhalt{padding:0 18px 18px;border-top:1px solid var(--line)}
+.schritt{padding-top:16px}
+.schritt+.schritt{margin-top:16px;border-top:1px solid var(--line)}
+.schritt h3{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-size:15.5px}
+.schritt h3 .nr{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--text);color:#000;font-size:12.5px;font-weight:700;flex:none}
+.schritt h3 .nr.ok{background:var(--ok)}
+.schritt p,.schritt li{font-size:14px;color:var(--muted)}
+.schritt p{margin:0 0 12px}
+.schritt ol{margin:0 0 12px;padding-left:20px}
+.schritt li{margin:0 0 5px}
+.schritt b{color:var(--text);font-weight:600}
+pre.code{margin:0 0 10px;max-height:220px;overflow:auto;padding:12px;border-radius:var(--r-btn);background:#050505;border:1px solid var(--line);font-size:12px;line-height:1.45;white-space:pre-wrap;word-break:break-all}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+select.input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+
+.laden{display:grid;place-items:center;padding:80px 0}
+.ring{width:28px;height:28px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--text);animation:dreh 1s linear infinite}
+@keyframes dreh{to{transform:rotate(360deg)}}
+#toasts{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 16px;z-index:50;pointer-events:none}
+.toast{max-width:520px;padding:12px 16px;border-radius:var(--r-card);background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:500;box-shadow:0 12px 28px rgba(0,0,0,.5);animation:rein .2s ease}
+.toast.bad{background:#2a0e0e;color:#fecaca;border:1px solid rgba(239,68,68,.5)}
+@keyframes rein{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><a class="logo" href="/">MAPQ</a><span class="tag">PC</span><span class="sp"></span><button class="btn sm" id="abmelden" data-a="abmelden" hidden>Abmelden</button></header>
+<main id="main"><div class="laden"><span class="ring" aria-label="Lädt"></span></div></main>
+<div id="toasts" aria-live="polite"></div>
+<script>
+'use strict';
+/* =====================================================================
+   PC fernsteuern
+   - Befehle (aus, neustart, schlafen, sperren) landen in Supabase (Tabelle mapq_pc, SQL: supabase/pc.sql).
+   - Das Hilfsprogramm auf dem PC (pcon/mapq-pc.ps1) fragt alle 5 s nach und führt sie aus.
+   - Einschalten: der Magenta-Router kann kein Wake-on-LAN von außen – optional über eine smarte
+     Steckdose aus „Zuhause“ (Strom kurz aus/an, PC startet über die BIOS-Einstellung).
+   - Anmeldung mit dem Admin-Passwort (Tresor admin-key.json → Postfach-Zugang → Supabase).
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const ICONS = {
+  power: '<path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/>',
+  neustart: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  mond: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  schloss: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  monitor: '<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+  stecker: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  wlan: '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
+  kopie: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  ok: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  db: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
+  terminal: '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+  muell: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+  extern: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3"/>'
+};
+const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+const BEFEHLE = {
+  aus: { name: 'Ausschalten', icon: 'power', text: 'fährt in 10 Sekunden herunter', frage: 'PC jetzt ausschalten? Nicht gespeicherte Arbeit geht verloren.' },
+  neustart: { name: 'Neustart', icon: 'neustart', text: 'startet in 10 Sekunden neu', frage: 'PC jetzt neu starten? Nicht gespeicherte Arbeit geht verloren.' },
+  schlafen: { name: 'Energiesparen', icon: 'mond', text: 'geht in den Energiesparmodus' },
+  sperren: { name: 'Sperren', icon: 'schloss', text: 'ist gesperrt' }
+};
+const PC_ID = 'pc';
+const PC_SQL = "-- PC fernsteuern (mapq.at/pcon) – kann gefahrlos mehrmals ausgeführt werden (auch als Update).\n-- Setzt voraus: Anfragen-Postfach (Funktion mapq_ist_admin).\n-- Befehle geben darf nur der Admin. Das Hilfsprogramm auf dem PC meldet sich mit seinem eigenen\n-- Schlüssel (gespeichert ist nur der SHA-256-Hash) und holt sich dabei den nächsten Befehl ab.\n-- Diese Datei steht auch in pcon/index.html (PC_SQL) – beide gleich halten.\n\ncreate table if not exists public.mapq_pc (\n  id text primary key check (id ~ '^[a-z0-9-]{1,30}$'),\n  erstellt timestamptz not null default now(),\n  name text check (char_length(name) <= 40),\n  token_hash text unique,\n  zuletzt timestamptz,\n  info jsonb,\n  befehl text check (befehl in ('aus', 'neustart', 'schlafen', 'sperren')),\n  befehl_zeit timestamptz,\n  quittiert timestamptz,\n  quittiert_befehl text,\n  steckdose text check (char_length(steckdose) <= 100)\n);\nalter table public.mapq_pc enable row level security;\nrevoke all on public.mapq_pc from anon, authenticated;\n\n-- Übersicht für die Seite (nur Admin, sonst null)\ncreate or replace function public.mapq_pc_status()\nreturns jsonb language sql stable security definer set search_path = ''\nas $$ select case when public.mapq_ist_admin() then jsonb_build_object(\n  'jetzt', now(),\n  'pcs', coalesce((select jsonb_agg(jsonb_build_object(\n      'id', p.id, 'name', p.name, 'zuletzt', p.zuletzt, 'info', p.info,\n      'online', coalesce(p.zuletzt > now() - interval '25 seconds', false),\n      'befehl', case when p.befehl_zeit > now() - interval '2 minutes' then p.befehl end,\n      'befehl_zeit', p.befehl_zeit, 'quittiert', p.quittiert, 'quittiert_befehl', p.quittiert_befehl,\n      'steckdose', p.steckdose, 'verbunden', p.token_hash is not null) order by p.erstellt)\n    from public.mapq_pc p), '[]'::jsonb)) end $$;\nrevoke all on function public.mapq_pc_status() from public, anon;\ngrant execute on function public.mapq_pc_status() to authenticated;\n\n-- Befehl geben (null = zurücknehmen). Ein Befehl gilt 2 Minuten, danach verfällt er.\ncreate or replace function public.mapq_pc_befehl(p_id text, p_befehl text)\nreturns jsonb language plpgsql security definer set search_path = ''\nas $$ begin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  if p_befehl is not null and p_befehl not in ('aus', 'neustart', 'schlafen', 'sperren') then raise exception 'Unbekannter Befehl'; end if;\n  update public.mapq_pc set befehl = p_befehl, befehl_zeit = case when p_befehl is null then null else now() end where id = p_id;\n  if not found then raise exception 'PC nicht gefunden'; end if;\n  return jsonb_build_object('ok', true, 'zeit', now());\nend $$;\nrevoke all on function public.mapq_pc_befehl(text, text) from public, anon;\ngrant execute on function public.mapq_pc_befehl(text, text) to authenticated;\n\n-- Neuer Schlüssel für das Hilfsprogramm (legt den PC an; der alte Schlüssel gilt danach nicht mehr)\ncreate or replace function public.mapq_pc_schluessel(p_id text default 'pc', p_name text default null)\nreturns text language plpgsql security definer set search_path = ''\nas $$\ndeclare t text := replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '');\nbegin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  insert into public.mapq_pc (id, name, token_hash)\n    values (p_id, coalesce(nullif(left(trim(p_name), 40), ''), 'Mein PC'), encode(sha256(convert_to(t, 'UTF8')), 'hex'))\n    on conflict (id) do update set token_hash = excluded.token_hash,\n      name = coalesce(nullif(left(trim(p_name), 40), ''), public.mapq_pc.name), befehl = null, befehl_zeit = null;\n  return t;\nend $$;\nrevoke all on function public.mapq_pc_schluessel(text, text) from public, anon;\ngrant execute on function public.mapq_pc_schluessel(text, text) to authenticated;\n\n-- Name und Steckdose (Gerät aus „Zuhause“, mit der sich der PC einschalten lässt) speichern\ncreate or replace function public.mapq_pc_einstellen(p_id text, p_daten jsonb)\nreturns jsonb language plpgsql security definer set search_path = ''\nas $$ begin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  update public.mapq_pc set\n    name = case when p_daten ? 'name' then coalesce(nullif(left(trim(p_daten->>'name'), 40), ''), name) else name end,\n    steckdose = case when p_daten ? 'steckdose' then nullif(left(p_daten->>'steckdose', 100), '') else steckdose end\n  where id = p_id;\n  if not found then raise exception 'PC nicht gefunden'; end if;\n  return jsonb_build_object('ok', true);\nend $$;\nrevoke all on function public.mapq_pc_einstellen(text, jsonb) from public, anon;\ngrant execute on function public.mapq_pc_einstellen(text, jsonb) to authenticated;\n\ncreate or replace function public.mapq_pc_loeschen(p_id text)\nreturns void language plpgsql security definer set search_path = ''\nas $$ begin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  delete from public.mapq_pc where id = p_id;\nend $$;\nrevoke all on function public.mapq_pc_loeschen(text) from public, anon;\ngrant execute on function public.mapq_pc_loeschen(text) to authenticated;\n\n-- Vom Hilfsprogramm auf dem PC (alle paar Sekunden, ohne Anmeldung, nur mit Schlüssel):\n-- „ich bin an“ + Infos (Name, Netzwerk) melden und den nächsten Befehl abholen (wird dabei quittiert)\ncreate or replace function public.mapq_pc_melden(p_token text, p_info jsonb default null)\nreturns jsonb language plpgsql security definer set search_path = ''\nas $$\ndeclare p public.mapq_pc; b text;\nbegin\n  if p_token is null or char_length(p_token) < 32 or char_length(p_token) > 200 then return jsonb_build_object('ok', false); end if;\n  select * into p from public.mapq_pc where token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex') for update;\n  if not found then return jsonb_build_object('ok', false, 'fehler', 'Unbekannter Schlüssel'); end if;\n  b := case when p.befehl_zeit > now() - interval '2 minutes' then p.befehl end;\n  update public.mapq_pc set\n    zuletzt = now(),\n    info = case when jsonb_typeof(p_info) = 'object' and pg_column_size(p_info) < 4000 then p_info else info end,\n    befehl = null,\n    quittiert = case when b is not null then now() else quittiert end,\n    quittiert_befehl = coalesce(b, quittiert_befehl)\n  where id = p.id;\n  return jsonb_build_object('ok', true, 'befehl', b, 'name', p.name);\nend $$;\nrevoke all on function public.mapq_pc_melden(text, jsonb) from public;\ngrant execute on function public.mapq_pc_melden(text, jsonb) to anon, authenticated;\n\nselect 'Fertig ✓' as ergebnis;\n";
+
+/* ---------- Speicher ---------- */
+const lager = {
+  get(k, s = localStorage) { try { const v = s.getItem('mapq_pc_' + k); return v === null ? null : JSON.parse(v); } catch { return null; } },
+  set(k, v, s = localStorage) { try { s.setItem('mapq_pc_' + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem('mapq_pc_' + k); sessionStorage.removeItem('mapq_pc_' + k); } catch {} }
+};
+const S = { cfg: null, sitzung: null, daten: null, offset: 0, sqlFehlt: false, kein: false, fehler: null, gesendet: null, token: null, skript: null, geraete: null, smartFehler: null, strom: null, timer: null, wolSig: '' };
+
+/* ---------- kleine Helfer ---------- */
+function toast(t, art) {
+  const el = document.createElement('div'); el.className = 'toast' + (art === 'bad' ? ' bad' : ''); el.textContent = t;
+  $('#toasts').appendChild(el); setTimeout(() => el.remove(), art === 'bad' ? 6000 : 3500);
+}
+const warte = ms => new Promise(r => setTimeout(r, ms));
+const jetzt = () => Date.now() + S.offset;
+function vor(iso) {
+  if (!iso) return '';
+  const s = Math.max(0, Math.round((jetzt() - Date.parse(iso)) / 1000));
+  if (s < 60) return s < 10 ? 'gerade eben' : `vor ${s} s`;
+  if (s < 3600) return `vor ${Math.round(s / 60)} Min.`;
+  if (s < 86400) return `vor ${Math.round(s / 3600)} Std.`;
+  const d = Math.round(s / 86400); return d === 1 ? 'gestern' : `vor ${d} Tagen`;
+}
+function dauer(iso) {
+  const m = Math.max(0, Math.round((jetzt() - Date.parse(iso)) / 60000));
+  if (m < 60) return `${m} Min.`;
+  const h = Math.floor(m / 60); if (h < 48) return `${h} Std.${m % 60 && h < 10 ? ' ' + (m % 60) + ' Min.' : ''}`;
+  return `${Math.floor(h / 24)} Tagen`;
+}
+async function kopieren(text, was) {
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  toast(`${was} kopiert.`);
+}
+
+/* ---------- Supabase ---------- */
+async function konfig() {
+  const c = await fetch('/content.json', { cache: 'no-cache' }).then(r => r.json());
+  if (!c?.inbox?.url || !c.inbox.key) throw new Error('Supabase ist noch nicht verbunden – im Admin-Panel unter Einstellungen das Postfach einrichten.');
+  return c.inbox;
+}
+function sitzungSpeichern(j, bleiben) {
+  S.sitzung = { a: j.access_token, r: j.refresh_token, bis: Date.now() + (j.expires_in || 3600) * 1000 - 60000, bleiben: !!bleiben };
+  lager.del('sitzung'); lager.set('sitzung', S.sitzung, bleiben ? localStorage : sessionStorage);
+}
+async function token(grant, body) {
+  const r = await fetch(S.cfg.url + '/auth/v1/token?grant_type=' + grant, { method: 'POST', headers: { apikey: S.cfg.key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.access_token) throw Object.assign(new Error(j.error_description || j.msg || 'Anmeldung ging nicht.'), { status: r.status });
+  return j;
+}
+async function erneuern() {
+  try { sitzungSpeichern(await token('refresh_token', { refresh_token: S.sitzung.r }), S.sitzung.bleiben); }
+  catch (e) { if (e.status >= 400 && e.status < 500) { abmelden(true); throw Object.assign(new Error('Bitte neu anmelden.'), { still: true }); } throw e; }
+}
+async function api(pfad, body, nochmal = true) {
+  if (S.sitzung.bis < Date.now()) await erneuern();
+  const r = await fetch(S.cfg.url + pfad, { method: 'POST', headers: { apikey: S.cfg.key, Authorization: 'Bearer ' + S.sitzung.a, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+  if (r.status === 401 && nochmal && pfad.startsWith('/rest/')) { await erneuern(); return api(pfad, body, false); }
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw Object.assign(new Error(j?.message || j?.error || ('Fehler ' + r.status)), { status: r.status, code: j?.code });
+  return j;
+}
+const rpc = (name, args) => api('/rest/v1/rpc/' + name, args);
+async function smart(body) {
+  const j = await api('/functions/v1/mapq-push', body);
+  if (j?.fehler?.length) throw new Error(j.fehler.join(' · '));
+  return j;
+}
+
+/* ---------- Anmeldung ---------- */
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function tresorOeffnen(file, passwort) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(passwort), 'PBKDF2', false, ['deriveBits']);
+  const raw = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64d(file.salt), iterations: file.iter || 600000 }, base, 256);
+  const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(file.iv) }, key, b64d(file.data));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+// Ist das Admin-Panel auf diesem Gerät dauerhaft angemeldet? Dann geht es ohne Passwort.
+function panelZugang() {
+  try { const a = JSON.parse(localStorage.getItem('mapq_admin_auth')); const sb = a?.vault?.sb; return sb?.email && sb.password ? sb : null; } catch { return null; }
+}
+async function mitPasswort(passwort, bleiben) {
+  const f = await fetch('/admin-key.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null);
+  if (!f) throw new Error('Keine Verbindung zu mapq.at – versuch es nochmal.');
+  let vault;
+  try { vault = await tresorOeffnen(f, passwort); } catch { throw new Error('Das Passwort stimmt nicht.'); }
+  if (!vault.sb?.email || !vault.sb.password) throw new Error('Im Admin-Panel ist der Postfach-Zugang nicht gespeichert (Einstellungen → Postfach).');
+  sitzungSpeichern(await token('password', { email: vault.sb.email, password: vault.sb.password }), bleiben);
+}
+function abmelden(still) {
+  clearInterval(S.timer); S.timer = null; lager.del('sitzung'); S.sitzung = null; S.daten = null; S.token = null;
+  $('#abmelden').hidden = true; zeigeLogin(); if (!still) toast('Abgemeldet.');
+}
+function zeigeLogin(fehler = '') {
+  $('#main').innerHTML = `<h1>PC</h1>
+    <form class="card" id="login" autocomplete="on">
+      <h2>Anmelden</h2>
+      <p class="muted small" style="margin:0 0 16px">Mit deinem Passwort vom Admin-Panel (mapq.at/admin.html).</p>
+      <input type="text" name="username" value="mapq Admin" autocomplete="username" hidden>
+      <div class="field"><label for="pw">Passwort</label><input class="input" id="pw" type="password" autocomplete="current-password" required></div>
+      <label class="check"><input type="checkbox" id="bleiben" checked> Auf diesem Gerät angemeldet bleiben</label>
+      <p class="err" id="loginErr" role="alert">${esc(fehler)}</p>
+      <button class="btn btn-primary w100" id="loginBtn">Anmelden</button>
+    </form>`;
+  setTimeout(() => $('#pw')?.focus(), 50);
+}
+async function login(e) {
+  e.preventDefault();
+  const btn = $('#loginBtn'), err = $('#loginErr');
+  btn.disabled = true; btn.textContent = 'Prüfe …'; err.textContent = '';
+  try { await mitPasswort($('#pw').value, $('#bleiben').checked); appStarten(); }
+  catch (x) { err.textContent = x.message; btn.disabled = false; btn.textContent = 'Anmelden'; }
+}
+
+/* ---------- Daten ---------- */
+const pc = () => (S.daten?.pcs || []).find(p => p.id === PC_ID) || null;
+async function laden() {
+  try {
+    const j = await rpc('mapq_pc_status', {});
+    if (j === null) { S.kein = true; zeichne(); return; }
+    S.offset = Date.parse(j.jetzt) - Date.now();
+    S.daten = j; S.sqlFehlt = false; S.fehler = null;
+  } catch (e) {
+    if (e.still) return;
+    if (e.status === 404 || e.code === 'PGRST202') S.sqlFehlt = true; else S.fehler = e.message;
+  }
+  zeichne();
+}
+function appStarten() {
+  $('#abmelden').hidden = false;
+  $('#main').innerHTML = `<h1>PC</h1><div id="statusBox"><div class="laden"><span class="ring"></span></div></div><div id="setupBox"></div>`;
+  S.daten = null; S.wolSig = '';
+  laden();
+  clearInterval(S.timer);
+  S.timer = setInterval(() => { if (!document.hidden && S.sitzung) laden(); }, 3000);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.sitzung && S.timer) laden(); });
+
+/* ---------- Anzeige ---------- */
+function zustand(p) {
+  // → [Klasse, Text, Untertext]
+  const q = p.quittiert && Date.parse(p.quittiert), seit = q ? (jetzt() - q) / 1000 : 1e9, qb = p.quittiert_befehl;
+  if (S.strom) return ['warte', S.strom.phase === 'startet' ? 'Startet …' : 'Strom wird kurz unterbrochen …', S.strom.phase === 'startet' ? 'Der PC meldet sich, sobald Windows läuft.' : 'Danach startet der PC von selbst.'];
+  if (!p.verbunden) return ['', 'Noch nicht verbunden', 'Richte unten das Hilfsprogramm auf dem PC ein.'];
+  if (!p.zuletzt) return ['', 'Wartet auf den PC', 'Das Hilfsprogramm hat sich noch nicht gemeldet.'];
+  if (p.online) {
+    if (qb === 'aus' && seit < 90) return ['warte', 'Fährt herunter …', 'Der Befehl ist angekommen.'];
+    if (qb === 'neustart' && seit < 90) return ['warte', 'Startet neu …', 'Der Befehl ist angekommen.'];
+    if (qb === 'schlafen' && seit < 30) return ['warte', 'Geht schlafen …', 'Der Befehl ist angekommen.'];
+    return ['an', 'An', p.info?.seit ? `Läuft seit ${dauer(p.info.seit)}` : 'Meldet sich gerade'];
+  }
+  if (qb === 'neustart' && seit < 240) return ['warte', 'Startet neu …', 'Der PC meldet sich gleich wieder.'];
+  if (qb === 'aus' && q >= Date.parse(p.zuletzt) - 30000) return ['', 'Aus', `Ausgeschaltet ${vor(p.quittiert)}`];
+  if (qb === 'schlafen' && q >= Date.parse(p.zuletzt) - 30000) return ['', 'Energiesparmodus', `Eingeschlafen ${vor(p.quittiert)}`];
+  return ['', 'Aus oder offline', `Zuletzt gemeldet ${vor(p.zuletzt)}`];
+}
+function zeichne() {
+  const box = $('#statusBox'); if (!box) return;
+  if (S.kein) { box.innerHTML = `<div class="card"><h2>Kein Zugriff</h2><p class="muted" style="margin:0">Dieses Konto ist nicht das Admin-Konto.</p></div>`; return; }
+  if (S.sqlFehlt) { box.innerHTML = ''; zeichneSetup(true); return; }
+  if (!S.daten) { box.innerHTML = S.fehler ? `<div class="card"><h2>Keine Verbindung</h2><p class="muted" style="margin:0">${esc(S.fehler)}</p></div>` : `<div class="laden"><span class="ring"></span></div>`; return; }
+  const p = pc();
+  if (!p) { box.innerHTML = `<div class="card"><div class="status"><span class="pcicon">${ic('monitor', 30)}<i class="dot"></i></span><div class="t"><div class="name">Noch kein PC verbunden</div><div class="sub">Zuerst unten „Einrichten“ durchgehen – dauert 2 Minuten.</div></div></div></div>`; zeichneSetup(); return; }
+  const [kl, txt, sub] = zustand(p), an = p.online && kl === 'an';
+  const offen = p.befehl && BEFEHLE[p.befehl];
+  let meldung = '';
+  if (offen) meldung = `<div class="meldung">${ic(BEFEHLE[p.befehl].icon, 18)}<span class="grow">„${BEFEHLE[p.befehl].name}“ ist unterwegs – der PC holt ihn in ein paar Sekunden ab.</span><button class="btn sm" data-a="zuruecknehmen">Zurücknehmen</button></div>`;
+  else if (S.gesendet && p.quittiert && Date.parse(p.quittiert) >= S.gesendet.zeit - 2000 && p.quittiert_befehl === S.gesendet.befehl && jetzt() - Date.parse(p.quittiert) < 60000)
+    meldung = `<div class="meldung">${ic('ok', 18)}<span class="grow">Angekommen – der PC ${BEFEHLE[p.quittiert_befehl].text}.</span></div>`;
+  else if (S.fehler) meldung = `<div class="meldung">${ic('x', 18)}<span class="grow">Gerade keine Verbindung: ${esc(S.fehler)}</span></div>`;
+  const knopf = k => `<button class="akt ${k === 'aus' ? 'rot' : ''}" data-a="befehl" data-b="${k}" ${an && !offen ? '' : 'disabled'}>${ic(BEFEHLE[k].icon, 22)}<span>${BEFEHLE[k].name}</span></button>`;
+  const stecker = p.steckdose && !p.online && !S.strom;
+  box.innerHTML = `<div class="card"><div class="status ${kl}"><span class="pcicon">${ic('monitor', 30)}<i class="dot"></i></span>
+      <div class="t"><div class="name">${esc(p.name || 'Mein PC')}</div><div class="zust">${esc(txt)}</div><div class="sub">${esc(sub)}</div></div></div>${meldung}</div>
+    <div class="aktionen">
+      ${stecker ? `<button class="akt gross" data-a="einschalten">${ic('power', 24)}<span>Einschalten<small>Über die Steckdose – Strom kurz aus und wieder an</small></span></button>` : ''}
+      ${knopf('aus')}${knopf('neustart')}${knopf('schlafen')}${knopf('sperren')}
+    </div>
+    ${!p.online && !p.steckdose && p.zuletzt && !S.strom ? `<p class="muted small" style="margin:12px 2px 0">Einschalten geht von hier nur über eine smarte Steckdose oder zuhause per Wake-on-LAN-App – siehe „Einschalten“ unten.</p>` : ''}`;
+  zeichneSetup();
+}
+
+/* ---------- Einrichten ---------- */
+const sqlLink = () => { const ref = (S.cfg.url.match(/^https:\/\/([a-z0-9]+)\.supabase\.co/) || [])[1]; return ref ? `https://supabase.com/dashboard/project/${ref}/sql/new` : 'https://supabase.com/dashboard'; };
+const PS = '$env:SystemRoot\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+const STOPP = `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*mapq-pc.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`;
+function installBefehl(skript) {
+  return [
+    '# mapq PC einrichten – in PowerShell einfügen und Enter drücken',
+    '$f = "$env:LOCALAPPDATA\\mapq-pc\\mapq-pc.ps1"',
+    `$ps = "${PS}"`,
+    'New-Item -ItemType Directory -Force (Split-Path $f) | Out-Null',
+    STOPP,
+    "@'", skript.replace(/\r\n/g, '\n').trimEnd(), "'@ | Set-Content -Path $f -Encoding UTF8",
+    '$a = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$f`""',
+    "$l = (New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Startup') + '\\mapq PC.lnk')",
+    '$l.TargetPath = $ps; $l.Arguments = $a; $l.WindowStyle = 7; $l.Save()',
+    'Start-Process $ps $a -WindowStyle Hidden',
+    "'Fertig: mapq PC laeuft. Schau auf mapq.at/pcon'"
+  ].join('\n') + '\n';
+}
+const ENTFERNEN = [STOPP, `Remove-Item ([Environment]::GetFolderPath('Startup') + '\\mapq PC.lnk'), "$env:LOCALAPPDATA\\mapq-pc" -Recurse -Force -ErrorAction SilentlyContinue`, "'mapq PC ist entfernt.'"].join('\n') + '\n';
+function broadcast(ip, praefix) {
+  const t = String(ip || '').split('.').map(Number); if (t.length !== 4 || t.some(x => !(x >= 0 && x <= 255)) || !(praefix >= 8 && praefix <= 30)) return '';
+  const n = ((t[0] << 24) >>> 0) + (t[1] << 16) + (t[2] << 8) + t[3], m = praefix === 0 ? 0 : (~0 << (32 - praefix)) >>> 0, b = ((n & m) | (~m >>> 0)) >>> 0;
+  return [b >>> 24, (b >>> 16) & 255, (b >>> 8) & 255, b & 255].join('.');
+}
+function zeichneSetup(nurSql) {
+  const box = $('#setupBox'); if (!box) return;
+  const p = pc(), sig = JSON.stringify([nurSql, !!p, p?.verbunden, !!p?.zuletzt, p?.online, p?.name, p?.steckdose, p?.info?.mac, p?.info?.ip, S.token, S.geraete, S.smartFehler, S.sqlFehlt]);
+  if (sig === S.wolSig) return; // nur neu zeichnen, wenn sich etwas Wichtiges geändert hat (Eingaben bleiben stehen)
+  const offenVorher = $('#einrichten')?.open, offenWol = $('#einschaltenBox')?.open;
+  S.wolSig = sig;
+  if (nurSql) {
+    box.innerHTML = `<div class="card"><h2>Einmal einrichten</h2><p class="muted small" style="margin:0 0 4px">In Supabase fehlt noch der Teil für die PC-Steuerung.</p>
+      <div class="schritt"><h3><span class="nr">1</span>In Supabase einfügen</h3>
+        <ol><li><b>SQL kopieren</b> und den <b>SQL-Editor</b> öffnen.</li><li>Einfügen, auf <b>Run</b> tippen – unten steht „Fertig ✓“.</li><li>Diese Seite neu laden.</li></ol>
+        <div class="row"><button class="btn btn-primary" data-a="sql-kopieren">${ic('kopie', 17)} SQL kopieren</button><a class="btn" href="${esc(sqlLink())}" target="_blank" rel="noopener">${ic('extern', 17)} SQL-Editor</a><button class="btn" data-a="neu-laden">Neu laden</button></div></div></div>`;
+    return;
+  }
+  const verbunden = !!p?.zuletzt, mac = p?.info?.mac, ip = p?.info?.ip, bc = broadcast(ip, p?.info?.praefix);
+  const geraete = (S.geraete || []).filter(g => g.art === 'schalter');
+  box.innerHTML = `
+  <details class="card" id="einrichten" ${offenVorher ?? !verbunden ? 'open' : ''}><summary>${ic('terminal', 20)} Einrichten${verbunden ? ' <span class="muted small">· verbunden</span>' : ''}${ic('chev', 18).replace('class="ic"', 'class="ic chev"')}</summary><div class="inhalt">
+    <div class="schritt"><h3><span class="nr ${p?.verbunden ? 'ok' : ''}">1</span>Schlüssel für den PC</h3>
+      <div class="field"><label for="pcName">Name</label><input class="input" id="pcName" maxlength="40" value="${esc(p?.name || '')}" placeholder="z. B. Gaming-PC"></div>
+      ${S.token ? '' : `<p>${p?.verbunden ? 'Ein neuer Schlüssel macht den alten ungültig – dann den Befehl in Schritt 2 auf dem PC nochmal ausführen.' : 'Der PC bekommt einen eigenen Schlüssel. Damit kann er sich nur melden und Befehle abholen – sonst nichts.'}</p>`}
+      <div class="row"><button class="btn ${p?.verbunden && !S.token ? '' : 'btn-primary'}" data-a="schluessel">${S.token ? 'Neuer Schlüssel' : p?.verbunden ? 'Neuen Schlüssel erstellen' : 'Schlüssel erstellen'}</button>${p ? '<button class="btn" data-a="name-speichern">Name speichern</button>' : ''}</div></div>
+    <div class="schritt"><h3><span class="nr ${verbunden ? 'ok' : ''}">2</span>Auf dem PC einfügen</h3>
+      ${S.token ? `<ol><li>Auf dem PC: <b>Start</b> → „<b>PowerShell</b>“ tippen → öffnen (keine Admin-Rechte nötig).</li><li><b>Befehl kopieren</b>, in PowerShell einfügen (Rechtsklick oder Strg+V) und <b>Enter</b> drücken. Fragt Windows wegen mehrerer Zeilen: „Trotzdem einfügen“.</li><li>Nach ein paar Sekunden steht oben „<b>An</b>“. Das Hilfsprogramm startet ab jetzt bei jeder Anmeldung von selbst.</li></ol>
+        <div class="row" style="margin-bottom:10px"><button class="btn btn-primary" data-a="install-kopieren">${ic('kopie', 17)} Befehl kopieren</button></div>
+        <details><summary class="muted small">Befehl ansehen</summary><pre class="code">${esc(installBefehl(S.skript || ''))}</pre></details>
+        <p class="small" style="margin:10px 0 0">Der Schlüssel steht nur jetzt hier. Lädst du die Seite neu, brauchst du einen neuen.</p>`
+        : `<p>${verbunden ? 'Das Hilfsprogramm läuft und meldet sich alle 5 Sekunden.' : 'Erst den Schlüssel erstellen – dann steht hier der Befehl zum Einfügen.'}</p>`}</div>
+    <div class="schritt"><h3><span class="nr">3</span>Entfernen</h3>
+      <p>Auf dem PC in PowerShell einfügen – das Hilfsprogramm und der Autostart-Eintrag sind dann weg.</p>
+      <div class="row"><button class="btn" data-a="entfernen-kopieren">${ic('kopie', 17)} Befehl zum Entfernen</button>${p ? `<button class="btn btn-danger" data-a="pc-loeschen">${ic('muell', 17)} PC von der Seite löschen</button>` : ''}</div></div>
+  </div></details>
+  ${p ? `<details class="card" id="einschaltenBox" ${offenWol ? 'open' : ''}><summary>${ic('power', 20)} Einschalten${p.steckdose ? ' <span class="muted small">· über Steckdose</span>' : ''}${ic('chev', 18).replace('class="ic"', 'class="ic chev"')}</summary><div class="inhalt">
+    <div class="schritt"><h3>${ic('stecker', 18)} Über eine smarte Steckdose</h3>
+      <p>Hängt der PC an einer Shelly- oder Smart-Life-Steckdose aus „Zuhause“, schaltet die Seite den Strom kurz aus und wieder an. Damit der PC dann startet, im <b>BIOS</b> „<b>Restore on AC Power Loss</b>“ (auch „AC Back“ / „Power On after Power Fail“) auf <b>Power On</b> stellen.</p>
+      ${S.smartFehler ? `<p class="small">Smart Home: ${esc(S.smartFehler)}</p>` : S.geraete === null ? '<p class="small">Lade Steckdosen …</p>'
+        : geraete.length ? `<div class="field"><label for="steckdose">Steckdose für den PC</label><select class="input" id="steckdose"><option value="">Keine</option>${geraete.map(g => `<option value="${esc(g.id)}" ${g.id === p.steckdose ? 'selected' : ''}>${esc(g.name)}${g.raum ? ' · ' + esc(g.raum) : ''}</option>`).join('')}</select></div>`
+        : '<p class="small">In „Zuhause“ ist keine Steckdose verbunden.</p>'}
+      <p class="small" style="margin:0">Nur wenn der PC aus ist – laufend würde ihn das hart abschalten. Deshalb gibt es den Knopf erst, wenn der PC aus ist.</p></div>
+    <div class="schritt"><h3>${ic('wlan', 18)} Zuhause im WLAN: Wake-on-LAN</h3>
+      <p>Mit einer Wake-on-LAN-App am Handy (z. B. „Wake On Lan“ im App Store) weckst du den PC, wenn du im selben Netz bist. Dein Magenta-Router kann das nicht von außen.</p>
+      ${mac ? `<dl class="kv"><dt>MAC-Adresse</dt><dd><code>${esc(mac)}</code></dd>${ip ? `<dt>IP-Adresse</dt><dd>${esc(ip)}</dd>` : ''}${bc ? `<dt>Broadcast</dt><dd>${esc(bc)}</dd>` : ''}<dt>Port</dt><dd>9</dd>${p.info?.kabel === false ? '<dt>Achtung</dt><dd>Das ist WLAN – Wake-on-LAN geht nur über Kabel.</dd>' : ''}</dl>
+        <div class="row" style="margin-bottom:12px"><button class="btn sm" data-a="mac-kopieren">${ic('kopie', 15)} MAC kopieren</button></div>`
+        : '<p class="small">Die MAC-Adresse steht hier, sobald sich das Hilfsprogramm gemeldet hat.</p>'}
+      <ol><li><b>BIOS</b>: „Wake on LAN“ bzw. „Power On by PCI-E“ einschalten.</li><li><b>Windows</b>: Geräte-Manager → Netzwerkadapter → Eigenschaften → Energieverwaltung: „Gerät kann den Computer aus dem Standbymodus aktivieren“ und „Nur Magic Packet …“ anhaken.</li><li><b>Schnellstart aus</b>: Systemsteuerung → Energieoptionen → „Auswählen, was beim Drücken des Netzschalters geschehen soll“.</li></ol></div>
+  </div></details>` : ''}`;
+  const sel = $('#steckdose'); if (sel) sel.onchange = () => steckdoseSpeichern(sel.value);
+  if (p && S.geraete === null && !S.smartLaedt) ladeSteckdosen();
+}
+async function ladeSteckdosen() {
+  S.smartLaedt = true;
+  try {
+    const j = await smart({ aktion: 'smart-status' });
+    S.geraete = (j.geraete || []).map(g => ({ ...g, name: j.einst?.[g.id]?.name || g.name, raum: j.einst?.[g.id]?.raum || '' }));
+    S.smartFehler = null;
+  } catch (e) { if (e.still) return; S.geraete = []; S.smartFehler = e.status === 401 ? 'nicht erreichbar (Funktion mapq-push).' : e.message; }
+  S.smartLaedt = false; zeichneSetup();
+}
+
+/* ---------- Aktionen ---------- */
+async function befehl(b) {
+  const p = pc(); if (!p) return;
+  if (BEFEHLE[b].frage && !confirm(BEFEHLE[b].frage)) return;
+  try { await rpc('mapq_pc_befehl', { p_id: PC_ID, p_befehl: b }); S.gesendet = { befehl: b, zeit: jetzt() }; await laden(); }
+  catch (e) { if (!e.still) toast('Hat nicht geklappt: ' + e.message, 'bad'); }
+}
+async function zuruecknehmen() {
+  try { await rpc('mapq_pc_befehl', { p_id: PC_ID, p_befehl: null }); S.gesendet = null; toast('Zurückgenommen.'); await laden(); }
+  catch (e) { if (!e.still) toast(e.message, 'bad'); }
+}
+async function schluessel() {
+  const p = pc();
+  if (p?.verbunden && p.zuletzt && !confirm('Neuen Schlüssel erstellen? Das Hilfsprogramm auf dem PC hört dann auf, bis du den neuen Befehl dort ausführst.')) return;
+  try {
+    const name = $('#pcName')?.value.trim() || '';
+    const [t, vorlage] = await Promise.all([rpc('mapq_pc_schluessel', { p_id: PC_ID, p_name: name || null }), fetch('/pcon/mapq-pc.ps1', { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error('Vorlage fehlt.'); return r.text(); })]);
+    S.token = t;
+    S.skript = vorlage.replace('__URL__', () => S.cfg.url).replace('__KEY__', () => S.cfg.key).replace('__TOKEN__', () => t);
+    if ($('#einrichten')) $('#einrichten').open = true;
+    await laden(); toast('Schlüssel erstellt – jetzt den Befehl auf dem PC einfügen.');
+  } catch (e) { if (!e.still) toast('Hat nicht geklappt: ' + e.message, 'bad'); }
+}
+async function nameSpeichern() {
+  try { await rpc('mapq_pc_einstellen', { p_id: PC_ID, p_daten: { name: $('#pcName').value.trim() } }); toast('Gespeichert.'); await laden(); }
+  catch (e) { if (!e.still) toast(e.message, 'bad'); }
+}
+async function steckdoseSpeichern(id) {
+  try { await rpc('mapq_pc_einstellen', { p_id: PC_ID, p_daten: { steckdose: id || null } }); toast(id ? 'Steckdose gespeichert.' : 'Keine Steckdose.'); await laden(); }
+  catch (e) { if (!e.still) toast(e.message, 'bad'); }
+}
+async function pcLoeschen() {
+  if (!confirm('PC von der Seite löschen? Das Hilfsprogramm auf dem PC kann sich dann nicht mehr melden – entferne es dort mit dem Befehl zum Entfernen.')) return;
+  try { await rpc('mapq_pc_loeschen', { p_id: PC_ID }); S.token = null; S.skript = null; toast('Gelöscht.'); await laden(); }
+  catch (e) { if (!e.still) toast(e.message, 'bad'); }
+}
+async function einschalten() {
+  const p = pc(); if (!p?.steckdose) return;
+  if (p.online) { toast('Der PC ist schon an.'); return; }
+  if (!confirm('Strom an der Steckdose kurz aus- und wieder einschalten? Der PC startet nur, wenn im BIOS „Restore on AC Power Loss“ auf „Power On“ steht.')) return;
+  S.strom = { phase: 'aus' }; zeichne();
+  try {
+    await smart({ aktion: 'smart-set', id: p.steckdose, befehl: { an: false } });
+    await warte(10000); // Netzteil kurz ganz ohne Strom lassen
+    S.strom.phase = 'an';
+    await smart({ aktion: 'smart-set', id: p.steckdose, befehl: { an: true } });
+    S.strom = { phase: 'startet' }; zeichne(); toast('Strom ist wieder an – der PC startet.');
+    setTimeout(() => { S.strom = null; zeichne(); }, 120000);
+  } catch (e) { S.strom = null; zeichne(); if (!e.still) toast('Steckdose: ' + e.message, 'bad'); }
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]'); if (!el) return;
+  const a = el.dataset.a, p = pc();
+  ({
+    abmelden: () => abmelden(),
+    befehl: () => befehl(el.dataset.b),
+    zuruecknehmen,
+    einschalten,
+    schluessel,
+    'name-speichern': nameSpeichern,
+    'pc-loeschen': pcLoeschen,
+    'sql-kopieren': () => kopieren(PC_SQL, 'SQL'),
+    'neu-laden': () => location.reload(),
+    'install-kopieren': () => kopieren(installBefehl(S.skript || ''), 'Befehl'),
+    'entfernen-kopieren': () => kopieren(ENTFERNEN, 'Befehl zum Entfernen'),
+    'mac-kopieren': () => p?.info?.mac && kopieren(p.info.mac, 'MAC-Adresse')
+  })[a]?.();
+});
+document.addEventListener('submit', e => { if (e.target.id === 'login') login(e); });
+
+(async function start() {
+  try { S.cfg = await konfig(); }
+  catch (e) { $('#main').innerHTML = `<h1>PC</h1><div class="card"><h2>Noch nicht bereit</h2><p class="muted" style="margin:0">${esc(e.message)}</p></div>`; return; }
+  S.sitzung = lager.get('sitzung') || lager.get('sitzung', sessionStorage);
+  if (!S.sitzung) {
+    const p = panelZugang();
+    if (p) { try { sitzungSpeichern(await token('password', { email: p.email, password: p.password }), true); } catch {} }
+  }
+  if (S.sitzung) appStarten(); else zeigeLogin();
+})();
+</script>
+</body>
+</html>
