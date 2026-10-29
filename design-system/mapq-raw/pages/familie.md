@@ -8,3 +8,4 @@ Geht MASTER.md vor. Private App für Matteos Familie, gewünscht im Stil der Hom
 - Personen haben feste Farben (aus dem Namen berechnet), Avatar = farbiger Kreis mit Anfangsbuchstabe.
 - Überschriften Archivo (font-stretch 75 %, 800), Text Space Grotesk – wie mapq.at, aber Titel in normaler Schreibweise statt Versalien.
 - Tableiste unten mit „Pill“-Hervorhebung in der Bereichsfarbe.
+- Zuhause (Smart Home): Gerätekacheln wie die Mushroom-Entity-Cards – Symbol links (Tipp = ein/aus), Name und Zustand rechts (Tipp = Details). Aus = grau, Licht an = Amber oder die echte Lichtfarbe, Steckdose an = Blau, Rollladen offen = Lila, Sensor = Himmelblau. Helligkeit als dünner Balken unten in der Kachel; im Dialog große runde Schieberegler (50 px hoch).

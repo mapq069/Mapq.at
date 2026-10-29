@@ -7,9 +7,12 @@
 //  • vom Panel als Test: Header "Authorization: Bearer <Login-Token>" + "apikey" – nur für den Admin
 //  • vom Panel { aktion: "familie-passwort", passwort } – legt das Familien-Konto an bzw. ändert sein Passwort (nur Admin)
 //  • von der Familien-App { aktion: "familie-test", endpoint } – Test an dieses eine Gerät (nur Familien-Konto)
+//  • von der Familien-App { aktion: "smart-…" } – Smart Home (Govee, Shelly, Smart Life / Tuya), siehe smart.ts
 //
 // Nur Standard-WebCrypto: VAPID (RFC 8292) und aes128gcm-Verschlüsselung (RFC 8291 / RFC 8188).
 // In Supabase mit ausgeschalteter „JWT-Verifizierung“ bereitstellen – die Prüfung passiert hier.
+
+import { Fehler, smartAktion } from "./smart.ts?v=1";
 
 const te = new TextEncoder();
 
@@ -135,7 +138,7 @@ async function handler(req: Request): Promise<Response> {
   };
 
   try {
-    const rows: { schluessel: string; wert: string }[] = await db("mapq_einstellungen?select=schluessel,wert");
+    const rows: { schluessel: string; wert: string }[] = await db("mapq_einstellungen?select=schluessel,wert&schluessel=not.like.smart_cache:*");
     const s = Object.fromEntries(rows.map((r) => [r.schluessel, r.wert]));
     const data = await req.json().catch(() => ({}));
     let msg: Nachricht;
@@ -166,6 +169,15 @@ async function handler(req: Request): Promise<Response> {
     } else if (data.aktion === "familie-passwort") {
       if (!(await rolle("mapq_ist_admin"))) return json({ error: "Kein Zugriff" }, 401);
       return json(await familienPasswort(String(data.passwort ?? ""), s));
+    } else if (typeof data.aktion === "string" && data.aktion.startsWith("smart-")) {
+      if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
+      try {
+        return json(await smartAktion(data, { db, s }));
+      } catch (e) {
+        if (e instanceof Fehler) return json({ error: e.message }, e.status);
+        console.error("Smart Home", e);
+        return json({ error: "Smart Home: " + (e as Error).message }, 500);
+      }
     } else if (data.aktion === "familie-test") {
       if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
       tabelle = "familie_abos";

@@ -455,6 +455,67 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 .prof .t b{display:block;font-size:20px;font-weight:700}
 .prof .t small{color:var(--muted);font-size:13px}
 .sheet-wrap{z-index:75}
+/* ---------- Zuhause: Smart Home (Mushroom-Kacheln) ---------- */
+.sec-h{display:flex;align-items:center;gap:10px;margin:18px 4px 10px}
+.sec-h b{font-size:16px;font-weight:600}
+.sec-h small{flex:1;min-width:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.devs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(min-width:600px){.devs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.dev{position:relative;display:flex;align-items:center;gap:10px;min-height:68px;padding:0 10px 0 12px;border-radius:var(--r);background:var(--card);overflow:hidden;transition:opacity var(--ease)}
+.dev.wide{grid-column:1/-1}
+.dev>.shape{width:44px;height:44px;border:0;padding:0;transition:background var(--ease),color var(--ease),transform var(--ease);-webkit-tap-highlight-color:transparent}
+.dev>.shape:active{transform:scale(.9)}
+.dev-t{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:1px;border:0;background:none;padding:10px 0;text-align:left;color:var(--text);-webkit-tap-highlight-color:transparent}
+.dev-t b{font-size:14.5px;font-weight:600;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere;hyphens:auto}
+.dev-t small{color:var(--muted);font-size:12.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dev-bar{position:absolute;left:0;bottom:0;height:3px;background:var(--c);opacity:.85;transition:width .3s ease}
+.dev-cv{display:flex;gap:6px;flex:none}
+.dev-cv button{width:38px;height:38px;border-radius:50%;border:0;background:var(--card-2);color:var(--text);display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+.dev-cv button:active{transform:scale(.92)}
+.dev button[disabled]{opacity:.45;pointer-events:none}
+.dev.offline{opacity:.6}
+.dev.hid{opacity:.45}
+.dev.busy>.shape{animation:puls 1s ease-in-out infinite}
+@keyframes puls{50%{opacity:.4}}
+.dchip.busy .ic{animation:spin .8s linear infinite}
+.sheet-h h3 small{display:block;margin-top:5px;font-family:var(--font-b);font-stretch:100%;font-size:13.5px;font-weight:500;color:var(--muted);letter-spacing:0}
+.sheet-h .switch{margin-right:2px}
+.ctl{margin-bottom:20px}
+.ctl-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 8px;font-size:13px;font-weight:600;color:var(--muted)}
+.ctl-h b{color:var(--text);font-size:14px;font-variant-numeric:tabular-nums}
+.ctl-f{display:flex;justify-content:space-between;margin:6px 2px 0;font-size:12px;color:var(--dim)}
+.rng{-webkit-appearance:none;appearance:none;display:block;width:100%;height:50px;margin:0;border-radius:16px;background:linear-gradient(90deg,var(--c,#FFC107) 0 var(--p,50%),var(--card-2) var(--p,50%) 100%);outline:none;cursor:pointer}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:8px;height:30px;border-radius:4px;background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+.rng::-moz-range-thumb{width:8px;height:30px;border:0;border-radius:4px;background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+.rng:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+.rng.kel{background:linear-gradient(90deg,#FF9F43,#FFD8A8 40%,#F8F9FA 62%,#B9DCFF)}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.swatches button,.sw-custom{position:relative;width:40px;height:40px;border-radius:50%;border:3px solid transparent;padding:0;background:var(--sw);background-clip:padding-box;-webkit-tap-highlight-color:transparent}
+.swatches button.on{border-color:var(--text);box-shadow:inset 0 0 0 2px var(--card)}
+.sw-custom{display:block;overflow:hidden;background:conic-gradient(#ff3b30,#ffcc00,#34c759,#00c7be,#007aff,#af52de,#ff2d55,#ff3b30)}
+.sw-custom input{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);opacity:0;border:0;padding:0;cursor:pointer}
+.szn{display:flex;flex-wrap:wrap;gap:8px;max-height:236px;overflow:auto;padding:2px;overscroll-behavior:contain}
+.szn button{height:36px;padding:0 14px;border-radius:18px;border:0;background:var(--card-2);color:var(--text);font-size:13.5px;font-weight:600}
+.szn button.on{background:var(--cb);color:var(--c)}
+.cv-big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.cv-big button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px;border:0;border-radius:var(--r-sm);background:var(--card-2);color:var(--text);font-size:13.5px;font-weight:600}
+.cv-big button:active{transform:scale(.97)}
+.sens{display:flex;gap:10px;margin-bottom:20px}
+.sens>div{flex:1;padding:14px;border-radius:var(--r-sm);background:var(--card-2)}
+.sens b{display:block;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:34px;line-height:1.05;font-variant-numeric:tabular-nums}
+.sens small{color:var(--muted);font-size:12.5px}
+details.dev-set{border-top:1px solid var(--line);padding-top:6px}
+details.dev-set>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:46px;color:var(--muted);font-size:14px;font-weight:600}
+details.dev-set>summary::-webkit-details-marker{display:none}
+details.dev-set[open]>summary{margin-bottom:10px}
+.setup-list{display:flex;flex-direction:column;gap:8px}
+.setup-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:0;border-radius:var(--r-sm);background:var(--card-2);text-align:left;color:var(--text)}
+.setup-row .t{flex:1;min-width:0}
+.setup-row b{display:block;font-size:15.5px;font-weight:600}
+.setup-row small{display:block;color:var(--muted);font-size:12.5px;line-height:1.4}
+.setup-row>.ic{color:var(--dim)}
+.setup-err{color:#FF8A80;font-size:14px;min-height:1.3em;margin:-4px 2px 12px}
+.banner .shape{width:36px;height:36px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -476,8 +537,8 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 'use strict';
 /* =====================================================================
    mapq.at/familie – Start, Listen (Einkauf, To-dos, Putzplan), Kalender,
-   Fotos & Videos, Pinnwand und unter „Mehr“: Essensplan, Rezepte,
-   Countdowns, wichtige Infos und das eigene Profil.
+   Fotos & Videos, Pinnwand und unter „Mehr“: Zuhause (Smart Home),
+   Essensplan, Rezepte, Countdowns, wichtige Infos und das eigene Profil.
    Daten in Supabase (gleiches Projekt wie das Kontaktformular, siehe
    /content.json → inbox). Alle melden sich mit dem Familien-Konto an;
    wer was eingetragen hat, steht im Feld „von“ (Name auf diesem Gerät).
@@ -544,7 +605,16 @@ const ICONS = {
   drizzle: CLOUD + '<path d="M8 19v1"/><path d="M8 14v1"/><path d="M16 19v1"/><path d="M16 14v1"/><path d="M12 21v1"/><path d="M12 16v1"/>',
   rain: CLOUD + '<path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/>',
   snow: CLOUD + '<path d="M8 15h.01"/><path d="M8 19h.01"/><path d="M12 17h.01"/><path d="M12 21h.01"/><path d="M16 15h.01"/><path d="M16 19h.01"/>',
-  storm: '<path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/>'
+  storm: '<path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/>',
+  bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  blinds: '<path d="M3 3h18"/><path d="M20 7H8"/><path d="M20 11H8"/><path d="M10 19h10"/><path d="M8 15h12"/><path d="M4 3v14"/><circle cx="4" cy="19" r="2"/>',
+  thermo: '<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>',
+  power: '<path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/>',
+  settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>', stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>'
 };
 const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
@@ -556,7 +626,7 @@ const TABS = [
   { id: 'pinnwand', label: 'Pinnwand', icon: 'chat', c: 'green' },
   { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
-const SUB = ['essen', 'rezepte', 'countdowns', 'infos', 'ich'];
+const SUB = ['zuhause', 'essen', 'rezepte', 'countdowns', 'infos', 'ich'];
 const ALL_TABS = [...TABS.map(t => t.id), ...SUB];
 const tabOf = t => SUB.includes(t) ? 'mehr' : t;
 const LISTS = [['einkauf', 'Einkauf', 'cart', 'amber'], ['todo', 'To-dos', 'todo', 'blue'], ['putzplan', 'Putzplan', 'sparkles', 'sky']];
@@ -711,7 +781,8 @@ const state = {
   aufgaben: null, alog: [], essen: {}, essenWoche: 0, rezepte: null, rsuche: '', countdowns: null, infos: null,
   cal: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
   day: null, showDone: false, weather: null,
-  wp: { info: null, loaded: false, mine: null, busy: false }
+  wp: { info: null, loaded: false, mine: null, busy: false },
+  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null
 };
 const unread = () => {
   const seen = store.get('seen', '');
@@ -827,7 +898,8 @@ function renderTabbar() {
 const LOADERS = {
   start: q => loadDash(q), listen: q => { loadItems(q); if (state.liste === 'putzplan') loadAufgaben(q); }, kalender: q => loadTermine(q),
   fotos: q => { loadFotos(q); if (state.fotoView === 'alben') loadAlben(q); }, pinnwand: q => loadMsgs(q), mehr: q => loadHub(q),
-  essen: q => { loadEssen(q); loadRezepte(true); }, rezepte: q => loadRezepte(q), countdowns: q => loadCountdowns(q), infos: q => loadInfos(q), ich: () => loadPushInfo()
+  essen: q => { loadEssen(q); loadRezepte(true); }, rezepte: q => loadRezepte(q), countdowns: q => loadCountdowns(q), infos: q => loadInfos(q), ich: () => loadPushInfo(),
+  zuhause: q => loadSmart(q)
 };
 function go(tab, replace) {
   state.tab = tab;
@@ -837,10 +909,10 @@ function go(tab, replace) {
 }
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (ALL_TABS.includes(h) && h !== state.tab && !$('#app').hidden) go(h, true); });
 
-const VIEWS = { start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView() };
+const VIEWS = { zuhause: () => zuhauseShell(), start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView() };
 function renderView() { $('#view').innerHTML = VIEWS[state.tab](); fill(); }
 function fill() {
-  ({ start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos })[state.tab]?.();
+  ({ zuhause: fillZuhause, start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos })[state.tab]?.();
 }
 const spinner = '<div class="loading"><div class="ring"></div></div>';
 const header = (title, sub, c, icon, action = '', back = false) => `${back ? `<button class="back" data-action="go" data-tab="mehr">${ic('left', 18)} Mehr</button>` : ''}<div class="ph c-${c}"><span class="shape lg">${ic(icon, 24)}</span><div><h1>${title}</h1><p id="phSub">${sub || ''}</p></div>${action}</div>`;
@@ -861,6 +933,7 @@ function startTimer() {
     if ((t === 'fotos' || t === 'start') && tick % 10 === 0) loadFotos(true);
     if (tick % 10 === 0) loadMembers().then(() => { if (state.tab === 'start') fillDash(); }).catch(() => {});
     if (t === 'essen' && tick % 10 === 0) loadEssen(true);
+    if (smartAktiv() && !state.smartErr?.alt && ((t === 'zuhause' && tick % 4 === 0) || (t === 'start' && tick % 5 === 0))) loadSmart(true);
   }, 6000);
 }
 function stopTimer() { if (timer) clearInterval(timer); timer = null; }
@@ -907,6 +980,7 @@ function weatherCard() {
 /* ---------- Übersicht ---------- */
 function loadDash(quiet) {
   loadItems(quiet); loadTermine(quiet); loadFotos(quiet); loadMsgs(quiet); loadWeather(); loadAufgaben(quiet); loadEssen(quiet); loadCountdowns(quiet);
+  if (!state.smartErr?.alt && (smartAktiv() || !state.smartGeprueft)) loadSmart(true);
 }
 function greeting() {
   const h = new Date().getHours();
@@ -939,9 +1013,11 @@ function fillDash() {
   const w = state.weather, wc = w ? WMO(w.now.weather_code) : null;
   const tasks = aufgabenAm(todayIso()), myTasks = tasks.filter(t => !t.done && (t.wer === state.me || !t.wer));
   const essen = state.essen[todayIso()];
+  const smartAn = smartAktiv() ? lichterAn() : [], smartStart = smartAktiv() ? startGeraete() : [];
   const cds = (state.countdowns || []).filter(c => c.datum >= todayIso()).slice(0, 4), bdays = nextBirthdays(21).filter(o => o.iso !== todayIso() || true).slice(0, 2);
   const chips = [
     w ? `<button class="dchip" data-action="refresh-weather"><span class="shape c-${wc[2]}">${ic(wc[1], 17)}</span>${Math.round(w.now.temperature_2m)}°</button>` : '',
+    smartAn.length ? `<button class="dchip" data-action="go" data-tab="zuhause"><span class="shape c-amber">${ic('bulb', 16)}</span>${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an</button>` : '',
     `<button class="dchip" data-action="go" data-tab="listen" data-liste="einkauf"><span class="shape c-amber">${ic('cart', 16)}</span>${ein.length ? ein.length + ' kaufen' : 'Nichts kaufen'}</button>`,
     myTasks.length ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="putzplan"><span class="shape c-sky">${ic('sparkles', 16)}</span>${myTasks.length} dran</button>` : '',
     `<button class="dchip" data-action="go" data-tab="listen" data-liste="todo"><span class="shape c-blue">${ic('todo', 16)}</span>${mine.length ? mine.length + ' für dich' : todo.length ? todo.length + ' To-dos' : 'Keine To-dos'}</button>`,
@@ -970,6 +1046,8 @@ function fillDash() {
       ${foto ? `<button class="tile wide photo c-pink" data-action="go" data-tab="fotos" style="background-image:url('${esc(fotoUrl || '')}')"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'} · zuletzt ${foto.von ? 'von ' + esc(foto.von) + ' ' : ''}${esc(rel(foto.erstellt))}</small></span></button>`
         : `<button class="tile wide c-pink" data-action="quick" data-q="foto"><span class="top"><span style="display:flex;align-items:center;gap:12px"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>Teil das erste Familienfoto</small></span></span></span><i class="bar"></i></button>`}
     </div>
+    ${smartStart.length ? `<div class="sec-h"><span class="shape sm c-amber">${ic('home', 16)}</span><b>Zuhause</b><small>${smartAn.length ? `${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an` : 'Alle Lichter aus'}</small><button class="btn sm" data-action="go" data-tab="zuhause">Alle</button></div>
+      <div class="devs">${smartStart.map(devTile).join('')}</div>` : ''}
     ${tasks.length ? `<section class="card c-sky"><div class="card-h"><span class="shape">${ic('sparkles')}</span><span class="t"><b>Heute dran</b><small>Putzplan</small></span><button class="btn sm" data-action="go" data-tab="listen" data-liste="putzplan">Alle</button></div>
       <div class="items" style="background:var(--card-2)">${tasks.map(aufgabeRow).join('')}</div></section>` : ''}
     <section class="card c-green"><div class="card-h"><span class="shape">${ic('chat')}</span><span class="t"><b>Pinnwand</b><small>${lastMsg ? (u ? u + ' neue Nachricht' + (u > 1 ? 'en' : '') : 'zuletzt ' + esc(rel(lastMsg.erstellt))) : 'Noch keine Nachrichten'}</small></span><button class="btn sm" data-action="go" data-tab="pinnwand">Öffnen</button></div>
@@ -1763,13 +1841,15 @@ async function delPost(id) {
 }
 
 /* ---------- Mehr ---------- */
-function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); }
+function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); if (!state.smartErr?.alt) loadSmart(true); }
 function hubShell() { return `${header('Mehr', 'Alles Weitere für die Familie', 'purple', 'grid')}<div id="hub"></div>`; }
 function fillHub() {
   const box = $('#hub'); if (!box) return;
   const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
   const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
+  const sm = smartAktiv(), an = sm ? lichterAn().length : 0, n = sm ? state.smart.geraete.filter(d => !einstOf(d.id).aus).length : 0;
   box.innerHTML = `<div class="tiles hub">
+    <button class="tile wide c-amber" data-action="go" data-tab="zuhause"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic('bulb')}</span><span style="min-width:0"><b>Zuhause</b><small>${sm ? `${n} Gerät${n === 1 ? '' : 'e'}${an ? ` · ${an} Licht${an === 1 ? '' : 'er'} an` : ''}` : 'Licht & Steckdosen von Govee, Shelly und Smart Life'}</small></span></span>${an ? `<span class="num">${an}</span>` : ''}</span><i class="bar"></i></button>
     ${tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
     ${tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte')}
     ${tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"')}
@@ -2006,6 +2086,318 @@ async function infoDel(id) {
   try { await remove('familie_infos', id); state.infos = state.infos.filter(x => x.id !== id); closeSheet(); fill(); } catch (e) { loadErr(e); }
 }
 
+/* ---------- Zuhause: Smart Home (Govee, Shelly, Smart Life / Tuya) ----------
+   Läuft über die Funktion mapq-push (Aktionen „smart-…“, Code in supabase/functions/mapq-push/smart.ts).
+   Die Zugangsdaten der Anbieter liegen nur auf dem Server – die App bekommt sie nie zurück. */
+const ART_ORDER = { licht: 0, schalter: 1, geraet: 2, rollo: 3, sensor: 4 };
+const DEV_ICON = { licht: 'bulb', schalter: 'plug', rollo: 'blinds', sensor: 'thermo', geraet: 'power' };
+const SWATCHES = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#00c7be', '#32ade6', '#007aff', '#5856d6', '#af52de', '#ff2d55'];
+const ANB = {
+  govee: ['Govee', 'amber', 'bulb', 'Lampen, LED-Streifen und Steckdosen'],
+  shelly: ['Shelly', 'sky', 'plug', 'Schalter, Dimmer, Rollläden und Sensoren'],
+  tuya: ['Smart Life / Tuya', 'orange', 'home', 'Alles aus der Smart-Life- oder Tuya-App']
+};
+const TUYA_REG = [['eu', 'Mitteleuropa (Österreich, Deutschland)'], ['eu-w', 'Westeuropa'], ['us', 'USA West'], ['us-e', 'USA Ost'], ['in', 'Indien'], ['cn', 'China']];
+const isHex = v => /^#[0-9a-f]{6}$/i.test(v || '');
+const fmtNum = (n, d = 1) => String(Math.round(n * 10 ** d) / 10 ** d).replace('.', ',');
+
+async function smartFn(body) {
+  // ohne zweiten Versuch: ein 401 heißt hier fast immer „Funktion noch nicht neu bereitgestellt“
+  const r = await API.fetch('/functions/v1/mapq-push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, false);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const e = new Error(j.error || j.message || ('Fehler ' + r.status)); e.status = r.status;
+    if (r.status === 401) { e.alt = true; e.message = 'Smart Home ist noch nicht freigeschaltet: Die Funktion „mapq-push“ muss in Supabase neu bereitgestellt werden.'; }
+    throw e;
+  }
+  return j;
+}
+const smartAktiv = () => { const a = state.smart?.anbieter; return !state.smartErr?.alt && !!(a && (a.govee?.aktiv || a.shelly?.aktiv || a.tuya?.aktiv)); };
+const einstOf = id => state.smart?.einst?.[id] || {};
+const devName = d => einstOf(d.id).name || d.name;
+const devById = id => (state.smart?.geraete || []).find(d => d.id === id);
+const startStd = d => d.art === 'licht' || d.art === 'schalter' || d.art === 'rollo';
+const aufStart = d => { const e = einstOf(d.id); return !e.aus && (e.start ?? startStd(d)); };
+function startGeraete() {
+  const g = (state.smart?.geraete || []).filter(aufStart).sort(devSort);
+  return [...g.filter(d => einstOf(d.id).start === true), ...g.filter(d => einstOf(d.id).start !== true)].slice(0, 8);
+}
+const devSort = (a, b) => (ART_ORDER[a.art] ?? 9) - (ART_ORDER[b.art] ?? 9) || devName(a).localeCompare(devName(b), 'de');
+const lichterAn = () => (state.smart?.geraete || []).filter(d => d.art === 'licht' && d.an && d.online && !einstOf(d.id).aus);
+const raeume = () => [...new Set((state.smart?.geraete || []).map(d => einstOf(d.id).raum).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+
+let smartLaeuft = false;
+async function loadSmart(quiet, frisch) {
+  if (smartLaeuft || !API.on) return;
+  smartLaeuft = true;
+  try {
+    const j = await smartFn({ aktion: 'smart-status', frisch: !!frisch });
+    // Geräte, die gerade geschaltet werden, behalten ihren neuen Zustand
+    if (state.smartBusy.size && state.smart?.geraete) j.geraete = j.geraete.map(g => state.smartBusy.has(g.id) ? (devById(g.id) || g) : g);
+    state.smart = j; state.smartErr = null; state.smartGeprueft = true; store.set('smart', j);
+  } catch (e) {
+    smartLaeuft = false;
+    if (e.silent) return;
+    state.smartErr = e; state.smartGeprueft = true;
+    if (!quiet && !e.alt) toast(errMsg(e), 'bad');
+  }
+  smartLaeuft = false;
+  redrawSmart();
+}
+function redrawSmart() {
+  if (state.tab === 'zuhause') fillZuhause();
+  else if (state.tab === 'start') fillDash();
+  else if (state.tab === 'mehr') fillHub();
+  updDevSheet();
+}
+
+function devStatus(d) {
+  if (!d.online) return 'Offline';
+  if (d.art === 'sensor') return [d.temp != null ? fmtNum(d.temp) + ' °C' : '', d.feuchte != null ? Math.round(d.feuchte) + ' %' : ''].filter(Boolean).join(' · ') || 'Sensor';
+  if (d.art === 'rollo') {
+    const b = d.bewegt;
+    if (b === 'opening') return 'Öffnet …';
+    if (b === 'closing') return 'Schließt …';
+    if (d.position == null) return b === 'open' ? 'Offen' : b === 'closed' || b === 'close' ? 'Geschlossen' : 'Auf · Stopp · Zu';
+    return d.position >= 99 ? 'Offen' : d.position <= 1 ? 'Geschlossen' : `${d.position} % offen`;
+  }
+  if (d.an == null) return d.kann.an ? 'Zustand unbekannt' : (d.modell || '');
+  if (!d.an) return 'Aus';
+  const x = ['An'];
+  if (d.art === 'licht' && d.hell != null) x.push(Math.round(d.hell) + ' %');
+  if (d.watt != null && d.watt > 0) x.push(fmtNum(d.watt) + ' W');
+  return x.join(' · ');
+}
+function devLook(d) {
+  const icon = DEV_ICON[d.art] || 'power';
+  if (d.art === 'sensor') return { icon, cls: 'c-sky', style: '' };
+  if (d.art === 'rollo') return { icon, cls: d.online && ((d.position ?? 0) > 1 || d.bewegt === 'opening' || d.bewegt === 'open') ? 'c-purple' : 'c-grey', style: '' };
+  if (!d.an || !d.online) return { icon, cls: 'c-grey', style: '' };
+  if (d.art === 'licht' && isHex(d.farbe)) {
+    const [r, g, b] = [1, 3, 5].map(i => parseInt(d.farbe.slice(i, i + 2), 16));
+    // sehr dunkle Farben wären auf dem dunklen Grund unsichtbar
+    if (r * .3 + g * .59 + b * .11 > 40) return { icon, cls: '', style: `--c:${d.farbe};--cb:rgba(${r},${g},${b},.2)` };
+  }
+  return { icon, cls: d.art === 'licht' ? 'c-amber' : d.art === 'schalter' ? 'c-blue' : 'c-teal', style: '' };
+}
+function devTile(d) {
+  const l = devLook(d), e = einstOf(d.id), name = devName(d), id = esc(d.id);
+  const icBtn = d.kann.an
+    ? `<button class="shape" data-action="dev-toggle" data-id="${id}" aria-label="${esc(name)} ${d.an ? 'ausschalten' : 'einschalten'}" aria-pressed="${d.an ? 'true' : 'false'}" ${d.online ? '' : 'disabled'}>${ic(l.icon, 22)}</button>`
+    : `<button class="shape" data-action="dev-open" data-id="${id}" tabindex="-1" aria-hidden="true">${ic(l.icon, 22)}</button>`;
+  const cv = d.art === 'rollo' ? `<span class="dev-cv">${[['open', 'up', 'öffnen'], ['stop', 'stop', 'stoppen'], ['close', 'down', 'schließen']].filter(x => x[0] !== 'stop' || d.kann.stopp)
+    .map(([p, i, t]) => `<button data-action="dev-cover" data-id="${id}" data-p="${p}" aria-label="${esc(name)} ${t}" ${d.online ? '' : 'disabled'}>${ic(i, 18)}</button>`).join('')}</span>` : '';
+  const bar = d.art === 'licht' && d.an && d.online && d.hell != null ? `<i class="dev-bar" style="width:${Math.round(d.hell)}%"></i>` : '';
+  return `<div class="dev ${l.cls}${d.art === 'rollo' ? ' wide' : ''}${d.online ? '' : ' offline'}${state.smartBusy.has(d.id) ? ' busy' : ''}${e.aus ? ' hid' : ''}" style="${l.style}">${icBtn}<button class="dev-t" data-action="dev-open" data-id="${id}"><b>${esc(name)}</b><small>${esc(e.aus ? 'Ausgeblendet' : devStatus(d))}</small></button>${cv}${bar}</div>`;
+}
+
+function zuhauseShell() {
+  return `${header('Zuhause', 'Licht, Steckdosen & mehr', 'amber', 'bulb', `<button class="btn sm icon" data-action="smart-setup" aria-label="Geräte verbinden">${ic('settings', 18)}</button>`, true)}<div id="zuhause">${state.smart ? '' : spinner}</div>`;
+}
+function fillZuhause() {
+  const box = $('#zuhause'); if (!box) return;
+  const sm = state.smart, err = state.smartErr;
+  if (err?.alt) { box.innerHTML = emptyBox('amber', 'alert', 'Noch nicht freigeschaltet', esc(err.message), `<div style="margin-top:16px"><button class="btn" data-action="smart-refresh">${ic('refresh', 17)} Nochmal prüfen</button></div>`); return; }
+  if (!sm) { box.innerHTML = err ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(err)), `<div style="margin-top:16px"><button class="btn" data-action="smart-refresh">${ic('refresh', 17)} Nochmal</button></div>`) : spinner; return; }
+  if (!smartAktiv()) {
+    box.innerHTML = emptyBox('amber', 'home', 'Smart Home verbinden', 'Lampen, Steckdosen und Rollläden von Govee, Shelly und Smart Life direkt hier steuern – für alle in der Familie.',
+      `<div style="margin-top:16px"><button class="btn btn-primary c-amber" data-action="smart-setup">${ic('link', 18)} Geräte verbinden</button></div>`);
+    return;
+  }
+  const a = sm.anbieter;
+  const fehler = Object.keys(ANB).filter(k => a[k]?.aktiv && a[k].fehler).map(k => `<div class="banner c-red"><span class="shape">${ic('alert', 18)}</span><div class="body"><b>${esc(ANB[k][0])}</b><p>${esc(a[k].fehler)}</p><div class="row-actions"><button class="btn sm" data-action="smart-setup-1" data-a="${k}">Zugang prüfen</button></div></div></div>`).join('');
+  const alle = [...(sm.geraete || [])].sort(devSort), sichtbar = alle.filter(d => !einstOf(d.id).aus), versteckt = alle.length - sichtbar.length;
+  const liste = state.smartAlle ? alle : sichtbar;
+  const an = lichterAn(), sensoren = sichtbar.filter(d => d.art === 'sensor' && d.online && d.temp != null).slice(0, 4);
+  const chips = [
+    an.length ? `<button class="dchip" data-action="smart-alle-aus"><span class="shape c-amber">${ic('bulb', 16)}</span>${an.length} an · Alle aus</button>`
+      : sichtbar.some(d => d.art === 'licht') ? `<span class="dchip"><span class="shape c-grey">${ic('bulb', 16)}</span>Alle Lichter aus</span>` : '',
+    ...sensoren.map(d => `<button class="dchip" data-action="dev-open" data-id="${esc(d.id)}"><span class="shape c-sky">${ic('thermo', 16)}</span>${fmtNum(d.temp)}° ${esc(devName(d))}</button>`),
+    `<button class="dchip" data-action="smart-refresh"><span class="shape">${ic('refresh', 16)}</span>Aktualisieren</button>`
+  ].join('');
+  const gruppen = {};
+  liste.forEach(d => { const r = einstOf(d.id).raum || ''; (gruppen[r] ||= []).push(d); });
+  const namen = Object.keys(gruppen).filter(Boolean).sort((x, y) => x.localeCompare(y, 'de'));
+  if (gruppen['']) namen.push('');
+  box.innerHTML = `<div class="chips">${chips}</div>${fehler}
+    ${liste.length ? namen.map(r => `${r || namen.length > 1 ? `<p class="sub-h">${r ? esc(r) : 'Weitere Geräte'}</p>` : ''}<div class="devs">${gruppen[r].map(devTile).join('')}</div>`).join('')
+      : emptyBox('amber', 'home', 'Keine Geräte gefunden', 'Prüf in der App des Herstellers, ob die Geräte dort angemeldet und online sind.')}
+    ${versteckt ? `<button class="btn sm" style="margin-top:4px" data-action="smart-hidden">${state.smartAlle ? 'Ausgeblendete verstecken' : `${versteckt} ausgeblendet – zeigen`}</button>` : ''}
+    <p class="hint" style="margin:16px 4px 0">Tipp aufs Symbol schaltet ein und aus. Tipp auf den Namen: Helligkeit, Farbe, Raum und Name.</p>`;
+}
+
+/* Schalten: sofort anzeigen, bei einem Fehler zurückdrehen */
+function optimistisch(b) {
+  if ('an' in b) return { an: b.an };
+  if ('hell' in b) return { an: true, hell: b.hell };
+  if ('farbe' in b) return { an: true, farbe: b.farbe, kelvin: null };
+  if ('kelvin' in b) return { an: true, kelvin: b.kelvin, farbe: null };
+  if ('szene' in b) return { an: true };
+  if ('position' in b) return typeof b.position === 'number' ? { position: b.position, bewegt: null } : { bewegt: b.position === 'open' ? 'opening' : b.position === 'close' ? 'closing' : 'stop' };
+  return {};
+}
+async function devSet(ids, befehl) {
+  ids = [].concat(ids).filter(id => devById(id));
+  if (!ids.length) return;
+  const vorher = ids.map(id => ({ ...devById(id) }));
+  ids.forEach(id => { Object.assign(devById(id), optimistisch(befehl)); state.smartBusy.add(id); });
+  redrawSmart();
+  try {
+    const j = await smartFn({ aktion: 'smart-set', ...(ids.length > 1 ? { ids } : { id: ids[0] }), befehl });
+    const ok = new Set();
+    (j.geraete || []).forEach(g => { const d = devById(g.id); if (d) { Object.assign(d, g); ok.add(g.id); } });
+    vorher.forEach(v => { const d = devById(v.id); if (d && !ok.has(v.id)) Object.assign(d, v); });
+    if (j.fehler?.length) toast(j.fehler.join(' · '), 'warn');
+  } catch (e) {
+    vorher.forEach(v => { const d = devById(v.id); if (d) Object.assign(d, v); });
+    if (!e.silent) toast(errMsg(e), 'bad');
+  }
+  ids.forEach(id => state.smartBusy.delete(id));
+  store.set('smart', state.smart);
+  redrawSmart();
+}
+
+/* Gerät: Helligkeit, Farbe, Weißton, Szenen, Rollladen – und Name, Raum, Anzeige */
+function devSheet(id) {
+  const d = devById(id); if (!d) return;
+  state.devOpen = id;
+  const e = einstOf(id), l = devLook(d), name = devName(d), i = esc(id);
+  let ctl = '';
+  if (d.art === 'licht') {
+    if (d.kann.hell) { const h = Math.round(d.hell ?? 100); ctl += `<div class="ctl"><div class="ctl-h"><span>Helligkeit</span><b id="hellVal">${h} %</b></div><input type="range" class="rng" id="hellRng" data-id="${i}" min="1" max="100" value="${h}" style="--p:${h}%" aria-label="Helligkeit"></div>`; }
+    if (d.kann.farbe) ctl += `<div class="ctl"><div class="ctl-h"><span>Farbe</span></div><div class="swatches">${SWATCHES.map(c => `<button style="--sw:${c}" class="${d.farbe === c ? 'on' : ''}" data-action="dev-farbe" data-id="${i}" data-f="${c}" aria-label="Farbe ${c}"></button>`).join('')}<label class="sw-custom" title="Eigene Farbe"><input type="color" id="farbIn" data-id="${i}" value="${isHex(d.farbe) ? d.farbe : '#ffffff'}" aria-label="Eigene Farbe"></label></div></div>`;
+    if (d.kann.kelvin) {
+      const kmin = d.kmin || 2700, kmax = d.kmax || 6500, k = Math.min(kmax, Math.max(kmin, d.kelvin || Math.round((kmin + kmax) / 2 / 50) * 50));
+      ctl += `<div class="ctl"><div class="ctl-h"><span>Weißton</span><b id="kVal">${d.kelvin ? k + ' K' : '–'}</b></div><input type="range" class="rng kel" id="kRng" data-id="${i}" min="${kmin}" max="${kmax}" step="50" value="${k}" aria-label="Weißton von warm bis kalt"><div class="ctl-f"><span>Warm</span><span>Kalt</span></div></div>`;
+    }
+    if (d.kann.szenen) ctl += `<div class="ctl"><div class="ctl-h"><span>Szenen</span></div><div id="szenen"><div class="loading" style="padding:16px 0"><div class="ring"></div></div></div></div>`;
+  } else if (d.art === 'rollo') {
+    ctl += `<div class="cv-big">${[['open', 'up', 'Auf'], ['stop', 'stop', 'Stopp'], ['close', 'down', 'Zu']].filter(x => x[0] !== 'stop' || d.kann.stopp)
+      .map(([p, ico, t]) => `<button data-action="dev-cover" data-id="${i}" data-p="${p}" ${d.online ? '' : 'disabled'}>${ic(ico, 22)}${t}</button>`).join('')}</div>`;
+    if (d.kann.position) { const p = Math.round(d.position ?? 0); ctl += `<div class="ctl"><div class="ctl-h"><span>Position</span><b id="posVal">${p} % offen</b></div><input type="range" class="rng" id="posRng" data-id="${i}" min="0" max="100" value="${p}" style="--p:${p}%" aria-label="Position in Prozent offen"></div>`; }
+  } else if (d.art === 'sensor') {
+    ctl += `<div class="sens">${d.temp != null ? `<div><b>${fmtNum(d.temp)}°</b><small>Temperatur</small></div>` : ''}${d.feuchte != null ? `<div><b>${Math.round(d.feuchte)} %</b><small>Luftfeuchte</small></div>` : ''}</div>`;
+  } else if (d.watt != null) ctl += `<div class="sens"><div><b>${fmtNum(d.watt)} W</b><small>Verbrauch gerade</small></div></div>`;
+  const startJetzt = e.start ?? startStd(d);
+  openSheet(`<div id="devBody" class="${l.cls}" style="${l.style}">
+    <div class="sheet-h" id="devHead"><span class="shape" id="devIc">${ic(l.icon)}</span><h3>${esc(name)}<small id="devSub">${esc(devStatus(d))}</small></h3>${d.kann.an ? `<input type="checkbox" class="switch" id="devSwitch" data-action="dev-switch" data-id="${i}" ${d.an ? 'checked' : ''} ${d.online ? '' : 'disabled'} aria-label="${esc(name)} ein oder aus">` : ''}<button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    ${!d.online ? `<p class="hint" style="margin:-6px 2px 16px;font-size:13.5px">Das Gerät ist gerade offline – prüf Strom und WLAN.</p>` : ''}
+    ${ctl}
+    <details class="dev-set" ${ctl ? '' : 'open'}><summary>${ic('settings', 17)} Name, Raum & Anzeige</summary>
+      <form id="devForm" data-id="${i}">
+        <div class="field"><label for="dName">Name</label><input id="dName" class="input" maxlength="40" value="${esc(e.name || '')}" placeholder="${esc(d.name)}"></div>
+        <div class="field"><label for="dRaum">Raum</label><input id="dRaum" class="input" maxlength="30" list="raumListe" value="${esc(e.raum || '')}" placeholder="z. B. Wohnzimmer, Küche, Matteo" autocapitalize="words"><datalist id="raumListe">${raeume().map(r => `<option value="${esc(r)}">`).join('')}</datalist></div>
+        <label class="switch-row"><span><b>Auf der Startseite</b><small>Als Kachel unter „Zuhause“</small></span><input type="checkbox" class="switch" id="dStart" ${startJetzt ? 'checked' : ''}></label>
+        <label class="switch-row"><span><b>Ausblenden</b><small>Nicht mehr in der Liste zeigen</small></span><input type="checkbox" class="switch" id="dAus" ${e.aus ? 'checked' : ''}></label>
+        <button class="btn btn-primary" style="width:100%">Speichern</button>
+        <p class="hint" style="margin:12px 2px 0">${esc(ANB[d.anbieter]?.[0] || d.anbieter)}${d.modell ? ' · ' + esc(d.modell) : ''} · ${d.online ? 'online' : 'offline'}</p>
+      </form>
+    </details></div>`);
+  if (d.kann.szenen) loadSzenen(id);
+}
+function updDevSheet() {
+  const id = state.devOpen, body = $('#devBody');
+  if (!id || !body || !$('#sheetWrap').classList.contains('open')) return;
+  const d = devById(id); if (!d) return;
+  const l = devLook(d);
+  body.className = l.cls; body.setAttribute('style', l.style);
+  $('#devIc').innerHTML = ic(l.icon); $('#devSub').textContent = devStatus(d);
+  const sw = $('#devSwitch'); if (sw) sw.checked = !!d.an;
+}
+async function loadSzenen(id) {
+  if (!state.szenen[id]) {
+    try { state.szenen[id] = (await smartFn({ aktion: 'smart-szenen', id })).szenen || []; }
+    catch (e) { const box = $('#szenen'); if (box && state.devOpen === id) box.innerHTML = `<p class="hint" style="margin:0">${esc(errMsg(e))}</p>`; return; }
+  }
+  const box = $('#szenen'); if (!box || state.devOpen !== id) return;
+  const l = state.szenen[id];
+  box.innerHTML = l.length ? `${l.length > 12 ? `<input class="input" id="sznSuche" placeholder="Szene suchen …" style="min-height:42px;margin-bottom:10px" autocomplete="off">` : ''}<div class="szn" id="sznList">${l.map(n => `<button data-action="dev-szene" data-id="${esc(id)}" data-name="${esc(n)}">${esc(n)}</button>`).join('')}</div>`
+    : '<p class="hint" style="margin:0">Für dieses Licht gibt es keine Szenen.</p>';
+}
+async function devSave(form) {
+  const id = form.dataset.id, d = devById(id); if (!d) return;
+  const name = $('#dName').value.trim(), start = $('#dStart').checked;
+  const btn = form.querySelector('.btn-primary'); btn.disabled = true;
+  try {
+    const j = await smartFn({ aktion: 'smart-geraet', id, name: name === d.name ? '' : name, raum: $('#dRaum').value.trim(), aus: $('#dAus').checked, start: start === startStd(d) ? null : start });
+    state.smart.einst = j.einst; store.set('smart', state.smart);
+    closeSheet(); toast('Gespeichert.', 'ok'); redrawSmart();
+  } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
+}
+
+/* Verbinden: Govee, Shelly, Smart Life / Tuya */
+function smartSetup() {
+  const a = state.smart?.anbieter || {};
+  openSheet(`<div class="sheet-h c-amber"><span class="shape">${ic('link')}</span><h3>Geräte verbinden</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <p class="muted" style="margin:-4px 2px 16px;font-size:14px">Einmal einrichten – dann kann die ganze Familie die Geräte steuern. Die Zugangsdaten bleiben auf dem Server und sind danach in der App für niemanden sichtbar.</p>
+    <div class="setup-list">${Object.entries(ANB).map(([k, [n, c, ico, t]]) => `<button class="setup-row c-${c}" data-action="smart-setup-1" data-a="${k}"><span class="shape">${ic(ico)}</span><span class="t"><b>${n}</b><small>${t}</small></span>${a[k]?.aktiv ? `<span class="chip c-${a[k].fehler ? 'red' : 'green'}">${a[k].fehler ? 'Fehler' : 'Verbunden'}</span>` : ic('right', 18)}</button>`).join('')}</div>`);
+}
+function setupSheet(k) {
+  if (!ANB[k]) return;
+  const a = state.smart?.anbieter?.[k] || {}, [n, c, ico] = ANB[k], on = !!a.aktiv;
+  const geheim = (id, label, ph) => `<div class="field"><label for="${id}">${label}</label><input id="${id}" class="input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${esc(ph)}"></div>`;
+  const text = 'autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
+  let steps = '', fields = '';
+  if (k === 'govee') {
+    steps = `<li>In der <b>Govee Home</b>-App unten rechts aufs <b>Profil</b> tippen.</li>
+      <li>Oben rechts aufs <b>Zahnrad</b> → <b>„API-Schlüssel beantragen“</b> (englisch „Apply for API Key“).</li>
+      <li>Name und Grund eintragen (z. B. „Familien-App“) – der Schlüssel kommt <b>per E-Mail</b>.</li>
+      <li>Den Schlüssel hier einfügen. Er gilt für alle Govee-Geräte im Konto.</li>`;
+    fields = geheim('sKey', 'API-Schlüssel', on ? 'Neuen Schlüssel einfügen' : 'z. B. 1a2b3c4d-…');
+  } else if (k === 'shelly') {
+    steps = `<li>In der <b>Shelly Smart Control</b>-App (oder auf control.shelly.cloud): Menü → <b>Benutzereinstellungen</b> → <b>„Authorization cloud key“</b> → „Get key“.</li>
+      <li><b>Schlüssel</b> und <b>Server</b> (z. B. shelly-103-eu.shelly.cloud) kopieren.</li>
+      <li>Für jedes Gerät: Gerät öffnen → <b>Einstellungen → Geräteinformationen</b> → <b>Device ID</b> kopieren.</li>`;
+    fields = `<div class="field"><label for="sHost">Server</label><input id="sHost" class="input" ${text} inputmode="url" value="${esc(a.host || '')}" placeholder="shelly-103-eu.shelly.cloud"></div>
+      ${geheim('sKey', 'Cloud-Schlüssel', on ? 'Leer lassen = unverändert' : 'Authorization cloud key')}
+      <div class="field"><label for="sIds">Geräte-IDs (eine pro Zeile, höchstens 20)</label><textarea id="sIds" class="input" rows="4" ${text} placeholder="z. B. 485519d9a1b4">${esc((a.ids || []).join('\n'))}</textarea></div>
+      <p class="hint" style="margin:-6px 2px 16px">Änderst du dein Shelly-Passwort, gibt es einen neuen Schlüssel.</p>`;
+  } else {
+    steps = `<li>Am besten am Computer auf <b>iot.tuya.com</b> ein kostenloses Konto anlegen.</li>
+      <li><b>Cloud → Development → Create Cloud Project</b>: Development Method <b>„Smart Home“</b>, Data Center <b>„Central Europe“</b>. Die vorgeschlagenen Dienste (u. a. <b>IoT Core</b>) übernehmen.</li>
+      <li>Im Projekt <b>Devices → Link App Account → Add App Account</b>: den QR-Code mit der <b>Smart-Life-App</b> scannen (Ich → Scan-Symbol oben rechts).</li>
+      <li>Unter <b>Overview</b> stehen <b>Access ID</b> und <b>Access Secret</b> – hier einfügen.</li>`;
+    fields = `<div class="field"><label for="sRegion">Rechenzentrum</label><select id="sRegion" class="input">${TUYA_REG.map(([v, t]) => `<option value="${v}" ${(a.region || 'eu') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="sId">Access ID / Client ID</label><input id="sId" class="input" ${text} placeholder="${on ? 'Zum Ändern neu eingeben' : 'z. B. 7xk2…'}"></div>
+      ${geheim('sSecret', 'Access Secret / Client Secret', '')}
+      <p class="hint" style="margin:-6px 2px 16px">Der kostenlose Zugang zu „IoT Core“ muss ab und zu auf iot.tuya.com verlängert werden (Cloud → Cloud Services). Wenn es so weit ist, steht es hier in der App.</p>`;
+  }
+  openSheet(`<div class="sheet-h c-${c}"><span class="shape">${ic(ico)}</span><h3>${n}</h3>${on ? `<span class="chip c-${a.fehler ? 'red' : 'green'}">${a.fehler ? 'Fehler' : 'Verbunden'}</span>` : ''}<button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <button class="back" data-action="smart-setup">${ic('left', 18)} Alle Anbieter</button>
+    ${a.fehler ? `<p class="setup-err" style="margin:0 2px 12px">${esc(a.fehler)}</p>` : ''}
+    <ol class="steps" style="margin:0 0 18px">${steps}</ol>
+    <form id="setupForm" data-a="${k}" class="c-${c}" autocomplete="off">${fields}
+      <p class="setup-err" id="setupErr" role="alert"></p>
+      <div class="sheet-actions">${on ? `<button type="button" class="btn btn-danger" data-action="smart-trennen" data-a="${k}">Trennen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="setupBtn">${on ? 'Speichern' : 'Verbinden'}</button></div>
+    </form>`);
+}
+async function smartEinrichten(form) {
+  const k = form.dataset.a, v = id => ($('#' + id)?.value || '').trim();
+  const body = { aktion: 'smart-einrichten', anbieter: k };
+  if (k === 'govee') body.key = v('sKey');
+  if (k === 'shelly') Object.assign(body, { host: v('sHost'), key: v('sKey'), ids: v('sIds') });
+  if (k === 'tuya') Object.assign(body, { region: v('sRegion'), id: v('sId'), secret: v('sSecret') });
+  const btn = $('#setupBtn'), err = $('#setupErr');
+  btn.disabled = true; btn.textContent = 'Prüfe …'; err.textContent = '';
+  try {
+    const j = await smartFn(body);
+    closeSheet();
+    toast(`${ANB[k][0]} verbunden – ${j.anzahl} ${j.anzahl === 1 ? 'Gerät' : 'Geräte'} gefunden.`, 'ok');
+    if (j.unbekannt?.length) setTimeout(() => toast('Nicht gefunden: ' + j.unbekannt.join(', '), 'warn'), 1500);
+    state.smartErr = null;
+    if (state.tab !== 'zuhause') go('zuhause');
+    loadSmart(true, true);
+  } catch (e) {
+    if (e.silent) return;
+    err.textContent = errMsg(e); btn.disabled = false; btn.textContent = 'Nochmal versuchen';
+  }
+}
+async function smartTrennen(k) {
+  if (!confirm(`${ANB[k][0]} trennen? Die Geräte verschwinden aus der App, die Zugangsdaten werden gelöscht.`)) return;
+  try { await smartFn({ aktion: 'smart-einrichten', anbieter: k, trennen: true }); closeSheet(); toast(`${ANB[k][0]} getrennt.`); loadSmart(true, true); }
+  catch (e) { toast(errMsg(e), 'bad'); }
+}
+
 /* ---------- Benachrichtigungen ---------- */
 const wpSupported = () => window.isSecureContext && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 const b64uToBytes = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
@@ -2118,7 +2510,7 @@ async function delMember(name) {
 async function logout() {
   if (!confirm('Auf diesem Handy abmelden?')) return;
   await wpDisable(true);
-  API.logout(); store.del('name'); state.me = null; state.items = state.termine = state.fotos = state.msgs = state.aufgaben = state.rezepte = state.countdowns = state.infos = state.alben = null;
+  API.logout(); store.del('name'); store.del('smart'); state.smart = null; state.szenen = {}; state.me = null; state.items = state.termine = state.fotos = state.msgs = state.aufgaben = state.rezepte = state.countdowns = state.infos = state.alben = null;
   showLogin();
 }
 
@@ -2213,6 +2605,18 @@ const ACTIONS = {
   'wp-test': () => wpTest(),
   'del-member': el => delMember(el.dataset.name),
   logout: () => logout(),
+  'dev-toggle': el => { const d = devById(el.dataset.id); if (d) devSet(d.id, { an: !d.an }); },
+  'dev-open': el => devSheet(el.dataset.id),
+  'dev-switch': el => devSet(el.dataset.id, { an: el.checked }),
+  'dev-farbe': el => { $$('.swatches button').forEach(b => b.classList.toggle('on', b === el)); devSet(el.dataset.id, { farbe: el.dataset.f }); },
+  'dev-szene': el => { $$('#sznList button').forEach(b => b.classList.toggle('on', b === el)); devSet(el.dataset.id, { szene: el.dataset.name }); },
+  'dev-cover': el => devSet(el.dataset.id, { position: el.dataset.p }),
+  'smart-setup': () => smartSetup(),
+  'smart-setup-1': el => setupSheet(el.dataset.a),
+  'smart-trennen': el => smartTrennen(el.dataset.a),
+  'smart-alle-aus': () => { const ids = lichterAn().map(d => d.id); if (ids.length) devSet(ids, { an: false }); },
+  'smart-refresh': el => { el.classList.add('busy'); state.smartErr = null; loadSmart(false, true); },
+  'smart-hidden': () => { state.smartAlle = !state.smartAlle; fillZuhause(); },
   'sheet-close': () => closeSheet()
 };
 document.addEventListener('click', e => {
@@ -2226,8 +2630,23 @@ document.addEventListener('submit', e => {
   if (e.target.id === 'postForm') { e.preventDefault(); sendPost(); }
   if (e.target.id === 'ortForm') { e.preventDefault(); const n = $('#ortName').value.trim(); if (n) setOrt(n); }
   if (e.target.matches('form.kform')) { e.preventDefault(); sendKomm(e.target); }
+  if (e.target.id === 'devForm') { e.preventDefault(); devSave(e.target); }
+  if (e.target.id === 'setupForm') { e.preventDefault(); smartEinrichten(e.target); }
 });
-document.addEventListener('input', e => { if (e.target.id === 'rSuche') { state.rsuche = e.target.value; fillRezepte(); } });
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'rSuche') { state.rsuche = t.value; fillRezepte(); }
+  if (t.id === 'hellRng' || t.id === 'posRng') { t.style.setProperty('--p', t.value + '%'); const l = $(t.id === 'hellRng' ? '#hellVal' : '#posVal'); if (l) l.textContent = t.value + (t.id === 'hellRng' ? ' %' : ' % offen'); }
+  if (t.id === 'kRng') { const l = $('#kVal'); if (l) l.textContent = t.value + ' K'; }
+  if (t.id === 'sznSuche') { const q = norm(t.value); $$('#sznList button').forEach(b => { b.hidden = !!q && !norm(b.textContent).includes(q); }); }
+});
+document.addEventListener('change', e => {
+  const t = e.target, id = t.dataset?.id;
+  if (t.id === 'hellRng') devSet(id, { hell: Number(t.value) });
+  if (t.id === 'kRng') devSet(id, { kelvin: Number(t.value) });
+  if (t.id === 'posRng') devSet(id, { position: Number(t.value) });
+  if (t.id === 'farbIn' && isHex(t.value)) { $$('.swatches button').forEach(b => b.classList.remove('on')); devSet(id, { farbe: t.value.toLowerCase() }); }
+});
 document.addEventListener('keydown', e => {
   if (e.target.id === 'postText' && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); sendPost(); }
   if (e.key === 'Enter' && e.target.closest?.('[data-action="status"]')) statusSheet();
