@@ -519,8 +519,13 @@ details.dev-set[open]>summary{margin-bottom:10px}
 .setup-err{color:#FF8A80;font-size:14px;min-height:1.3em;margin:-4px 2px 12px}
 .banner .shape{width:36px;height:36px}
 /* Familien-Karte */
-.karte{height:46vh;min-height:260px;max-height:520px;margin-bottom:12px;border-radius:var(--r);overflow:hidden;background:var(--card);z-index:0}
+.karte-w{position:relative;margin-bottom:12px}
+.karte{height:46vh;min-height:260px;max-height:520px;border-radius:var(--r);overflow:hidden;background:var(--card);z-index:0}
 .leaflet-container{background:#191a1d!important;font:inherit}
+.karte.hell.leaflet-container{background:#dedad2!important}
+.kstatus{position:absolute;top:10px;left:10px;right:60px;z-index:2;min-height:40px;padding:9px 13px;border-radius:14px;background:rgba(20,20,23,.9);color:var(--text);font-size:13.5px;line-height:1.4;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+.kstatus[hidden]{display:none}
+.btn.kstil{position:absolute;top:10px;right:10px;z-index:2;width:40px;min-height:40px;box-shadow:0 4px 12px rgba(0,0,0,.35)}
 .leaflet-control-attribution{background:rgba(14,14,16,.7)!important;color:#8a8a93!important;font-size:10px!important}
 .leaflet-control-attribution a{color:#b5b5bd!important}
 .leaflet-bar a{background:var(--card-2)!important;color:var(--text)!important;border-color:var(--line)!important}
@@ -2704,20 +2709,61 @@ async function zuhauseSetzen() {
 }
 
 let leafletP = null, karte = null;
-// nicht „leaflet“ nennen – Leaflet legt selbst window.leaflet an
+// nicht „leaflet“ nennen – Leaflet legt selbst window.leaflet an.
+// Leaflet liegt im Repo (familie/leaflet/), damit die Karte nicht von einem fremden Server abhängt.
 function ladeLeaflet() {
+  if (window.L?.map) return Promise.resolve(window.L);
   return leafletP || (leafletP = new Promise((res, rej) => {
-    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(l);
-    const s = document.createElement('script'); s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    const t = setTimeout(() => { leafletP = null; rej(new Error('Die Karte lädt gerade nicht – prüf die Internetverbindung und öffne die Seite nochmal.')); }, 15000);
-    s.onload = () => { clearTimeout(t); window.L ? res(window.L) : rej(new Error('Die Karte konnte nicht laden.')); };
-    s.onerror = () => { clearTimeout(t); leafletP = null; rej(new Error('Die Karte konnte nicht laden.')); };
+    const fehler = m => { clearTimeout(t); leafletP = null; rej(new Error(m)); };
+    const t = setTimeout(() => fehler('Die Karte lädt gerade nicht – prüf die Internetverbindung, sie versucht es gleich nochmal.'), 15000);
+    // erst zeichnen, wenn auch das Stylesheet da ist – sonst liegen die Kartenbilder durcheinander
+    const css = new Promise(ok => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/familie/leaflet/leaflet.css'; l.onload = l.onerror = ok; document.head.appendChild(l); setTimeout(ok, 5000); });
+    const s = document.createElement('script'); s.src = '/familie/leaflet/leaflet.js';
+    s.onload = () => css.then(() => { clearTimeout(t); window.L?.map ? res(window.L) : fehler('Die Karte konnte nicht starten.'); });
+    s.onerror = () => fehler('Die Karte konnte nicht laden – prüf die Internetverbindung, sie versucht es gleich nochmal.');
     document.head.appendChild(s);
   }));
 }
+/* Kartenbilder: hell (CARTO Voyager, wie Apple Karten) oder dunkel (CARTO Dark Matter), pro Handy wählbar.
+   Kommen von CARTO keine Bilder an, springt die Karte auf OpenStreetMap um. */
+const OSM_A = '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>';
+const KACHELN = {
+  hell: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', att: OSM_A + ' · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a>' },
+  dunkel: { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', sub: 'abcd', att: OSM_A + ' · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a>' },
+  osm: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: 'abc', att: OSM_A }
+};
+const karteStil = () => store.get('karteStil', 'hell') === 'dunkel' ? 'dunkel' : 'hell';
+const stilKnopf = s => `${ic(s === 'hell' ? 'moon' : 'sun', 18)}`;
+function kStatus(text) { const s = $('#kStatus'); if (s) { s.hidden = !text; s.textContent = text || ''; } }
+function kacheln(L, name) {
+  const k = KACHELN[name], m = karte;
+  if (m._kacheln) m.removeLayer(m._kacheln);
+  let geladen = 0, fehler = 0;
+  const layer = L.tileLayer(k.url, { subdomains: k.sub, maxZoom: 19, attribution: k.att });
+  layer.on('tileload', () => { if (!geladen++) { clearTimeout(m._kTimer); kStatus(''); } });
+  layer.on('tileerror', () => {
+    if (geladen || ++fehler < 3 || m._kacheln !== layer) return;
+    if (name !== 'osm') kacheln(L, 'osm');
+    else kStatus('Die Kartenbilder kommen gerade nicht an. Die Liste unten geht trotzdem – das Karten-Symbol öffnet Apple Karten.');
+  });
+  m._kacheln = layer.addTo(m);
+  m.getContainer().classList.toggle('hell', name !== 'dunkel');
+  clearTimeout(m._kTimer);
+  m._kTimer = setTimeout(() => { if (!geladen && m._kacheln === layer) kStatus('Die Kartenbilder laden gerade sehr langsam …'); }, 10000);
+}
+function karteStilWechseln(btn) {
+  const neu = karteStil() === 'hell' ? 'dunkel' : 'hell';
+  store.set('karteStil', neu);
+  btn.innerHTML = stilKnopf(neu); btn.setAttribute('aria-label', neu === 'hell' ? 'Dunkle Karte' : 'Helle Karte');
+  if (karte && window.L?.map) kacheln(window.L, neu);
+}
 function karteShell() {
+  const s = karteStil();
   return `${header('Wo sind alle?', 'Familien-Karte', 'sky', 'pin', `<button class="btn btn-primary c-sky" data-action="ort-teilen">${ic('pin', 17)} Teilen</button>`, true)}
-    <div class="karte" id="karte" role="img" aria-label="Karte mit den geteilten Standorten"></div><div id="orte">${state.orte ? '' : spinner}</div>`;
+    <div class="karte-w"><div class="karte ${s === 'hell' ? 'hell' : ''}" id="karte" role="img" aria-label="Karte mit den geteilten Standorten"></div>
+      <div class="kstatus" id="kStatus" role="status">Karte lädt …</div>
+      <button class="btn sm icon kstil" data-action="karte-stil" aria-label="${s === 'hell' ? 'Dunkle Karte' : 'Helle Karte'}" title="Hell / Dunkel">${stilKnopf(s)}</button></div>
+    <div id="orte">${state.orte ? '' : spinner}</div>`;
 }
 async function fillKarte() {
   try { await fillKarte2(); }
@@ -2725,7 +2771,7 @@ async function fillKarte() {
 }
 async function fillKarte2() {
   const box = $('#orte'); if (!box) return;
-  if (state.orteErr?.alt || state.smartErr?.alt) { box.innerHTML = emptyBox('sky', 'alert', 'Noch nicht freigeschaltet', esc((state.orteErr || state.smartErr).message)); $('#karte')?.remove(); return; }
+  if (state.orteErr?.alt || state.smartErr?.alt) { box.innerHTML = emptyBox('sky', 'alert', 'Noch nicht freigeschaltet', esc((state.orteErr || state.smartErr).message)); $('.karte-w')?.remove(); return; }
   if (!Array.isArray(state.orte?.standorte)) { box.innerHTML = state.orteErr ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(state.orteErr))) : spinner; return zeichneKarte({ standorte: [], zuhause: null }); }
   const o = state.orte, leute = [...new Set([state.me, ...state.members])];
   const sub = $('#phSub'), n = o.standorte.length; if (sub) sub.textContent = n ? `${n} ${n === 1 ? 'Person teilt' : 'Personen teilen'} den Standort` : 'Noch teilt niemand den Standort';
@@ -2742,12 +2788,12 @@ async function fillKarte2() {
 async function zeichneKarte(o) {
   const el = $('#karte'); if (!el) return;
   let L;
-  try { L = await ladeLeaflet(); } catch (e) { el.innerHTML = `<p class="hint" style="padding:16px">${esc(e.message)}</p>`; return; }
+  try { L = await ladeLeaflet(); } catch (e) { kStatus(e.message); return; }
   if (!document.body.contains(el)) return;
   if (!karte || karte.getContainer() !== el) {
-    if (karte) karte.remove();
+    if (karte) { clearTimeout(karte._kTimer); karte.remove(); }
     karte = L.map(el, { zoomControl: false, attributionControl: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }).addTo(karte);
+    kacheln(L, karteStil());
     L.control.zoom({ position: 'bottomright' }).addTo(karte);
     karte._mapq = L.layerGroup().addTo(karte);
   }
@@ -3030,6 +3076,7 @@ const ACTIONS = {
   'raum-edit': () => raumSheet(state.raum),
   'raum-weg': () => { const f = $('#raumForm'); if (f && confirm(`Raum „${f.dataset.r}“ auflösen? Die Geräte bleiben, nur ohne Raum.`)) raumSpeichern(f, true); },
   'ort-teilen': () => ortTeilen(false),
+  'karte-stil': el => karteStilWechseln(el),
   'ort-stopp': () => ortStopp(),
   'ort-zeigen': el => ortZeigen(el.dataset.name),
   'zuhause-setzen': () => zuhauseSetzen(),
