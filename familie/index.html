@@ -2305,6 +2305,7 @@ function fillRaum(box) {
     tiles = namen.map(x => `<p class="sub-h">${x ? esc(x) : 'Ohne Raum'}</p><div class="devs">${gruppen[x].map(devTile).join('')}</div>`).join('');
   } else tiles = `<div class="devs">${liste.map(devTile).join('')}</div>`;
   box.innerHTML = `<div class="chips">${chips}</div>${tiles}
+    ${r && r !== '*' ? `<button class="btn sm" style="margin:2px 0 4px" data-action="raum-edit">${ic('plus', 15)} Geräte hinzufügen</button>` : ''}
     ${versteckt ? `<button class="btn sm" style="margin-top:4px" data-action="smart-hidden">${state.smartAlle ? 'Ausgeblendete verstecken' : `${versteckt} ausgeblendet – zeigen`}</button>` : ''}
     <p class="hint" style="margin:16px 4px 0">Tipp aufs Symbol schaltet ein und aus. Tipp auf den Namen: Helligkeit, Farbe, Raum und Name.</p>`;
 }
@@ -2424,7 +2425,7 @@ function devSheet(id) {
         <label class="switch-row"><span><b>Auf der Startseite</b><small>Als Kachel unter „Zuhause“</small></span><input type="checkbox" class="switch" id="dStart" ${startJetzt ? 'checked' : ''}></label>
         <label class="switch-row"><span><b>Ausblenden</b><small>Nicht mehr in der Liste zeigen</small></span><input type="checkbox" class="switch" id="dAus" ${e.aus ? 'checked' : ''}></label>
         <button class="btn btn-primary" style="width:100%">Speichern</button>
-        <p class="hint" style="margin:12px 2px 0">${esc(ANB[d.anbieter]?.[0] || d.anbieter)}${d.modell ? ' · ' + esc(d.modell) : ''} · ${d.online ? 'online' : 'offline'}</p>
+        <p class="hint" style="margin:12px 2px 0">${esc(ANB[d.anbieter]?.[0] || d.anbieter)}${d.konto && (state.smart?.anbieter?.govee?.konten?.length || 0) > 1 ? ' · Konto ' + esc(d.konto) : ''}${d.modell ? ' · ' + esc(d.modell) : ''} · ${d.online ? 'online' : 'offline'}</p>
       </form>
     </details></div>`);
   if (d.kann.szenen) loadSzenen(id);
@@ -2464,10 +2465,40 @@ function smartSetup() {
   const a = state.smart?.anbieter || {};
   openSheet(`<div class="sheet-h c-amber"><span class="shape">${ic('link')}</span><h3>Geräte verbinden</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
     <p class="muted" style="margin:-4px 2px 16px;font-size:14px">Einmal einrichten – dann kann die ganze Familie die Geräte steuern. Die Zugangsdaten bleiben auf dem Server und sind danach in der App für niemanden sichtbar.</p>
-    <div class="setup-list">${Object.entries(ANB).map(([k, [n, c, ico, t]]) => `<button class="setup-row c-${c}" data-action="smart-setup-1" data-a="${k}"><span class="shape">${ic(ico)}</span><span class="t"><b>${n}</b><small>${t}</small></span>${a[k]?.aktiv ? `<span class="chip c-${a[k].fehler ? 'red' : 'green'}">${a[k].fehler ? 'Fehler' : 'Verbunden'}</span>` : ic('right', 18)}</button>`).join('')}</div>`);
+    <div class="setup-list">${Object.entries(ANB).map(([k, [n, c, ico, t]]) => `<button class="setup-row c-${c}" data-action="smart-setup-1" data-a="${k}"><span class="shape">${ic(ico)}</span><span class="t"><b>${n}</b><small>${t}</small></span>${a[k]?.aktiv ? `<span class="chip c-${a[k].fehler ? 'red' : 'green'}">${a[k].fehler ? 'Fehler' : (a[k].konten?.length > 1 ? a[k].konten.length + ' Konten' : 'Verbunden')}</span>` : ic('right', 18)}</button>`).join('')}</div>`);
+}
+const GOVEE_STEPS = `<li>In der <b>Govee Home</b>-App unten rechts aufs <b>Profil</b> tippen.</li>
+  <li>Oben rechts aufs <b>Zahnrad</b> → <b>„API-Schlüssel beantragen“</b> (englisch „Apply for API Key“).</li>
+  <li>Name und Grund eintragen (z. B. „Familien-App“) – der Schlüssel kommt <b>per E-Mail</b>.</li>
+  <li>Den Schlüssel hier einfügen. Er gilt für alle Govee-Geräte in diesem Konto.</li>`;
+/* Govee: mehrere Konten (z. B. jedes Familienmitglied mit eigener Govee-App), je Konto optional ein Raum */
+function goveeSheet(editId) {
+  const a = state.smart?.anbieter?.govee || {}, konten = a.konten || [], edit = editId ? konten.find(k => k.id === editId) : null;
+  const vorschlaege = [...new Set([...raeume(), ...state.members])];
+  const liste = konten.length ? `<p class="sub-h" style="margin:0 2px 8px">Verbundene Konten</p><div class="pick" style="margin-bottom:18px">${konten.map(k => `<div class="pick-row"><span class="shape sm c-amber">${ic('bulb', 16)}</span><span class="t">${esc(k.name)}<small>${k.anzahl} Gerät${k.anzahl === 1 ? '' : 'e'}${k.raum ? ' · Raum ' + esc(k.raum) : ''}</small></span><button type="button" class="ghost" data-action="govee-edit" data-k="${esc(k.id)}" aria-label="${esc(k.name)} ändern">${ic('edit', 16)}</button><button type="button" class="ghost" data-action="govee-weg" data-k="${esc(k.id)}" data-n="${esc(k.name)}" aria-label="${esc(k.name)} entfernen">${ic('trash', 16)}</button></div>`).join('')}</div>` : '';
+  openSheet(`<div class="sheet-h c-amber"><span class="shape">${ic('bulb')}</span><h3>Govee</h3>${konten.length ? `<span class="chip c-${a.fehler ? 'red' : 'green'}">${a.fehler ? 'Fehler' : konten.length > 1 ? konten.length + ' Konten' : 'Verbunden'}</span>` : ''}<button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <button class="back" data-action="${edit ? 'smart-setup-1' : 'smart-setup'}" data-a="govee">${ic('left', 18)} ${edit ? 'Alle Govee-Konten' : 'Alle Anbieter'}</button>
+    ${a.fehler && !edit ? `<p class="setup-err" style="margin:0 2px 12px">${esc(a.fehler)}</p>` : ''}
+    ${edit ? '' : liste}
+    <p class="sub-h" style="margin:0 2px 8px">${edit ? `Konto „${esc(edit.name)}“ ändern` : konten.length ? 'Weiteres Konto hinzufügen' : 'Konto verbinden'}</p>
+    ${edit ? '' : konten.length ? `<details class="dev-set" style="border:0;padding:0;margin-bottom:6px"><summary>${ic('info', 17)} So bekommst du einen Schlüssel</summary><ol class="steps" style="margin:0 0 14px">${GOVEE_STEPS}</ol></details>` : `<ol class="steps" style="margin:0 0 18px">${GOVEE_STEPS}</ol>`}
+    <form id="setupForm" data-a="govee" data-konto="${edit ? esc(edit.id) : ''}" class="c-amber" autocomplete="off">
+      <div class="grid2"><div class="field"><label for="gName">Name</label><input id="gName" class="input" maxlength="30" value="${esc(edit?.name || '')}" placeholder="${konten.length ? 'z. B. Matteo' : 'z. B. Familie'}" autocapitalize="words"></div>
+        <div class="field"><label for="gRaum">Raum (optional)</label><input id="gRaum" class="input" maxlength="30" list="gRaeume" value="${esc(edit?.raum || '')}" placeholder="z. B. Matteo" autocapitalize="words"><datalist id="gRaeume">${vorschlaege.map(r => `<option value="${esc(r)}">`).join('')}</datalist></div></div>
+      <div class="field"><label for="sKey">API-Schlüssel</label><input id="sKey" class="input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${edit ? 'Leer lassen = unverändert' : 'z. B. 1a2b3c4d-…'}"></div>
+      <p class="hint" style="margin:-6px 2px 16px">Mit Raum landen alle Lampen dieses Kontos, die noch keinen Raum haben, gleich dort.</p>
+      <p class="setup-err" id="setupErr" role="alert"></p>
+      <div class="sheet-actions"><span class="grow"></span><button class="btn btn-primary" id="setupBtn">${edit ? 'Speichern' : 'Verbinden'}</button></div>
+    </form>`);
+}
+async function goveeWeg(id, name) {
+  if (!confirm(`Govee-Konto „${name}“ entfernen? Seine Geräte verschwinden aus der App, der Schlüssel wird gelöscht.`)) return;
+  try { await smartFn({ aktion: 'smart-einrichten', anbieter: 'govee', konto: id, trennen: true }); toast(`„${name}“ entfernt.`); closeSheet(); await loadSmart(true, true); }
+  catch (e) { toast(errMsg(e), 'bad'); }
 }
 function setupSheet(k) {
   if (!ANB[k]) return;
+  if (k === 'govee') return goveeSheet();
   const a = state.smart?.anbieter?.[k] || {}, [n, c, ico] = ANB[k], on = !!a.aktiv;
   const geheim = (id, label, ph) => `<div class="field"><label for="${id}">${label}</label><input id="${id}" class="input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${esc(ph)}"></div>`;
   const text = 'autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
@@ -2508,7 +2539,7 @@ function setupSheet(k) {
 async function smartEinrichten(form) {
   const k = form.dataset.a, v = id => ($('#' + id)?.value || '').trim();
   const body = { aktion: 'smart-einrichten', anbieter: k };
-  if (k === 'govee') body.key = v('sKey');
+  if (k === 'govee') Object.assign(body, { key: v('sKey'), name: v('gName'), raum: v('gRaum'), ...(form.dataset.konto ? { konto: form.dataset.konto } : {}) });
   if (k === 'shelly') Object.assign(body, { host: v('sHost'), key: v('sKey'), ids: v('sIds') });
   if (k === 'tuya') Object.assign(body, { region: v('sRegion'), id: v('sId'), secret: v('sSecret') });
   const btn = $('#setupBtn'), err = $('#setupErr');
@@ -2516,7 +2547,8 @@ async function smartEinrichten(form) {
   try {
     const j = await smartFn(body);
     closeSheet();
-    toast(`${ANB[k][0]} verbunden – ${j.anzahl} ${j.anzahl === 1 ? 'Gerät' : 'Geräte'} gefunden.`, 'ok');
+    const wer = k === 'govee' && body.name ? `Govee „${body.name}“` : ANB[k][0];
+    toast(k === 'govee' && body.konto ? 'Gespeichert.' : `${wer} verbunden – ${j.anzahl} ${j.anzahl === 1 ? 'Gerät' : 'Geräte'} gefunden.`, 'ok');
     if (j.unbekannt?.length) setTimeout(() => toast('Nicht gefunden: ' + j.unbekannt.join(', '), 'warn'), 1500);
     state.smartErr = null;
     if (state.tab !== 'zuhause') go('zuhause');
@@ -2748,6 +2780,8 @@ const ACTIONS = {
   'smart-setup': () => smartSetup(),
   'smart-setup-1': el => setupSheet(el.dataset.a),
   'smart-trennen': el => smartTrennen(el.dataset.a),
+  'govee-edit': el => goveeSheet(el.dataset.k),
+  'govee-weg': el => goveeWeg(el.dataset.k, el.dataset.n),
   'smart-alle-aus': () => { const ids = lichterAn().map(d => d.id); if (ids.length) devSet(ids, { an: false }); },
   'smart-refresh': el => { el.classList.add('busy'); state.smartErr = null; loadSmart(false, true); },
   'smart-hidden': () => { state.smartAlle = !state.smartAlle; fillZuhause(); },
