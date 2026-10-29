@@ -12,9 +12,19 @@ Eine Seite: `index.html`. Google-Drive-Fotoordner: Button „Ordner“ in der Ko
 - Instagram-Direktnachrichten: Reiter „Instagram“ unter Anfragen (Instagram API mit Instagram-Login, graph.instagram.com). Der Token liegt verschlüsselt in `admin-key.json` (`ig`) und wird vom Panel vor Ablauf (60 Tage) automatisch verlängert (Commit „Admin: Instagram-Zugang verlängert“).
 - Besucherstatistik: `index.html` zählt (nur wenn `content.json` `stats: true` und `inbox` hat) Seitenaufrufe und geöffnete Fotos in Supabase-Tabelle `besuche` – ohne Cookies, ohne IP, nicht bei „Do Not Track“ und nicht auf Geräten, auf denen das Panel offen war (`mapq_admin_notrack`). Auswertung per RPC `mapq_statistik` in der Panel-Übersicht.
 - Push bei neuer Anfrage: Supabase-Trigger `mapq_push` → Edge Function `mapq-push` (Code in `supabase/functions/mapq-push/index.ts`, in Supabase mit „Verify JWT“ aus bereitgestellt) → Web-Push an die mapq-Admin-App (Logo, Service Worker `admin-sw.js`, Scope `/admin`). Geräte stehen in Tabelle `push_abos`; VAPID-Schlüssel, `push_secret` und `push_url` in `mapq_einstellungen`. Ist kein Gerät angemeldet, geht der Trigger auf ntfy.sh (Thema `push_thema`) zurück. Im Panel: Einstellungen → Push & Statistik („Benachrichtigungen erlauben“ – auf dem iPhone nur in der App vom Home-Bildschirm). Thema, Secret und privater VAPID-Schlüssel sind geheim, nie ins Repo schreiben.
-- SEO: Titel/Beschreibung, JSON-LD (ProfessionalService, Person, WebSite), `sitemap.xml`, `robots.txt` (sperrt /admin).
+- SEO: Titel/Beschreibung, JSON-LD (ProfessionalService, Person, WebSite), `sitemap.xml`, `robots.txt` (sperrt /admin und /familie).
 - Das Panel lässt sich als App aufs Handy legen: `admin-manifest.json` und `admin-icon-*.png` (MAPQ-Logo, hellgrau auf Schwarz; auch `push-icon.png` für ntfy). Neues Icon wirkt am iPhone erst nach erneutem „Zum Home-Bildschirm“.
 - Anmeldung im Panel nur mit Passwort: `admin-key.json` enthält GitHub-Token und Postfach-Zugang, verschlüsselt (AES-GCM, Schlüssel per PBKDF2-SHA256 aus dem Passwort). Datei nie löschen oder von Hand ändern – sonst kommt Matteo nicht mehr ins Panel.
+
+## Familien-App (mapq.at/familie)
+
+- `familie/index.html` (eine Datei), `familie/sw.js` (Push), `familie/manifest.json`, `familie/icon-*.png` (MAPQ-Logo invertiert). noindex, `robots.txt` sperrt /familie.
+- Gestaltung bewusst anders als mapq.at: Matteo wollte sie wie die Home-Assistant-Apps (dunkle runde Karten im Mushroom-Stil, farbige Symbole je Bereich, Start-Übersicht mit Wetter, Chips, Kacheln). Nicht auf Schwarz-Weiß zurückbauen.
+- Bereiche: Start, Listen (Einkauf/To-dos), Kalender (auch jährliche Termine), Fotos, Pinnwand, „Ich“ (Avatar oben rechts).
+- Daten in Supabase (gleiches Projekt, URL/Key aus `content.json` → `inbox`): Tabellen `familie_*`, privater Storage-Bucket `familie` (Fotos 1600 px + `klein/` 480 px, signierte URLs). SQL: `supabase/familie.sql` – steht auch im Panel als `FAMILY_SQL`; beide gleich halten.
+- Anmeldung: ein gemeinsames Konto `familie@mapq.at`. Das Passwort setzt Matteo im Panel (Einstellungen → Familien-App) über die Edge Function `mapq-push` (`aktion: familie-passwort`, Auth-Admin-API). Zugriff nur über `mapq_ist_familie()` (Konto-ID in `mapq_einstellungen.familie_user`) oder als Admin. Wer etwas eingetragen hat, steht im Feld `von` (Name, den jeder auf seinem Handy wählt).
+- Push: Trigger `familie_push` → `mapq-push` (`ziel: familie`) an alle Familien-Handys außer denen der Person selbst; pro Person und Bereich höchstens alle 3 Minuten (Pinnwand immer).
+- Wetter von open-meteo.com, Ort pro Gerät einstellbar (Standard Innsbruck).
 
 ## Design-System
 

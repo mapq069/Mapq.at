@@ -2,7 +2,10 @@
 //
 // Aufrufe:
 //  • vom Datenbank-Trigger bei neuer Anfrage: Header "x-mapq-secret" (aus mapq_einstellungen.push_secret)
+//  • vom Datenbank-Trigger der Familien-App: gleicher Header, Body { ziel: "familie", titel, text, url, tag, von }
 //  • vom Panel als Test: Header "Authorization: Bearer <Login-Token>" + "apikey" – nur für den Admin
+//  • vom Panel { aktion: "familie-passwort", passwort } – legt das Familien-Konto an bzw. ändert sein Passwort (nur Admin)
+//  • von der Familien-App { aktion: "familie-test", endpoint } – Test an dieses eine Gerät (nur Familien-Konto)
 //
 // Nur Standard-WebCrypto: VAPID (RFC 8292) und aes128gcm-Verschlüsselung (RFC 8291 / RFC 8188).
 // In Supabase mit ausgeschalteter „JWT-Verifizierung“ bereitstellen – die Prüfung passiert hier.
@@ -74,7 +77,8 @@ export async function vapidHeader(endpoint: string, subject: string, publicKey: 
   return `vapid t=${head}.${body}.${b64u.enc(sig)}, k=${publicKey}`;
 }
 
-type Abo = { id: string; endpoint: string; p256dh: string; auth: string };
+type Abo = { id: string; endpoint: string; p256dh: string; auth: string; name?: string | null };
+const FAMILIE_EMAIL = "familie@mapq.at";
 type Nachricht = { title: string; body: string; url: string; tag: string };
 
 /** Schickt eine Nachricht an ein Abo. Gibt den HTTP-Status des Push-Dienstes zurück. */
@@ -112,8 +116,21 @@ async function handler(req: Request): Promise<Response> {
     const headers: Record<string, string> = { apikey: service, "Content-Type": "application/json" };
     if (service.startsWith("eyJ")) headers.Authorization = `Bearer ${service}`;
     const r = await fetch(`${base}/rest/v1/${path}`, { ...init, headers: { ...headers, ...(init.headers as Record<string, string> ?? {}) } });
-    if (!r.ok) throw new Error(`${path}: ${r.status} ${await r.text()}`);
-    return r.status === 204 ? null : r.json();
+    const txt = await r.text();
+    if (!r.ok) throw new Error(`${path}: ${r.status} ${txt}`);
+    return txt ? JSON.parse(txt) : null;
+  };
+
+  // Prüft mit dem Login-Token des Aufrufers eine der Rollen-Funktionen (mapq_ist_admin / mapq_ist_familie)
+  const rolle = async (fn: string) => {
+    const auth = req.headers.get("authorization") ?? "";
+    if (!/^Bearer\s+\S+/.test(auth)) return false;
+    const r = await fetch(`${base}/rest/v1/rpc/${fn}`, {
+      method: "POST",
+      headers: { apikey: req.headers.get("apikey") ?? "", Authorization: auth, "Content-Type": "application/json" },
+      body: "{}",
+    });
+    return r.ok && (await r.json()) === true;
   };
 
   try {
@@ -121,9 +138,22 @@ async function handler(req: Request): Promise<Response> {
     const s = Object.fromEntries(rows.map((r) => [r.schluessel, r.wert]));
     const data = await req.json().catch(() => ({}));
     let msg: Nachricht;
+    let tabelle = "push_abos";
+    let passt = (_a: Abo) => true;
 
     const secret = req.headers.get("x-mapq-secret");
-    if (secret && s.push_secret && secret === s.push_secret) {
+    if (secret && s.push_secret && secret === s.push_secret && data.ziel === "familie") {
+      // Familien-App: an alle Familien-Geräte außer an die der Person, die etwas eingetragen hat
+      tabelle = "familie_abos";
+      const von = typeof data.von === "string" && data.von ? data.von : null;
+      passt = (a) => !von || a.name !== von;
+      msg = {
+        title: String(data.titel ?? "Familie").slice(0, 80),
+        body: String(data.text ?? "").slice(0, 240),
+        url: typeof data.url === "string" && data.url.startsWith("/familie/") ? data.url : "/familie/",
+        tag: String(data.tag ?? "familie").slice(0, 80),
+      };
+    } else if (secret && s.push_secret && secret === s.push_secret) {
       const vorname = String(data.name ?? "").trim().split(/\s+/)[0];
       msg = {
         title: "Neue Anfrage",
@@ -131,27 +161,28 @@ async function handler(req: Request): Promise<Response> {
         url: "/admin.html#inquiries",
         tag: `anfrage-${data.id ?? Date.now()}`,
       };
+    } else if (data.aktion === "familie-passwort") {
+      if (!(await rolle("mapq_ist_admin"))) return json({ error: "Kein Zugriff" }, 401);
+      return json(await familienPasswort(String(data.passwort ?? ""), s));
+    } else if (data.aktion === "familie-test") {
+      if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
+      tabelle = "familie_abos";
+      passt = (a) => a.endpoint === data.endpoint;
+      msg = { title: "Familie", body: "Test: Benachrichtigungen funktionieren.", url: "/familie/#mehr", tag: "familie-test" };
     } else {
       // Test aus dem Panel – nur wenn der Login-Token zum Admin gehört
-      const auth = req.headers.get("authorization") ?? "";
-      const apikey = req.headers.get("apikey") ?? "";
-      const r = await fetch(`${base}/rest/v1/rpc/mapq_ist_admin`, {
-        method: "POST",
-        headers: { apikey, Authorization: auth, "Content-Type": "application/json" },
-        body: "{}",
-      });
-      if (!r.ok || (await r.json()) !== true) return json({ error: "Kein Zugriff" }, 401);
+      if (!(await rolle("mapq_ist_admin"))) return json({ error: "Kein Zugriff" }, 401);
       msg = { title: "mapq.at Admin", body: "Test: Benachrichtigungen funktionieren.", url: "/admin.html", tag: "test" };
     }
 
     const vapid = { subject: s.vapid_subject, publicKey: s.vapid_public, privateKey: s.vapid_private };
-    const abos: Abo[] = await db("push_abos?select=id,endpoint,p256dh,auth");
+    const abos: Abo[] = ((await db(`${tabelle}?select=id,endpoint,p256dh,auth${tabelle === "familie_abos" ? ",name" : ""}`)) as Abo[]).filter(passt);
     let sent = 0, removed = 0, failed = 0;
     await Promise.all(abos.map(async (abo) => {
       try {
         const status = await sendPush(abo, msg, vapid);
         if (status >= 200 && status < 300) sent++;
-        else if (status === 404 || status === 410) { await db(`push_abos?id=eq.${abo.id}`, { method: "DELETE" }); removed++; }
+        else if (status === 404 || status === 410) { await db(`${tabelle}?id=eq.${abo.id}`, { method: "DELETE" }); removed++; }
         else { failed++; console.error("Push abgelehnt", status, new URL(abo.endpoint).host); }
       } catch (e) { failed++; console.error("Push-Fehler", (e as Error).message); }
     }));
@@ -159,6 +190,42 @@ async function handler(req: Request): Promise<Response> {
   } catch (e) {
     console.error(e);
     return json({ error: (e as Error).message }, 500);
+  }
+
+  /** Legt das Familien-Konto an (beim ersten Mal) oder ändert sein Passwort – über die Auth-Admin-API. */
+  async function familienPasswort(passwort: string, s: Record<string, string>) {
+    if (passwort.length < 8) throw new Error("Das Passwort braucht mindestens 8 Zeichen.");
+    const admin = async (path: string, method: string, body?: unknown) => {
+      const headers: Record<string, string> = { apikey: service, "Content-Type": "application/json" };
+      if (service.startsWith("eyJ")) headers.Authorization = `Bearer ${service}`;
+      const r = await fetch(`${base}/auth/v1/admin/${path}`, { method, headers, body: body ? JSON.stringify(body) : undefined });
+      const j = await r.json().catch(() => ({}));
+      return { ok: r.ok, status: r.status, j };
+    };
+    let id: string | undefined = s.familie_user;
+    if (id) {
+      const r = await admin(`users/${id}`, "PUT", { password: passwort });
+      if (r.ok) return { ok: true, neu: false };
+      if (r.status !== 404) throw new Error(r.j.msg || r.j.message || `Passwort ändern ging nicht (${r.status})`);
+      id = undefined;
+    }
+    const r = await admin("users", "POST", { email: FAMILIE_EMAIL, password: passwort, email_confirm: true, user_metadata: { rolle: "familie" } });
+    if (r.ok) id = r.j.id;
+    else {
+      // Gibt es das Konto schon (z. B. von Hand angelegt)? Dann übernehmen.
+      const liste = await admin("users?page=1&per_page=1000", "GET");
+      const u = (liste.j.users ?? []).find((x: { email?: string }) => x.email?.toLowerCase() === FAMILIE_EMAIL);
+      if (!u) throw new Error(r.j.msg || r.j.message || `Familien-Konto anlegen ging nicht (${r.status})`);
+      const p = await admin(`users/${u.id}`, "PUT", { password: passwort, email_confirm: true });
+      if (!p.ok) throw new Error(p.j.msg || p.j.message || `Passwort setzen ging nicht (${p.status})`);
+      id = u.id;
+    }
+    await db("mapq_einstellungen?on_conflict=schluessel", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({ schluessel: "familie_user", wert: id }),
+    });
+    return { ok: true, neu: true };
   }
 }
 

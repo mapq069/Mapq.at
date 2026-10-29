@@ -503,6 +503,8 @@ const ICONS = {
   user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
   bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
   chart: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  share: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/>',
   send: '<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>'
 };
 const ic = (n, s = 20, cls = '') => `<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -1278,6 +1280,7 @@ async function loadExtras() {
   state.extras.checked = true;
   if (state.view === 'settings' && !$('#sheetWrap').classList.contains('open')) renderView();
   loadPushInfo();
+  loadFamilie();
 }
 async function loadStats() {
   if (inqMode() !== 'live' || !state.content?.stats) return;
@@ -1622,6 +1625,63 @@ function extrasSection() {
     ${setup}${ntfy}
     <label class="switch-row" style="margin:4px 0 0"><span><b>Besucherstatistik auf mapq.at</b><small>${c.stats ? 'Aktiv' : 'Ohne Cookies und ohne IP-Adressen. Nach dem Einschalten veröffentlichen.'}</small></span><input type="checkbox" class="switch" id="statsSwitch" ${c.stats ? 'checked' : ''} ${c.inbox ? '' : 'disabled'}></label>
     ${c.inbox ? '' : '<p class="hint" style="margin:8px 0 0">Schalte dafür zuerst „Formular auf mapq.at aktivieren“ ein.</p>'}
+  </section>`;
+}
+
+
+/* ---------- Familien-App (mapq.at/familie) ---------- */
+/* SQL-Quelle: supabase/familie.sql – bei Änderungen beide anpassen. */
+const FAMILY_SQL = "-- Familien-App mapq.at/familie (kann gefahrlos mehrmals ausgeführt werden)\n-- Setzt voraus: Anfragen-Postfach (mapq_ist_admin) und „Push & Statistik“ (mapq_einstellungen, push_url, push_secret).\n-- Zugriff hat nur das Familien-Konto (dessen ID die Funktion mapq-push in mapq_einstellungen.familie_user ablegt) und der Admin.\n\ngrant select, insert, update on public.mapq_einstellungen to service_role;\n\ncreate or replace function public.mapq_ist_familie()\nreturns boolean language sql stable security definer set search_path = ''\nas $$ select auth.uid() is not null and (\n  auth.uid()::text = (select wert from public.mapq_einstellungen where schluessel = 'familie_user')\n  or public.mapq_ist_admin()) $$;\nrevoke all on function public.mapq_ist_familie() from public, anon;\ngrant execute on function public.mapq_ist_familie() to authenticated;\n\n-- Tabellen\ncreate table if not exists public.familie_mitglieder (\n  name text primary key check (char_length(name) between 1 and 30),\n  erstellt timestamptz not null default now()\n);\ncreate table if not exists public.familie_eintraege (\n  id uuid primary key default gen_random_uuid(),\n  erstellt timestamptz not null default now(),\n  liste text not null check (liste in ('einkauf', 'todo')),\n  text text not null check (char_length(text) between 1 and 200),\n  von text,\n  fuer text,\n  erledigt boolean not null default false,\n  erledigt_von text,\n  erledigt_am timestamptz\n);\ncreate index if not exists familie_eintraege_liste on public.familie_eintraege (liste, erledigt);\ncreate table if not exists public.familie_termine (\n  id uuid primary key default gen_random_uuid(),\n  erstellt timestamptz not null default now(),\n  titel text not null check (char_length(titel) between 1 and 120),\n  datum date not null,\n  zeit time,\n  ort text check (char_length(ort) <= 120),\n  notiz text check (char_length(notiz) <= 1000),\n  fuer text,\n  von text,\n  jaehrlich boolean not null default false\n);\ncreate index if not exists familie_termine_datum on public.familie_termine (datum);\ncreate table if not exists public.familie_fotos (\n  id uuid primary key default gen_random_uuid(),\n  erstellt timestamptz not null default now(),\n  pfad text not null,\n  klein text not null,\n  breite int,\n  hoehe int,\n  text text check (char_length(text) <= 300),\n  von text\n);\ncreate index if not exists familie_fotos_erstellt on public.familie_fotos (erstellt desc);\ncreate table if not exists public.familie_nachrichten (\n  id uuid primary key default gen_random_uuid(),\n  erstellt timestamptz not null default now(),\n  text text not null check (char_length(text) between 1 and 2000),\n  von text\n);\ncreate index if not exists familie_nachrichten_erstellt on public.familie_nachrichten (erstellt desc);\ncreate table if not exists public.familie_abos (\n  id uuid primary key default gen_random_uuid(),\n  erstellt timestamptz not null default now(),\n  endpoint text not null unique,\n  p256dh text not null,\n  auth text not null,\n  name text,\n  geraet text\n);\ncreate table if not exists public.familie_push_log (\n  art text not null,\n  von text not null,\n  zeit timestamptz not null default now(),\n  primary key (art, von)\n);\n\n-- Nur die Familie (und der Admin) dürfen lesen und schreiben\ndo $$\ndeclare t text;\nbegin\n  foreach t in array array['familie_mitglieder', 'familie_eintraege', 'familie_termine', 'familie_fotos', 'familie_nachrichten', 'familie_abos'] loop\n    execute format('alter table public.%I enable row level security', t);\n    execute format('drop policy if exists \"familie\" on public.%I', t);\n    execute format('create policy \"familie\" on public.%I for all to authenticated using (public.mapq_ist_familie()) with check (public.mapq_ist_familie())', t);\n    execute format('revoke all on public.%I from anon', t);\n    execute format('grant select, insert, update, delete on public.%I to authenticated', t);\n    execute format('grant select, delete on public.%I to service_role', t);\n  end loop;\nend $$;\nalter table public.familie_push_log enable row level security;\nrevoke all on public.familie_push_log from anon, authenticated;\n\n-- Fotos: privater Speicher, nur für die Familie\ninsert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)\n  values ('familie', 'familie', false, 8388608, array['image/jpeg', 'image/png', 'image/webp'])\n  on conflict (id) do nothing;\ndrop policy if exists \"familie_lesen\" on storage.objects;\ncreate policy \"familie_lesen\" on storage.objects for select to authenticated\n  using (bucket_id = 'familie' and public.mapq_ist_familie());\ndrop policy if exists \"familie_hochladen\" on storage.objects;\ncreate policy \"familie_hochladen\" on storage.objects for insert to authenticated\n  with check (bucket_id = 'familie' and public.mapq_ist_familie());\ndrop policy if exists \"familie_loeschen\" on storage.objects;\ncreate policy \"familie_loeschen\" on storage.objects for delete to authenticated\n  using (bucket_id = 'familie' and public.mapq_ist_familie());\n\n-- Infos für die App und das Panel\ncreate or replace function public.mapq_familie_info()\nreturns jsonb language sql stable security definer set search_path = ''\nas $$ select case when public.mapq_ist_familie() then jsonb_build_object(\n  'vapid_public', (select wert from public.mapq_einstellungen where schluessel = 'vapid_public')) end $$;\nrevoke all on function public.mapq_familie_info() from public, anon;\ngrant execute on function public.mapq_familie_info() to authenticated;\n\ncreate or replace function public.mapq_familie_status()\nreturns jsonb language sql stable security definer set search_path = ''\nas $$ select case when public.mapq_ist_admin() then jsonb_build_object(\n  'passwort', exists (select 1 from public.mapq_einstellungen where schluessel = 'familie_user'),\n  'mitglieder', (select coalesce(jsonb_agg(name order by name), '[]'::jsonb) from public.familie_mitglieder),\n  'geraete', (select count(*) from public.familie_abos),\n  'fotos', (select count(*) from public.familie_fotos)) end $$;\nrevoke all on function public.mapq_familie_status() from public, anon;\ngrant execute on function public.mapq_familie_status() to authenticated;\n\n-- Push an alle anderen Familien-Handys, wenn jemand etwas einträgt\ncreate or replace function public.mapq_familie_push()\nreturns trigger language plpgsql security definer set search_path = ''\nas $$\ndeclare\n  r jsonb := to_jsonb(new);\n  wer text := coalesce(r->>'von', '');\n  ziel text; geheim text; v_art text; titel text; txt text; tab text;\nbegin\n  select wert into ziel from public.mapq_einstellungen where schluessel = 'push_url';\n  select wert into geheim from public.mapq_einstellungen where schluessel = 'push_secret';\n  if ziel is null or geheim is null then return new; end if;\n  if not exists (select 1 from public.familie_abos a where a.name is distinct from nullif(wer, '')) then return new; end if;\n  v_art := case tg_table_name\n    when 'familie_eintraege' then r->>'liste'\n    when 'familie_termine' then 'termin'\n    when 'familie_fotos' then 'foto'\n    else 'nachricht' end;\n  -- Bündeln: pro Person und Bereich höchstens alle 3 Minuten eine Mitteilung (Pinnwand immer)\n  if v_art <> 'nachricht' then\n    if exists (select 1 from public.familie_push_log l where l.art = v_art and l.von = wer and l.zeit > now() - interval '3 minutes') then\n      return new;\n    end if;\n    insert into public.familie_push_log (art, von, zeit) values (v_art, wer, now())\n      on conflict (art, von) do update set zeit = excluded.zeit;\n  end if;\n  titel := case v_art\n    when 'einkauf' then 'Einkaufsliste'\n    when 'todo' then 'Neues To-do'\n    when 'termin' then 'Neuer Termin'\n    when 'foto' then 'Neue Fotos'\n    else coalesce(nullif(wer, ''), 'Pinnwand') end;\n  txt := case v_art\n    when 'einkauf' then coalesce(nullif(wer, '') || ': ', '') || (r->>'text')\n    when 'todo' then coalesce(nullif(wer, '') || ': ', '') || (r->>'text') || coalesce(' → ' || nullif(r->>'fuer', ''), '')\n    when 'termin' then (r->>'titel') || ' · ' || to_char((r->>'datum')::date, 'DD.MM.') || coalesce(' ' || left(r->>'zeit', 5), '') || coalesce(' (' || nullif(wer, '') || ')', '')\n    when 'foto' then coalesce(nullif(wer, ''), 'Jemand') || ' hat Fotos geteilt' || coalesce(': ' || nullif(r->>'text', ''), '')\n    else left(r->>'text', 180) end;\n  tab := case v_art when 'einkauf' then 'listen' when 'todo' then 'listen' when 'termin' then 'kalender' when 'foto' then 'fotos' else 'pinnwand' end;\n  perform net.http_post(\n    url := ziel,\n    body := jsonb_build_object('ziel', 'familie', 'titel', titel, 'text', txt, 'url', '/familie/#' || tab,\n      'tag', case when v_art = 'nachricht' then 'familie-n-' || (r->>'id') else 'familie-' || v_art end,\n      'von', nullif(wer, '')),\n    headers := jsonb_build_object('Content-Type', 'application/json', 'x-mapq-secret', geheim),\n    timeout_milliseconds := 10000\n  );\n  return new;\nexception when others then\n  return new; -- ein Push-Fehler darf nie einen Eintrag verhindern\nend $$;\n\ndrop trigger if exists familie_push on public.familie_eintraege;\ncreate trigger familie_push after insert on public.familie_eintraege for each row execute function public.mapq_familie_push();\ndrop trigger if exists familie_push on public.familie_termine;\ncreate trigger familie_push after insert on public.familie_termine for each row execute function public.mapq_familie_push();\ndrop trigger if exists familie_push on public.familie_fotos;\ncreate trigger familie_push after insert on public.familie_fotos for each row execute function public.mapq_familie_push();\ndrop trigger if exists familie_push on public.familie_nachrichten;\ncreate trigger familie_push after insert on public.familie_nachrichten for each row execute function public.mapq_familie_push();\n";
+state.fam = { status: null, loaded: false, missing: false, busy: false };
+async function loadFamilie() {
+  if (inqMode() !== 'live') return;
+  try { state.fam.status = await SB.req('/rpc/mapq_familie_status', { method: 'POST', body: '{}' }); state.fam.missing = false; }
+  catch (e) { state.fam.status = null; state.fam.missing = /could not find|does not exist|PGRST202|42883/i.test(e.message); }
+  state.fam.loaded = true;
+  if (state.view === 'settings' && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+async function famPasswort() {
+  const el = $('#famPass'), pw = el ? el.value : '';
+  if (pw.length < 8) { toast('Das Familien-Passwort braucht mindestens 8 Zeichen.', 'warn'); el && el.focus(); return; }
+  state.fam.busy = true; renderView();
+  try {
+    const r = await sbFn('mapq-push', { aktion: 'familie-passwort', passwort: pw });
+    toast(r.neu ? 'Familien-Konto angelegt – deine Familie kann sich jetzt anmelden.' : 'Familien-Passwort geändert.', 'ok');
+    await loadFamilie();
+  } catch (e) { toast(e.status === 404 ? 'Die Funktion „mapq-push“ in Supabase ist noch die alte – siehe Einrichtung.' : 'Hat nicht geklappt: ' + e.message, 'bad'); }
+  state.fam.busy = false; renderView();
+}
+const FAM_INVITE = 'Hier ist unsere Familien-App mit Einkaufsliste, Kalender, Fotos und Pinnwand: https://mapq.at/familie/\n\nAm iPhone in Safari öffnen → Teilen → „Zum Home-Bildschirm“. Das Passwort sag ich dir persönlich.';
+async function famShare() {
+  if (navigator.share) { try { await navigator.share({ title: 'Familien-App', text: FAM_INVITE }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  try { await navigator.clipboard.writeText(FAM_INVITE); toast('Einladung kopiert – einfach in WhatsApp einfügen.', 'ok'); } catch { toast('Kopieren ging nicht.', 'bad'); }
+}
+function familieSection() {
+  const live = inqMode() === 'live', f = state.fam, st = f.status;
+  const head = `<div class="sec-h"><h2>${ic('home')} Familien-App</h2>${st?.passwort ? '<span class="chip ok">Eingerichtet</span>' : '<span class="chip">Nicht eingerichtet</span>'}</div>
+    <p class="muted">Eine eigene App für deine Familie auf <b style="color:var(--text)">mapq.at/familie</b>: Einkaufsliste & To-dos, Kalender, Fotos und Pinnwand – mit Benachrichtigungen. Alle melden sich mit einem gemeinsamen Familien-Passwort an.</p>`;
+  if (!live) return `<section class="card sec" id="sec-fam">${head}<p class="hint" style="margin:0">Richte zuerst oben das Anfragen-Postfach ein.</p></section>`;
+  if (!f.loaded) return `<section class="card sec" id="sec-fam">${head}<div class="loading" style="padding:24px 0"><div class="ring"></div></div></section>`;
+  const setup = `<details class="help" ${st ? '' : 'open'}><summary>${ic('chev', 16)} Einrichtung ${st ? '(erledigt)' : '(einmalig, am Computer)'}</summary><div>
+      ${state.wp.info?.vapid_public ? '' : '<p class="hint" style="margin:0 0 10px">Richte vorher „Push & Statistik“ oben ein – die Familien-App nutzt dieselbe Push-Funktion.</p>'}
+      <ol class="steps">
+        <li>In Supabase links <b>SQL Editor</b> öffnen, diesen Code einfügen und <b>Run</b> drücken (Warnung bestätigen):
+          <div class="code"><pre id="famSql">${esc(FAMILY_SQL)}</pre><button class="btn sm" data-action="copy" data-target="#famSql">${ic('copy', 15)} Kopieren</button></div></li>
+        <li>In Supabase links <b>Edge Functions → mapq-push → Code</b>: alles durch die neue Version von <a href="https://github.com/${esc(cfg.gh.owner)}/${esc(cfg.gh.repo)}/blob/main/supabase/functions/mapq-push/index.ts" target="_blank" rel="noopener">supabase/functions/mapq-push/index.ts</a> ersetzen und <b>Deploy</b> drücken. „Verify JWT“ bleibt aus.</li>
+        <li>Diese Seite neu laden und unten das Familien-Passwort festlegen.</li>
+      </ol></div></details>`;
+  if (!st) return `<section class="card sec" id="sec-fam">${head}${setup}</section>`;
+  const m = arr(st.mitglieder);
+  return `<section class="card sec" id="sec-fam">${head}
+    <div class="field"><label for="famPass">${st.passwort ? 'Familien-Passwort ändern' : 'Familien-Passwort festlegen'}</label>
+      <div class="pass-wrap"><input id="famPass" class="input" type="password" placeholder="mind. 8 Zeichen" autocomplete="new-password" autocapitalize="off" spellcheck="false"><button class="btn sm icon" data-action="toggle-pass" data-target="#famPass" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div>
+      <small>${st.passwort ? 'Wer schon angemeldet ist, bleibt angemeldet. Neue Anmeldungen brauchen dann das neue Passwort.' : 'Dieses Passwort gibst du deiner Familie. Nimm etwas Einfaches, aber nicht zu Kurzes – z. B. drei Wörter.'}</small></div>
+    <div class="row-actions" style="margin-bottom:18px"><button class="btn btn-primary" data-action="fam-pass" ${f.busy ? 'disabled' : ''}>${ic('check', 18)} ${f.busy ? 'Einen Moment …' : st.passwort ? 'Passwort ändern' : 'Passwort festlegen'}</button></div>
+    ${st.passwort ? `<p class="sub-h">Familie</p>
+      <p class="muted" style="margin:0 0 14px;font-size:14px">${m.length ? m.map(n => `<span class="chip white" style="margin:0 6px 6px 0">${esc(n)}</span>`).join('') : 'Noch niemand angemeldet.'}</p>
+      <p class="hint" style="margin:0 0 16px">${st.geraete || 0} Handy${st.geraete === 1 ? '' : 's'} mit Benachrichtigungen · ${st.fotos || 0} Foto${st.fotos === 1 ? '' : 's'}</p>
+      <div class="row-actions" style="margin-bottom:16px"><a class="btn" href="/familie/" target="_blank" rel="noopener">${ic('arrow', 17)} App öffnen</a><button class="btn" data-action="fam-share">${ic('share', 17)} Einladung teilen</button></div>` : ''}
+    ${setup}
   </section>`;
 }
 
@@ -2032,6 +2092,8 @@ VIEWS.settings = () => {
 
   ${extrasSection()}
 
+  ${familieSection()}
+
   <section class="card sec" id="sec-ig">
     <div class="sec-h"><h2>${ic('insta')} Instagram-Nachrichten</h2>${IG.ready ? `<span class="chip ok">@${esc(IG.info.username)}</span>` : '<span class="chip">Nicht verbunden</span>'}</div>
     <p class="muted">Deine Instagram-Direktnachrichten im Panel lesen und beantworten. Der Zugang wird mit deinem Passwort verschlüsselt gespeichert und verlängert sich automatisch, wenn du das Panel ab und zu öffnest.</p>
@@ -2349,6 +2411,8 @@ const ACTIONS = {
   'wp-disable': () => wpDisable(),
   'wp-test': () => wpTest(),
   'wp-remove': el => wpRemove(el.dataset.id),
+  'fam-pass': () => famPasswort(),
+  'fam-share': () => famShare(),
   'stats-refresh': () => { state.stats.data = null; renderView(); loadStats(); },
   'go-extra': () => { go('settings'); setTimeout(() => $('#sec-extra')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); },
   'ig-send': () => igSend(),

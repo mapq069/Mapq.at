@@ -1,0 +1,17 @@
+{
+  "name": "Familie · mapq",
+  "short_name": "Familie",
+  "description": "Einkaufsliste, To-dos, Kalender, Fotos und Pinnwand für die Familie.",
+  "id": "/familie/",
+  "start_url": "/familie/",
+  "scope": "/familie/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "de",
+  "icons": [
+    { "src": "/familie/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/familie/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
