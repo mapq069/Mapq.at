@@ -23,6 +23,7 @@ Eine Seite: `index.html`. Google-Drive-Fotoordner: Button „Ordner“ in der Ko
 - Bereiche: Start, Listen (Einkauf/To-dos), Kalender (auch jährliche Termine), Fotos, Pinnwand, „Ich“ (Avatar oben rechts).
 - Daten in Supabase (gleiches Projekt, URL/Key aus `content.json` → `inbox`): Tabellen `familie_*`, privater Storage-Bucket `familie` (Fotos 1600 px + `klein/` 480 px, signierte URLs). SQL: `supabase/familie.sql` – steht auch im Panel als `FAMILY_SQL`; beide gleich halten.
 - Anmeldung: ein gemeinsames Konto `familie@mapq.at`. Das Passwort setzt Matteo im Panel (Einstellungen → Familien-App) über die Edge Function `mapq-push` (`aktion: familie-passwort`, Auth-Admin-API). Zugriff nur über `mapq_ist_familie()` (Konto-ID in `mapq_einstellungen.familie_user`) oder als Admin. Wer etwas eingetragen hat, steht im Feld `von` (Name, den jeder auf seinem Handy wählt).
+- In Supabase ist `mapq-push` als Einzeiler bereitgestellt, der `supabase/functions/mapq-push/index.ts` von GitHub (raw, `main`) importiert – Änderungen daran wirken erst nach erneutem Deploy der Funktion.
 - Push: Trigger `familie_push` → `mapq-push` (`ziel: familie`) an alle Familien-Handys außer denen der Person selbst; pro Person und Bereich höchstens alle 3 Minuten (Pinnwand immer).
 - Wetter von open-meteo.com, Ort pro Gerät einstellbar (Standard Innsbruck).
 
