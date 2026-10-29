@@ -2643,7 +2643,12 @@ const ortAlt = o => Date.now() - o.zeit > 24 * 3600e3;
 const ortZeit = o => relShort(new Date(o.zeit).toISOString());
 async function loadOrte(quiet) {
   if (!bereich('karte') || state.smartErr?.alt) return;
-  try { state.orte = await smartFn({ aktion: 'standort-liste' }); state.orteErr = null; }
+  try {
+    const j = await smartFn({ aktion: 'standort-liste' });
+    // Antwort ohne Liste = in Supabase läuft noch die alte Funktion
+    if (!Array.isArray(j?.standorte)) throw Object.assign(new Error('Die Karte braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=5 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
+    state.orte = j; state.orteErr = null;
+  }
   catch (e) { if (e.silent) return; state.orteErr = e; if (!quiet && !e.alt) toast(errMsg(e), 'bad'); }
   if ($('#sheetWrap').classList.contains('open')) return;
   if (state.tab === 'karte') fillKarte(); else if (state.tab === 'start') fillDash(); else if (state.tab === 'mehr') fillHub(); else if (state.tab === 'ich') renderView();
@@ -2654,12 +2659,14 @@ function position() {
     navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
   });
 }
+const neueFunktion = () => Object.assign(new Error('Das braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=5 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
 const posFehler = e => e.code === 1 ? 'Standort ist nicht erlaubt – iPhone-Einstellungen → Datenschutz → Ortungsdienste → Safari-Websites (bzw. „Familie“) → „Beim Verwenden“.' : e.code === 0 ? e.message : 'Der Standort konnte gerade nicht bestimmt werden – versuch es draußen nochmal.';
 async function ortTeilen(still) {
   let p;
   try { p = await position(); } catch (e) { if (!still) toast(posFehler(e), 'warn'); return; }
   try {
     const j = await smartFn({ aktion: 'standort-setzen', name: state.me, lat: p.coords.latitude, lon: p.coords.longitude, gen: p.coords.accuracy });
+    if (!j?.standort) throw neueFunktion();
     store.set('ortZuletzt', Date.now());
     if (state.orte) state.orte.standorte = [...state.orte.standorte.filter(x => x.name !== state.me), j.standort];
     else state.orte = { standorte: [j.standort], kurzbefehl: [], zuhause: null };
@@ -2682,6 +2689,7 @@ async function zuhauseSetzen() {
   try { p = await position(); } catch (e) { toast(posFehler(e), 'warn'); return; }
   try {
     const j = await smartFn({ aktion: 'standort-zuhause', lat: p.coords.latitude, lon: p.coords.longitude });
+    if (!j?.zuhause) throw neueFunktion();
     state.orte = { ...(state.orte || { standorte: [], kurzbefehl: [] }), zuhause: j.zuhause };
     toast('Zuhause festgelegt – wer in der Nähe ist, steht jetzt als „Zuhause“ da.', 'ok'); fillKarte();
   } catch (e) { if (!e.silent) toast(errMsg(e), 'bad'); }
@@ -2693,7 +2701,9 @@ function ladeLeaflet() {
   return leafletP || (leafletP = new Promise((res, rej) => {
     const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(l);
     const s = document.createElement('script'); s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    s.onload = () => res(window.L); s.onerror = () => { leafletP = null; rej(new Error('Die Karte konnte nicht laden.')); };
+    const t = setTimeout(() => { leafletP = null; rej(new Error('Die Karte lädt gerade nicht – prüf die Internetverbindung und öffne die Seite nochmal.')); }, 15000);
+    s.onload = () => { clearTimeout(t); window.L ? res(window.L) : rej(new Error('Die Karte konnte nicht laden.')); };
+    s.onerror = () => { clearTimeout(t); leafletP = null; rej(new Error('Die Karte konnte nicht laden.')); };
     document.head.appendChild(s);
   }));
 }
@@ -2702,9 +2712,13 @@ function karteShell() {
     <div class="karte" id="karte" role="img" aria-label="Karte mit den geteilten Standorten"></div><div id="orte">${state.orte ? '' : spinner}</div>`;
 }
 async function fillKarte() {
+  try { await fillKarte2(); }
+  catch (e) { const b = $('#orte'); if (b) b.innerHTML = emptyBox('red', 'alert', 'Die Karte hatte einen Fehler', esc(e.message || String(e))); }
+}
+async function fillKarte2() {
   const box = $('#orte'); if (!box) return;
   if (state.orteErr?.alt || state.smartErr?.alt) { box.innerHTML = emptyBox('sky', 'alert', 'Noch nicht freigeschaltet', esc((state.orteErr || state.smartErr).message)); $('#karte')?.remove(); return; }
-  if (!state.orte) { box.innerHTML = state.orteErr ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(state.orteErr))) : spinner; return; }
+  if (!Array.isArray(state.orte?.standorte)) { box.innerHTML = state.orteErr ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(state.orteErr))) : spinner; return zeichneKarte({ standorte: [], zuhause: null }); }
   const o = state.orte, leute = [...new Set([state.me, ...state.members])];
   const sub = $('#phSub'), n = o.standorte.length; if (sub) sub.textContent = n ? `${n} ${n === 1 ? 'Person teilt' : 'Personen teilen'} den Standort` : 'Noch teilt niemand den Standort';
   box.innerHTML = `<div class="items orte">${leute.map(name => {
@@ -2714,6 +2728,9 @@ async function fillKarte() {
     }).join('')}</div>
     <div class="row-actions" style="margin:12px 2px 0"><button class="btn sm" data-action="zuhause-setzen">${ic('home', 15)} ${o.zuhause ? 'Zuhause ändern' : 'Hier ist Zuhause'}</button><button class="btn sm" data-action="go" data-tab="ich">${ic('settings', 15)} Mein Standort</button></div>
     <p class="hint" style="margin:14px 4px 0">Freiwillig: Jede Person entscheidet selbst, ob und wann sie ihren Standort teilt. Gezeigt wird nur der zuletzt geteilte Standort – automatisch geht es mit einem iPhone-Kurzbefehl (unter „Mein Standort“).</p>`;
+  return zeichneKarte(o);
+}
+async function zeichneKarte(o) {
   const el = $('#karte'); if (!el) return;
   let L;
   try { L = await ladeLeaflet(); } catch (e) { el.innerHTML = `<p class="hint" style="padding:16px">${esc(e.message)}</p>`; return; }
@@ -2772,7 +2789,7 @@ function kurzbefehlSheet(token) {
     ${token ? '' : '<p class="hint" style="margin:0 2px">Ein neuer Schlüssel macht den alten ungültig – ein schon eingerichteter Kurzbefehl braucht dann den neuen.</p>'}`);
 }
 async function kbToken() {
-  try { const j = await smartFn({ aktion: 'standort-token', name: state.me }); state.orte && !(state.orte.kurzbefehl || []).includes(state.me) && (state.orte.kurzbefehl = [...(state.orte.kurzbefehl || []), state.me]); kurzbefehlSheet(j.token); }
+  try { const j = await smartFn({ aktion: 'standort-token', name: state.me }); if (!j?.token) throw neueFunktion(); state.orte && !(state.orte.kurzbefehl || []).includes(state.me) && (state.orte.kurzbefehl = [...(state.orte.kurzbefehl || []), state.me]); kurzbefehlSheet(j.token); }
   catch (e) { if (!e.silent) toast(errMsg(e), 'bad'); }
 }
 
