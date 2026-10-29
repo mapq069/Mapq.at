@@ -18,7 +18,7 @@ Eine Seite: `index.html`. Google-Drive-Fotoordner: Button „Ordner“ in der Ko
 
 ## Familien-App (mapq.at/familie)
 
-- `familie/index.html` (eine Datei), `familie/sw.js` (Push), `familie/manifest.json`, `familie/icon-*.png` (MAPQ-Logo klein, schwarz auf Hellgrau, darunter „FAMILIE“; `familie/mark.png` nur Logo für die Kopfzeile). noindex, `robots.txt` sperrt /familie.
+- `familie/index.html` (eine Datei), `familie/sw.js` (Push), `familie/manifest.json`, `familie/icon-*.png` (eigenes Familien-Logo: vier bunte Figuren in den App-Farben auf Dunkel, darunter „FAMILIE“; `familie/mark.png` nur die Figuren für die Kopfzeile). noindex, `robots.txt` sperrt /familie.
 - Gestaltung bewusst anders als mapq.at: Matteo wollte sie wie die Home-Assistant-Apps (dunkle runde Karten im Mushroom-Stil, farbige Symbole je Bereich, Start-Übersicht mit Wetter, Chips, Kacheln). Nicht auf Schwarz-Weiß zurückbauen.
 - Bereiche: Start, Listen (Einkauf/To-dos), Kalender (auch jährliche Termine), Fotos, Pinnwand, „Ich“ (Avatar oben rechts).
 - Daten in Supabase (gleiches Projekt, URL/Key aus `content.json` → `inbox`): Tabellen `familie_*`, privater Storage-Bucket `familie` (Fotos 1600 px + `klein/` 480 px, signierte URLs). SQL: `supabase/familie.sql` – steht auch im Panel als `FAMILY_SQL`; beide gleich halten.
