@@ -94,6 +94,9 @@ h2{font-family:var(--font-h);font-stretch:75%;font-weight:750;font-size:19px;mar
 .akt.gross{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start;min-height:72px;background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .akt.gross small{color:#334155}
 .akt[disabled]{opacity:.35;pointer-events:none}
+a.akt{text-decoration:none}
+.akt.gross.zweit{background:var(--card);color:var(--text);border-color:var(--line-2)}
+.akt.gross.zweit small{color:var(--muted)}
 
 /* Einrichten */
 details.card{padding:0}
@@ -169,6 +172,11 @@ const BEFEHLE = {
   sperren: { name: 'Sperren', icon: 'schloss', text: 'ist gesperrt' }
 };
 const PC_ID = 'pc';
+// Einschalten im WLAN: die Seite startet einen iPhone-Kurzbefehl, der über eine Wake-on-LAN-App das Weck-Signal schickt
+const KB_STD = 'PC einschalten';
+const kbName = () => (lager.get('kurzbefehl') || KB_STD);
+const kbLink = () => 'shortcuts://run-shortcut?name=' + encodeURIComponent(kbName());
+const WOL_APP = 'https://apps.apple.com/app/wake-me-up-wake-on-lan/id1465416032';
 const PC_SQL = "-- PC fernsteuern (mapq.at/pcon) – kann gefahrlos mehrmals ausgeführt werden (auch als Update).\n-- Setzt voraus: Anfragen-Postfach (Funktion mapq_ist_admin).\n-- Befehle geben darf nur der Admin. Das Hilfsprogramm auf dem PC meldet sich mit seinem eigenen\n-- Schlüssel (gespeichert ist nur der SHA-256-Hash) und holt sich dabei den nächsten Befehl ab.\n-- Diese Datei steht auch in pcon/index.html (PC_SQL) – beide gleich halten.\n\ncreate table if not exists public.mapq_pc (\n  id text primary key check (id ~ '^[a-z0-9-]{1,30}$'),\n  erstellt timestamptz not null default now(),\n  name text check (char_length(name) <= 40),\n  token_hash text unique,\n  zuletzt timestamptz,\n  info jsonb,\n  befehl text check (befehl in ('aus', 'neustart', 'schlafen', 'sperren')),\n  befehl_zeit timestamptz,\n  quittiert timestamptz,\n  quittiert_befehl text,\n  steckdose text check (char_length(steckdose) <= 100)\n);\nalter table public.mapq_pc enable row level security;\nrevoke all on public.mapq_pc from anon, authenticated;\n\n-- Übersicht für die Seite (nur Admin, sonst null)\ncreate or replace function public.mapq_pc_status()\nreturns jsonb language sql stable security definer set search_path = ''\nas $$ select case when public.mapq_ist_admin() then jsonb_build_object(\n  'jetzt', now(),\n  'pcs', coalesce((select jsonb_agg(jsonb_build_object(\n      'id', p.id, 'name', p.name, 'zuletzt', p.zuletzt, 'info', p.info,\n      'online', coalesce(p.zuletzt > now() - interval '25 seconds', false),\n      'befehl', case when p.befehl_zeit > now() - interval '2 minutes' then p.befehl end,\n      'befehl_zeit', p.befehl_zeit, 'quittiert', p.quittiert, 'quittiert_befehl', p.quittiert_befehl,\n      'steckdose', p.steckdose, 'verbunden', p.token_hash is not null) order by p.erstellt)\n    from public.mapq_pc p), '[]'::jsonb)) end $$;\nrevoke all on function public.mapq_pc_status() from public, anon;\ngrant execute on function public.mapq_pc_status() to authenticated;\n\n-- Befehl geben (null = zurücknehmen). Ein Befehl gilt 2 Minuten, danach verfällt er.\ncreate or replace function public.mapq_pc_befehl(p_id text, p_befehl text)\nreturns jsonb language plpgsql security definer set search_path = ''\nas $$ begin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  if p_befehl is not null and p_befehl not in ('aus', 'neustart', 'schlafen', 'sperren') then raise exception 'Unbekannter Befehl'; end if;\n  update public.mapq_pc set befehl = p_befehl, befehl_zeit = case when p_befehl is null then null else now() end where id = p_id;\n  if not found then raise exception 'PC nicht gefunden'; end if;\n  return jsonb_build_object('ok', true, 'zeit', now());\nend $$;\nrevoke all on function public.mapq_pc_befehl(text, text) from public, anon;\ngrant execute on function public.mapq_pc_befehl(text, text) to authenticated;\n\n-- Neuer Schlüssel für das Hilfsprogramm (legt den PC an; der alte Schlüssel gilt danach nicht mehr)\ncreate or replace function public.mapq_pc_schluessel(p_id text default 'pc', p_name text default null)\nreturns text language plpgsql security definer set search_path = ''\nas $$\ndeclare t text := replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '');\nbegin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  insert into public.mapq_pc (id, name, token_hash)\n    values (p_id, coalesce(nullif(left(trim(p_name), 40), ''), 'Mein PC'), encode(sha256(convert_to(t, 'UTF8')), 'hex'))\n    on conflict (id) do update set token_hash = excluded.token_hash,\n      name = coalesce(nullif(left(trim(p_name), 40), ''), public.mapq_pc.name), befehl = null, befehl_zeit = null;\n  return t;\nend $$;\nrevoke all on function public.mapq_pc_schluessel(text, text) from public, anon;\ngrant execute on function public.mapq_pc_schluessel(text, text) to authenticated;\n\n-- Name und Steckdose (Gerät aus „Zuhause“, mit der sich der PC einschalten lässt) speichern\ncreate or replace function public.mapq_pc_einstellen(p_id text, p_daten jsonb)\nreturns jsonb language plpgsql security definer set search_path = ''\nas $$ begin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  update public.mapq_pc set\n    name = case when p_daten ? 'name' then coalesce(nullif(left(trim(p_daten->>'name'), 40), ''), name) else name end,\n    steckdose = case when p_daten ? 'steckdose' then nullif(left(p_daten->>'steckdose', 100), '') else steckdose end\n  where id = p_id;\n  if not found then raise exception 'PC nicht gefunden'; end if;\n  return jsonb_build_object('ok', true);\nend $$;\nrevoke all on function public.mapq_pc_einstellen(text, jsonb) from public, anon;\ngrant execute on function public.mapq_pc_einstellen(text, jsonb) to authenticated;\n\ncreate or replace function public.mapq_pc_loeschen(p_id text)\nreturns void language plpgsql security definer set search_path = ''\nas $$ begin\n  if not public.mapq_ist_admin() then raise exception 'Kein Zugriff' using errcode = '42501'; end if;\n  delete from public.mapq_pc where id = p_id;\nend $$;\nrevoke all on function public.mapq_pc_loeschen(text) from public, anon;\ngrant execute on function public.mapq_pc_loeschen(text) to authenticated;\n\n-- Vom Hilfsprogramm auf dem PC (alle paar Sekunden, ohne Anmeldung, nur mit Schlüssel):\n-- „ich bin an“ + Infos (Name, Netzwerk) melden und den nächsten Befehl abholen (wird dabei quittiert)\ncreate or replace function public.mapq_pc_melden(p_token text, p_info jsonb default null)\nreturns jsonb language plpgsql security definer set search_path = ''\nas $$\ndeclare p public.mapq_pc; b text;\nbegin\n  if p_token is null or char_length(p_token) < 32 or char_length(p_token) > 200 then return jsonb_build_object('ok', false); end if;\n  select * into p from public.mapq_pc where token_hash = encode(sha256(convert_to(p_token, 'UTF8')), 'hex') for update;\n  if not found then return jsonb_build_object('ok', false, 'fehler', 'Unbekannter Schlüssel'); end if;\n  b := case when p.befehl_zeit > now() - interval '2 minutes' then p.befehl end;\n  update public.mapq_pc set\n    zuletzt = now(),\n    info = case when jsonb_typeof(p_info) = 'object' and pg_column_size(p_info) < 4000 then p_info else info end,\n    befehl = null,\n    quittiert = case when b is not null then now() else quittiert end,\n    quittiert_befehl = coalesce(b, quittiert_befehl)\n  where id = p.id;\n  return jsonb_build_object('ok', true, 'befehl', b, 'name', p.name);\nend $$;\nrevoke all on function public.mapq_pc_melden(text, jsonb) from public;\ngrant execute on function public.mapq_pc_melden(text, jsonb) to anon, authenticated;\n\nselect 'Fertig ✓' as ergebnis;\n";
 
 /* ---------- Speicher ---------- */
@@ -315,6 +323,8 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && S.
 function zustand(p) {
   // → [Klasse, Text, Untertext]
   const q = p.quittiert && Date.parse(p.quittiert), seit = q ? (jetzt() - q) / 1000 : 1e9, qb = p.quittiert_befehl;
+  if (S.strom && p.online && S.strom.phase === 'startet') S.strom = null;
+  if (S.strom?.art === 'wol') return ['warte', 'Wird geweckt …', 'Ist das Handy im WLAN zuhause, startet der PC jetzt und meldet sich, sobald Windows läuft.'];
   if (S.strom) return ['warte', S.strom.phase === 'startet' ? 'Startet …' : 'Strom wird kurz unterbrochen …', S.strom.phase === 'startet' ? 'Der PC meldet sich, sobald Windows läuft.' : 'Danach startet der PC von selbst.'];
   if (!p.verbunden) return ['', 'Noch nicht verbunden', 'Richte unten das Hilfsprogramm auf dem PC ein.'];
   if (!p.zuletzt) return ['', 'Wartet auf den PC', 'Das Hilfsprogramm hat sich noch nicht gemeldet.'];
@@ -344,14 +354,15 @@ function zeichne() {
     meldung = `<div class="meldung">${ic('ok', 18)}<span class="grow">Angekommen – der PC ${BEFEHLE[p.quittiert_befehl].text}.</span></div>`;
   else if (S.fehler) meldung = `<div class="meldung">${ic('x', 18)}<span class="grow">Gerade keine Verbindung: ${esc(S.fehler)}</span></div>`;
   const knopf = k => `<button class="akt ${k === 'aus' ? 'rot' : ''}" data-a="befehl" data-b="${k}" ${an && !offen ? '' : 'disabled'}>${ic(BEFEHLE[k].icon, 22)}<span>${BEFEHLE[k].name}</span></button>`;
-  const stecker = p.steckdose && !p.online && !S.strom;
+  const aus = !p.online && !S.strom, stecker = p.steckdose && aus;
   box.innerHTML = `<div class="card"><div class="status ${kl}"><span class="pcicon">${ic('monitor', 30)}<i class="dot"></i></span>
       <div class="t"><div class="name">${esc(p.name || 'Mein PC')}</div><div class="zust">${esc(txt)}</div><div class="sub">${esc(sub)}</div></div></div>${meldung}</div>
     <div class="aktionen">
-      ${stecker ? `<button class="akt gross" data-a="einschalten">${ic('power', 24)}<span>Einschalten<small>Über die Steckdose – Strom kurz aus und wieder an</small></span></button>` : ''}
+      ${aus ? `<a class="akt gross" href="${esc(kbLink())}" data-a="wecken">${ic('power', 24)}<span>Einschalten<small>Zuhause im WLAN – startet den Kurzbefehl „${esc(kbName())}“</small></span></a>` : ''}
+      ${stecker ? `<button class="akt gross zweit" data-a="einschalten">${ic('stecker', 24)}<span>Über die Steckdose einschalten<small>Strom kurz aus und wieder an – geht auch unterwegs</small></span></button>` : ''}
       ${knopf('aus')}${knopf('neustart')}${knopf('schlafen')}${knopf('sperren')}
     </div>
-    ${!p.online && !p.steckdose && p.zuletzt && !S.strom ? `<p class="muted small" style="margin:12px 2px 0">Einschalten geht von hier nur über eine smarte Steckdose oder zuhause per Wake-on-LAN-App – siehe „Einschalten“ unten.</p>` : ''}`;
+    ${aus && !lager.get('kbFertig') ? `<p class="muted small" style="margin:12px 2px 0">„Einschalten“ braucht einmal einen Kurzbefehl am iPhone – Anleitung unten unter „Einschalten“.</p>` : ''}`;
   zeichneSetup();
 }
 
@@ -380,6 +391,7 @@ function broadcast(ip, praefix) {
   const n = ((t[0] << 24) >>> 0) + (t[1] << 16) + (t[2] << 8) + t[3], m = praefix === 0 ? 0 : (~0 << (32 - praefix)) >>> 0, b = ((n & m) | (~m >>> 0)) >>> 0;
   return [b >>> 24, (b >>> 16) & 255, (b >>> 8) & 255, b & 255].join('.');
 }
+const maske = pr => !(pr >= 8 && pr <= 30) ? '' : [24, 16, 8, 0].map(v => ((~0 << (32 - pr)) >>> v) & 255).join('.');
 function zeichneSetup(nurSql) {
   const box = $('#setupBox'); if (!box) return;
   const p = pc(), sig = JSON.stringify([nurSql, !!p, p?.verbunden, !!p?.zuletzt, p?.online, p?.name, p?.steckdose, p?.info?.mac, p?.info?.ip, S.token, S.geraete, S.smartFehler, S.sqlFehlt]);
@@ -412,20 +424,31 @@ function zeichneSetup(nurSql) {
       <div class="row"><button class="btn" data-a="entfernen-kopieren">${ic('kopie', 17)} Befehl zum Entfernen</button>${p ? `<button class="btn btn-danger" data-a="pc-loeschen">${ic('muell', 17)} PC von der Seite löschen</button>` : ''}</div></div>
   </div></details>
   ${p ? `<details class="card" id="einschaltenBox" ${offenWol ? 'open' : ''}><summary>${ic('power', 20)} Einschalten${p.steckdose ? ' <span class="muted small">· über Steckdose</span>' : ''}${ic('chev', 18).replace('class="ic"', 'class="ic chev"')}</summary><div class="inhalt">
+    <div class="schritt"><h3>${ic('wlan', 18)} Zuhause im WLAN: Wake-on-LAN</h3>
+      <p>Eine Webseite kann das Weck-Signal nicht selbst schicken. Das übernimmt ein <b>Kurzbefehl</b> am iPhone, den der Knopf „<b>Einschalten</b>“ oben startet. Klappt nur, wenn das Handy im WLAN zuhause ist.</p>
+      <ol>
+        <li>App <a href="${WOL_APP}" target="_blank" rel="noopener"><b>Wake Me Up – Wake-on-LAN</b></a> laden (gratis, kann Kurzbefehle) und darin den PC anlegen:${mac ? '' : ' Die Werte stehen hier, sobald sich das Hilfsprogramm gemeldet hat.'}</li>
+      </ol>
+      ${mac ? `<dl class="kv"><dt>MAC-Adresse</dt><dd><code>${esc(mac)}</code></dd>${ip ? `<dt>IP-Adresse</dt><dd>${esc(ip)}</dd>` : ''}${bc ? `<dt>Broadcast</dt><dd>${esc(bc)}</dd>` : ''}<dt>Subnetzmaske</dt><dd>${esc(maske(p.info?.praefix) || '255.255.255.0')}</dd><dt>Port</dt><dd>9</dd>${p.info?.kabel === false ? '<dt>Achtung</dt><dd>Das ist WLAN – Wake-on-LAN geht nur über Kabel.</dd>' : ''}</dl>
+        <div class="row" style="margin-bottom:12px"><button class="btn sm" data-a="mac-kopieren">${ic('kopie', 15)} MAC</button>${bc ? `<button class="btn sm" data-a="bc-kopieren">${ic('kopie', 15)} Broadcast</button>` : ''}${ip ? `<button class="btn sm" data-a="ip-kopieren">${ic('kopie', 15)} IP</button>` : ''}</div>` : ''}
+      <ol start="2">
+        <li>App <b>Kurzbefehle</b> → <b>+</b> → „Aktion hinzufügen“ → nach <b>Wake Me Up</b> suchen → die Aktion zum Aufwecken wählen und deinen PC auswählen.</li>
+        <li>Den Kurzbefehl oben genau so nennen wie hier:</li>
+      </ol>
+      <div class="field"><label for="kbName">Name des Kurzbefehls</label><input class="input" id="kbName" maxlength="60" value="${esc(kbName())}" autocapitalize="off"></div>
+      <ol start="4"><li>PC herunterfahren und oben auf <b>Einschalten</b> tippen – fertig.</li></ol>
+      <label class="check"><input type="checkbox" id="kbFertig" ${lager.get('kbFertig') ? 'checked' : ''}> Kurzbefehl ist eingerichtet (Hinweis oben ausblenden)</label>
+      <details><summary class="muted small">Am PC einmal nötig (hast du schon erledigt)</summary><ol style="margin-top:10px"><li><b>BIOS</b>: ErP aus, „Fortsetzung durch PCI-E-Gerät“ an.</li><li><b>Geräte-Manager</b> → Intel I211 → „Akt. über Magic Packet“ an, Energieverwaltung: Wecken erlauben.</li><li><b>Schnellstart aus</b> (Energieoptionen).</li></ol></details></div>
     <div class="schritt"><h3>${ic('stecker', 18)} Über eine smarte Steckdose</h3>
       <p>Hängt der PC an einer Shelly- oder Smart-Life-Steckdose aus „Zuhause“, schaltet die Seite den Strom kurz aus und wieder an. Damit der PC dann startet, im <b>BIOS</b> „<b>Restore on AC Power Loss</b>“ (auch „AC Back“ / „Power On after Power Fail“) auf <b>Power On</b> stellen.</p>
       ${S.smartFehler ? `<p class="small">Smart Home: ${esc(S.smartFehler)}</p>` : S.geraete === null ? '<p class="small">Lade Steckdosen …</p>'
         : geraete.length ? `<div class="field"><label for="steckdose">Steckdose für den PC</label><select class="input" id="steckdose"><option value="">Keine</option>${geraete.map(g => `<option value="${esc(g.id)}" ${g.id === p.steckdose ? 'selected' : ''}>${esc(g.name)}${g.raum ? ' · ' + esc(g.raum) : ''}</option>`).join('')}</select></div>`
         : '<p class="small">In „Zuhause“ ist keine Steckdose verbunden.</p>'}
       <p class="small" style="margin:0">Nur wenn der PC aus ist – laufend würde ihn das hart abschalten. Deshalb gibt es den Knopf erst, wenn der PC aus ist.</p></div>
-    <div class="schritt"><h3>${ic('wlan', 18)} Zuhause im WLAN: Wake-on-LAN</h3>
-      <p>Mit einer Wake-on-LAN-App am Handy (z. B. „Wake On Lan“ im App Store) weckst du den PC, wenn du im selben Netz bist. Dein Magenta-Router kann das nicht von außen.</p>
-      ${mac ? `<dl class="kv"><dt>MAC-Adresse</dt><dd><code>${esc(mac)}</code></dd>${ip ? `<dt>IP-Adresse</dt><dd>${esc(ip)}</dd>` : ''}${bc ? `<dt>Broadcast</dt><dd>${esc(bc)}</dd>` : ''}<dt>Port</dt><dd>9</dd>${p.info?.kabel === false ? '<dt>Achtung</dt><dd>Das ist WLAN – Wake-on-LAN geht nur über Kabel.</dd>' : ''}</dl>
-        <div class="row" style="margin-bottom:12px"><button class="btn sm" data-a="mac-kopieren">${ic('kopie', 15)} MAC kopieren</button></div>`
-        : '<p class="small">Die MAC-Adresse steht hier, sobald sich das Hilfsprogramm gemeldet hat.</p>'}
-      <ol><li><b>BIOS</b>: „Wake on LAN“ bzw. „Power On by PCI-E“ einschalten.</li><li><b>Windows</b>: Geräte-Manager → Netzwerkadapter → Eigenschaften → Energieverwaltung: „Gerät kann den Computer aus dem Standbymodus aktivieren“ und „Nur Magic Packet …“ anhaken.</li><li><b>Schnellstart aus</b>: Systemsteuerung → Energieoptionen → „Auswählen, was beim Drücken des Netzschalters geschehen soll“.</li></ol></div>
   </div></details>` : ''}`;
   const sel = $('#steckdose'); if (sel) sel.onchange = () => steckdoseSpeichern(sel.value);
+  const kb = $('#kbName'); if (kb) kb.onchange = () => { lager.set('kurzbefehl', kb.value.trim() || KB_STD); zeichne(); };
+  const kf = $('#kbFertig'); if (kf) kf.onchange = () => { lager.set('kbFertig', kf.checked); zeichne(); };
   if (p && S.geraete === null && !S.smartLaedt) ladeSteckdosen();
 }
 async function ladeSteckdosen() {
@@ -504,7 +527,11 @@ document.addEventListener('click', e => {
     'neu-laden': () => location.reload(),
     'install-kopieren': () => kopieren(installBefehl(S.skript || ''), 'Befehl'),
     'entfernen-kopieren': () => kopieren(ENTFERNEN, 'Befehl zum Entfernen'),
-    'mac-kopieren': () => p?.info?.mac && kopieren(p.info.mac, 'MAC-Adresse')
+    'mac-kopieren': () => p?.info?.mac && kopieren(p.info.mac, 'MAC-Adresse'),
+    'bc-kopieren': () => kopieren(broadcast(p?.info?.ip, p?.info?.praefix), 'Broadcast-Adresse'),
+    'ip-kopieren': () => p?.info?.ip && kopieren(p.info.ip, 'IP-Adresse'),
+    // Link öffnet den Kurzbefehl (nicht verhindern) – die Anzeige erst danach umstellen
+    wecken: () => { S.strom = { phase: 'startet', art: 'wol' }; setTimeout(zeichne, 400); clearTimeout(S.weckTimer); S.weckTimer = setTimeout(() => { if (S.strom?.art === 'wol') { S.strom = null; zeichne(); } }, 150000); }
   })[a]?.();
 });
 document.addEventListener('submit', e => { if (e.target.id === 'login') login(e); });
