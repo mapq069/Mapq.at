@@ -1726,8 +1726,9 @@ function familieSection() {
    ===================================================================== */
 const FN_VERSION = 5; // ?v= der Code-Zeile von mapq-push in Supabase
 const FAM_FARBEN = { indigo: '#7986CB', amber: '#FFC107', orange: '#FF7043', pink: '#F06292', green: '#66BB6A', teal: '#26A69A', purple: '#BA68C8', blue: '#42A5F5', sky: '#4FC3F7', red: '#EF5350', lime: '#9CCC65', grey: '#B0BEC5' };
-const FAM_TABS = [['start', 'Start', 'indigo'], ['listen', 'Listen', 'amber'], ['kalender', 'Kalender', 'orange'], ['fotos', 'Fotos', 'pink'], ['pinnwand', 'Pinnwand', 'green'], ['zuhause', 'Zuhause', 'teal'], ['mehr', 'Mehr', 'purple']];
-const FAM_MEHR = [['karte', 'Wo sind alle?', 'Familien-Karte mit geteilten Standorten'], ['essen', 'Essensplan'], ['rezepte', 'Rezepte'], ['putzplan', 'Putzplan', 'Unter „Listen“ und als Kachel'], ['countdowns', 'Countdowns'], ['infos', 'Wichtige Infos']];
+// Reihenfolge = Standard in der App; „Fotos“ ist standardmäßig nicht unten, sondern unter „Mehr“
+const FAM_TABS = [['start', 'Start', 'indigo'], ['listen', 'Listen', 'amber'], ['kalender', 'Kalender', 'orange'], ['karte', 'Karte', 'sky'], ['fotos', 'Fotos', 'pink', false], ['pinnwand', 'Pinnwand', 'green'], ['zuhause', 'Zuhause', 'teal'], ['mehr', 'Mehr', 'purple']];
+const FAM_MEHR = [['karte', 'Wo sind alle?', 'Familien-Karte – wenn sie nicht unten ist'], ['fotos', 'Fotos & Videos', 'Wenn sie nicht unten sind'], ['essen', 'Essensplan'], ['rezepte', 'Rezepte'], ['putzplan', 'Putzplan', 'Unter „Listen“ und als Kachel'], ['countdowns', 'Countdowns'], ['infos', 'Wichtige Infos']];
 const FAM_START = [['wetter', 'Wetter'], ['schnell', 'Schnell-Knöpfe', 'Einkauf, Termin, Foto, Nachricht'], ['leiste', 'Geburtstage & Countdowns'], ['kacheln', 'Kacheln', 'Einkauf, To-dos, Essen, nächster Termin, Fotos'], ['zuhause', 'Zuhause-Geräte'], ['putzplan', 'Heute dran', 'Putzplan'], ['pinnwand', 'Pinnwand'], ['termine', 'Heute & morgen'], ['familie', 'Familie', 'Wer ist wo'], ['fotos', 'Neueste Fotos']];
 const FAM_SEG = [['uebersicht', 'Übersicht'], ['aussehen', 'Aussehen'], ['inhalte', 'Inhalte'], ['zuhause', 'Zuhause']];
 Object.assign(state, { famTab: 'uebersicht', famInh: 'eintraege', famRows: {}, famErr: {}, famQuery: '', famUrls: {}, famSmart: null, famSmartErr: null });
@@ -1735,7 +1736,7 @@ Object.assign(state, { famTab: 'uebersicht', famInh: 'eintraege', famRows: {}, f
 /* ---------- Aussehen & Bereiche (content.json → familie) ---------- */
 const famDefaults = () => ({
   titel: 'Familie',
-  tabs: FAM_TABS.map(([id, label, farbe]) => ({ id, label, farbe, an: true })),
+  tabs: FAM_TABS.map(([id, label, farbe, an = true]) => ({ id, label, farbe, an })),
   mehr: Object.fromEntries(FAM_MEHR.map(m => [m[0], true])),
   start: Object.fromEntries(FAM_START.map(m => [m[0], true]))
 });
@@ -1776,7 +1777,7 @@ function famAussehen() {
         ${t.id === 'start' || t.id === 'mehr' ? '<span class="famfix">immer</span>' : `<input type="checkbox" class="switch" data-fam="tab:${t.id}:an" ${t.an !== false ? 'checked' : ''} aria-label="${esc(t.label)} zeigen">`}</div>
       <div class="farben">${Object.entries(FAM_FARBEN).map(([k, h]) => `<button class="${t.farbe === k ? 'on' : ''}" style="--f:${h}" data-action="famtab-farbe" data-id="${t.id}" data-f="${k}" aria-label="Farbe ${k}"></button>`).join('')}</div>
     </div>`).join('')}</div>
-    <p class="hint" style="margin:12px 0 0">„Start“ und „Mehr“ bleiben immer. Ein ausgeblendeter Bereich verschwindet auch von der Startseite.</p>
+    <p class="hint" style="margin:12px 0 0">„Start“ und „Mehr“ bleiben immer. „Karte“ und „Fotos“ stehen unter „Mehr“, wenn sie hier aus sind. Andere ausgeblendete Bereiche verschwinden ganz – auch von der Startseite.</p>
   </section>
   <section class="card sec"><h2>Unter „Mehr“</h2>${FAM_MEHR.map(([k, l, d]) => famSwitch(`mehr:${k}`, l, d, f.mehr[k])).join('')}</section>
   <section class="card sec"><h2>Startseite</h2>${FAM_START.map(([k, l, d]) => famSwitch(`start:${k}`, l, d, f.start[k])).join('')}</section>`;

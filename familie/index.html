@@ -688,18 +688,24 @@ const TABS_STD = [
   { id: 'start', label: 'Start', icon: 'home', c: 'indigo' },
   { id: 'listen', label: 'Listen', icon: 'list', c: 'amber' },
   { id: 'kalender', label: 'Kalender', icon: 'cal', c: 'orange' },
-  { id: 'fotos', label: 'Fotos', icon: 'image', c: 'pink' },
+  { id: 'karte', label: 'Karte', icon: 'pin', c: 'sky' },
+  { id: 'fotos', label: 'Fotos', icon: 'image', c: 'pink', aus: true },
   { id: 'pinnwand', label: 'Pinnwand', icon: 'chat', c: 'green' },
   { id: 'zuhause', label: 'Zuhause', icon: 'hplug', c: 'teal' },
   { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
-const SUB = ['karte', 'essen', 'rezepte', 'countdowns', 'infos', 'ich'];
-let TABS = TABS_STD.slice(), ALL_TABS = [...TABS.map(t => t.id), ...SUB];
+/* Bereiche, die unter „Mehr“ stehen – „Karte“ und „Fotos“ nur, wenn sie nicht unten in der Leiste sind */
+const SUB = ['karte', 'fotos', 'essen', 'rezepte', 'countdowns', 'infos', 'ich'];
+let TABS = TABS_STD.filter(t => !t.aus), ALL_TABS = [];
 /* Aussehen & Bereiche – stellt Matteo im Admin-Panel ein (content.json → familie) */
 let DESIGN = { titel: 'Familie', mehr: {}, start: {} };
 const zeigeMehr = k => DESIGN.mehr[k] !== false;
 const zeigeStart = k => DESIGN.start[k] !== false;
-const bereich = id => (SUB.includes(id) || id === 'putzplan') ? (id === 'ich' || zeigeMehr(id)) : TABS.some(t => t.id === id);
+const unten = id => TABS.some(t => t.id === id);
+const unterMehr = id => SUB.includes(id) && !unten(id);
+const bereich = id => unten(id) || id === 'ich' || ((SUB.includes(id) || id === 'putzplan') && zeigeMehr(id));
+const tabsNeu = () => { ALL_TABS = [...TABS.map(t => t.id), ...SUB.filter(id => !unten(id) && bereich(id))]; };
+tabsNeu();
 function applyDesign(f) {
   if (!f || typeof f !== 'object') return;
   const std = Object.fromEntries(TABS_STD.map(t => [t.id, t])), farben = [...PALETTE, 'indigo', 'grey'];
@@ -708,18 +714,18 @@ function applyDesign(f) {
     ...std[t.id],
     label: typeof t.label === 'string' && t.label.trim() ? t.label.trim().slice(0, 12) : std[t.id].label,
     c: farben.includes(t.farbe) ? t.farbe : std[t.id].c,
-    an: t.an !== false || t.id === 'start' || t.id === 'mehr'
+    an: t.id === 'start' || t.id === 'mehr' || (typeof t.an === 'boolean' ? t.an : !std[t.id].aus)
   })).filter(t => t.an);
   DESIGN = {
     titel: typeof f.titel === 'string' && f.titel.trim() ? f.titel.trim().slice(0, 24) : 'Familie',
     mehr: f.mehr && typeof f.mehr === 'object' ? f.mehr : {},
     start: f.start && typeof f.start === 'object' ? f.start : {}
   };
-  ALL_TABS = [...TABS.map(t => t.id), ...SUB.filter(bereich)];
+  tabsNeu();
   const b = $('#brandName'); if (b) b.textContent = DESIGN.titel;
   document.title = DESIGN.titel + ' · mapq';
 }
-const tabOf = t => SUB.includes(t) ? 'mehr' : t;
+const tabOf = t => unterMehr(t) ? 'mehr' : t;
 const LISTS = [['einkauf', 'Einkauf', 'cart', 'amber'], ['todo', 'To-dos', 'todo', 'blue'], ['putzplan', 'Putzplan', 'sparkles', 'sky']];
 const LIST_C = Object.fromEntries(LISTS.map(l => [l[0], l[3]]));
 const PALETTE = ['blue', 'pink', 'green', 'amber', 'purple', 'teal', 'orange', 'sky', 'indigo', 'red', 'lime'];
@@ -1616,6 +1622,7 @@ async function loadFotos(quiet, more) {
     state.fotosAlle = r.length < lim;
     if (state.tab === 'fotos' && state.fotoView === 'alle') fillFotos();
     if (state.tab === 'start') fillDash();
+    if (state.tab === 'mehr' && !$('#sheetWrap').classList.contains('open')) fillHub();
   } catch (e) { loadErr(e, quiet); }
 }
 async function loadAlben(quiet) {
@@ -1631,7 +1638,7 @@ async function loadAlben(quiet) {
 }
 function fotosShell() {
   const alb = state.album && (state.alben || []).find(a => a.id === state.album);
-  return `${alb ? `<button class="back" data-action="album-close">${ic('left', 18)} Alben</button>` : ''}${header(alb ? esc(alb.name) : 'Fotos', '', 'pink', alb ? 'folder' : 'image', `<button class="btn btn-primary c-pink" data-action="pick-fotos">${ic('plus', 18)} Hochladen</button>`)}
+  return `${alb ? `<button class="back" data-action="album-close">${ic('left', 18)} Alben</button>` : ''}${header(alb ? esc(alb.name) : 'Fotos', '', 'pink', alb ? 'folder' : 'image', `<button class="btn btn-primary c-pink" data-action="pick-fotos">${ic('plus', 18)} Hochladen</button>`, !alb && unterMehr('fotos'))}
     ${alb ? '' : `<div class="seg"><button class="seg-b c-pink ${state.fotoView === 'alle' ? 'on' : ''}" data-action="foto-view" data-v="alle">${ic('image', 17)}Alle</button><button class="seg-b c-pink ${state.fotoView === 'alben' ? 'on' : ''}" data-action="foto-view" data-v="alben">${ic('folder', 17)}Alben</button></div>`}
     <div id="fotoBox">${state.fotoView === 'alben' && !state.album ? (state.alben ? '' : spinner) : (state.fotos ? '' : spinner)}</div>`;
 }
@@ -1950,14 +1957,15 @@ async function delPost(id) {
 }
 
 /* ---------- Mehr ---------- */
-function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); loadOrte(true); }
+function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); loadOrte(true); if (unterMehr('fotos') && bereich('fotos')) loadFotos(true); }
 function hubShell() { return `${header('Mehr', 'Alles Weitere für die Familie', 'purple', 'grid')}<div id="hub"></div>`; }
 function fillHub() {
   const box = $('#hub'); if (!box) return;
   const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
   const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
   box.innerHTML = `<div class="tiles hub">
-    ${bereich('karte') ? tile('karte', 'sky', ic('pin'), 'Wo sind alle?', state.orte ? (state.orte.standorte.length ? `${state.orte.standorte.length} teilen ihren Standort` : 'Standort teilen') : 'Familien-Karte') : ''}
+    ${bereich('karte') && unterMehr('karte') ? tile('karte', 'sky', ic('pin'), 'Wo sind alle?', state.orte ? (state.orte.standorte.length ? `${state.orte.standorte.length} teilen ihren Standort` : 'Standort teilen') : 'Familien-Karte') : ''}
+    ${bereich('fotos') && unterMehr('fotos') ? tile('fotos', 'pink', ic('image'), 'Fotos & Videos', state.fotos?.length ? `${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'}` : 'Alben, Fotos und Videos') : ''}
     ${!bereich('essen') ? '' : tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
     ${bereich('rezepte') ? tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte') : ''}
     ${bereich('putzplan') && bereich('listen') ? tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"') : ''}
@@ -2797,7 +2805,7 @@ function orteZeigen() {
 }
 function karteShell() {
   const s = karteStil();
-  return `${header('Wo sind alle?', 'Familien-Karte', 'sky', 'pin', `<button class="btn btn-primary c-sky" data-action="ort-teilen">${ic('pin', 17)} Teilen</button>`, true)}
+  return `${header('Wo sind alle?', 'Familien-Karte', 'sky', 'pin', `<button class="btn btn-primary c-sky" data-action="ort-teilen">${ic('pin', 17)} Teilen</button>`, unterMehr('karte'))}
     <div class="karte-w"><div class="karte ${s === 'hell' ? 'hell' : ''}" id="karte" role="img" aria-label="Karte mit den geteilten Standorten"></div>
       <div class="kstatus" id="kStatus" role="status">Karte lädt …</div>
       <button class="btn sm icon kstil" data-action="karte-stil" aria-label="${s === 'hell' ? 'Dunkle Karte' : 'Helle Karte'}" title="Hell / Dunkel">${stilKnopf(s)}</button></div>
