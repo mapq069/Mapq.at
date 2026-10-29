@@ -531,14 +531,17 @@ details.dev-set[open]>summary{margin-bottom:10px}
 .kpin.alt{opacity:.55;filter:grayscale(.6)}
 .kheim{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(79,195,247,.2);color:#4FC3F7;border:2px solid #4FC3F7}
 .orte{padding:2px 6px 2px 12px}
-.orow{width:100%;color:var(--text)}
-.orow+.orow{border-top:1px solid var(--line)}
+.orow-w{display:flex;align-items:center;gap:2px}
+.orow-w+.orow-w{border-top:1px solid var(--line)}
+.orow{flex:1;min-width:0;color:var(--text)}
+.amap{color:var(--c,#4FC3F7);text-decoration:none}
+.kpop{display:flex;gap:14px;margin-top:8px}
+.kpop a{color:#4FC3F7;font-weight:600;text-decoration:none}
 .orow[disabled]{opacity:.55;cursor:default}
 .orow .t{text-align:left}
 .orow .t>span{display:block;font-size:16px;line-height:1.35}
 .orow .t small{display:block;margin-top:2px;color:var(--muted);font-size:13px}
 .orow.alt .t small{color:var(--dim)}
-.orow>.ic{color:var(--dim);margin-right:6px}
 .kopie{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:var(--r-sm);background:var(--card-2)}
 .kopie code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12.5px;color:var(--text)}
 .steps code{font-size:12.5px;background:var(--card-2);padding:1px 6px;border-radius:5px;color:var(--text)}
@@ -665,6 +668,8 @@ const ICONS = {
   link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
   refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
   hplug: '<path d="M10 12V8.964"/><path d="M14 12V8.964"/><path d="M15 12a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1z"/><path d="M8.5 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2"/>',
+  karte: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>',
+  route: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
   up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>', stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>'
 };
 const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -2641,6 +2646,9 @@ const daheim = o => !!(o && state.orte?.zuhause && abstandM(o, state.orte.zuhaus
 const ortName = o => daheim(o) ? 'Zuhause' : o.ort || 'Unterwegs';
 const ortAlt = o => Date.now() - o.zeit > 24 * 3600e3;
 const ortZeit = o => relShort(new Date(o.zeit).toISOString());
+/* Öffnet am iPhone die App „Karten“ (am Computer die Apple-Karte im Browser) */
+const appleKarte = (o, name) => `https://maps.apple.com/?ll=${o.lat},${o.lon}&q=${encodeURIComponent(name)}&z=15`;
+const appleRoute = o => `https://maps.apple.com/?daddr=${o.lat},${o.lon}&dirflg=d`;
 async function loadOrte(quiet) {
   if (!bereich('karte') || state.smartErr?.alt) return;
   try {
@@ -2723,11 +2731,12 @@ async function fillKarte2() {
   const sub = $('#phSub'), n = o.standorte.length; if (sub) sub.textContent = n ? `${n} ${n === 1 ? 'Person teilt' : 'Personen teilen'} den Standort` : 'Noch teilt niemand den Standort';
   box.innerHTML = `<div class="items orte">${leute.map(name => {
       const x = ortVon(name);
-      return `<button class="item-main orow ${x && ortAlt(x) ? 'alt' : ''}" data-action="ort-zeigen" data-name="${esc(name)}" ${x ? '' : 'disabled'}>${av(name)}<span class="t"><span>${esc(name)}${name === state.me ? ' <small style="display:inline;color:var(--dim)">(du)</small>' : ''}</span>
-        <small>${x ? `${daheim(x) ? '🏠' : '📍'} ${esc(ortName(x))} · ${esc(ortZeit(x))}${x.quelle === 'kurzbefehl' ? ' · automatisch' : ''}` : 'teilt den Standort nicht'}</small></span>${x ? ic('right', 18) : ''}</button>`;
+      return `<div class="orow-w"><button class="item-main orow ${x && ortAlt(x) ? 'alt' : ''}" data-action="ort-zeigen" data-name="${esc(name)}" ${x ? '' : 'disabled'}>${av(name)}<span class="t"><span>${esc(name)}${name === state.me ? ' <small style="display:inline;color:var(--dim)">(du)</small>' : ''}</span>
+        <small>${x ? `${daheim(x) ? '🏠' : '📍'} ${esc(ortName(x))} · ${esc(ortZeit(x))}${x.quelle === 'kurzbefehl' ? ' · automatisch' : ''}` : 'teilt den Standort nicht'}</small></span></button>
+        ${x ? `<a class="ghost amap" href="${esc(appleKarte(x, name))}" target="_blank" rel="noopener" aria-label="${esc(name)} in Apple Karten öffnen" title="In Apple Karten öffnen">${ic('karte', 19)}</a>${name !== state.me ? `<a class="ghost amap" href="${esc(appleRoute(x))}" target="_blank" rel="noopener" aria-label="Route zu ${esc(name)} in Apple Karten" title="Route in Apple Karten">${ic('route', 18)}</a>` : ''}` : ''}</div>`;
     }).join('')}</div>
     <div class="row-actions" style="margin:12px 2px 0"><button class="btn sm" data-action="zuhause-setzen">${ic('home', 15)} ${o.zuhause ? 'Zuhause ändern' : 'Hier ist Zuhause'}</button><button class="btn sm" data-action="go" data-tab="ich">${ic('settings', 15)} Mein Standort</button></div>
-    <p class="hint" style="margin:14px 4px 0">Freiwillig: Jede Person entscheidet selbst, ob und wann sie ihren Standort teilt. Gezeigt wird nur der zuletzt geteilte Standort – automatisch geht es mit einem iPhone-Kurzbefehl (unter „Mein Standort“).</p>`;
+    <p class="hint" style="margin:14px 4px 0">${ic('karte', 13).replace('class="ic"', 'class="ic" style="display:inline;vertical-align:-2px"')} öffnet die Person in Apple Karten, ${ic('route', 12).replace('class="ic"', 'class="ic" style="display:inline;vertical-align:-1px"')} startet die Route dorthin.<br>Freiwillig: Jede Person entscheidet selbst, ob und wann sie ihren Standort teilt. Gezeigt wird nur der zuletzt geteilte Standort – automatisch geht es mit einem iPhone-Kurzbefehl (unter „Mein Standort“).</p>`;
   return zeichneKarte(o);
 }
 async function zeichneKarte(o) {
@@ -2747,7 +2756,7 @@ async function zeichneKarte(o) {
   if (o.zuhause) { L.marker([o.zuhause.lat, o.zuhause.lon], { icon: L.divIcon({ className: '', html: `<span class="kheim">${ic('home', 18)}</span>`, iconSize: [34, 34], iconAnchor: [17, 17] }), keyboard: false }).addTo(g); punkte.push([o.zuhause.lat, o.zuhause.lon]); }
   o.standorte.forEach(x => {
     const m = L.marker([x.lat, x.lon], { icon: L.divIcon({ className: '', html: `<span class="kpin ${ortAlt(x) ? 'alt' : ''}">${av(x.name)}</span>`, iconSize: [44, 44], iconAnchor: [22, 22] }), title: x.name }).addTo(g);
-    m.bindPopup(`<b>${esc(x.name)}</b><br>${esc(ortName(x))} · ${esc(ortZeit(x))}`);
+    m.bindPopup(`<b>${esc(x.name)}</b><br>${esc(ortName(x))} · ${esc(ortZeit(x))}<div class="kpop"><a href="${esc(appleKarte(x, x.name))}" target="_blank" rel="noopener">In Apple Karten</a>${x.name !== state.me ? `<a href="${esc(appleRoute(x))}" target="_blank" rel="noopener">Route</a>` : ''}</div>`);
     if (x.gen && x.gen > 30 && x.gen < 5000) L.circle([x.lat, x.lon], { radius: x.gen, color: '#4FC3F7', weight: 1, fillOpacity: .08 }).addTo(g);
     punkte.push([x.lat, x.lon]);
   });
