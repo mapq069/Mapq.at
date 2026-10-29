@@ -324,10 +324,12 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 /* ---------- Version 2: weitere Bereiche ---------- */
 .c-red{--c:#EF5350;--cb:rgba(239,83,80,.17)}
 .c-lime{--c:#9CCC65;--cb:rgba(156,204,101,.17)}
-.tabbar{grid-template-columns:repeat(6,1fr)}
-.tab{font-size:10.5px}
-.tab .pill{width:48px}
-@media(min-width:760px){.tabbar{width:640px}}
+.tabbar{grid-template-columns:repeat(7,minmax(0,1fr));padding-left:2px;padding-right:2px}
+.tab{font-size:10px;letter-spacing:-.01em;min-width:0}
+.tab>span:not(.pill):not(.badge){white-space:nowrap}
+.tab .pill{width:44px}
+@media(max-width:350px){.tab{font-size:9.5px;letter-spacing:-.02em}.tab .pill{width:40px}}
+@media(min-width:760px){.tabbar{width:720px}.tab{font-size:11px}.tab .pill{width:52px}}
 .av{overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover;display:block}
 .back{display:inline-flex;align-items:center;gap:4px;margin:2px 0 8px -6px;padding:6px 8px;border:0;background:none;color:var(--muted);font-size:14px;font-weight:600;border-radius:10px}
@@ -516,6 +518,30 @@ details.dev-set[open]>summary{margin-bottom:10px}
 .setup-row>.ic{color:var(--dim)}
 .setup-err{color:#FF8A80;font-size:14px;min-height:1.3em;margin:-4px 2px 12px}
 .banner .shape{width:36px;height:36px}
+/* Räume */
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(min-width:600px){.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.room{position:relative;min-height:122px;border-radius:var(--r);background:var(--card);overflow:hidden;transition:background var(--ease)}
+.room.lit{background:linear-gradient(160deg,rgba(255,193,7,.13),var(--card) 62%)}
+.room-main{display:flex;flex-direction:column;justify-content:space-between;gap:12px;width:100%;height:100%;min-height:122px;padding:14px;border:0;background:none;text-align:left;color:var(--text);-webkit-tap-highlight-color:transparent}
+.room-main:active{transform:scale(.98)}
+.room-main .shape{width:46px;height:46px}
+.room-main .shape .e,.ph .shape .e{font-size:24px;line-height:1}
+.room-main .shape .av{width:46px;height:46px;font-size:19px}
+.room-main .t{min-width:0;width:100%}
+.room-main b{display:block;font-size:16px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+.room-main small{display:block;margin-top:2px;color:var(--muted);font-size:12.5px;line-height:1.35}
+.room-pw{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:var(--card-2);color:var(--muted);display:grid;place-items:center;-webkit-tap-highlight-color:transparent;transition:background var(--ease),color var(--ease)}
+.room-pw.on{background:#FFC107;color:var(--on-light)}
+.room-pw:active{transform:scale(.92)}
+.ph .shape .av{width:52px;height:52px;font-size:21px}
+.ph h1{overflow-wrap:anywhere;hyphens:auto}
+.pick{display:flex;flex-direction:column;max-height:46dvh;overflow:auto;margin-bottom:12px;padding:2px 12px;border-radius:var(--r-sm);background:var(--card-2);overscroll-behavior:contain}
+.pick-row{display:flex;align-items:center;gap:12px;min-height:52px;font-size:15px}
+.pick-row+.pick-row{border-top:1px solid var(--line)}
+.pick-row input{flex:none;width:22px;height:22px;accent-color:#26A69A}
+.pick-row .t{flex:1;min-width:0;overflow-wrap:anywhere}
+.pick-row small{display:block;color:var(--dim);font-size:12px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -537,8 +563,8 @@ details.dev-set[open]>summary{margin-bottom:10px}
 'use strict';
 /* =====================================================================
    mapq.at/familie – Start, Listen (Einkauf, To-dos, Putzplan), Kalender,
-   Fotos & Videos, Pinnwand und unter „Mehr“: Zuhause (Smart Home),
-   Essensplan, Rezepte, Countdowns, wichtige Infos und das eigene Profil.
+   Fotos & Videos, Pinnwand, Zuhause (Smart Home nach Räumen) und unter
+   „Mehr“: Essensplan, Rezepte, Countdowns, wichtige Infos, eigenes Profil.
    Daten in Supabase (gleiches Projekt wie das Kontaktformular, siehe
    /content.json → inbox). Alle melden sich mit dem Familien-Konto an;
    wer was eingetragen hat, steht im Feld „von“ (Name auf diesem Gerät).
@@ -614,6 +640,7 @@ const ICONS = {
   settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
   link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
   refresh: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  hplug: '<path d="M10 12V8.964"/><path d="M14 12V8.964"/><path d="M15 12a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1z"/><path d="M8.5 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2"/>',
   up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>', stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>'
 };
 const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -624,9 +651,10 @@ const TABS = [
   { id: 'kalender', label: 'Kalender', icon: 'cal', c: 'orange' },
   { id: 'fotos', label: 'Fotos', icon: 'image', c: 'pink' },
   { id: 'pinnwand', label: 'Pinnwand', icon: 'chat', c: 'green' },
+  { id: 'zuhause', label: 'Zuhause', icon: 'hplug', c: 'teal' },
   { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
-const SUB = ['zuhause', 'essen', 'rezepte', 'countdowns', 'infos', 'ich'];
+const SUB = ['essen', 'rezepte', 'countdowns', 'infos', 'ich'];
 const ALL_TABS = [...TABS.map(t => t.id), ...SUB];
 const tabOf = t => SUB.includes(t) ? 'mehr' : t;
 const LISTS = [['einkauf', 'Einkauf', 'cart', 'amber'], ['todo', 'To-dos', 'todo', 'blue'], ['putzplan', 'Putzplan', 'sparkles', 'sky']];
@@ -782,7 +810,7 @@ const state = {
   cal: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
   day: null, showDone: false, weather: null,
   wp: { info: null, loaded: false, mine: null, busy: false },
-  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null
+  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null, raum: null
 };
 const unread = () => {
   const seen = store.get('seen', '');
@@ -1046,7 +1074,7 @@ function fillDash() {
       ${foto ? `<button class="tile wide photo c-pink" data-action="go" data-tab="fotos" style="background-image:url('${esc(fotoUrl || '')}')"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'} · zuletzt ${foto.von ? 'von ' + esc(foto.von) + ' ' : ''}${esc(rel(foto.erstellt))}</small></span></button>`
         : `<button class="tile wide c-pink" data-action="quick" data-q="foto"><span class="top"><span style="display:flex;align-items:center;gap:12px"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>Teil das erste Familienfoto</small></span></span></span><i class="bar"></i></button>`}
     </div>
-    ${smartStart.length ? `<div class="sec-h"><span class="shape sm c-amber">${ic('home', 16)}</span><b>Zuhause</b><small>${smartAn.length ? `${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an` : 'Alle Lichter aus'}</small><button class="btn sm" data-action="go" data-tab="zuhause">Alle</button></div>
+    ${smartStart.length ? `<div class="sec-h"><span class="shape sm c-teal">${ic('hplug', 16)}</span><b>Zuhause</b><small>${smartAn.length ? `${smartAn.length} Licht${smartAn.length === 1 ? '' : 'er'} an` : 'Alle Lichter aus'}</small><button class="btn sm" data-action="go" data-tab="zuhause" data-raum="">Räume</button></div>
       <div class="devs">${smartStart.map(devTile).join('')}</div>` : ''}
     ${tasks.length ? `<section class="card c-sky"><div class="card-h"><span class="shape">${ic('sparkles')}</span><span class="t"><b>Heute dran</b><small>Putzplan</small></span><button class="btn sm" data-action="go" data-tab="listen" data-liste="putzplan">Alle</button></div>
       <div class="items" style="background:var(--card-2)">${tasks.map(aufgabeRow).join('')}</div></section>` : ''}
@@ -1841,15 +1869,13 @@ async function delPost(id) {
 }
 
 /* ---------- Mehr ---------- */
-function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); if (!state.smartErr?.alt) loadSmart(true); }
+function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); }
 function hubShell() { return `${header('Mehr', 'Alles Weitere für die Familie', 'purple', 'grid')}<div id="hub"></div>`; }
 function fillHub() {
   const box = $('#hub'); if (!box) return;
   const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
   const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
-  const sm = smartAktiv(), an = sm ? lichterAn().length : 0, n = sm ? state.smart.geraete.filter(d => !einstOf(d.id).aus).length : 0;
   box.innerHTML = `<div class="tiles hub">
-    <button class="tile wide c-amber" data-action="go" data-tab="zuhause"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic('bulb')}</span><span style="min-width:0"><b>Zuhause</b><small>${sm ? `${n} Gerät${n === 1 ? '' : 'e'}${an ? ` · ${an} Licht${an === 1 ? '' : 'er'} an` : ''}` : 'Licht & Steckdosen von Govee, Shelly und Smart Life'}</small></span></span>${an ? `<span class="num">${an}</span>` : ''}</span><i class="bar"></i></button>
     ${tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
     ${tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte')}
     ${tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"')}
@@ -2191,8 +2217,39 @@ function devTile(d) {
   return `<div class="dev ${l.cls}${d.art === 'rollo' ? ' wide' : ''}${d.online ? '' : ' offline'}${state.smartBusy.has(d.id) ? ' busy' : ''}${e.aus ? ' hid' : ''}" style="${l.style}">${icBtn}<button class="dev-t" data-action="dev-open" data-id="${id}"><b>${esc(name)}</b><small>${esc(e.aus ? 'Ausgeblendet' : devStatus(d))}</small></button>${cv}${bar}</div>`;
 }
 
+/* Räume: Übersicht mit Raum-Karten, darin die Geräte. Ein Raum entsteht, sobald ein Gerät ihm zugeordnet ist. */
+const RAUM_EMO = [[/wohn|stube|lounge/, '🛋️'], [/küche|kueche|koch/, '🍳'], [/schlaf|bett/, '🛏️'], [/bad|wc|toilette|dusche/, '🛁'], [/kind|baby/, '🧸'],
+  [/büro|buero|arbeit|office/, '💻'], [/garten|terrasse|balkon|außen|aussen|draußen|draussen/, '🌳'], [/garage|carport/, '🚗'], [/flur|gang|vorraum|diele|eingang|stiege|treppe/, '🚪'],
+  [/keller|wasch|technik|heiz/, '🧺'], [/essz|essbereich|esstisch|^essen/, '🍽️'], [/gäste|gaeste/, '🛎️'], [/fitness|sport|gym/, '🏋️'], [/musik|studio/, '🎧'], [/spiel|game/, '🎮']];
+const raumIcon = r => {
+  if (!r) return '<span class="e">📦</span>';
+  const m = state.members.find(n => n.toLowerCase() === r.toLowerCase());
+  if (m) return av(m);
+  const e = RAUM_EMO.find(([re]) => re.test(r.toLowerCase()));
+  return `<span class="e">${e ? e[1] : '🏠'}</span>`;
+};
+const imRaum = r => (state.smart?.geraete || []).filter(d => !einstOf(d.id).aus && (r === '*' || (einstOf(d.id).raum || '') === r));
+const raumLichter = r => imRaum(r).filter(d => d.art === 'licht' && d.online && d.kann.an);
+function raumInfo(r) {
+  const g = imRaum(r), an = g.filter(d => d.art === 'licht' && d.an && d.online).length, s = g.find(d => d.art === 'sensor' && d.online && d.temp != null);
+  const x = [an ? `${an} Licht${an === 1 ? '' : 'er'} an` : g.some(d => d.art === 'licht') ? 'Licht aus' : `${g.length} Gerät${g.length === 1 ? '' : 'e'}`];
+  const sw = g.filter(d => (d.art === 'schalter' || d.art === 'geraet') && d.an && d.online).length;
+  if (sw) x.push(`${sw} Steckdose${sw === 1 ? '' : 'n'} an`);
+  if (s) x.push(fmtNum(s.temp) + '°');
+  return { an, text: x.join(' · ') };
+}
 function zuhauseShell() {
-  return `${header('Zuhause', 'Licht, Steckdosen & mehr', 'amber', 'bulb', `<button class="btn sm icon" data-action="smart-setup" aria-label="Geräte verbinden">${ic('settings', 18)}</button>`, true)}<div id="zuhause">${state.smart ? '' : spinner}</div>`;
+  const r = state.raum;
+  if (r === null || !smartAktiv()) {
+    return `${header('Zuhause', smartAktiv() ? 'Alle Räume' : 'Licht, Steckdosen & mehr', 'teal', 'hplug', smartAktiv()
+      ? `<span class="row-actions" style="gap:8px"><button class="btn sm" data-action="raum-neu">${ic('plus', 16)} Raum</button><button class="btn sm icon" data-action="smart-setup" aria-label="Geräte verbinden">${ic('settings', 18)}</button></span>`
+      : `<button class="btn sm icon" data-action="smart-setup" aria-label="Geräte verbinden">${ic('settings', 18)}</button>`)}<div id="zuhause">${state.smart ? '' : spinner}</div>`;
+  }
+  const titel = r === '*' ? 'Alle Geräte' : r || 'Ohne Raum';
+  return `<button class="back" data-action="raum" data-r="">${ic('left', 18)} Alle Räume</button>
+    <div class="ph c-teal"><span class="shape lg">${r === '*' ? ic('hplug', 24) : raumIcon(r)}</span><div><h1>${esc(titel)}</h1><p id="phSub"></p></div>
+    ${r && r !== '*' ? `<button class="btn sm icon" data-action="raum-edit" aria-label="Raum bearbeiten" title="Raum bearbeiten">${ic('edit', 17)}</button>` : ''}</div>
+    <div id="zuhause"></div>`;
 }
 function fillZuhause() {
   const box = $('#zuhause'); if (!box) return;
@@ -2200,30 +2257,107 @@ function fillZuhause() {
   if (err?.alt) { box.innerHTML = emptyBox('amber', 'alert', 'Noch nicht freigeschaltet', esc(err.message), `<div style="margin-top:16px"><button class="btn" data-action="smart-refresh">${ic('refresh', 17)} Nochmal prüfen</button></div>`); return; }
   if (!sm) { box.innerHTML = err ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(err)), `<div style="margin-top:16px"><button class="btn" data-action="smart-refresh">${ic('refresh', 17)} Nochmal</button></div>`) : spinner; return; }
   if (!smartAktiv()) {
-    box.innerHTML = emptyBox('amber', 'home', 'Smart Home verbinden', 'Lampen, Steckdosen und Rollläden von Govee, Shelly und Smart Life direkt hier steuern – für alle in der Familie.',
-      `<div style="margin-top:16px"><button class="btn btn-primary c-amber" data-action="smart-setup">${ic('link', 18)} Geräte verbinden</button></div>`);
+    box.innerHTML = emptyBox('teal', 'hplug', 'Smart Home verbinden', 'Lampen, Steckdosen und Rollläden von Govee, Shelly und Smart Life direkt hier steuern – nach Räumen sortiert, für alle in der Familie.',
+      `<div style="margin-top:16px"><button class="btn btn-primary c-teal" data-action="smart-setup">${ic('link', 18)} Geräte verbinden</button></div>`);
     return;
   }
+  // Ein Raum wurde leer (z. B. alle Geräte umgezogen) → zurück zur Übersicht
+  if (state.raum != null && state.raum !== '*' && !imRaum(state.raum).length) { state.raum = null; return renderView(); }
+  if (state.raum !== null && state.raum !== undefined) return fillRaum(box);
   const a = sm.anbieter;
   const fehler = Object.keys(ANB).filter(k => a[k]?.aktiv && a[k].fehler).map(k => `<div class="banner c-red"><span class="shape">${ic('alert', 18)}</span><div class="body"><b>${esc(ANB[k][0])}</b><p>${esc(a[k].fehler)}</p><div class="row-actions"><button class="btn sm" data-action="smart-setup-1" data-a="${k}">Zugang prüfen</button></div></div></div>`).join('');
-  const alle = [...(sm.geraete || [])].sort(devSort), sichtbar = alle.filter(d => !einstOf(d.id).aus), versteckt = alle.length - sichtbar.length;
-  const liste = state.smartAlle ? alle : sichtbar;
-  const an = lichterAn(), sensoren = sichtbar.filter(d => d.art === 'sensor' && d.online && d.temp != null).slice(0, 4);
+  const alle = imRaum('*'), an = lichterAn(), sensoren = alle.filter(d => d.art === 'sensor' && d.online && d.temp != null).slice(0, 4);
   const chips = [
     an.length ? `<button class="dchip" data-action="smart-alle-aus"><span class="shape c-amber">${ic('bulb', 16)}</span>${an.length} an · Alle aus</button>`
-      : sichtbar.some(d => d.art === 'licht') ? `<span class="dchip"><span class="shape c-grey">${ic('bulb', 16)}</span>Alle Lichter aus</span>` : '',
+      : alle.some(d => d.art === 'licht') ? `<span class="dchip"><span class="shape c-grey">${ic('bulb', 16)}</span>Alle Lichter aus</span>` : '',
     ...sensoren.map(d => `<button class="dchip" data-action="dev-open" data-id="${esc(d.id)}"><span class="shape c-sky">${ic('thermo', 16)}</span>${fmtNum(d.temp)}° ${esc(devName(d))}</button>`),
     `<button class="dchip" data-action="smart-refresh"><span class="shape">${ic('refresh', 16)}</span>Aktualisieren</button>`
   ].join('');
-  const gruppen = {};
-  liste.forEach(d => { const r = einstOf(d.id).raum || ''; (gruppen[r] ||= []).push(d); });
-  const namen = Object.keys(gruppen).filter(Boolean).sort((x, y) => x.localeCompare(y, 'de'));
-  if (gruppen['']) namen.push('');
+  const rs = raeume(), ohne = imRaum('');
+  const karte = r => {
+    const i = raumInfo(r), l = raumLichter(r);
+    return `<div class="room ${i.an ? 'c-amber lit' : 'c-teal'}"><button class="room-main" data-action="raum" data-r="${esc(r)}" aria-label="${esc(r || 'Ohne Raum')} öffnen"><span class="shape">${raumIcon(r)}</span><span class="t"><b>${esc(r || 'Ohne Raum')}</b><small>${esc(i.text)}</small></span></button>
+      ${l.length ? `<button class="room-pw ${i.an ? 'on' : ''}" data-action="raum-licht" data-r="${esc(r)}" aria-label="Licht in ${esc(r || 'Ohne Raum')} ${i.an ? 'ausschalten' : 'einschalten'}" aria-pressed="${i.an ? 'true' : 'false'}">${ic('bulb', 20)}</button>` : ''}</div>`;
+  };
   box.innerHTML = `<div class="chips">${chips}</div>${fehler}
-    ${liste.length ? namen.map(r => `${r || namen.length > 1 ? `<p class="sub-h">${r ? esc(r) : 'Weitere Geräte'}</p>` : ''}<div class="devs">${gruppen[r].map(devTile).join('')}</div>`).join('')
-      : emptyBox('amber', 'home', 'Keine Geräte gefunden', 'Prüf in der App des Herstellers, ob die Geräte dort angemeldet und online sind.')}
+    ${rs.length ? `<div class="rooms">${rs.map(karte).join('')}${ohne.length ? karte('') : ''}</div>
+      <button class="btn sm" style="margin:2px 0 4px" data-action="raum" data-r="*">${ic('grid', 15)} Alle Geräte</button>`
+    : `<div class="banner c-teal"><span class="shape">${ic('home', 18)}</span><div class="body"><b>Räume anlegen</b><p>Ordne die Geräte Räumen zu – z. B. Wohnzimmer, Küche oder Matteo. Dann ist hier alles nach Zimmern sortiert.</p><div class="row-actions"><button class="btn sm btn-primary c-teal" data-action="raum-neu">${ic('plus', 15)} Ersten Raum anlegen</button></div></div></div>
+      ${alle.length ? `<div class="devs">${alle.sort(devSort).map(devTile).join('')}</div>` : emptyBox('teal', 'hplug', 'Keine Geräte gefunden', 'Prüf in der App des Herstellers, ob die Geräte dort angemeldet und online sind.')}`}
+    <p class="hint" style="margin:16px 4px 0">${rs.length ? 'Tipp auf einen Raum für seine Geräte – die Lampe rechts schaltet das ganze Licht im Raum.' : 'Tipp aufs Symbol schaltet ein und aus. Tipp auf den Namen: Helligkeit, Farbe, Raum und Name.'}</p>`;
+}
+function fillRaum(box) {
+  const r = state.raum, alleAuch = r === '*' && state.smartAlle;
+  const liste = (alleAuch ? (state.smart.geraete || []) : imRaum(r)).slice().sort(devSort);
+  const versteckt = r === '*' ? (state.smart.geraete || []).filter(d => einstOf(d.id).aus).length : 0;
+  const l = raumLichter(r), an = l.filter(d => d.an), sens = liste.filter(d => d.art === 'sensor' && d.online && d.temp != null);
+  const sub = $('#phSub'); if (sub) sub.textContent = raumInfo(r).text;
+  const chips = [
+    l.length ? `<button class="dchip" data-action="raum-licht" data-r="${esc(r)}"><span class="shape ${an.length ? 'c-amber' : 'c-grey'}">${ic('bulb', 16)}</span>${an.length ? `${an.length} an · Alle aus` : 'Licht an'}</button>` : '',
+    ...sens.map(d => `<button class="dchip" data-action="dev-open" data-id="${esc(d.id)}"><span class="shape c-sky">${ic('thermo', 16)}</span>${fmtNum(d.temp)}°${d.feuchte != null ? ` · ${Math.round(d.feuchte)} %` : ''}</button>`),
+    `<button class="dchip" data-action="smart-refresh"><span class="shape">${ic('refresh', 16)}</span>Aktualisieren</button>`
+  ].join('');
+  let tiles;
+  if (r === '*') {
+    const gruppen = {};
+    liste.forEach(d => { const x = einstOf(d.id).raum || ''; (gruppen[x] ||= []).push(d); });
+    const namen = Object.keys(gruppen).filter(Boolean).sort((x, y) => x.localeCompare(y, 'de')); if (gruppen['']) namen.push('');
+    tiles = namen.map(x => `<p class="sub-h">${x ? esc(x) : 'Ohne Raum'}</p><div class="devs">${gruppen[x].map(devTile).join('')}</div>`).join('');
+  } else tiles = `<div class="devs">${liste.map(devTile).join('')}</div>`;
+  box.innerHTML = `<div class="chips">${chips}</div>${tiles}
     ${versteckt ? `<button class="btn sm" style="margin-top:4px" data-action="smart-hidden">${state.smartAlle ? 'Ausgeblendete verstecken' : `${versteckt} ausgeblendet – zeigen`}</button>` : ''}
     <p class="hint" style="margin:16px 4px 0">Tipp aufs Symbol schaltet ein und aus. Tipp auf den Namen: Helligkeit, Farbe, Raum und Name.</p>`;
+}
+function raumLicht(r) {
+  const l = raumLichter(r); if (!l.length) return;
+  const an = l.filter(d => d.an);
+  an.length ? devSet(an.map(d => d.id), { an: false }) : devSet(l.map(d => d.id), { an: true });
+}
+/* Raum anlegen, umbenennen, Geräte zuordnen oder Raum auflösen */
+function raumSheet(r) {
+  const neu = r === null, geraete = [...(state.smart?.geraete || [])].sort(devSort);
+  openSheet(`<div class="sheet-h c-teal"><span class="shape">${neu ? ic('plus') : raumIcon(r)}</span><h3>${neu ? 'Neuer Raum' : r ? esc(r) : 'Ohne Raum'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="raumForm" class="c-teal" data-r="${neu ? '' : esc(r)}" data-neu="${neu ? 1 : 0}">
+      ${neu || r ? `<div class="field"><label for="rName">Name des Raums</label><input id="rName" class="input" maxlength="30" required value="${esc(r || '')}" placeholder="z. B. Wohnzimmer, Küche, Matteo" autocapitalize="words" list="raumListe2"><datalist id="raumListe2">${state.members.map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>` : ''}
+      <p class="sub-h" style="margin:4px 2px 8px">Welche Geräte gehören dazu?</p>
+      <div class="pick">${geraete.map(d => { const x = einstOf(d.id).raum || '', drin = !neu && x === (r || ''); return `<label class="pick-row"><input type="checkbox" value="${esc(d.id)}" ${drin ? 'checked' : ''}><span class="shape sm ${devLook(d).cls}" style="${devLook(d).style}">${ic(DEV_ICON[d.art] || 'power', 16)}</span><span class="t">${esc(devName(d))}${x && !drin ? `<small>jetzt: ${esc(x)}</small>` : ''}</span></label>`; }).join('')}</div>
+      <p class="setup-err" id="raumErr" role="alert"></p>
+      <div class="sheet-actions">${!neu && r ? `<button type="button" class="btn btn-danger" data-action="raum-weg">Auflösen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="raumBtn">Speichern</button></div>
+    </form>`);
+  if (neu) setTimeout(() => $('#rName')?.focus(), 60);
+}
+async function raumSpeichern(form, aufloesen) {
+  const alt = form.dataset.r, neu = form.dataset.neu === '1';
+  const name = aufloesen ? '' : ($('#rName')?.value.trim().replace(/\s+/g, ' ').replace(/^\*+$/, '') ?? '');
+  if (!aufloesen && (neu || alt) && !name) { $('#raumErr').textContent = 'Bitte einen Namen eingeben.'; return; }
+  const gewaehlt = new Set($$('.pick input:checked').map(i => i.value));
+  if (!aufloesen && neu && !gewaehlt.size) { $('#raumErr').textContent = 'Wähl mindestens ein Gerät aus – ein Raum ohne Geräte wird nicht gespeichert.'; return; }
+  // Was ändert sich? Gewählte Geräte kommen in den Raum, abgewählte aus diesem Raum werden „ohne Raum“
+  const ziel = aufloesen ? '' : (neu || alt ? name : '');
+  const aend = [];
+  for (const d of state.smart.geraete) {
+    const jetzt = einstOf(d.id).raum || '';
+    const soll = aufloesen ? (jetzt === alt ? '' : jetzt) : gewaehlt.has(d.id) ? ziel : (!neu && jetzt === alt ? '' : jetzt);
+    if (soll !== jetzt) aend.push([d.id, soll]);
+  }
+  const btn = $('#raumBtn'); btn.disabled = true;
+  try {
+    let i = 0;
+    for (const [id, raum] of aend) { // nacheinander – jede Änderung baut auf der vorigen auf
+      btn.textContent = `Speichere ${++i}/${aend.length} …`;
+      const j = await smartFn({ aktion: 'smart-geraet', id, raum });
+      state.smart.einst = j.einst;
+    }
+    store.set('smart', state.smart);
+    closeSheet();
+    state.raum = aufloesen ? null : neu ? state.raum : (ziel && imRaum(ziel).length ? ziel : null);
+    toast(aufloesen ? 'Raum aufgelöst.' : aend.length ? 'Raum gespeichert.' : 'Nichts geändert.', 'ok');
+    renderView();
+  } catch (e) {
+    if (e.silent) return;
+    $('#raumErr').textContent = errMsg(e); btn.disabled = false; btn.textContent = 'Nochmal versuchen';
+    store.set('smart', state.smart); fillZuhause();
+  }
 }
 
 /* Schalten: sofort anzeigen, bei einem Fehler zurückdrehen */
@@ -2530,7 +2664,7 @@ function quick(q) {
   if (q === 'nachricht') { go('pinnwand'); setTimeout(() => $('#postText')?.focus(), 60); }
 }
 const ACTIONS = {
-  go: el => { closeFoto(); closeSheet(); if (el.dataset.liste) { state.liste = el.dataset.liste; store.set('liste', state.liste); } go(el.dataset.tab); },
+  go: el => { closeFoto(); closeSheet(); if (el.dataset.liste) { state.liste = el.dataset.liste; store.set('liste', state.liste); } if (el.dataset.tab === 'zuhause' && (state.tab === 'zuhause' || 'raum' in el.dataset)) state.raum = null; go(el.dataset.tab); },
   quick: el => quick(el.dataset.q),
   'refresh-weather': () => loadWeather(true),
   'toggle-pass': el => { const i = el.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; },
@@ -2617,6 +2751,11 @@ const ACTIONS = {
   'smart-alle-aus': () => { const ids = lichterAn().map(d => d.id); if (ids.length) devSet(ids, { an: false }); },
   'smart-refresh': el => { el.classList.add('busy'); state.smartErr = null; loadSmart(false, true); },
   'smart-hidden': () => { state.smartAlle = !state.smartAlle; fillZuhause(); },
+  raum: el => { const r = el.dataset.r; state.raum = r === '' && el.classList.contains('back') ? null : r; state.smartAlle = false; renderView(); window.scrollTo(0, 0); },
+  'raum-licht': el => raumLicht(el.dataset.r),
+  'raum-neu': () => raumSheet(null),
+  'raum-edit': () => raumSheet(state.raum),
+  'raum-weg': () => { const f = $('#raumForm'); if (f && confirm(`Raum „${f.dataset.r}“ auflösen? Die Geräte bleiben, nur ohne Raum.`)) raumSpeichern(f, true); },
   'sheet-close': () => closeSheet()
 };
 document.addEventListener('click', e => {
@@ -2632,6 +2771,7 @@ document.addEventListener('submit', e => {
   if (e.target.matches('form.kform')) { e.preventDefault(); sendKomm(e.target); }
   if (e.target.id === 'devForm') { e.preventDefault(); devSave(e.target); }
   if (e.target.id === 'setupForm') { e.preventDefault(); smartEinrichten(e.target); }
+  if (e.target.id === 'raumForm') { e.preventDefault(); raumSpeichern(e.target, false); }
 });
 document.addEventListener('input', e => {
   const t = e.target;
