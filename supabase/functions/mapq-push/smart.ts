@@ -1,7 +1,7 @@
 // Smart Home für die Familien-App (mapq.at/familie → „Zuhause“): Govee, Shelly und Smart Life / Tuya.
 //
 // Die Familie trägt die Zugangsdaten in der App ein. Sie liegen nur hier auf dem Server in mapq_einstellungen
-// (smart_govee_key, smart_shelly_*, smart_tuya_*) und gehen nie zurück an den Browser.
+// (smart_govee_konten – mehrere Govee-Konten, z. B. eins pro Zimmer –, smart_shelly_*, smart_tuya_*) und gehen nie zurück an den Browser.
 // Die App bekommt eine einheitliche Geräteliste. Zustände werden kurz zwischengespeichert
 // (mapq_einstellungen „smart_cache:…“), damit die Grenzen der Anbieter halten (Shelly: 1 Anfrage pro Sekunde).
 //
@@ -10,6 +10,7 @@
 //   smart-set        { id | ids, befehl }             → befehl: { an } | { hell } | { farbe } | { kelvin } | { szene } | { position }
 //   smart-szenen     { id }                           → Govee-Szenen eines Lichts
 //   smart-einrichten { anbieter, …Zugangsdaten }      → prüft und speichert; { anbieter, trennen: true } entfernt sie
+//                    Govee: { key, name, raum?, konto? } – mehrere Konten; konto = bestehendes Konto ändern bzw. mit trennen entfernen
 //   smart-geraet     { id, name?, raum?, start?, aus? } → eigener Name, Raum, auf Start zeigen, ausblenden
 
 const te = new TextEncoder();
@@ -35,6 +36,7 @@ export type Geraet = {
   feuchte?: number | null;
   watt?: number | null;
   kann: { an?: boolean; hell?: boolean; farbe?: boolean; kelvin?: boolean; szenen?: boolean; position?: boolean; stopp?: boolean };
+  konto?: string;
   // deno-lint-ignore no-explicit-any
   ref?: any;
 };
@@ -125,14 +127,23 @@ const TUYA_HOSTS: Record<string, string> = {
   in: "openapi.tuyain.com",
   cn: "openapi.tuyacn.com",
 };
-type GoveeCfg = { key: string };
+type GoveeKonto = { id: string; name: string; key: string; raum?: string };
+type GoveeCfg = { konten: GoveeKonto[] };
 type ShellyCfg = { key: string; host: string; ids: string[] };
 type TuyaCfg = { id: string; secret: string; region: string };
 type Konfig = { govee: GoveeCfg | null; shelly: ShellyCfg | null; tuya: TuyaCfg | null };
 const liste = (s?: string) => (s || "").split(",").map((x) => x.trim()).filter(Boolean);
+/** Alle Govee-Konten (übernimmt den früheren einzelnen Schlüssel smart_govee_key als erstes Konto). */
+function goveeKonten(s: Record<string, string>): GoveeKonto[] {
+  let l: Roh = [];
+  try { l = JSON.parse(s.smart_govee_konten || "[]"); } catch { l = []; }
+  const k: GoveeKonto[] = (Array.isArray(l) ? l : []).filter((x: Roh) => x && typeof x.key === "string" && x.key && typeof x.id === "string");
+  if (s.smart_govee_key && !k.some((x) => x.key === s.smart_govee_key)) k.unshift({ id: "g0", name: "Govee", key: s.smart_govee_key });
+  return k;
+}
 function konfig(s: Record<string, string>): Konfig {
   return {
-    govee: s.smart_govee_key ? { key: s.smart_govee_key } : null,
+    govee: goveeKonten(s).length ? { konten: goveeKonten(s) } : null,
     shelly: s.smart_shelly_key && s.smart_shelly_host && liste(s.smart_shelly_ids).length
       ? { key: s.smart_shelly_key, host: s.smart_shelly_host, ids: liste(s.smart_shelly_ids) }
       : null,
@@ -166,7 +177,7 @@ async function goveeApi(key: string, path: string, payload?: unknown): Promise<R
 }
 // deno-lint-ignore no-explicit-any
 const goveeCap = (caps: any[], type: string, inst: string) => (caps ?? []).find((c) => c?.type === "devices.capabilities." + type && c?.instance === inst);
-function goveeBasis(d: Roh): Geraet {
+function goveeBasis(d: Roh, konto?: GoveeKonto): Geraet {
   const caps = d.capabilities ?? [];
   const kt = goveeCap(caps, "color_setting", "colorTemperatureK");
   const typ = String(d.type ?? "");
@@ -188,7 +199,8 @@ function goveeBasis(d: Roh): Geraet {
     },
     kmin: num(kt?.parameters?.range?.min) ?? 2000,
     kmax: num(kt?.parameters?.range?.max) ?? 9000,
-    ref: { sku: d.sku, device: d.device },
+    konto: konto?.name,
+    ref: { sku: d.sku, device: d.device, konto: konto?.id },
   };
 }
 function goveeZustand(g: Geraet, caps: Roh[]): Geraet {
@@ -209,27 +221,53 @@ function goveeZustand(g: Geraet, caps: Roh[]): Geraet {
     feuchte: num(h) ?? num(h?.currentHumidity),
   };
 }
-async function goveeStatus(cfg: GoveeCfg, c: Cache, neu: Neu): Promise<Geraet[]> {
-  let basis: Geraet[] | undefined = c["liste:govee"] && Date.now() - c["liste:govee"].zeit < 10 * 60e3 ? c["liste:govee"].daten : undefined;
+const goveeZiel = (g: Geraet) => ({ sku: g.ref.sku, device: g.ref.device });
+/** Schlüssel für ein Gerät: aus seinem Konto (ältere Zwischenspeicher ohne Konto → erstes Konto). */
+function goveeKey(cfg: GoveeCfg, g: Geraet): string {
+  const k = cfg.konten.find((x) => x.id === g.ref?.konto) ?? (g.ref?.konto ? undefined : cfg.konten[0]);
+  if (!k) throw new Fehler("Das Govee-Konto dieses Geräts ist nicht mehr verbunden.");
+  return k.key;
+}
+async function goveeKontoStatus(k: GoveeKonto, c: Cache, neu: Neu): Promise<Geraet[]> {
+  const ck = `liste:govee:${k.id}`;
+  let basis: Geraet[] | undefined = c[ck] && Date.now() - c[ck].zeit < 10 * 60e3 ? c[ck].daten : undefined;
   if (!basis) {
-    const j = await goveeApi(cfg.key, "/user/devices");
-    basis = (Array.isArray(j.data) ? j.data : []).filter((d: Roh) => d?.sku && d?.device).slice(0, 40).map(goveeBasis);
-    c["liste:govee"] = { zeit: Date.now(), daten: basis };
-    neu["liste:govee"] = basis;
+    const j = await goveeApi(k.key, "/user/devices");
+    basis = (Array.isArray(j.data) ? j.data : []).filter((d: Roh) => d?.sku && d?.device).slice(0, 40).map((d: Roh) => goveeBasis(d, k));
+    c[ck] = { zeit: Date.now(), daten: basis };
+    neu[ck] = basis;
   }
   return await Promise.all(basis!.map(async (g) => {
     try {
-      const j = await goveeApi(cfg.key, "/device/state", g.ref);
+      const j = await goveeApi(k.key, "/device/state", goveeZiel(g));
       return goveeZustand(g, j.payload?.capabilities ?? []);
     } catch {
       return { ...g, an: g.kann.an ? null : undefined };
     }
   }));
 }
+/** Alle Konten parallel; fällt eines aus, bleiben seine Geräte mit dem letzten Stand da. */
+async function goveeStatus(cfg: GoveeCfg, c: Cache, neu: Neu): Promise<{ geraete: Geraet[]; fehler: string | null }> {
+  const alt: Geraet[] = c["status:govee"]?.daten ?? [];
+  const fehler: string[] = [];
+  const teile = await Promise.all(cfg.konten.map(async (k) => {
+    try {
+      return await goveeKontoStatus(k, c, neu);
+    } catch (e) {
+      const m = e instanceof Fehler ? e.message : (e as Error).message;
+      fehler.push(cfg.konten.length > 1 ? `${m} (Konto „${k.name}“)` : m);
+      return alt.filter((g) => g.ref?.konto === k.id);
+    }
+  }));
+  const gesehen = new Set<string>();
+  const geraete = teile.flat().filter((g) => !gesehen.has(g.id) && !!gesehen.add(g.id));
+  if (fehler.length === cfg.konten.length && !geraete.length) throw new Fehler(fehler.join(" · "));
+  return { geraete, fehler: fehler.length ? fehler.join(" · ") : null };
+}
 async function goveeSzenen(cfg: GoveeCfg, c: Cache, neu: Neu, g: Geraet): Promise<{ name: string; wert: unknown }[]> {
   const k = `szenen:${g.id}`;
   if (c[k] && Date.now() - c[k].zeit < 7 * 864e5) return c[k].daten;
-  const j = await goveeApi(cfg.key, "/device/scenes", g.ref);
+  const j = await goveeApi(goveeKey(cfg, g), "/device/scenes", goveeZiel(g));
   const cap = (j.payload?.capabilities ?? []).find((x: Roh) => x?.instance === "lightScene");
   const l = (cap?.parameters?.options ?? []).filter((o: Roh) => o?.name && o.value != null)
     .slice(0, 300).map((o: Roh) => ({ name: String(o.name).slice(0, 60), wert: o.value }));
@@ -239,7 +277,7 @@ async function goveeSzenen(cfg: GoveeCfg, c: Cache, neu: Neu, g: Geraet): Promis
 }
 async function goveeSetzen(cfg: GoveeCfg, c: Cache, neu: Neu, g: Geraet, b: Befehl): Promise<Geraet> {
   const send = (type: string, instance: string, value: unknown) =>
-    goveeApi(cfg.key, "/device/control", { ...g.ref, capability: { type: "devices.capabilities." + type, instance, value } });
+    goveeApi(goveeKey(cfg, g), "/device/control", { ...goveeZiel(g), capability: { type: "devices.capabilities." + type, instance, value } });
   if (typeof b.an === "boolean") {
     if (!g.kann.an) throw new Fehler("Das lässt sich nicht schalten.");
     await send("on_off", "powerSwitch", b.an ? 1 : 0);
@@ -669,7 +707,9 @@ async function zustand(ctx: Ctx, frisch: "nein" | "ja" | "immer", c?: Cache) {
     const alt = cache[`status:${a}`];
     if (alt && Date.now() - alt.zeit < maxAlter) return alt.daten as Geraet[];
     try {
-      const g: Geraet[] = await ADAPTER[a].status(k, cache, neu);
+      const r = await ADAPTER[a].status(k, cache, neu);
+      const g: Geraet[] = Array.isArray(r) ? r : r.geraete;
+      if (!Array.isArray(r) && r.fehler) fehler[a] = r.fehler;
       cache[`status:${a}`] = { zeit: Date.now(), daten: g };
       neu[`status:${a}`] = g;
       return g;
@@ -699,7 +739,10 @@ async function aktionStatus(ctx: Ctx, frisch: boolean) {
   const s = ctx.s;
   return {
     anbieter: {
-      govee: { aktiv: !!z.cfg.govee, fehler: z.fehler.govee ?? null },
+      govee: {
+        aktiv: !!z.cfg.govee, fehler: z.fehler.govee ?? null,
+        konten: goveeKonten(s).map((k) => ({ id: k.id, name: k.name, raum: k.raum || null, anzahl: z.geraete.filter((g) => g.anbieter === "govee" && (g.ref?.konto ?? "g0") === k.id).length })),
+      },
       shelly: { aktiv: !!z.cfg.shelly, fehler: z.fehler.shelly ?? null, host: s.smart_shelly_host || null, ids: liste(s.smart_shelly_ids) },
       tuya: { aktiv: !!z.cfg.tuya, fehler: z.fehler.tuya ?? null, region: s.smart_tuya_region || "eu" },
     },
@@ -772,8 +815,14 @@ async function aktionEinrichten(ctx: Ctx, data: Roh) {
   const s = ctx.s;
   const alt: Neu = { [`status:${a}`]: null, [`liste:${a}`]: null };
   if (!ANBIETER.includes(a as Anbieter)) throw new Fehler("Unbekannter Anbieter.");
+  if (a === "govee" && data.trennen === true && data.konto) {
+    const rest = goveeKonten(s).filter((k) => k.id !== String(data.konto));
+    await einstellen(ctx.db, { smart_govee_konten: JSON.stringify(rest), smart_govee_key: "" });
+    await merke(ctx.db, { "status:govee": null, [`liste:govee:${String(data.konto).slice(0, 20)}`]: null });
+    return { ok: true };
+  }
   if (data.trennen === true) {
-    const leer: Record<string, string> = a === "govee" ? { smart_govee_key: "" }
+    const leer: Record<string, string> = a === "govee" ? { smart_govee_key: "", smart_govee_konten: "[]" }
       : a === "shelly" ? { smart_shelly_key: "", smart_shelly_host: "", smart_shelly_ids: "" }
       : { smart_tuya_id: "", smart_tuya_secret: "", smart_tuya_region: "" };
     await einstellen(ctx.db, leer);
@@ -783,13 +832,33 @@ async function aktionEinrichten(ctx: Ctx, data: Roh) {
   const text = (v: unknown, max = 200) => String(v ?? "").trim().slice(0, max);
 
   if (a === "govee") {
-    const key = text(data.key);
+    const konten = goveeKonten(s);
+    const kid = text(data.konto, 20);
+    const vorher = kid ? konten.find((k) => k.id === kid) : undefined;
+    if (kid && !vorher) throw new Fehler("Dieses Govee-Konto gibt es nicht mehr.");
+    if (!vorher && konten.length >= 8) throw new Fehler("Höchstens 8 Govee-Konten.");
+    const key = text(data.key) || vorher?.key || "";
     if (!/^[A-Za-z0-9-]{16,80}$/.test(key)) throw new Fehler("Der API-Schlüssel sieht nicht richtig aus (z. B. 1a2b3c4d-…).");
+    const doppelt = konten.find((k) => k.key === key && k.id !== kid);
+    if (doppelt) throw new Fehler(`Dieser Schlüssel ist schon verbunden (Konto „${doppelt.name}“).`);
+    const name = text(data.name, 30) || vorher?.name || (konten.length ? `Govee ${konten.length + 1}` : "Govee");
+    const raum = text(data.raum, 30);
     const j = await goveeApi(key, "/user/devices");
-    const n = (Array.isArray(j.data) ? j.data : []).length;
-    await einstellen(ctx.db, { smart_govee_key: key });
-    await merke(ctx.db, alt);
-    return { ok: true, anzahl: n };
+    const geraete = (Array.isArray(j.data) ? j.data : []).filter((d: Roh) => d?.sku && d?.device);
+    const konto: GoveeKonto = { id: vorher?.id ?? "g" + crypto.randomUUID().replace(/-/g, "").slice(0, 8), name, key, ...(raum ? { raum } : {}) };
+    const werte: Record<string, string> = {
+      smart_govee_konten: JSON.stringify(vorher ? konten.map((k) => (k.id === kid ? konto : k)) : [...konten, konto]),
+      smart_govee_key: "",
+    };
+    // Geräte dieses Kontos, die noch keinen Raum haben, kommen gleich in den gewählten Raum
+    if (raum) {
+      const e = einst(s);
+      for (const d of geraete) { const id = `govee~${d.sku}~${d.device}`; if (!e[id]?.raum) e[id] = { ...(e[id] ?? {}), raum }; }
+      werte.smart_geraete = JSON.stringify(e);
+    }
+    await einstellen(ctx.db, werte);
+    await merke(ctx.db, { ...alt, [`liste:govee:${konto.id}`]: null });
+    return { ok: true, anzahl: geraete.length, konto: konto.id };
   }
 
   if (a === "shelly") {

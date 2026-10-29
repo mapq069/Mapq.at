@@ -12,7 +12,7 @@
 // Nur Standard-WebCrypto: VAPID (RFC 8292) und aes128gcm-Verschlüsselung (RFC 8291 / RFC 8188).
 // In Supabase mit ausgeschalteter „JWT-Verifizierung“ bereitstellen – die Prüfung passiert hier.
 
-import { Fehler, smartAktion } from "./smart.ts?v=1";
+import { Fehler, smartAktion } from "./smart.ts?v=2";
 
 const te = new TextEncoder();
 
