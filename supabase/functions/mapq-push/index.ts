@@ -7,14 +7,15 @@
 //  • vom Panel als Test: Header "Authorization: Bearer <Login-Token>" + "apikey" – nur für den Admin
 //  • vom Panel { aktion: "familie-passwort", passwort } – legt das Familien-Konto an bzw. ändert sein Passwort (nur Admin)
 //  • von der Familien-App { aktion: "familie-test", endpoint } – Test an dieses eine Gerät (nur Familien-Konto)
-//  • von der Familien-App { aktion: "smart-…" } – Smart Home (Govee, Shelly, Smart Life / Tuya), siehe smart.ts
+//  • von der Familien-App { aktion: "smart-…" } – Smart Home (Govee, Shelly, Smart Life / Tuya, SmartThings), siehe smart.ts
+//    { aktion: "smart-st-code", code, state } – Rückkehr von der Samsung-Anmeldung, ohne Login (der einmalige state weist aus)
 //  • { aktion: "standort-…" } – Familien-Karte (Familie); { aktion: "standort", token } vom iPhone-Kurzbefehl, siehe standort.ts
 //
 // Nur Standard-WebCrypto: VAPID (RFC 8292) und aes128gcm-Verschlüsselung (RFC 8291 / RFC 8188).
 // In Supabase mit ausgeschalteter „JWT-Verifizierung“ bereitstellen – die Prüfung passiert hier.
 
-import { Fehler, smartAktion } from "./smart.ts?v=2";
-import { standortAktion } from "./standort.ts?v=1";
+import { Fehler, smartAktion } from "./smart.ts?v=3";
+import { standortAktion } from "./standort.ts?v=2";
 
 const te = new TextEncoder();
 
@@ -182,7 +183,7 @@ async function handler(req: Request): Promise<Response> {
         return json({ error: "Standort: " + (e as Error).message }, 500);
       }
     } else if (typeof data.aktion === "string" && data.aktion.startsWith("smart-")) {
-      if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
+      if (data.aktion !== "smart-st-code" && !(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
       try {
         return json(await smartAktion(data, { db, s }));
       } catch (e) {

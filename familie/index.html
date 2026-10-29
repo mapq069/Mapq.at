@@ -499,6 +499,13 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 .szn{display:flex;flex-wrap:wrap;gap:8px;max-height:236px;overflow:auto;padding:2px;overscroll-behavior:contain}
 .szn button{height:36px;padding:0 14px;border-radius:18px;border:0;background:var(--card-2);color:var(--text);font-size:13.5px;font-weight:600}
 .szn button.on{background:var(--cb);color:var(--c)}
+.szn button[disabled],.tv-b[disabled]{opacity:.4}
+.tv-row{display:flex;align-items:center;gap:8px}
+.tv-row .rng{flex:1;min-width:0}
+.tv-b{flex:none;display:grid;place-items:center;min-width:50px;height:50px;padding:0 12px;border:0;border-radius:16px;background:var(--card-2);color:var(--text);font-size:13.5px;font-weight:600;-webkit-tap-highlight-color:transparent}
+.tv-b.wide{flex:1;display:flex;justify-content:center;gap:6px}
+.tv-b.on{background:var(--cb);color:var(--c)}
+.tv-b:active{transform:scale(.96)}
 .cv-big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:20px}
 .cv-big button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px;border:0;border-radius:var(--r-sm);background:var(--card-2);color:var(--text);font-size:13.5px;font-weight:600}
 .cv-big button:active{transform:scale(.97)}
@@ -680,7 +687,12 @@ const ICONS = {
   hplug: '<path d="M10 12V8.964"/><path d="M14 12V8.964"/><path d="M15 12a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1z"/><path d="M8.5 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2"/>',
   karte: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>',
   route: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
-  up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>', stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>'
+  up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>', stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>',
+  tv: '<rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><path d="m17 2-5 5-5-5"/>',
+  minus: '<path d="M5 12h14"/>',
+  pause: '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
+  vol: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
+  volx: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>'
 };
 const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
@@ -919,6 +931,12 @@ async function boot() {
     applyDesign(c.familie);
   } catch {
     return gate(`<h1>Familie</h1><p class="lead">Die Familien-App ist noch nicht eingerichtet.</p>`);
+  }
+  // Rückkehr von der Samsung-Anmeldung (SmartThings): ?code=…&state=… – geht auch ohne Familien-Anmeldung
+  const sp = new URLSearchParams(location.search);
+  if (sp.has('state') && (sp.has('code') || sp.has('error'))) {
+    history.replaceState(null, '', location.pathname + '#zuhause');
+    await stZurueck(sp);
   }
   // Aus dem Admin-Panel geöffnet: eigene Admin-Sitzung kommt im Adress-Anker mit (#admin=…) und wird sofort erneuert
   const ho = location.hash.match(/^#admin=([A-Za-z0-9_-]+)$/);
@@ -2202,16 +2220,17 @@ async function infoDel(id) {
   try { await remove('familie_infos', id); state.infos = state.infos.filter(x => x.id !== id); closeSheet(); fill(); } catch (e) { loadErr(e); }
 }
 
-/* ---------- Zuhause: Smart Home (Govee, Shelly, Smart Life / Tuya) ----------
+/* ---------- Zuhause: Smart Home (Govee, Shelly, Smart Life / Tuya, SmartThings) ----------
    Läuft über die Funktion mapq-push (Aktionen „smart-…“, Code in supabase/functions/mapq-push/smart.ts).
    Die Zugangsdaten der Anbieter liegen nur auf dem Server – die App bekommt sie nie zurück. */
-const ART_ORDER = { licht: 0, schalter: 1, geraet: 2, rollo: 3, sensor: 4 };
-const DEV_ICON = { licht: 'bulb', schalter: 'plug', rollo: 'blinds', sensor: 'thermo', geraet: 'power' };
+const ART_ORDER = { licht: 0, tv: 1, schalter: 2, geraet: 3, rollo: 4, sensor: 5 };
+const DEV_ICON = { licht: 'bulb', schalter: 'plug', rollo: 'blinds', sensor: 'thermo', geraet: 'power', tv: 'tv' };
 const SWATCHES = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#00c7be', '#32ade6', '#007aff', '#5856d6', '#af52de', '#ff2d55'];
 const ANB = {
   govee: ['Govee', 'amber', 'bulb', 'Lampen, LED-Streifen und Steckdosen'],
   shelly: ['Shelly', 'sky', 'plug', 'Schalter, Dimmer, Rollläden und Sensoren'],
-  tuya: ['Smart Life / Tuya', 'orange', 'home', 'Alles aus der Smart-Life- oder Tuya-App']
+  tuya: ['Smart Life / Tuya', 'orange', 'home', 'Alles aus der Smart-Life- oder Tuya-App'],
+  smartthings: ['SmartThings (Samsung)', 'indigo', 'tv', 'Samsung-Fernseher und alles aus der SmartThings-App']
 };
 const TUYA_REG = [['eu', 'Mitteleuropa (Österreich, Deutschland)'], ['eu-w', 'Westeuropa'], ['us', 'USA West'], ['us-e', 'USA Ost'], ['in', 'Indien'], ['cn', 'China']];
 const isHex = v => /^#[0-9a-f]{6}$/i.test(v || '');
@@ -2228,11 +2247,13 @@ async function smartFn(body) {
   }
   return j;
 }
-const smartAktiv = () => { const a = state.smart?.anbieter; return !state.smartErr?.alt && !!(a && (a.govee?.aktiv || a.shelly?.aktiv || a.tuya?.aktiv)); };
+const smartAktiv = () => { const a = state.smart?.anbieter; return !state.smartErr?.alt && !!(a && (a.govee?.aktiv || a.shelly?.aktiv || a.tuya?.aktiv || a.smartthings?.aktiv)); };
 const einstOf = id => state.smart?.einst?.[id] || {};
 const devName = d => einstOf(d.id).name || d.name;
 const devById = id => (state.smart?.geraete || []).find(d => d.id === id);
-const startStd = d => d.art === 'licht' || d.art === 'schalter' || d.art === 'rollo';
+const startStd = d => d.art === 'licht' || d.art === 'schalter' || d.art === 'rollo' || d.art === 'tv';
+const tvAus = d => d.art === 'tv' && (!d.online || d.an === false);
+const quelleName = d => (d.quellen || []).find(q => q.id === d.quelle)?.name || d.quelle || '';
 const aufStart = d => { const e = einstOf(d.id); return !e.aus && (e.start ?? startStd(d)); };
 function startGeraete() {
   const g = (state.smart?.geraete || []).filter(aufStart).sort(devSort);
@@ -2268,6 +2289,7 @@ function redrawSmart() {
 }
 
 function devStatus(d) {
+  if (d.art === 'tv') return tvAus(d) ? 'Aus' : ['An', d.stumm ? 'Stumm' : d.lautst != null ? `Lautstärke ${d.lautst}` : '', quelleName(d)].filter(Boolean).join(' · ');
   if (!d.online) return 'Offline';
   if (d.art === 'sensor') return [d.temp != null ? fmtNum(d.temp) + ' °C' : '', d.feuchte != null ? Math.round(d.feuchte) + ' %' : ''].filter(Boolean).join(' · ') || 'Sensor';
   if (d.art === 'rollo') {
@@ -2294,17 +2316,17 @@ function devLook(d) {
     // sehr dunkle Farben wären auf dem dunklen Grund unsichtbar
     if (r * .3 + g * .59 + b * .11 > 40) return { icon, cls: '', style: `--c:${d.farbe};--cb:rgba(${r},${g},${b},.2)` };
   }
-  return { icon, cls: d.art === 'licht' ? 'c-amber' : d.art === 'schalter' ? 'c-blue' : 'c-teal', style: '' };
+  return { icon, cls: d.art === 'licht' ? 'c-amber' : d.art === 'schalter' ? 'c-blue' : d.art === 'tv' ? 'c-indigo' : 'c-teal', style: '' };
 }
 function devTile(d) {
   const l = devLook(d), e = einstOf(d.id), name = devName(d), id = esc(d.id);
   const icBtn = d.kann.an
-    ? `<button class="shape" data-action="dev-toggle" data-id="${id}" aria-label="${esc(name)} ${d.an ? 'ausschalten' : 'einschalten'}" aria-pressed="${d.an ? 'true' : 'false'}" ${d.online ? '' : 'disabled'}>${ic(l.icon, 22)}</button>`
+    ? `<button class="shape" data-action="dev-toggle" data-id="${id}" aria-label="${esc(name)} ${d.an ? 'ausschalten' : 'einschalten'}" aria-pressed="${d.an && d.online ? 'true' : 'false'}" ${d.online || d.art === 'tv' ? '' : 'disabled'}>${ic(l.icon, 22)}</button>`
     : `<button class="shape" data-action="dev-open" data-id="${id}" tabindex="-1" aria-hidden="true">${ic(l.icon, 22)}</button>`;
   const cv = d.art === 'rollo' ? `<span class="dev-cv">${[['open', 'up', 'öffnen'], ['stop', 'stop', 'stoppen'], ['close', 'down', 'schließen']].filter(x => x[0] !== 'stop' || d.kann.stopp)
     .map(([p, i, t]) => `<button data-action="dev-cover" data-id="${id}" data-p="${p}" aria-label="${esc(name)} ${t}" ${d.online ? '' : 'disabled'}>${ic(i, 18)}</button>`).join('')}</span>` : '';
   const bar = d.art === 'licht' && d.an && d.online && d.hell != null ? `<i class="dev-bar" style="width:${Math.round(d.hell)}%"></i>` : '';
-  return `<div class="dev ${l.cls}${d.art === 'rollo' ? ' wide' : ''}${d.online ? '' : ' offline'}${state.smartBusy.has(d.id) ? ' busy' : ''}${e.aus ? ' hid' : ''}" style="${l.style}">${icBtn}<button class="dev-t" data-action="dev-open" data-id="${id}"><b>${esc(name)}</b><small>${esc(e.aus ? 'Ausgeblendet' : devStatus(d))}</small></button>${cv}${bar}</div>`;
+  return `<div class="dev ${l.cls}${d.art === 'rollo' ? ' wide' : ''}${d.online || d.art === 'tv' ? '' : ' offline'}${state.smartBusy.has(d.id) ? ' busy' : ''}${e.aus ? ' hid' : ''}" style="${l.style}">${icBtn}<button class="dev-t" data-action="dev-open" data-id="${id}"><b>${esc(name)}</b><small>${esc(e.aus ? 'Ausgeblendet' : devStatus(d))}</small></button>${cv}${bar}</div>`;
 }
 
 /* Räume: Übersicht mit Raum-Karten, darin die Geräte. Ein Raum entsteht, sobald ein Gerät ihm zugeordnet ist. */
@@ -2459,6 +2481,9 @@ function optimistisch(b) {
   if ('kelvin' in b) return { an: true, kelvin: b.kelvin, farbe: null };
   if ('szene' in b) return { an: true };
   if ('position' in b) return typeof b.position === 'number' ? { position: b.position, bewegt: null } : { bewegt: b.position === 'open' ? 'opening' : b.position === 'close' ? 'closing' : 'stop' };
+  if ('lautst' in b) return { lautst: b.lautst };
+  if ('stumm' in b) return { stumm: b.stumm };
+  if ('quelle' in b) return { quelle: b.quelle };
   return {};
 }
 async function devSet(ids, befehl) {
@@ -2500,13 +2525,15 @@ function devSheet(id) {
     ctl += `<div class="cv-big">${[['open', 'up', 'Auf'], ['stop', 'stop', 'Stopp'], ['close', 'down', 'Zu']].filter(x => x[0] !== 'stop' || d.kann.stopp)
       .map(([p, ico, t]) => `<button data-action="dev-cover" data-id="${i}" data-p="${p}" ${d.online ? '' : 'disabled'}>${ic(ico, 22)}${t}</button>`).join('')}</div>`;
     if (d.kann.position) { const p = Math.round(d.position ?? 0); ctl += `<div class="ctl"><div class="ctl-h"><span>Position</span><b id="posVal">${p} % offen</b></div><input type="range" class="rng" id="posRng" data-id="${i}" min="0" max="100" value="${p}" style="--p:${p}%" aria-label="Position in Prozent offen"></div>`; }
+  } else if (d.art === 'tv') {
+    ctl += `<div id="tvCtl">${tvCtl(d)}</div>`;
   } else if (d.art === 'sensor') {
     ctl += `<div class="sens">${d.temp != null ? `<div><b>${fmtNum(d.temp)}°</b><small>Temperatur</small></div>` : ''}${d.feuchte != null ? `<div><b>${Math.round(d.feuchte)} %</b><small>Luftfeuchte</small></div>` : ''}</div>`;
   } else if (d.watt != null) ctl += `<div class="sens"><div><b>${fmtNum(d.watt)} W</b><small>Verbrauch gerade</small></div></div>`;
   const startJetzt = e.start ?? startStd(d);
   openSheet(`<div id="devBody" class="${l.cls}" style="${l.style}">
-    <div class="sheet-h" id="devHead"><span class="shape" id="devIc">${ic(l.icon)}</span><h3>${esc(name)}<small id="devSub">${esc(devStatus(d))}</small></h3>${d.kann.an ? `<input type="checkbox" class="switch" id="devSwitch" data-action="dev-switch" data-id="${i}" ${d.an ? 'checked' : ''} ${d.online ? '' : 'disabled'} aria-label="${esc(name)} ein oder aus">` : ''}<button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
-    ${!d.online ? `<p class="hint" style="margin:-6px 2px 16px;font-size:13.5px">Das Gerät ist gerade offline – prüf Strom und WLAN.</p>` : ''}
+    <div class="sheet-h" id="devHead"><span class="shape" id="devIc">${ic(l.icon)}</span><h3>${esc(name)}<small id="devSub">${esc(devStatus(d))}</small></h3>${d.kann.an ? `<input type="checkbox" class="switch" id="devSwitch" data-action="dev-switch" data-id="${i}" ${d.an && d.online ? 'checked' : ''} ${d.online || d.art === 'tv' ? '' : 'disabled'} aria-label="${esc(name)} ein oder aus">` : ''}<button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    ${!d.online && d.art !== 'tv' ? `<p class="hint" style="margin:-6px 2px 16px;font-size:13.5px">Das Gerät ist gerade offline – prüf Strom und WLAN.</p>` : ''}
     ${ctl}
     <details class="dev-set" ${ctl ? '' : 'open'}><summary>${ic('settings', 17)} Name, Raum & Anzeige</summary>
       <form id="devForm" data-id="${i}">
@@ -2527,7 +2554,26 @@ function updDevSheet() {
   const l = devLook(d);
   body.className = l.cls; body.setAttribute('style', l.style);
   $('#devIc').innerHTML = ic(l.icon); $('#devSub').textContent = devStatus(d);
-  const sw = $('#devSwitch'); if (sw) sw.checked = !!d.an;
+  const sw = $('#devSwitch'); if (sw) sw.checked = !!d.an && (d.online || d.art !== 'tv');
+  const tv = $('#tvCtl'); if (tv && document.activeElement?.id !== 'lautRng') tv.innerHTML = tvCtl(d);
+}
+/* Fernseher (SmartThings): Lautstärke, Stumm, Quelle, Sender, Wiedergabe */
+function tvCtl(d) {
+  const i = esc(d.id), aus = tvAus(d), dis = aus ? 'disabled' : '';
+  let h = aus ? `<p class="hint" style="margin:-4px 2px 16px;font-size:13.5px">Der Fernseher ist aus – einschalten geht mit dem Schalter oben. Klappt das nicht: am Fernseher Einstellungen → Allgemein → Netzwerk → Experteneinstellungen → <b>„Mit Mobilgerät einschalten“</b> aktivieren.</p>` : '';
+  if (d.kann.lautst) {
+    const v = Math.round(d.lautst ?? 0);
+    h += `<div class="ctl"><div class="ctl-h"><span>Lautstärke</span><b id="lautVal">${d.stumm ? 'stumm' : v}</b></div><div class="tv-row">
+      <button class="tv-b" data-action="dev-taste" data-id="${i}" data-t="laut-" aria-label="Leiser" ${dis}>${ic('minus', 20)}</button>
+      <input type="range" class="rng" id="lautRng" data-id="${i}" min="0" max="100" value="${v}" style="--p:${v}%" aria-label="Lautstärke" ${dis}>
+      <button class="tv-b" data-action="dev-taste" data-id="${i}" data-t="laut+" aria-label="Lauter" ${dis}>${ic('plus', 20)}</button>
+      ${d.kann.stumm ? `<button class="tv-b ${d.stumm ? 'on' : ''}" data-action="dev-stumm" data-id="${i}" aria-pressed="${d.stumm ? 'true' : 'false'}" aria-label="Stumm" ${dis}>${ic(d.stumm ? 'volx' : 'vol', 20)}</button>` : ''}</div></div>`;
+  }
+  if (d.kann.quelle) h += `<div class="ctl"><div class="ctl-h"><span>Quelle</span></div><div class="szn">${(d.quellen || []).map(q => `<button class="${q.id === d.quelle ? 'on' : ''}" data-action="dev-quelle" data-id="${i}" data-q="${esc(q.id)}" ${dis}>${esc(q.name)}</button>`).join('')}</div></div>`;
+  if (d.kann.kanal || d.kann.medien) h += `<div class="ctl"><div class="ctl-h"><span>${d.kann.kanal ? 'Sender' : 'Wiedergabe'}</span>${d.kanal && !aus ? `<b>${esc(d.kanal)}</b>` : ''}</div><div class="tv-row">
+    ${d.kann.kanal ? `<button class="tv-b wide" data-action="dev-taste" data-id="${i}" data-t="kanal-" aria-label="Sender zurück" ${dis}>${ic('minus', 18)} Sender</button><button class="tv-b wide" data-action="dev-taste" data-id="${i}" data-t="kanal+" aria-label="Sender weiter" ${dis}>${ic('plus', 18)} Sender</button>` : ''}
+    ${d.kann.medien ? `<button class="tv-b" data-action="dev-taste" data-id="${i}" data-t="play" aria-label="Abspielen" ${dis}>${ic('play', 18)}</button><button class="tv-b" data-action="dev-taste" data-id="${i}" data-t="pause" aria-label="Pause" ${dis}>${ic('pause', 18)}</button>` : ''}</div></div>`;
+  return h;
 }
 async function loadSzenen(id) {
   if (!state.szenen[id]) {
@@ -2589,6 +2635,7 @@ async function goveeWeg(id, name) {
 function setupSheet(k) {
   if (!ANB[k]) return;
   if (k === 'govee') return goveeSheet();
+  if (k === 'smartthings') return stSheet();
   const a = state.smart?.anbieter?.[k] || {}, [n, c, ico] = ANB[k], on = !!a.aktiv;
   const geheim = (id, label, ph) => `<div class="field"><label for="${id}">${label}</label><input id="${id}" class="input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${esc(ph)}"></div>`;
   const text = 'autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
@@ -2626,8 +2673,61 @@ function setupSheet(k) {
       <div class="sheet-actions">${on ? `<button type="button" class="btn btn-danger" data-action="smart-trennen" data-a="${k}">Trennen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="setupBtn">${on ? 'Speichern' : 'Verbinden'}</button></div>
     </form>`);
 }
+/* SmartThings (Samsung): einmal mit einem 24-Stunden-Token eine eigene App anlegen lassen, dann bei Samsung anmelden.
+   Samsung schickt zurück auf mapq.at/familie/?code=…&state=… – das löst stZurueck() beim Start ein. */
+function stSheet() {
+  const a = state.smart?.anbieter?.smartthings || {}, on = !!a.aktiv;
+  const text = 'autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
+  openSheet(`<div class="sheet-h c-indigo"><span class="shape">${ic('tv')}</span><h3>SmartThings (Samsung)</h3>${on ? `<span class="chip c-${a.fehler ? 'red' : 'green'}">${a.fehler ? 'Fehler' : 'Verbunden'}</span>` : ''}<button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <button class="back" data-action="smart-setup">${ic('left', 18)} Alle Anbieter</button>
+    ${a.fehler ? `<p class="setup-err" style="margin:0 2px 12px">${esc(a.fehler)}</p>` : ''}
+    ${on && !a.fehler ? `<p class="muted" style="margin:-4px 2px 16px;font-size:14px">Verbunden – neue Geräte aus der SmartThings-App erscheinen von selbst. „Neu anmelden“ braucht keinen Token.</p>` : ''}
+    <ol class="steps" style="margin:0 0 18px">
+      <li>Den <b>Fernseher</b> in der <b>SmartThings</b>-App hinzufügen (falls noch nicht) – mit demselben Samsung-Konto wie am Fernseher.</li>
+      <li>Am besten am Computer <a href="https://account.smartthings.com/tokens" target="_blank" rel="noopener"><b>account.smartthings.com/tokens</b></a> öffnen und mit dem Samsung-Konto anmelden.</li>
+      <li><b>„Generate new token“</b> → Name z. B. „mapq“ → bei <b>Authorized Scopes</b> unter <b>Devices</b> und unter <b>Apps</b> alle Häkchen setzen → <b>„Generate token“</b> und kopieren.</li>
+      <li>Hier einfügen und auf <b>„Weiter zu Samsung“</b> tippen – dort anmelden, den Standort wählen und erlauben. Fertig.</li>
+    </ol>
+    <form id="setupForm" data-a="smartthings" class="c-indigo" autocomplete="off">
+      <div class="field"><label for="sToken">Token (gilt nur 24 Stunden, wird nur einmal gebraucht)</label><input id="sToken" class="input" type="password" ${text} placeholder="z. B. 1a2b3c4d-…"></div>
+      <details class="dev-set" style="border:0;padding:0;margin:0 0 12px"><summary>${ic('info', 17)} Schon eine eigene SmartThings-App (Client-ID)?</summary>
+        <div class="field" style="margin-top:10px"><label for="sCid">Client-ID</label><input id="sCid" class="input" ${text}></div>
+        <div class="field"><label for="sCsec">Client-Secret</label><input id="sCsec" class="input" type="password" ${text}></div>
+        <p class="hint" style="margin:-6px 2px 0">Weiterleitungs-Adresse der App: https://mapq.at/familie/</p></details>
+      <p class="hint" style="margin:0 2px 14px">Der Zugang bleibt auf dem Server. Wird „Zuhause“ 4 Wochen lang nicht geöffnet, einmal „Neu anmelden“.</p>
+      <p class="setup-err" id="setupErr" role="alert"></p>
+      <div class="sheet-actions">${on ? `<button type="button" class="btn btn-danger" data-action="smart-trennen" data-a="smartthings">Trennen</button>` : ''}<span class="grow"></span>${on || a.fehler ? `<button type="button" class="btn" data-action="st-neu">Neu anmelden</button>` : ''}<button class="btn btn-primary" id="setupBtn">Weiter zu Samsung</button></div>
+    </form>`);
+}
+async function stVerbinden(body, btn, err) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Einen Moment …'; }
+  if (err) err.textContent = '';
+  try {
+    const j = await smartFn(body);
+    if (!j.weiter) throw new Error('Keine Antwort von SmartThings.');
+    location.href = j.weiter; // zur Samsung-Anmeldung – zurück kommt man auf mapq.at/familie/
+  } catch (e) {
+    if (e.silent) return;
+    const m = /Unbekannter Anbieter/.test(e.message) ? 'Dafür muss die Funktion „mapq-push“ in Supabase neu bereitgestellt werden (?v=6) – danach „Verify JWT“ ausschalten.' : errMsg(e);
+    if (err) err.textContent = m; else toast(m, 'bad');
+    if (btn) { btn.disabled = false; btn.textContent = 'Weiter zu Samsung'; }
+  }
+}
+async function stZurueck(sp) {
+  if (sp.get('error')) { toast(sp.get('error') === 'access_denied' ? 'Samsung-Anmeldung abgebrochen.' : 'Samsung-Anmeldung ging nicht: ' + sp.get('error'), 'warn'); return; }
+  try {
+    const r = await fetch(API.url + '/functions/v1/mapq-push', { method: 'POST', headers: { apikey: API.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ aktion: 'smart-st-code', code: sp.get('code'), state: sp.get('state') }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || j.message || ('Fehler ' + r.status));
+    toast(`SmartThings verbunden – ${j.anzahl} Gerät${j.anzahl === 1 ? '' : 'e'}${j.tv ? ', mit Fernseher' : ''}.`, 'ok');
+  } catch (e) { toast('SmartThings: ' + e.message, 'bad'); }
+}
 async function smartEinrichten(form) {
   const k = form.dataset.a, v = id => ($('#' + id)?.value || '').trim();
+  if (k === 'smartthings') {
+    if (!v('sToken') && !(v('sCid') && v('sCsec'))) { $('#setupErr').textContent = 'Bitte den Token einfügen.'; return; }
+    return stVerbinden({ aktion: 'smart-einrichten', anbieter: k, token: v('sToken'), client_id: v('sCid'), client_secret: v('sCsec') }, $('#setupBtn'), $('#setupErr'));
+  }
   const body = { aktion: 'smart-einrichten', anbieter: k };
   if (k === 'govee') Object.assign(body, { key: v('sKey'), name: v('gName'), raum: v('gRaum'), ...(form.dataset.konto ? { konto: form.dataset.konto } : {}) });
   if (k === 'shelly') Object.assign(body, { host: v('sHost'), key: v('sKey'), ids: v('sIds') });
@@ -2672,7 +2772,7 @@ async function loadOrte(quiet) {
   try {
     const j = await smartFn({ aktion: 'standort-liste' });
     // Antwort ohne Liste = in Supabase läuft noch die alte Funktion
-    if (!Array.isArray(j?.standorte)) throw Object.assign(new Error('Die Karte braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=5 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
+    if (!Array.isArray(j?.standorte)) throw Object.assign(new Error('Die Karte braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=6 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
     ortNamenEinsetzen(j.standorte);
     state.orte = j; state.orteErr = null;
     fehlendeOrte();
@@ -2686,7 +2786,7 @@ function position() {
     navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
   });
 }
-const neueFunktion = () => Object.assign(new Error('Das braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=5 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
+const neueFunktion = () => Object.assign(new Error('Das braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=6 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
 const posFehler = e => e.code === 1 ? 'Standort ist nicht erlaubt – iPhone-Einstellungen → Datenschutz → Ortungsdienste → Safari-Websites (bzw. „Familie“) → „Beim Verwenden“.' : e.code === 0 ? e.message : 'Der Standort konnte gerade nicht bestimmt werden – versuch es draußen nochmal.';
 async function ortTeilen(still) {
   let p;
@@ -3102,7 +3202,11 @@ const ACTIONS = {
   'wp-test': () => wpTest(),
   'del-member': el => delMember(el.dataset.name),
   logout: () => logout(),
-  'dev-toggle': el => { const d = devById(el.dataset.id); if (d) devSet(d.id, { an: !d.an }); },
+  'dev-toggle': el => { const d = devById(el.dataset.id); if (d) devSet(d.id, { an: tvAus(d) ? true : !d.an }); },
+  'dev-taste': el => devSet(el.dataset.id, { taste: el.dataset.t }),
+  'dev-quelle': el => devSet(el.dataset.id, { quelle: el.dataset.q }),
+  'dev-stumm': el => devSet(el.dataset.id, { stumm: !devById(el.dataset.id)?.stumm }),
+  'st-neu': () => stVerbinden({ aktion: 'smart-einrichten', anbieter: 'smartthings' }, $('#setupBtn'), $('#setupErr')),
   'dev-open': el => devSheet(el.dataset.id),
   'dev-switch': el => devSet(el.dataset.id, { an: el.checked }),
   'dev-farbe': el => { $$('.swatches button').forEach(b => b.classList.toggle('on', b === el)); devSet(el.dataset.id, { farbe: el.dataset.f }); },
@@ -3151,6 +3255,7 @@ document.addEventListener('input', e => {
   if (t.id === 'rSuche') { state.rsuche = t.value; fillRezepte(); }
   if (t.id === 'hellRng' || t.id === 'posRng') { t.style.setProperty('--p', t.value + '%'); const l = $(t.id === 'hellRng' ? '#hellVal' : '#posVal'); if (l) l.textContent = t.value + (t.id === 'hellRng' ? ' %' : ' % offen'); }
   if (t.id === 'kRng') { const l = $('#kVal'); if (l) l.textContent = t.value + ' K'; }
+  if (t.id === 'lautRng') { t.style.setProperty('--p', t.value + '%'); const l = $('#lautVal'); if (l) l.textContent = t.value; }
   if (t.id === 'sznSuche') { const q = norm(t.value); $$('#sznList button').forEach(b => { b.hidden = !!q && !norm(b.textContent).includes(q); }); }
 });
 document.addEventListener('change', e => {
@@ -3158,6 +3263,7 @@ document.addEventListener('change', e => {
   if (t.id === 'hellRng') devSet(id, { hell: Number(t.value) });
   if (t.id === 'kRng') devSet(id, { kelvin: Number(t.value) });
   if (t.id === 'posRng') devSet(id, { position: Number(t.value) });
+  if (t.id === 'lautRng') devSet(id, { lautst: Number(t.value) });
   if (t.id === 'ortAuto') { store.set('ortAuto', t.checked); if (t.checked) ortTeilen(false); }
   if (t.id === 'farbIn' && isHex(t.value)) { $$('.swatches button').forEach(b => b.classList.remove('on')); devSet(id, { farbe: t.value.toLowerCase() }); }
 });

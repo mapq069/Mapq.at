@@ -14,7 +14,7 @@
 //   standort-stopp    { name }                   – nicht mehr teilen: Standort und Schlüssel weg
 //   standort-zuhause  { lat, lon } | { loeschen } – Zuhause festlegen
 
-import { Fehler } from "./smart.ts?v=2";
+import { Fehler } from "./smart.ts?v=3";
 
 // deno-lint-ignore no-explicit-any
 type Db = (path: string, init?: RequestInit) => Promise<any>;

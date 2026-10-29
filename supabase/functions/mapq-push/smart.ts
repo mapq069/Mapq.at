@@ -1,4 +1,4 @@
-// Smart Home für die Familien-App (mapq.at/familie → „Zuhause“): Govee, Shelly und Smart Life / Tuya.
+// Smart Home für die Familien-App (mapq.at/familie → „Zuhause“): Govee, Shelly, Smart Life / Tuya und SmartThings (Samsung).
 //
 // Die Familie trägt die Zugangsdaten in der App ein. Sie liegen nur hier auf dem Server in mapq_einstellungen
 // (smart_govee_konten – mehrere Govee-Konten, z. B. eins pro Zimmer –, smart_shelly_*, smart_tuya_*) und gehen nie zurück an den Browser.
@@ -12,11 +12,13 @@
 //   smart-einrichten { anbieter, …Zugangsdaten }      → prüft und speichert; { anbieter, trennen: true } entfernt sie
 //                    Govee: { key, name, raum?, konto? } – mehrere Konten; konto = bestehendes Konto ändern bzw. mit trennen entfernen
 //   smart-geraet     { id, name?, raum?, start?, aus? } → eigener Name, Raum, auf Start zeigen, ausblenden
+//   smart-st-code    { code, state }                  → Rückkehr von der Samsung-Anmeldung (ohne Login, nur mit dem einmaligen state)
+//   Fernseher (SmartThings): befehl { lautst } | { stumm } | { quelle } | { taste: kanal+ | kanal- | laut+ | laut- | play | pause }
 
 const te = new TextEncoder();
 
-export type Art = "licht" | "schalter" | "rollo" | "sensor" | "geraet";
-export type Anbieter = "govee" | "shelly" | "tuya";
+export type Art = "licht" | "schalter" | "rollo" | "sensor" | "geraet" | "tv";
+export type Anbieter = "govee" | "shelly" | "tuya" | "smartthings";
 export type Geraet = {
   id: string;
   anbieter: Anbieter;
@@ -35,12 +37,26 @@ export type Geraet = {
   temp?: number | null;
   feuchte?: number | null;
   watt?: number | null;
-  kann: { an?: boolean; hell?: boolean; farbe?: boolean; kelvin?: boolean; szenen?: boolean; position?: boolean; stopp?: boolean };
+  lautst?: number | null;
+  stumm?: boolean | null;
+  quelle?: string | null;
+  quellen?: { id: string; name: string }[];
+  kanal?: string | null;
+  kann: {
+    an?: boolean; hell?: boolean; farbe?: boolean; kelvin?: boolean; szenen?: boolean; position?: boolean; stopp?: boolean;
+    lautst?: boolean; stumm?: boolean; quelle?: boolean; kanal?: boolean; medien?: boolean;
+  };
   konto?: string;
   // deno-lint-ignore no-explicit-any
   ref?: any;
 };
-export type Befehl = { an?: boolean; hell?: number; farbe?: string; kelvin?: number; szene?: string; position?: number | "open" | "close" | "stop" };
+export type Taste = "kanal+" | "kanal-" | "laut+" | "laut-" | "play" | "pause";
+const TASTEN: Taste[] = ["kanal+", "kanal-", "laut+", "laut-", "play", "pause"];
+export type Befehl = {
+  an?: boolean; hell?: number; farbe?: string; kelvin?: number; szene?: string; position?: number | "open" | "close" | "stop";
+  lautst?: number; stumm?: boolean; quelle?: string; taste?: Taste;
+};
+const tvBefehl = (b: Befehl) => "lautst" in b || "stumm" in b || "quelle" in b || "taste" in b;
 // deno-lint-ignore no-explicit-any
 type Db = (path: string, init?: RequestInit) => Promise<any>;
 export type Ctx = { db: Db; s: Record<string, string> };
@@ -131,7 +147,8 @@ type GoveeKonto = { id: string; name: string; key: string; raum?: string };
 type GoveeCfg = { konten: GoveeKonto[] };
 type ShellyCfg = { key: string; host: string; ids: string[] };
 type TuyaCfg = { id: string; secret: string; region: string };
-type Konfig = { govee: GoveeCfg | null; shelly: ShellyCfg | null; tuya: TuyaCfg | null };
+type StCfg = { client: string; secret: string; access: string; refresh: string; ablauf: number; db?: Db };
+type Konfig = { govee: GoveeCfg | null; shelly: ShellyCfg | null; tuya: TuyaCfg | null; smartthings: StCfg | null };
 const liste = (s?: string) => (s || "").split(",").map((x) => x.trim()).filter(Boolean);
 /** Alle Govee-Konten (übernimmt den früheren einzelnen Schlüssel smart_govee_key als erstes Konto). */
 function goveeKonten(s: Record<string, string>): GoveeKonto[] {
@@ -149,6 +166,9 @@ function konfig(s: Record<string, string>): Konfig {
       : null,
     tuya: s.smart_tuya_id && s.smart_tuya_secret
       ? { id: s.smart_tuya_id, secret: s.smart_tuya_secret, region: TUYA_HOSTS[s.smart_tuya_region] ? s.smart_tuya_region : "eu" }
+      : null,
+    smartthings: s.smart_st_client && s.smart_st_secret && s.smart_st_refresh
+      ? { client: s.smart_st_client, secret: s.smart_st_secret, access: s.smart_st_access || "", refresh: s.smart_st_refresh, ablauf: Number(s.smart_st_ablauf) || 0 }
       : null,
   };
 }
@@ -680,9 +700,231 @@ async function tuyaSetzen(cfg: TuyaCfg, c: Cache, neu: Neu, g: Geraet, b: Befehl
 }
 
 /* =====================================================================
+   SmartThings (Samsung) – z. B. der Fernseher aus der SmartThings-App
+   Persönliche Tokens von account.smartthings.com gelten nur noch 24 Stunden. Darum legt der Server mit so einem
+   Token einmal eine eigene OAuth-App an (nur Geräte lesen und steuern) und die Familie meldet sich einmal bei
+   Samsung an. Danach erneuert er den Zugang selbst: der Zugang gilt 24 h, der Erneuerungs-Schlüssel ist nur
+   einmal gültig und verfällt nach 29 Tagen ohne Nutzung.
+   mapq_einstellungen: smart_st_client, smart_st_secret, smart_st_app, smart_st_state (nur beim Verbinden),
+   smart_st_access, smart_st_refresh, smart_st_ablauf.
+   ===================================================================== */
+const ST = "https://api.smartthings.com";
+export const ST_REDIRECT = "https://mapq.at/familie/";
+const ST_SCOPE = ["r:devices:*", "x:devices:*"];
+const ST_SCHLUESSEL = ["smart_st_access", "smart_st_refresh", "smart_st_ablauf"];
+const stAbgelaufen = "Der SmartThings-Zugang ist abgelaufen – in „Zuhause“ → Zahnrad → SmartThings neu verbinden.";
+
+async function stToken(cfg: { client: string; secret: string }, body: Record<string, string>): Promise<Roh> {
+  const r = await fetch(`${ST}/oauth/token`, {
+    method: "POST",
+    headers: { Authorization: "Basic " + btoa(`${cfg.client}:${cfg.secret}`), "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+    body: new URLSearchParams({ ...body, client_id: cfg.client }).toString(),
+    signal: zeitlimit(),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (r.ok && j.access_token) return j;
+  const grant = j.error === "invalid_grant";
+  throw Object.assign(new Fehler(grant ? stAbgelaufen : `SmartThings: Anmeldung ging nicht (${j.error_description || j.error || r.status}).`), { grant });
+}
+const stWerte = (j: Roh) => ({
+  smart_st_access: String(j.access_token),
+  smart_st_refresh: String(j.refresh_token || ""),
+  smart_st_ablauf: String(Date.now() + (Number(j.expires_in) || 86400) * 1000),
+});
+/** Gültiger Zugang – erneuert ihn, wenn er bald abläuft, und speichert den neuen Erneuerungs-Schlüssel sofort. */
+async function stZugang(cfg: StCfg): Promise<string> {
+  if (cfg.access && cfg.ablauf - Date.now() > 120000) return cfg.access;
+  try {
+    const w = stWerte(await stToken(cfg, { grant_type: "refresh_token", refresh_token: cfg.refresh }));
+    if (cfg.db) await einstellen(cfg.db, w);
+    Object.assign(cfg, { access: w.smart_st_access, refresh: w.smart_st_refresh || cfg.refresh, ablauf: Number(w.smart_st_ablauf) });
+    return cfg.access;
+  } catch (e) {
+    // Hat gerade eine andere Anfrage erneuert? Der Erneuerungs-Schlüssel gilt nur einmal – dann steht der neue schon in der Datenbank.
+    if ((e as Roh).grant && cfg.db) {
+      for (const ms of [600, 1500]) {
+        await warte(ms);
+        const rows: { schluessel: string; wert: string }[] = (await cfg.db(`mapq_einstellungen?select=schluessel,wert&schluessel=in.(${ST_SCHLUESSEL.join(",")})`)) ?? [];
+        const m = Object.fromEntries(rows.map((r) => [r.schluessel, r.wert]));
+        if (m.smart_st_refresh && m.smart_st_refresh !== cfg.refresh && Number(m.smart_st_ablauf) - Date.now() > 60000) {
+          Object.assign(cfg, { access: m.smart_st_access, refresh: m.smart_st_refresh, ablauf: Number(m.smart_st_ablauf) });
+          return cfg.access;
+        }
+      }
+    }
+    throw e;
+  }
+}
+async function stApi(cfg: StCfg, method: string, path: string, body?: unknown, nochmal = true): Promise<Roh> {
+  const tok = await stZugang(cfg);
+  const r = await fetch(`${ST}/v1/${path}`, {
+    method,
+    headers: { Authorization: `Bearer ${tok}`, Accept: "application/json", ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+    signal: zeitlimit(),
+  });
+  if (r.status === 401 && nochmal) { cfg.ablauf = 0; return stApi(cfg, method, path, body, false); }
+  const txt = await r.text();
+  let j: Roh = null;
+  try { j = txt ? JSON.parse(txt) : null; } catch { j = null; }
+  if (r.status === 429) throw new Fehler("SmartThings: zu viele Anfragen – kurz warten.");
+  if (!r.ok) throw new Fehler(`SmartThings: ${j?.error?.message || j?.message || "Fehler " + r.status}`);
+  return j;
+}
+const stWert = (st: Roh, cap: string, attr: string) => st?.[cap]?.[attr]?.value ?? null;
+function stGeraet(d: Roh, st: Roh, online: boolean): Geraet | null {
+  const comp = (d?.components ?? []).find((c: Roh) => c?.id === "main") ?? d?.components?.[0];
+  if (!d?.deviceId || !comp) return null;
+  const caps = new Set<string>((comp.capabilities ?? []).map((c: Roh) => String(c?.id ?? "")));
+  const kat = (comp.categories ?? []).map((c: Roh) => String(c?.name ?? ""));
+  const s: Roh = st?.components?.[comp.id] ?? st?.components?.main ?? {};
+  const has = (c: string) => caps.has(c);
+  const tv = kat.includes("Television") || d.ocf?.ocfDeviceType === "oic.d.tv" || has("tvChannel") || (has("audioVolume") && (has("mediaInputSource") || has("samsungvd.mediaInputSource")));
+  const licht = !tv && (has("colorControl") || has("colorTemperature") || has("switchLevel") || (has("switch") && kat.some((k: string) => /light/i.test(k))));
+  const art: Art | null = tv ? "tv" : licht ? "licht" : has("windowShade") ? "rollo" : has("switch") ? "schalter"
+    : has("temperatureMeasurement") || has("relativeHumidityMeasurement") ? "sensor" : null;
+  if (!art) return null;
+  const sw = stWert(s, "switch", "switch");
+  const g: Geraet = {
+    id: `smartthings~${d.deviceId}`, anbieter: "smartthings", name: String(d.label || d.name || "Gerät").slice(0, 60), art,
+    modell: [d.manufacturerName, d.presentationId?.split?.("/")?.[0]].filter((x) => x && x !== "SmartThings").join(" ").slice(0, 60) || undefined,
+    online, an: sw === "on" ? true : sw === "off" ? false : null,
+    kann: { an: has("switch") },
+    ref: { id: d.deviceId, comp: comp.id, caps: [...caps] },
+  };
+  const t = num(stWert(s, "temperatureMeasurement", "temperature")), f = num(stWert(s, "relativeHumidityMeasurement", "humidity")), w = num(stWert(s, "powerMeter", "power"));
+  if (t !== null) g.temp = t;
+  if (f !== null) g.feuchte = f;
+  if (w !== null) g.watt = w;
+  if (art === "licht") {
+    const l = num(stWert(s, "switchLevel", "level")), k = num(stWert(s, "colorTemperature", "colorTemperature"));
+    const h = num(stWert(s, "colorControl", "hue")), sat = num(stWert(s, "colorControl", "saturation"));
+    Object.assign(g.kann, { hell: has("switchLevel"), farbe: has("colorControl"), kelvin: has("colorTemperature") });
+    g.hell = l; g.kelvin = k;
+    g.farbe = h !== null && sat !== null && sat > 5 ? hsvHex(h * 3.6, sat / 100, 1) : null;
+    if (has("colorTemperature")) { g.kmin = 2700; g.kmax = 6500; }
+  }
+  if (art === "rollo") {
+    const lv = num(stWert(s, "windowShadeLevel", "shadeLevel"));
+    g.position = lv; g.bewegt = stWert(s, "windowShade", "windowShade");
+    Object.assign(g.kann, { position: has("windowShadeLevel"), stopp: true, an: false });
+  }
+  if (art === "tv") {
+    const map = jsonWert(stWert(s, "samsungvd.mediaInputSource", "supportedInputSourcesMap"));
+    const quellen: { id: string; name: string }[] = Array.isArray(map) && map.length
+      ? map.map((q: Roh) => ({ id: String(q?.id ?? ""), name: String(q?.name || q?.id || "") }))
+      : (jsonWert(stWert(s, "mediaInputSource", "supportedInputSources")) ?? []).map((q: unknown) => ({ id: String(q), name: String(q) }));
+    g.quellen = quellen.filter((q) => q.id).slice(0, 16);
+    g.quelle = stWert(s, "samsungvd.mediaInputSource", "inputSource") ?? stWert(s, "mediaInputSource", "inputSource");
+    const v = num(stWert(s, "audioVolume", "volume"));
+    g.lautst = v;
+    const m = stWert(s, "audioMute", "mute");
+    g.stumm = m === "muted" ? true : m === "unmuted" ? false : null;
+    const ch = stWert(s, "tvChannel", "tvChannel"), chn = stWert(s, "tvChannel", "tvChannelName");
+    g.kanal = [ch, chn].filter((x) => x !== null && x !== "").join(" · ") || null;
+    g.ref.quelleCap = has("samsungvd.mediaInputSource") ? "samsungvd.mediaInputSource" : "mediaInputSource";
+    Object.assign(g.kann, { lautst: has("audioVolume"), stumm: has("audioMute"), quelle: g.quellen.length > 0, kanal: has("tvChannel"), medien: has("mediaPlayback") });
+  }
+  return g;
+}
+async function stStatus(cfg: StCfg): Promise<Geraet[]> {
+  const j = await stApi(cfg, "GET", "devices?includeHealth=true");
+  const items: Roh[] = (Array.isArray(j?.items) ? j.items : []).filter((d: Roh) => stGeraet(d, null, true)).slice(0, 40);
+  const out: Geraet[] = [];
+  for (let i = 0; i < items.length; i += 8) {
+    out.push(...(await Promise.all(items.slice(i, i + 8).map(async (d) => {
+      let st: Roh = null;
+      try { st = await stApi(cfg, "GET", `devices/${encodeURIComponent(d.deviceId)}/status`); } catch { /* Gerät ohne Status */ }
+      const h = d.healthState?.state ?? st?.healthState?.state;
+      return stGeraet(d, st, h ? h === "ONLINE" : true);
+    }))).filter((g): g is Geraet => !!g));
+  }
+  return out;
+}
+async function stSetzen(cfg: StCfg, _c: Cache, _n: Neu, g: Geraet, b: Befehl): Promise<Geraet> {
+  const caps: string[] = g.ref?.caps ?? [];
+  const cmd = (capability: string, command: string, args: unknown[] = []) => ({ component: g.ref?.comp || "main", capability, command, arguments: args });
+  let c: ReturnType<typeof cmd>;
+  let neu: Partial<Geraet> = {};
+  if (typeof b.an === "boolean") { c = cmd("switch", b.an ? "on" : "off"); neu = { an: b.an }; }
+  else if (b.hell != null) { c = cmd("switchLevel", "setLevel", [b.hell]); neu = { an: true, hell: b.hell }; }
+  else if (b.farbe) { const { h, s } = hexHsv(b.farbe); c = cmd("colorControl", "setColor", [{ hue: Math.round(h / 3.6), saturation: Math.round(s * 100) }]); neu = { an: true, farbe: b.farbe, kelvin: null }; }
+  else if (b.kelvin != null) { c = cmd("colorTemperature", "setColorTemperature", [b.kelvin]); neu = { an: true, kelvin: b.kelvin, farbe: null }; }
+  else if (typeof b.position === "number") { c = cmd("windowShadeLevel", "setShadeLevel", [b.position]); neu = { position: b.position }; }
+  else if (b.position) { c = cmd("windowShade", b.position === "open" ? "open" : b.position === "close" ? "close" : "pause"); neu = { bewegt: b.position === "open" ? "opening" : b.position === "close" ? "closing" : null }; }
+  else if (b.lautst != null) { c = cmd("audioVolume", "setVolume", [b.lautst]); neu = { lautst: b.lautst }; }
+  else if (typeof b.stumm === "boolean") { c = cmd("audioMute", b.stumm ? "mute" : "unmute"); neu = { stumm: b.stumm }; }
+  else if (b.quelle) {
+    if (g.quellen?.length && !g.quellen.some((q) => q.id === b.quelle)) throw new Fehler("Diese Quelle gibt es am Fernseher nicht.");
+    c = cmd(g.ref?.quelleCap || "mediaInputSource", "setInputSource", [b.quelle]); neu = { quelle: b.quelle };
+  } else if (b.taste) {
+    const t: Record<Taste, [string, string]> = { "kanal+": ["tvChannel", "channelUp"], "kanal-": ["tvChannel", "channelDown"], "laut+": ["audioVolume", "volumeUp"], "laut-": ["audioVolume", "volumeDown"], play: ["mediaPlayback", "play"], pause: ["mediaPlayback", "pause"] };
+    c = cmd(...t[b.taste]);
+    if (g.lautst != null && (b.taste === "laut+" || b.taste === "laut-")) neu = { lautst: clamp(g.lautst + (b.taste === "laut+" ? 1 : -1), 0, 100) };
+  } else throw new Fehler("Geht bei diesem Gerät nicht.");
+  if (!caps.includes(c.capability)) throw new Fehler("Das kann dieses Gerät nicht.");
+  const j = await stApi(cfg, "POST", `devices/${encodeURIComponent(g.ref.id)}/commands`, { commands: [c] });
+  const r = j?.results?.[0];
+  if (r?.status === "FAILED") throw new Fehler("Das Gerät hat den Befehl nicht angenommen" + (g.art === "tv" && b.an ? " – ist der Fernseher ganz aus, geht Einschalten nur mit „Mit Mobilgerät einschalten“ in den TV-Einstellungen." : "."));
+  return { ...g, ...neu, ...(b.an === true ? { online: true } : {}) };
+}
+/** Schritt 1: mit dem 24-Stunden-Token eine eigene OAuth-App anlegen (oder vorhandene Client-ID/Secret) → Adresse zur Samsung-Anmeldung */
+async function stEinrichten(ctx: Ctx, data: Roh) {
+  const pat = text(data.token, 200);
+  let client = text(data.client_id, 100), secret = text(data.client_secret, 200), app = "";
+  if (pat) {
+    if (!/^[0-9a-f-]{30,60}$/i.test(pat)) throw new Fehler("Der Token sieht nicht richtig aus (z. B. 1a2b3c4d-…).");
+    const r = await fetch(`${ST}/v1/apps`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${pat}`, "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        appName: "mapq-familie-" + crypto.randomUUID().replace(/-/g, "").slice(0, 10),
+        displayName: "mapq Familie",
+        description: "Familien-App auf mapq.at – Geräte anzeigen und steuern",
+        appType: "API_ONLY",
+        classifications: ["CONNECTED_SERVICE"],
+        singleInstance: true,
+        principalType: "LOCATION",
+        apiOnly: {},
+        oauth: { clientName: "mapq Familie", scope: ST_SCOPE, redirectUris: [ST_REDIRECT] },
+      }),
+      signal: zeitlimit(),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 401) throw new Fehler("Der Token gilt nicht (mehr) – einen neuen erstellen, er ist nur 24 Stunden gültig.");
+    if (r.status === 403) throw new Fehler("Dem Token fehlt die Berechtigung für Apps – beim Erstellen bei „Apps“ alle Häkchen setzen.");
+    if (!r.ok || !j.oauthClientId || !j.oauthClientSecret) throw new Fehler(`SmartThings: Die App konnte nicht angelegt werden (${j?.error?.message || j?.message || r.status}).`);
+    client = j.oauthClientId; secret = j.oauthClientSecret; app = String(j.app?.appId ?? "");
+  } else if (!client && !secret && ctx.s.smart_st_client && ctx.s.smart_st_secret) {
+    client = ctx.s.smart_st_client; secret = ctx.s.smart_st_secret; app = ctx.s.smart_st_app || ""; // nur neu anmelden
+  }
+  if (!client || !secret) throw new Fehler("Bitte den Token von account.smartthings.com/tokens einfügen.");
+  if (!/^[\w-]{8,100}$/.test(client)) throw new Fehler("Die Client-ID sieht nicht richtig aus.");
+  const state = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+  await einstellen(ctx.db, { smart_st_client: client, smart_st_secret: secret, smart_st_app: app, smart_st_state: `${state}:${Date.now()}` });
+  const q = new URLSearchParams({ client_id: client, response_type: "code", redirect_uri: ST_REDIRECT, scope: ST_SCOPE.join(" "), state });
+  return { ok: true, weiter: `${ST}/oauth/authorize?${q}` };
+}
+/** Schritt 2: Rückkehr von Samsung – der einmalige state weist die Anfrage aus (die App ist dabei evtl. gar nicht angemeldet) */
+async function stCode(ctx: Ctx, data: Roh) {
+  const code = text(data.code, 300), state = text(data.state, 100), s = ctx.s;
+  const [soll, zeit] = (s.smart_st_state || "").split(":");
+  if (!soll || state.length < 32 || soll !== state || Date.now() - Number(zeit) > 30 * 60e3) throw new Fehler("Diese Anmeldung ist abgelaufen – in der App unter „Zuhause“ → Zahnrad → SmartThings nochmal verbinden.", 401);
+  if (!code || !s.smart_st_client || !s.smart_st_secret) throw new Fehler("Die Anmeldung bei Samsung hat nicht geklappt.");
+  const j = await stToken({ client: s.smart_st_client, secret: s.smart_st_secret }, { grant_type: "authorization_code", code, redirect_uri: ST_REDIRECT });
+  const w = stWerte(j);
+  await einstellen(ctx.db, { ...w, smart_st_state: "" });
+  const cfg: StCfg = { client: s.smart_st_client, secret: s.smart_st_secret, access: w.smart_st_access, refresh: w.smart_st_refresh, ablauf: Number(w.smart_st_ablauf), db: ctx.db };
+  let geraete: Geraet[] = [];
+  try { geraete = await stStatus(cfg); } catch (e) { console.error("SmartThings", (e as Error).message); }
+  await merke(ctx.db, { "status:smartthings": geraete });
+  return { ok: true, anzahl: geraete.length, tv: geraete.filter((g) => g.art === "tv").length };
+}
+
+/* =====================================================================
    Gemeinsamer Teil
    ===================================================================== */
-const ANBIETER: Anbieter[] = ["govee", "shelly", "tuya"];
+const ANBIETER: Anbieter[] = ["govee", "shelly", "tuya", "smartthings"];
 const ADAPTER = {
   // deno-lint-ignore no-explicit-any
   govee: { status: goveeStatus as any, setzen: goveeSetzen as any },
@@ -690,13 +932,17 @@ const ADAPTER = {
   shelly: { status: shellyStatus as any, setzen: shellySetzen as any },
   // deno-lint-ignore no-explicit-any
   tuya: { status: tuyaStatus as any, setzen: tuyaSetzen as any },
+  // deno-lint-ignore no-explicit-any
+  smartthings: { status: stStatus as any, setzen: stSetzen as any },
 };
+const text = (v: unknown, max = 200) => String(v ?? "").trim().slice(0, max);
 const fuerApp = (g: Geraet) => { const { ref: _ref, ...rest } = g; return rest; };
 const einst = (s: Record<string, string>): Record<string, Roh> => { try { return JSON.parse(s.smart_geraete || "{}") || {}; } catch { return {}; } };
 
 /** Aktueller Zustand aller Geräte – aus dem Zwischenspeicher, wenn er jung genug ist. */
 async function zustand(ctx: Ctx, frisch: "nein" | "ja" | "immer", c?: Cache) {
   const cfg = konfig(ctx.s);
+  if (cfg.smartthings) cfg.smartthings.db = ctx.db; // erneuerter Zugang wird sofort gespeichert
   const cache = c ?? await ladeCache(ctx.db);
   const neu: Neu = {};
   const fehler: Record<string, string> = {};
@@ -731,6 +977,10 @@ function pruefeBefehl(b: Roh): Befehl {
   if (typeof b?.szene === "string" && b.szene && b.szene.length <= 60) return { szene: b.szene };
   if (b?.position === "open" || b?.position === "close" || b?.position === "stop") return { position: b.position };
   if (num(b?.position) !== null) return { position: clamp(Math.round(b.position), 0, 100) };
+  if (num(b?.lautst) !== null) return { lautst: clamp(Math.round(b.lautst), 0, 100) };
+  if (typeof b?.stumm === "boolean") return { stumm: b.stumm };
+  if (typeof b?.quelle === "string" && /^[\w .:+()/-]{1,40}$/.test(b.quelle)) return { quelle: b.quelle };
+  if (TASTEN.includes(b?.taste)) return { taste: b.taste };
   throw new Fehler("Ungültiger Befehl.");
 }
 
@@ -745,6 +995,7 @@ async function aktionStatus(ctx: Ctx, frisch: boolean) {
       },
       shelly: { aktiv: !!z.cfg.shelly, fehler: z.fehler.shelly ?? null, host: s.smart_shelly_host || null, ids: liste(s.smart_shelly_ids) },
       tuya: { aktiv: !!z.cfg.tuya, fehler: z.fehler.tuya ?? null, region: s.smart_tuya_region || "eu" },
+      smartthings: { aktiv: !!z.cfg.smartthings, fehler: z.fehler.smartthings ?? null },
     },
     geraete: z.geraete.map(fuerApp),
     einst: einst(s),
@@ -765,7 +1016,9 @@ async function aktionSetzen(ctx: Ctx, data: Roh) {
   const fehler: string[] = [];
   const versuch = async (g: Geraet) => {
     try {
-      if (!g.online) throw new Fehler("Das Gerät ist offline.");
+      // ein Fernseher im Standby gilt bei SmartThings oft als offline – Einschalten trotzdem versuchen
+      if (!g.online && !(g.art === "tv" && b.an === true)) throw new Fehler(g.art === "tv" ? "Der Fernseher ist aus." : "Das Gerät ist offline.");
+      if (tvBefehl(b) && g.anbieter !== "smartthings") throw new Fehler("Geht bei diesem Gerät nicht.");
       ok.push(await ADAPTER[g.anbieter].setzen(z.cfg[g.anbieter], z.cache, neu, g, b));
     } catch (e) {
       fehler.push(`${g.name}: ${e instanceof Fehler ? e.message : (e as Error).message}`);
@@ -824,12 +1077,13 @@ async function aktionEinrichten(ctx: Ctx, data: Roh) {
   if (data.trennen === true) {
     const leer: Record<string, string> = a === "govee" ? { smart_govee_key: "", smart_govee_konten: "[]" }
       : a === "shelly" ? { smart_shelly_key: "", smart_shelly_host: "", smart_shelly_ids: "" }
+      : a === "smartthings" ? Object.fromEntries(["client", "secret", "app", "state", "access", "refresh", "ablauf"].map((k) => [`smart_st_${k}`, ""]))
       : { smart_tuya_id: "", smart_tuya_secret: "", smart_tuya_region: "" };
     await einstellen(ctx.db, leer);
     await merke(ctx.db, a === "tuya" ? { ...alt, "token:tuya": null } : alt);
     return { ok: true };
   }
-  const text = (v: unknown, max = 200) => String(v ?? "").trim().slice(0, max);
+  if (a === "smartthings") return await stEinrichten(ctx, data);
 
   if (a === "govee") {
     const konten = goveeKonten(s);
@@ -897,7 +1151,7 @@ async function aktionEinrichten(ctx: Ctx, data: Roh) {
 
 async function aktionGeraet(ctx: Ctx, data: Roh) {
   const id = String(data.id ?? "").slice(0, 200);
-  if (!/^(govee|shelly|tuya)~/.test(id)) throw new Fehler("Unbekanntes Gerät.");
+  if (!/^(govee|shelly|tuya|smartthings)~/.test(id)) throw new Fehler("Unbekanntes Gerät.");
   const e = einst(ctx.s);
   const x: Roh = { ...(e[id] ?? {}) };
   if ("name" in data) x.name = String(data.name ?? "").trim().slice(0, 40) || undefined;
@@ -920,9 +1174,10 @@ export async function smartAktion(data: Roh, ctx: Ctx): Promise<unknown> {
     case "smart-szenen": return await aktionSzenen(ctx, String(data.id ?? ""));
     case "smart-einrichten": return await aktionEinrichten(ctx, data);
     case "smart-geraet": return await aktionGeraet(ctx, data);
+    case "smart-st-code": return await stCode(ctx, data);
     default: throw new Fehler("Unbekannte Aktion.");
   }
 }
 
 // Für Tests
-export const _intern = { goveeBasis, goveeZustand, shellyGeraete, tuyaGeraete, tuyaRoh, pruefeBefehl };
+export const _intern = { goveeBasis, goveeZustand, shellyGeraete, tuyaGeraete, tuyaRoh, pruefeBefehl, stGeraet };

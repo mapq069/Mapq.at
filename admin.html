@@ -1724,7 +1724,7 @@ function familieSection() {
    wird mit „Veröffentlichen“ live), Inhalte (Tabellen familie_* direkt in Supabase)
    und Zuhause (Smart Home über mapq-push, Aktionen smart-…).
    ===================================================================== */
-const FN_VERSION = 5; // ?v= der Code-Zeile von mapq-push in Supabase
+const FN_VERSION = 6; // ?v= der Code-Zeile von mapq-push in Supabase
 const FAM_FARBEN = { indigo: '#7986CB', amber: '#FFC107', orange: '#FF7043', pink: '#F06292', green: '#66BB6A', teal: '#26A69A', purple: '#BA68C8', blue: '#42A5F5', sky: '#4FC3F7', red: '#EF5350', lime: '#9CCC65', grey: '#B0BEC5' };
 // Reihenfolge = Standard in der App; „Fotos“ ist standardmäßig nicht unten, sondern unter „Mehr“
 const FAM_TABS = [['start', 'Start', 'indigo'], ['listen', 'Listen', 'amber'], ['kalender', 'Kalender', 'orange'], ['karte', 'Karte', 'sky'], ['fotos', 'Fotos', 'pink', false], ['pinnwand', 'Pinnwand', 'green'], ['zuhause', 'Zuhause', 'teal'], ['mehr', 'Mehr', 'purple']];
@@ -1890,9 +1890,9 @@ async function famDel(k, id) {
 }
 
 /* ---------- Zuhause (Smart Home über mapq-push) ---------- */
-const SM_ANB = { govee: 'Govee', shelly: 'Shelly', tuya: 'Smart Life' };
-const SM_ART = { licht: 'Licht', schalter: 'Steckdose', rollo: 'Rollladen', sensor: 'Sensor', geraet: 'Gerät' };
-const smStartStd = d => d.art === 'licht' || d.art === 'schalter' || d.art === 'rollo';
+const SM_ANB = { govee: 'Govee', shelly: 'Shelly', tuya: 'Smart Life', smartthings: 'SmartThings' };
+const SM_ART = { licht: 'Licht', schalter: 'Steckdose', rollo: 'Rollladen', sensor: 'Sensor', geraet: 'Gerät', tv: 'Fernseher' };
+const smStartStd = d => d.art === 'licht' || d.art === 'schalter' || d.art === 'rollo' || d.art === 'tv';
 let famQ = Promise.resolve();
 const famQueue = fn => (famQ = famQ.then(fn, fn)); // Einstellungen nacheinander speichern – jede baut auf der vorigen auf
 async function famSmartLoad(frisch) {
@@ -1956,6 +1956,10 @@ function famZuhause() {
       ${geheim('fsTSec', 'Access Secret')}
       <p class="hint" style="margin:-6px 0 14px">Aus dem Cloud-Projekt auf iot.tuya.com (Anleitung in der Familien-App unter Zuhause → Zahnrad).</p>
       <div class="sheet-actions">${a.tuya?.aktiv ? `<button class="btn btn-danger" data-action="fs-trennen" data-a="tuya">Trennen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" data-action="fs-einrichten" data-a="tuya">${ic('check', 17)} Speichern</button></div></div></details>
+  </section>
+  <section class="card sec"><div class="sec-h"><h2>SmartThings (Samsung)</h2>${chip('smartthings')}</div>${fehler('smartthings')}
+    <p class="muted" style="margin:0 0 ${a.smartthings?.aktiv ? '14px' : '0'}">Zum Beispiel der Samsung-Fernseher. Verbinden geht in der Familien-App unter <b style="color:var(--text)">Zuhause → Zahnrad → SmartThings</b>, weil die Samsung-Anmeldung dorthin zurückführt.</p>
+    ${a.smartthings?.aktiv ? `<div class="sheet-actions"><button class="btn btn-danger" data-action="fs-trennen" data-a="smartthings">Trennen</button></div>` : ''}
   </section>`;
 }
 async function famSmartGeraet(el) {
