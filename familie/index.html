@@ -321,12 +321,146 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 .toast.warn{background:#3a2c07;color:#FFE082}
 .toast.out{opacity:0;transform:translateY(-8px);transition:.3s}
 @keyframes drop{from{opacity:0;transform:translateY(-10px)}}
+/* ---------- Version 2: weitere Bereiche ---------- */
+.c-red{--c:#EF5350;--cb:rgba(239,83,80,.17)}
+.c-lime{--c:#9CCC65;--cb:rgba(156,204,101,.17)}
+.tabbar{grid-template-columns:repeat(6,1fr)}
+.tab{font-size:10.5px}
+.tab .pill{width:48px}
+@media(min-width:760px){.tabbar{width:640px}}
+.av{overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.back{display:inline-flex;align-items:center;gap:4px;margin:2px 0 8px -6px;padding:6px 8px;border:0;background:none;color:var(--muted);font-size:14px;font-weight:600;border-radius:10px}
+.back:hover{color:var(--text);background:var(--card)}
+.kat-h{display:flex;align-items:center;gap:8px;margin:16px 6px 6px;font-size:13px;font-weight:700;color:var(--muted)}
+.kat-h:first-child{margin-top:4px}
+.kat-h .e{font-size:17px}
+.kat-h .n{margin-left:auto;font-weight:600;color:var(--dim)}
+.tickb{flex:none;width:44px;height:44px;margin-left:-8px;display:grid;place-items:center;border:0;background:none;-webkit-tap-highlight-color:transparent}
+.item-main.text{gap:0}
+.menge{font-weight:800;color:var(--c);margin-right:6px}
+.chipsel{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chipsel button{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 13px;border-radius:19px;border:2px solid transparent;background:var(--card-2);color:var(--text);font-size:13.5px;font-weight:600}
+.chipsel button.on{border-color:var(--c,#F5F5F7);background:var(--cb,var(--card-2))}
+.chipsel button .ord{min-width:18px;height:18px;border-radius:9px;background:var(--c);color:var(--on-light);font-size:11px;display:grid;place-items:center}
+.who-chip{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px 0 3px;border-radius:11px;background:var(--cb);color:var(--c);font-size:11.5px;font-weight:600}
+.who-chip .av{width:17px;height:17px;font-size:9.5px}
+.overdue{color:var(--bad)!important}
+/* Fotos & Alben */
+.ftile .vb{position:absolute;left:6px;bottom:6px;display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700}
+.ftile .vb .ic{width:11px;height:11px}
+.ftile.noimg{display:grid;place-items:center;color:var(--muted)}
+.agrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(min-width:600px){.agrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.acard{display:flex;flex-direction:column;gap:8px;border:0;background:none;padding:0;text-align:left;color:var(--text)}
+.acard .cov{aspect-ratio:1/1;border-radius:var(--r);background:var(--card) center/cover no-repeat;display:grid;place-items:center;color:var(--c,#F06292)}
+.acard b{font-size:15px;font-weight:600;padding:0 4px}
+.acard small{color:var(--muted);font-size:12.5px;padding:0 4px;margin-top:-6px}
+.lb video{max-width:100%;max-height:100%;display:block;background:#000}
+.lb-foot{flex-wrap:wrap}
+.lb-foot .acts{display:flex;gap:8px;width:100%;flex-wrap:wrap;align-items:center}
+/* Reaktionen, Kommentare, Umfragen */
+.reacts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.rc{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:15px;border:1.5px solid transparent;background:var(--card-2);font-size:14px;color:var(--text);font-weight:600}
+.rc.mine{border-color:var(--c,#66BB6A);background:var(--cb,var(--card-2))}
+.rc small{font-size:12px;color:var(--muted)}
+.rc.add{width:30px;padding:0;justify-content:center;color:var(--muted)}
+.picker{display:flex;gap:4px;padding:4px;border-radius:18px;background:var(--card-2);margin-top:8px;width:max-content;max-width:100%}
+.picker button{width:38px;height:38px;border:0;border-radius:50%;background:none;font-size:21px}
+.picker button:hover{background:#2d2d34}
+.kbtn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:0;border-radius:15px;background:none;color:var(--muted);font-size:13px;font-weight:600}
+.kbtn:hover{background:var(--card-2);color:var(--text)}
+.komm{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.km{display:flex;gap:10px;align-items:flex-start}
+.km .b{flex:1;min-width:0;background:var(--card-2);border-radius:14px;padding:8px 12px}
+.km .b b{font-size:13px;font-weight:600}
+.km .b small{color:var(--dim);font-size:11.5px;margin-left:6px}
+.km .b p{margin:2px 0 0;font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.kform{display:flex;gap:8px}
+.kform .input{min-height:42px;padding:9px 14px;border-radius:21px}
+.kform .btn{width:42px;min-height:42px;padding:0}
+.poll{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.opt{position:relative;display:flex;align-items:center;gap:10px;min-height:46px;padding:0 12px;border:2px solid transparent;border-radius:14px;background:var(--card-2);color:var(--text);font-size:15px;font-weight:600;text-align:left;overflow:hidden}
+.opt.mine{border-color:var(--c)}
+.opt i{position:absolute;left:0;top:0;bottom:0;background:var(--cb);transition:width .4s ease}
+.opt span,.opt .vt{position:relative}
+.opt span{flex:1;min-width:0}
+.opt .vt{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.opt .vt .av{width:20px;height:20px;font-size:10px;margin-left:-8px;border:2px solid var(--card-2)}
+.opt .vt .av:first-child{margin-left:0}
+.pollin{display:flex;flex-direction:column;gap:8px}
+/* Mehr, Essen, Rezepte, Countdowns, Infos */
+.hub .tile{min-height:128px}
+.days{display:flex;flex-direction:column;gap:8px}
+.dayc{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-radius:var(--r);background:var(--card);text-align:left;color:var(--text)}
+.dayc.today{box-shadow:inset 0 0 0 2px var(--c)}
+.dayc .d{flex:none;width:44px;text-align:center}
+.dayc .d small{display:block;color:var(--muted);font-size:11.5px;font-weight:600;text-transform:uppercase}
+.dayc .d b{display:block;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:22px;line-height:1.1}
+.dayc .t{flex:1;min-width:0}
+.dayc .t b{display:block;font-size:15.5px;font-weight:600;line-height:1.3;word-break:break-word}
+.dayc .t small{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12.5px;margin-top:3px}
+.dayc .t .none{color:var(--dim);font-weight:500}
+.wnav{display:flex;align-items:center;gap:6px;margin:0 0 12px}
+.wnav b{flex:1;text-align:center;font-size:14.5px;font-weight:600}
+.rgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(min-width:600px){.rgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rcard{display:flex;flex-direction:column;border:0;padding:0;border-radius:var(--r);background:var(--card);overflow:hidden;text-align:left;color:var(--text)}
+.rcard .img{aspect-ratio:4/3;background:var(--cb) center/cover no-repeat;display:grid;place-items:center;font-size:40px}
+.rcard .t{padding:10px 12px 12px}
+.rcard b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.rcard small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.rhero{margin:-10px -18px 16px;aspect-ratio:16/9;background:var(--card-2) center/cover no-repeat}
+@media(min-width:700px){.rhero{margin:-26px -26px 18px;border-radius:28px 28px 0 0}}
+.zl{display:flex;flex-direction:column;margin-bottom:12px;background:var(--card-2);border-radius:var(--r-sm);padding:4px 12px}
+.zl label{display:flex;align-items:center;gap:12px;min-height:44px;font-size:15px}
+.zl label+label{border-top:1px solid var(--line)}
+.zl input{width:20px;height:20px;accent-color:var(--c,#FFC107)}
+.anl{white-space:pre-wrap;font-size:15px;line-height:1.6;margin:0 0 16px}
+.cds{display:flex;flex-direction:column;gap:10px}
+.cd{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:0;border-radius:var(--r);background:var(--card);text-align:left;color:var(--text)}
+.cd .shape{font-size:24px}
+.cd .t{flex:1;min-width:0}
+.cd .t b{display:block;font-size:16px;font-weight:600}
+.cd .t small{display:block;color:var(--muted);font-size:13px}
+.cd .num{text-align:right;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:30px;line-height:1;color:var(--c)}
+.cd .num small{display:block;font-family:var(--font-b);font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.cd.past{opacity:.5}
+.cdstrip{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 12px;padding:0 16px}
+.cdstrip::-webkit-scrollbar{display:none}
+.cdstrip .tile{flex:none;width:150px;min-height:118px}
+.cdstrip .tile .e{font-size:28px;line-height:1}
+.emo{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.emo button{width:44px;height:44px;border-radius:50%;border:2px solid transparent;background:var(--card-2);font-size:22px}
+.emo button.on{border-color:var(--c)}
+.infos .en{padding:10px 0}
+.infos .en+.en{border-top:1px solid var(--line)}
+.infos .en .h{display:flex;align-items:center;gap:8px}
+.infos .en .h b{flex:1;min-width:0;font-size:15px;font-weight:600}
+.infos .en p{margin:4px 0 0;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--text)}
+.infos .en a{color:var(--c);font-weight:600;text-decoration:none}
+.palette{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0 4px}
+.palette button{width:38px;height:38px;border-radius:50%;border:3px solid transparent;background:var(--c);box-shadow:inset 0 0 0 2px var(--card)}
+.palette button.on{border-color:var(--text)}
+.stgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stb{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border:2px solid transparent;border-radius:16px;background:var(--card-2);font-size:12px;font-weight:600;color:var(--text)}
+.stb .e{font-size:24px;line-height:1.1}
+.stb.on{border-color:var(--c,#F5F5F7);background:var(--cb,var(--card-2))}
+.person .st{font-size:11px;color:var(--muted);margin-top:-4px;white-space:nowrap;max-width:76px;overflow:hidden;text-overflow:ellipsis}
+.person{width:76px}
+.person.me-p{cursor:pointer}
+.prof{display:flex;align-items:center;gap:16px}
+.prof .av{width:72px;height:72px;font-size:28px}
+.prof .t{flex:1;min-width:0}
+.prof .t b{display:block;font-size:20px;font-weight:700}
+.prof .t small{color:var(--muted);font-size:13px}
+.sheet-wrap{z-index:75}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div id="app" hidden>
-  <header class="topbar"><a class="brand" href="#start" aria-label="Familie – Start"><img src="/familie/mark.png?v=3" alt=""><b>Familie</b></a><span class="spacer"></span><button class="me-btn" id="meBtn" data-action="go" data-tab="mehr" aria-label="Mein Profil"></button></header>
+  <header class="topbar"><a class="brand" href="#start" aria-label="Familie – Start"><img src="/familie/mark.png?v=3" alt=""><b>Familie</b></a><span class="spacer"></span><button class="me-btn" id="meBtn" data-action="go" data-tab="ich" aria-label="Mein Profil"></button></header>
   <main id="view"></main>
   <nav class="tabbar" id="tabbar" aria-label="Bereiche"></nav>
 </div>
@@ -334,12 +468,16 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 <div id="lb"></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="gate" id="gate" hidden></div>
-<input type="file" id="fotoInput" accept="image/*" multiple hidden>
+<input type="file" id="fotoInput" accept="image/*,video/*" multiple hidden>
+<input type="file" id="avatarInput" accept="image/*" hidden>
+<input type="file" id="rezeptInput" accept="image/*" hidden>
 
 <script>
 'use strict';
 /* =====================================================================
-   mapq.at/familie – Übersicht, Listen, Kalender, Fotos und Pinnwand.
+   mapq.at/familie – Start, Listen (Einkauf, To-dos, Putzplan), Kalender,
+   Fotos & Videos, Pinnwand und unter „Mehr“: Essensplan, Rezepte,
+   Countdowns, wichtige Infos und das eigene Profil.
    Daten in Supabase (gleiches Projekt wie das Kontaktformular, siehe
    /content.json → inbox). Alle melden sich mit dem Familien-Konto an;
    wer was eingetragen hat, steht im Feld „von“ (Name auf diesem Gerät).
@@ -347,6 +485,7 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
    ===================================================================== */
 const FAMILY_EMAIL = 'familie@mapq.at';
 const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const store = {
   k: k => 'mapq_familie_' + k,
@@ -354,6 +493,7 @@ const store = {
   set(k, v) { try { localStorage.setItem(this.k(k), JSON.stringify(v)); } catch {} },
   del(k) { try { localStorage.removeItem(this.k(k)); } catch {} }
 };
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2));
 
 /* ---------- Icons (Lucide) ---------- */
 const CLOUD = '<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>';
@@ -362,10 +502,25 @@ const ICONS = {
   list: '<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
   cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
   todo: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/>',
+  sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/>',
   cal: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
   image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
   camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  play: '<polygon points="6 3 20 12 6 21 6 3" fill="currentColor"/>',
   chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  reply: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  poll: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16h8"/><path d="M7 11h12"/><path d="M7 6h3"/>',
+  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>',
+  grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  utensils: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  hourglass: '<path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>',
+  siren: '<path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/><path d="M12 12v6"/>',
+  edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
   plus: '<path d="M5 12h14M12 5v14"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', check: '<path d="M20 6 9 17l-5-5"/>',
   left: '<path d="m15 18-6-6 6-6"/>', right: '<path d="m9 18 6-6-6-6"/>', chev: '<path d="m9 18 6-6-6-6"/>',
   trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
@@ -377,6 +532,7 @@ const ICONS = {
   alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/>',
   eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
   phone: '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
   pin: '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
   cake: '<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3"/><path d="M12 8v3"/><path d="M17 8v3"/><path d="M7 4h.01"/><path d="M12 4h.01"/><path d="M17 4h.01"/>',
@@ -388,23 +544,45 @@ const ICONS = {
   drizzle: CLOUD + '<path d="M8 19v1"/><path d="M8 14v1"/><path d="M16 19v1"/><path d="M16 14v1"/><path d="M12 21v1"/><path d="M12 16v1"/>',
   rain: CLOUD + '<path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/>',
   snow: CLOUD + '<path d="M8 15h.01"/><path d="M8 19h.01"/><path d="M12 17h.01"/><path d="M12 21h.01"/><path d="M16 15h.01"/><path d="M16 19h.01"/>',
-  storm: '<path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/>',
-  drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>'
+  storm: '<path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/>'
 };
 const ic = (n, s = 20) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
 const TABS = [
   { id: 'start', label: 'Start', icon: 'home', c: 'indigo' },
   { id: 'listen', label: 'Listen', icon: 'list', c: 'amber' },
   { id: 'kalender', label: 'Kalender', icon: 'cal', c: 'orange' },
   { id: 'fotos', label: 'Fotos', icon: 'image', c: 'pink' },
-  { id: 'pinnwand', label: 'Pinnwand', icon: 'chat', c: 'green' }
+  { id: 'pinnwand', label: 'Pinnwand', icon: 'chat', c: 'green' },
+  { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
-const ALL_TABS = [...TABS.map(t => t.id), 'mehr'];
-const LIST_C = { einkauf: 'amber', todo: 'blue' };
-/* Jede Person bekommt eine feste Farbe */
-const PALETTE = ['blue', 'pink', 'green', 'amber', 'purple', 'teal', 'orange', 'sky', 'indigo'];
-const colorOf = n => { let h = 0; for (const ch of String(n || '')) h = (h * 31 + ch.codePointAt(0)) >>> 0; return n ? PALETTE[h % PALETTE.length] : 'grey'; };
-const av = (n, cls = '') => `<span class="av ${cls} c-${colorOf(n)}" aria-hidden="true">${esc(initial(n))}</span>`;
+const SUB = ['essen', 'rezepte', 'countdowns', 'infos', 'ich'];
+const ALL_TABS = [...TABS.map(t => t.id), ...SUB];
+const tabOf = t => SUB.includes(t) ? 'mehr' : t;
+const LISTS = [['einkauf', 'Einkauf', 'cart', 'amber'], ['todo', 'To-dos', 'todo', 'blue'], ['putzplan', 'Putzplan', 'sparkles', 'sky']];
+const LIST_C = Object.fromEntries(LISTS.map(l => [l[0], l[3]]));
+const PALETTE = ['blue', 'pink', 'green', 'amber', 'purple', 'teal', 'orange', 'sky', 'indigo', 'red', 'lime'];
+const STATUS = [['zuhause', '🏠', 'Zuhause'], ['arbeit', '💼', 'Arbeit'], ['schule', '🎒', 'Schule'], ['unterwegs', '🚗', 'Unterwegs'], ['einkaufen', '🛒', 'Einkaufen'], ['sport', '⚽', 'Sport'], ['urlaub', '✈️', 'Urlaub'], ['schlafen', '😴', 'Schläft']];
+const EMO = ['❤️', '😂', '👍', '😮', '😢', '🎉'];
+const CD_EMO = ['✈️', '🏖️', '🎄', '🎂', '🎉', '⛷️', '🏕️', '🎓', '🚗', '❤️', '⚽', '🎁'];
+const INFO_ART = [['notfall', '🚨', 'Notfall', 'red'], ['arzt', '🩺', 'Ärzte & Gesundheit', 'pink'], ['haus', '🏠', 'Zuhause & WLAN', 'blue'], ['muell', '🗑️', 'Müllabfuhr', 'green'], ['schule', '🎒', 'Schule & Kinder', 'amber'], ['sonstiges', '📌', 'Sonstiges', 'grey']];
+const KATS = [['obst', '🥦', 'Obst & Gemüse'], ['brot', '🥖', 'Brot & Gebäck'], ['kuehl', '🧀', 'Milch & Kühlregal'], ['fleisch', '🥩', 'Fleisch & Fisch'], ['vorrat', '🥫', 'Vorrat'], ['tk', '🧊', 'Tiefkühl'], ['getraenke', '🥤', 'Getränke'], ['suess', '🍫', 'Süßes & Snacks'], ['drogerie', '🧴', 'Drogerie & Haushalt'], ['sonst', '🛒', 'Sonstiges']];
+const KAT_WORDS = {
+  obst: 'apfel äpfel banane birne orange mandarine zitrone limette traube beere erdbeer himbeer heidelbeer kiwi mango ananas melone pfirsich marille aprikose zwetschke pflaume kirsche tomate paradeiser gurke salat eisberg rucola karotte möhre zwiebel knoblauch kartoffel erdäpfel paprika zucchini brokkoli karfiol blumenkohl spinat lauch porree sellerie pilz champignon schwammerl avocado kräuter petersilie schnittlauch basilikum ingwer kürbis radieschen kohl kraut mais obst gemüse fenchel spargel bohnen erbsen',
+  brot: 'brot semmel gebäck weckerl baguette toast brötchen kipferl croissant striezel knäckebrot wrap tortilla kuchen krapfen breze brezel',
+  kuehl: 'milch butter käse joghurt jogurt topfen quark sahne obers rahm mozzarella feta eier margarine aufstrich hummus tofu kefir buttermilch mascarpone ricotta parmesan gouda emmentaler',
+  fleisch: 'fleisch faschiertes hack wurst schinken speck salami hendl huhn hähnchen pute rind schwein steak schnitzel lachs fisch garnelen leberkäse würstel frankfurter kotelett braten forelle',
+  vorrat: 'nudeln pasta spaghetti penne reis mehl zucker salz pfeffer öl essig gewürz linsen kichererbsen dose konserve sauce soße ketchup senf mayo mayonnaise honig marmelade nutella müsli haferflocken cornflakes kaffee tee kakao grieß brösel backpulver hefe germ suppe brühe pesto passata tomatenmark polenta couscous thunfisch nüsse rosinen',
+  tk: 'tiefkühl tk pizza eis eiscreme pommes fischstäbchen',
+  getraenke: 'wasser mineral saft cola limo limonade bier wein sekt sprite fanta eistee almdudler energy sirup radler prosecco apfelsaft orangensaft',
+  suess: 'schokolade schoko chips gummibär kekse keks bonbon süßigkeit popcorn manner waffel riegel studentenfutter knabber kaugummi',
+  drogerie: 'klopapier toilettenpapier küchenrolle taschentuch zahnpasta zahnbürste shampoo duschgel seife deo waschmittel weichspüler spülmittel geschirrtab tabs müllsack müllsäcke alufolie frischhaltefolie backpapier batterie windeln creme rasierer wattepad putzmittel schwamm glühbirne kerze spülmaschine'
+};
+const KAT_LIST = Object.entries(KAT_WORDS).flatMap(([k, w]) => w.split(' ').map(x => [x, k]));
+const ERI_ZEIT = [['', 'Keine Erinnerung'], ['15', '15 Min. vorher'], ['30', '30 Min. vorher'], ['60', '1 Std. vorher'], ['120', '2 Std. vorher'], ['1440', '1 Tag vorher']];
+const ERI_TAG = [['', 'Keine Erinnerung'], ['0', 'Am Morgen (8 Uhr)'], ['840', 'Am Vortag (18 Uhr)'], ['2280', '2 Tage vorher (18 Uhr)']];
+const RHYTHMUS = [['taeglich', 'Täglich'], ['woechentlich', 'Jede Woche'], ['zweiwoechentlich', 'Alle 2 Wochen'], ['monatlich', 'Jeden Monat']];
+const WD_LONG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
 
 /* ---------- Kleinkram ---------- */
 function toast(msg, kind = '') {
@@ -419,12 +597,15 @@ const isoDay = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate
 const parseDay = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, m - 1, d); };
 const todayIso = () => isoDay(new Date());
 const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const dayDiff = (a, b) => Math.round((parseDay(isoDay(b)) - parseDay(isoDay(a))) / 864e5);
+const isodow = d => ((d.getDay() + 6) % 7) + 1;
 const MONTHS = ['Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 function dayLabel(iso) {
   const d = parseDay(iso), txt = d.toLocaleDateString('de-AT', { weekday: 'short', day: 'numeric', month: 'short' });
   if (iso === todayIso()) return ['Heute', txt];
   if (iso === isoDay(addDays(new Date(), 1))) return ['Morgen', txt];
+  if (iso === isoDay(addDays(new Date(), -1))) return ['Gestern', txt];
   return [d.toLocaleDateString('de-AT', { weekday: 'long' }), d.toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: d.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' })];
 }
 function rel(ts) {
@@ -442,6 +623,7 @@ function relShort(ts) {
   if (s < 86400) return `${Math.floor(s / 3600)} Std.`;
   const d = Math.floor(s / 86400); return d === 1 ? 'gestern' : d < 30 ? `${d} Tage` : 'länger her';
 }
+const inDays = n => n === 0 ? 'heute' : n === 1 ? 'morgen' : n === -1 ? 'gestern' : n > 0 ? `in ${n} Tagen` : `vor ${-n} Tagen`;
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const platform = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(navigator.userAgent) ? 'android' : 'desktop';
 function deviceLabel() {
@@ -455,6 +637,13 @@ function deviceLabel() {
 }
 const offline = e => e instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(e?.message || '');
 const errMsg = e => offline(e) ? 'Keine Verbindung – versuch es gleich nochmal.' : (e?.message || 'Unbekannter Fehler');
+const fmtDauer = s => s ? `${Math.floor(s / 60)}:${pad(Math.round(s % 60))}` : '';
+const inList = ids => `in.(${ids.map(encodeURIComponent).join(',')})`;
+/* Telefonnummern und Links in (bereits escaptem) Text anklickbar machen */
+function linkify(t) {
+  return t.split(/(https?:\/\/[^\s<]+)/g).map((part, i) => i % 2 ? `<a href="${part}" target="_blank" rel="noopener">${part}</a>`
+    : part.replace(/(\+?\d[\d \/-]{1,}\d)/g, m => (m.replace(/\D/g, '').length >= 3 ? `<a href="tel:${m.replace(/[^\d+]/g, '')}">${m}</a>` : m))).join('');
+}
 
 /* ---------- Supabase ---------- */
 const API = {
@@ -491,22 +680,35 @@ const API = {
     const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch {}
     if (!r.ok) {
       const e = new Error(j?.message || ('Fehler ' + r.status)); e.status = r.status; e.code = j?.code;
-      if (j?.code === 'PGRST205' || j?.code === '42P01' || /could not find the (table|function)/i.test(j?.message || '')) { e.setup = true; e.message = 'Die Familien-App ist noch nicht fertig eingerichtet.'; }
+      if (j?.code === 'PGRST205' || j?.code === '42P01' || j?.code === 'PGRST204' || j?.code === '42703' || /could not find the (table|function)|column .* does not exist/i.test(j?.message || '')) { e.setup = true; e.message = 'Die Familien-App braucht noch ein Update in Supabase.'; }
       if (j?.code === '42501') e.message = 'Kein Zugriff – bitte neu anmelden.';
       throw e;
     }
     return j;
+  },
+  async upload(path, blob, type) {
+    const r = await this.fetch('/storage/v1/object/familie/' + path, { method: 'POST', headers: { 'Content-Type': type || 'image/jpeg', 'cache-control': 'max-age=31536000', 'x-upsert': 'false' }, body: blob });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.message || j.error || ('Hochladen ging nicht (' + r.status + ')')); }
+  },
+  removeFiles(paths) {
+    const p = paths.filter(Boolean); if (!p.length) return Promise.resolve();
+    return this.fetch('/storage/v1/object/familie', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prefixes: p }) }).catch(() => {});
   }
 };
-const insert = (table, row) => API.rest('/' + table, { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) }).then(r => r && r[0]);
-const patch = (table, id, row) => API.rest(`/${table}?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) }).then(r => r && r[0]);
+const REP = { Prefer: 'return=representation' };
+const insert = (table, row) => API.rest('/' + table, { method: 'POST', headers: REP, body: JSON.stringify(row) }).then(r => Array.isArray(row) ? r : r && r[0]);
+const upsert = (table, conflict, row) => API.rest(`/${table}?on_conflict=${conflict}`, { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=representation' }, body: JSON.stringify(row) }).then(r => r && r[0]);
+const patch = (table, id, row) => API.rest(`/${table}?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: REP, body: JSON.stringify(row) }).then(r => r && r[0]);
 const remove = (table, id) => API.rest(`/${table}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' });
 
 /* ---------- Zustand ---------- */
 const state = {
   me: store.get('name'),
   tab: 'start', liste: store.get('liste', 'einkauf'),
-  items: null, termine: null, fotos: null, fotosAlle: false, msgs: null, members: [],
+  items: null, termine: null, fotos: null, fotosAlle: false, msgs: null, members: [], mem: {},
+  alben: null, albumInfo: {}, album: null, fotoView: 'alle',
+  react: {}, komm: {}, stimmen: {}, openKomm: new Set(), pick: null, poll: false,
+  aufgaben: null, alog: [], essen: {}, essenWoche: 0, rezepte: null, rsuche: '', countdowns: null, infos: null,
   cal: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
   day: null, showDone: false, weather: null,
   wp: { info: null, loaded: false, mine: null, busy: false }
@@ -515,6 +717,27 @@ const unread = () => {
   const seen = store.get('seen', '');
   return (state.msgs || []).filter(m => m.von !== state.me && m.erstellt > seen).length;
 };
+
+/* ---------- Personen: Farbe, Foto, Status ---------- */
+const colorOf = n => {
+  const f = state.mem[n]?.farbe; if (f && PALETTE.includes(f)) return f;
+  let h = 0; for (const ch of String(n || '')) h = (h * 31 + ch.codePointAt(0)) >>> 0; return n ? PALETTE[h % 9] : 'grey';
+};
+const av = (n, cls = '') => { const b = state.mem[n]?.bild, u = b && URLS[b]?.[0]; return `<span class="av ${cls} c-${colorOf(n)}" aria-hidden="true">${u ? `<img src="${esc(u)}" alt="">` : esc(initial(n))}</span>`; };
+function statusOf(n) {
+  const m = state.mem[n]; if (!m?.status || !m.status_seit) return null;
+  const s = STATUS.find(x => x[0] === m.status); if (!s) return null;
+  const age = Date.now() - new Date(m.status_seit);
+  if (age > (m.status === 'urlaub' ? 14 : 1) * 864e5) return null;
+  return { emoji: s[1], label: s[2], seit: m.status_seit };
+}
+async function loadMembers() {
+  const m = (await API.rest('/familie_mitglieder?select=*&order=name')) || [];
+  state.members = m.map(x => x.name); state.mem = Object.fromEntries(m.map(x => [x.name, x]));
+  try { await signed(m.map(x => x.bild)); } catch {}
+  const b = $('#meBtn'); if (b && state.me) b.innerHTML = av(state.me, 'sm');
+}
+const patchMe = row => API.rest('/familie_mitglieder?name=eq.' + encodeURIComponent(state.me), { method: 'PATCH', headers: REP, body: JSON.stringify(row) }).then(r => { if (r && r[0]) state.mem[state.me] = r[0]; return r && r[0]; });
 
 /* ---------- Start ---------- */
 let swReg = null;
@@ -532,7 +755,6 @@ async function boot() {
   if (!state.me) return showWho();
   startApp();
 }
-
 function gate(html) {
   const g = $('#gate'); g.innerHTML = `<div class="gate-box"><img src="/familie/icon-192.png?v=3" alt="">${html}</div>`; g.hidden = false;
   $('#app').hidden = true;
@@ -541,7 +763,7 @@ function showLogin(msg = '') {
   stopTimer();
   gate(`<h1>Unsere Familie</h1>
     <p class="lead">Alles an einem Ort – für alle auf dem Handy.</p>
-    <div class="feat"><span class="chip c-amber">${ic('cart', 15)} Einkauf</span><span class="chip c-orange">${ic('cal', 15)} Termine</span><span class="chip c-pink">${ic('image', 15)} Fotos</span><span class="chip c-green">${ic('chat', 15)} Pinnwand</span></div>
+    <div class="feat"><span class="chip c-amber">${ic('cart', 15)} Einkauf</span><span class="chip c-orange">${ic('cal', 15)} Termine</span><span class="chip c-pink">${ic('image', 15)} Fotos</span><span class="chip c-green">${ic('chat', 15)} Pinnwand</span><span class="chip c-lime">${ic('utensils', 15)} Essen</span><span class="chip c-sky">${ic('sparkles', 15)} Putzplan</span></div>
     <form id="loginForm" autocomplete="on">
       <input type="email" name="username" value="${FAMILY_EMAIL}" autocomplete="username" hidden>
       <div class="field"><label for="pw">Familien-Passwort</label><div class="pass-wrap"><input id="pw" class="input" type="password" autocomplete="current-password" required><button type="button" class="btn sm icon" data-action="toggle-pass" aria-label="Passwort anzeigen">${ic('eye', 18)}</button></div></div>
@@ -582,6 +804,7 @@ async function pickName(name, isNew) {
     if (isNew) await API.rest('/familie_mitglieder', { method: 'POST', headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' }, body: JSON.stringify({ name }) });
     const old = state.me; state.me = name; store.set('name', name);
     if (old !== name && state.wp.mine) API.rest('/familie_abos?endpoint=eq.' + encodeURIComponent(state.wp.mine), { method: 'PATCH', body: JSON.stringify({ name }) }).catch(() => {});
+    if (isNew) await loadMembers().catch(() => {});
     startApp();
   } catch (e) { if (!e.silent) toast(errMsg(e), 'bad'); }
 }
@@ -598,31 +821,30 @@ function startApp() {
   if (!started) { started = true; loadPushInfo(); }
 }
 function renderTabbar() {
-  const u = unread();
-  $('#tabbar').innerHTML = TABS.map(t => `<button class="tab c-${t.c} ${state.tab === t.id ? 'active' : ''}" data-action="go" data-tab="${t.id}" aria-label="${t.label}" ${state.tab === t.id ? 'aria-current="page"' : ''}><span class="pill">${ic(t.icon, 22)}</span><span>${t.label}</span>${t.id === 'pinnwand' && u ? `<span class="badge">${u > 9 ? '9+' : u}</span>` : ''}</button>`).join('');
+  const u = unread(), cur = tabOf(state.tab);
+  $('#tabbar').innerHTML = TABS.map(t => `<button class="tab c-${t.c} ${cur === t.id ? 'active' : ''}" data-action="go" data-tab="${t.id}" aria-label="${t.label}" ${cur === t.id ? 'aria-current="page"' : ''}><span class="pill">${ic(t.icon, 22)}</span><span>${t.label}</span>${t.id === 'pinnwand' && u ? `<span class="badge">${u > 9 ? '9+' : u}</span>` : ''}</button>`).join('');
 }
+const LOADERS = {
+  start: q => loadDash(q), listen: q => { loadItems(q); if (state.liste === 'putzplan') loadAufgaben(q); }, kalender: q => loadTermine(q),
+  fotos: q => { loadFotos(q); if (state.fotoView === 'alben') loadAlben(q); }, pinnwand: q => loadMsgs(q), mehr: q => loadHub(q),
+  essen: q => { loadEssen(q); loadRezepte(true); }, rezepte: q => loadRezepte(q), countdowns: q => loadCountdowns(q), infos: q => loadInfos(q), ich: () => loadPushInfo()
+};
 function go(tab, replace) {
   state.tab = tab;
   if (location.hash.slice(1) !== tab) history[replace ? 'replaceState' : 'pushState'](null, '', '#' + tab);
   renderTabbar(); renderView(); window.scrollTo(0, 0);
-  ({ start: () => loadDash(), listen: () => loadItems(), kalender: () => loadTermine(), fotos: () => loadFotos(), pinnwand: () => loadMsgs(), mehr: () => loadPushInfo() })[tab]?.();
+  LOADERS[tab]?.();
 }
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (ALL_TABS.includes(h) && h !== state.tab && !$('#app').hidden) go(h, true); });
 
-function renderView() {
-  const v = $('#view');
-  v.innerHTML = ({ start: dashShell, listen: listenShell, kalender: kalenderShell, fotos: fotosShell, pinnwand: pinnwandShell, mehr: mehrView })[state.tab]();
-  fill();
-}
+const VIEWS = { start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView() };
+function renderView() { $('#view').innerHTML = VIEWS[state.tab](); fill(); }
 function fill() {
-  if (state.tab === 'start') fillDash();
-  else if (state.tab === 'listen') fillItems();
-  else if (state.tab === 'kalender') { fillCal(); fillCalList(); }
-  else if (state.tab === 'fotos') fillFotos();
-  else if (state.tab === 'pinnwand') fillPosts();
+  ({ start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos })[state.tab]?.();
 }
 const spinner = '<div class="loading"><div class="ring"></div></div>';
-const header = (title, sub, c, icon, action = '') => `<div class="ph c-${c}"><span class="shape lg">${ic(icon, 24)}</span><div><h1>${title}</h1>${sub ? `<p id="phSub">${sub}</p>` : '<p id="phSub"></p>'}</div>${action}</div>`;
+const header = (title, sub, c, icon, action = '', back = false) => `${back ? `<button class="back" data-action="go" data-tab="mehr">${ic('left', 18)} Mehr</button>` : ''}<div class="ph c-${c}"><span class="shape lg">${ic(icon, 24)}</span><div><h1>${title}</h1><p id="phSub">${sub || ''}</p></div>${action}</div>`;
+const emptyBox = (c, icon, title, text, extra = '') => `<div class="empty c-${c}"><span class="shape lg">${ic(icon, 24)}</span><b>${title}</b>${text}${extra}</div>`;
 
 /* ---------- Aktualisieren ---------- */
 let timer = null, tick = 0;
@@ -631,28 +853,27 @@ function startTimer() {
   timer = setInterval(() => {
     if (document.hidden || !API.on || $('#app').hidden) return;
     tick++;
-    if (state.tab === 'pinnwand' || tick % 4 === 0) loadMsgs(true);
-    if ((state.tab === 'listen' && tick % 2 === 0) || (state.tab === 'start' && tick % 4 === 0)) loadItems(true);
-    if ((state.tab === 'kalender' || state.tab === 'start') && tick % 10 === 0) loadTermine(true);
-    if ((state.tab === 'fotos' || state.tab === 'start') && tick % 10 === 0) loadFotos(true);
+    const t = state.tab;
+    if (t === 'pinnwand' || tick % 4 === 0) loadMsgs(true);
+    if ((t === 'listen' && tick % 2 === 0) || (t === 'start' && tick % 4 === 0)) loadItems(true);
+    if ((t === 'listen' && state.liste === 'putzplan' || t === 'start') && tick % 5 === 0) loadAufgaben(true);
+    if ((t === 'kalender' || t === 'start') && tick % 10 === 0) loadTermine(true);
+    if ((t === 'fotos' || t === 'start') && tick % 10 === 0) loadFotos(true);
+    if (tick % 10 === 0) loadMembers().then(() => { if (state.tab === 'start') fillDash(); }).catch(() => {});
+    if (t === 'essen' && tick % 10 === 0) loadEssen(true);
   }, 6000);
 }
 function stopTimer() { if (timer) clearInterval(timer); timer = null; }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || !API.on || $('#app').hidden) return;
-  clearBadge(); loadMsgs(true);
-  ({ start: () => loadDash(true), listen: () => loadItems(true), kalender: () => loadTermine(true), fotos: () => loadFotos(true) })[state.tab]?.();
+  clearBadge(); loadMsgs(true); LOADERS[state.tab]?.(true);
 });
 function clearBadge() { try { navigator.clearAppBadge && navigator.clearAppBadge(); } catch {} }
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 function loadErr(e, quiet) {
   if (e.silent) return;
-  if (e.setup) { gate(`<h1>Familie</h1><p class="lead">${esc(e.message)} Sag Matteo Bescheid.</p>`); return; }
+  if (e.setup) { if (!quiet) toast(e.message + ' Sag Matteo Bescheid.', 'warn'); return; }
   if (!quiet) toast(errMsg(e), 'bad');
-}
-async function loadMembers() {
-  const m = await API.rest('/familie_mitglieder?select=name&order=name');
-  state.members = (m || []).map(x => x.name);
 }
 
 /* ---------- Wetter (open-meteo.com) ---------- */
@@ -685,7 +906,7 @@ function weatherCard() {
 
 /* ---------- Übersicht ---------- */
 function loadDash(quiet) {
-  loadItems(quiet); loadTermine(quiet); loadFotos(quiet); loadMsgs(quiet); loadWeather();
+  loadItems(quiet); loadTermine(quiet); loadFotos(quiet); loadMsgs(quiet); loadWeather(); loadAufgaben(quiet); loadEssen(quiet); loadCountdowns(quiet);
 }
 function greeting() {
   const h = new Date().getHours();
@@ -703,26 +924,35 @@ function lastActive() {
   (state.termine || []).forEach(x => bump(x.von, x.erstellt));
   return t;
 }
+function nextBirthdays(days) {
+  return state.termine ? occurrences(todayIso(), isoDay(addDays(new Date(), days))).filter(o => o.t.jaehrlich) : [];
+}
 function fillDash() {
   const box = $('#dash'); if (!box) return;
   if (!state.items && !state.msgs) return;
   const items = state.items || [], open = l => items.filter(i => i.liste === l && !i.erledigt);
   const ein = open('einkauf'), todo = open('todo'), mine = todo.filter(i => i.fuer === state.me);
   const occ = state.termine ? occurrences(todayIso(), isoDay(addDays(new Date(), 30))) : [];
-  const heute = occ.filter(o => o.iso === todayIso()), next = occ[0], u = unread(), lastMsg = (state.msgs || [])[0];
+  const heute = occ.filter(o => o.iso === todayIso()), next = occ.find(o => !o.t.jaehrlich) || occ[0], u = unread(), lastMsg = (state.msgs || [])[0];
   const act = lastActive(), people = [...new Set([state.me, ...state.members])];
   const foto = (state.fotos || [])[0], fotoUrl = foto && URLS[foto.klein]?.[0];
   const w = state.weather, wc = w ? WMO(w.now.weather_code) : null;
+  const tasks = aufgabenAm(todayIso()), myTasks = tasks.filter(t => !t.done && (t.wer === state.me || !t.wer));
+  const essen = state.essen[todayIso()];
+  const cds = (state.countdowns || []).filter(c => c.datum >= todayIso()).slice(0, 4), bdays = nextBirthdays(21).filter(o => o.iso !== todayIso() || true).slice(0, 2);
   const chips = [
     w ? `<button class="dchip" data-action="refresh-weather"><span class="shape c-${wc[2]}">${ic(wc[1], 17)}</span>${Math.round(w.now.temperature_2m)}°</button>` : '',
     `<button class="dchip" data-action="go" data-tab="listen" data-liste="einkauf"><span class="shape c-amber">${ic('cart', 16)}</span>${ein.length ? ein.length + ' kaufen' : 'Nichts kaufen'}</button>`,
-    `<button class="dchip" data-action="go" data-tab="listen" data-liste="todo"><span class="shape c-blue">${ic('todo', 16)}</span>${mine.length ? mine.length + ' für dich' : todo.length + ' To-dos'}</button>`,
+    myTasks.length ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="putzplan"><span class="shape c-sky">${ic('sparkles', 16)}</span>${myTasks.length} dran</button>` : '',
+    `<button class="dchip" data-action="go" data-tab="listen" data-liste="todo"><span class="shape c-blue">${ic('todo', 16)}</span>${mine.length ? mine.length + ' für dich' : todo.length ? todo.length + ' To-dos' : 'Keine To-dos'}</button>`,
     `<button class="dchip" data-action="go" data-tab="kalender"><span class="shape c-orange">${ic('cal', 16)}</span>${heute.length ? heute.length + ' heute' : 'Heute frei'}</button>`,
     u ? `<button class="dchip" data-action="go" data-tab="pinnwand"><span class="shape c-green">${ic('chat', 16)}</span>${u} neu</button>` : ''
   ].join('');
-  const nextTxt = next ? `${esc(next.t.titel)}` : 'Nichts geplant';
+  const nextTxt = next ? esc(next.t.titel) : 'Nichts geplant';
   const nextSub = next ? `${esc(dayLabel(next.iso)[0])}${next.t.zeit ? ', ' + esc(next.t.zeit.slice(0, 5)) : ''}${next.t.ort ? ' · ' + esc(next.t.ort) : ''}` : 'Die nächsten 30 Tage sind frei.';
   const agenda = occ.filter(o => o.iso <= isoDay(addDays(new Date(), 1)));
+  const strip = [...bdays.map(o => { const n = dayDiff(new Date(), parseDay(o.iso)); return `<button class="tile c-pink" data-action="go" data-tab="kalender"><span class="e">🎂</span><span><b>${esc(o.t.titel)}</b><small>${n === 0 ? 'Heute!' : inDays(n)}${o.jahre > 0 ? ` · ${o.jahre} Jahre` : ''}</small></span></button>`; }),
+    ...cds.map(c => { const n = dayDiff(new Date(), parseDay(c.datum)); return `<button class="tile c-purple" data-action="go" data-tab="countdowns"><span class="top"><span class="e">${esc(c.emoji || '⏳')}</span><span class="num">${n}</span></span><span><b>${esc(c.titel)}</b><small>${n === 0 ? 'Heute! 🎉' : n === 1 ? 'Morgen' : 'Tage'}</small></span></button>`; })].join('');
   box.innerHTML = `<div class="chips">${chips}</div>
     ${weatherCard()}
     <div class="quick">
@@ -731,79 +961,148 @@ function fillDash() {
       <button class="qb c-pink" data-action="quick" data-q="foto"><span class="shape">${ic('camera')}</span>Foto</button>
       <button class="qb c-green" data-action="quick" data-q="nachricht"><span class="shape">${ic('chat')}</span>Nachricht</button>
     </div>
+    ${strip ? `<div class="cdstrip">${strip}</div>` : ''}
     <div class="tiles">
       <button class="tile c-amber" data-action="go" data-tab="listen" data-liste="einkauf"><span class="top"><span class="shape">${ic('cart')}</span><span class="num">${ein.length}</span></span><span><b>Einkaufsliste</b><small>${ein.length ? ein.slice(0, 4).map(i => esc(i.text)).join(', ') : 'Alles da'}</small></span><i class="bar"></i></button>
       <button class="tile c-blue" data-action="go" data-tab="listen" data-liste="todo"><span class="top"><span class="shape">${ic('todo')}</span><span class="num">${todo.length}</span></span><span><b>To-dos</b><small>${mine.length ? `${mine.length} für dich: ${esc(mine[0].text)}` : todo.length ? esc(todo[0].text) : 'Alles erledigt'}</small></span><i class="bar"></i></button>
+      <button class="tile wide c-lime" data-action="go" data-tab="essen"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic('utensils')}</span><span style="min-width:0"><b>${essen ? 'Heute: ' + esc(essen.gericht) : 'Was essen wir heute?'}</b><small>${essen ? (essen.koch ? esc(essen.koch) + ' kocht' : 'Essensplan') : 'Tipp hier und plan die Woche'}</small></span></span>${essen?.koch ? av(essen.koch, 'sm') : ''}</span><i class="bar"></i></button>
       <button class="tile wide c-orange" data-action="go" data-tab="kalender"><span class="top"><span style="display:flex;align-items:center;gap:12px;min-width:0"><span class="shape">${ic(next?.t.jaehrlich ? 'cake' : 'cal')}</span><span style="min-width:0"><b>${nextTxt}</b><small>${nextSub}</small></span></span>${next && next.iso === todayIso() ? '<span class="chip c-orange">Heute</span>' : ''}</span><i class="bar"></i></button>
       ${foto ? `<button class="tile wide photo c-pink" data-action="go" data-tab="fotos" style="background-image:url('${esc(fotoUrl || '')}')"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'} · zuletzt ${foto.von ? 'von ' + esc(foto.von) + ' ' : ''}${esc(rel(foto.erstellt))}</small></span></button>`
         : `<button class="tile wide c-pink" data-action="quick" data-q="foto"><span class="top"><span style="display:flex;align-items:center;gap:12px"><span class="shape">${ic('image')}</span><span><b>Fotos</b><small>Teil das erste Familienfoto</small></span></span></span><i class="bar"></i></button>`}
     </div>
+    ${tasks.length ? `<section class="card c-sky"><div class="card-h"><span class="shape">${ic('sparkles')}</span><span class="t"><b>Heute dran</b><small>Putzplan</small></span><button class="btn sm" data-action="go" data-tab="listen" data-liste="putzplan">Alle</button></div>
+      <div class="items" style="background:var(--card-2)">${tasks.map(aufgabeRow).join('')}</div></section>` : ''}
     <section class="card c-green"><div class="card-h"><span class="shape">${ic('chat')}</span><span class="t"><b>Pinnwand</b><small>${lastMsg ? (u ? u + ' neue Nachricht' + (u > 1 ? 'en' : '') : 'zuletzt ' + esc(rel(lastMsg.erstellt))) : 'Noch keine Nachrichten'}</small></span><button class="btn sm" data-action="go" data-tab="pinnwand">Öffnen</button></div>
-      ${lastMsg ? `<div class="msgs-mini">${state.msgs.slice(0, 2).map(m => `<div class="m">${av(m.von, 'sm')}<div style="min-width:0"><small>${esc(m.von || 'Jemand')} · ${esc(relShort(m.erstellt))}</small><p>${esc(m.text)}</p></div></div>`).join('')}</div>` : ''}</section>
+      ${lastMsg ? `<div class="msgs-mini">${state.msgs.slice(0, 2).map(m => `<div class="m">${av(m.von, 'sm')}<div style="min-width:0"><small>${esc(m.von || 'Jemand')} · ${esc(relShort(m.erstellt))}</small><p>${m.optionen ? '📊 ' : ''}${esc(m.text)}</p></div></div>`).join('')}</div>` : ''}</section>
     <section class="card c-orange"><div class="card-h"><span class="shape">${ic('cal')}</span><span class="t"><b>Heute & morgen</b><small>${agenda.length ? agenda.length + ' Termin' + (agenda.length > 1 ? 'e' : '') : 'Nichts eingetragen'}</small></span><button class="btn sm" data-action="quick" data-q="termin">${ic('plus', 15)} Termin</button></div>
       ${agenda.length ? `<div class="evs" style="background:var(--card-2)">${agenda.map(evRow).join('')}</div>` : ''}</section>
-    <section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>${people.length} ${people.length === 1 ? 'Person' : 'Personen'}</small></span></div>
-      <div class="people">${people.map(n => `<div class="person">${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b><small>${n === state.me ? 'du' : act[n] ? esc(relShort(act[n])) : '–'}</small></div>`).join('')}</div></section>
+    <section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>Tipp auf dich, um deinen Status zu setzen</small></span></div>
+      <div class="people">${people.map(n => { const s = statusOf(n); return `<div class="person ${n === state.me ? 'me-p' : ''}" ${n === state.me ? 'data-action="status" role="button" tabindex="0"' : ''}>${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b>${s ? `<span class="st">${s.emoji} ${esc(s.label)}</span>` : `<small>${n === state.me ? 'Status setzen' : act[n] ? esc(relShort(act[n])) : '–'}</small>`}</div>`; }).join('')}</div></section>
     ${(state.fotos || []).length > 1 ? `<p class="sub-h">Neueste Fotos</p><div class="strip">${state.fotos.slice(0, 12).map((f, i) => `<button data-action="open-foto" data-i="${i}" aria-label="Foto öffnen"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}`;
 }
+function statusSheet() {
+  const cur = state.mem[state.me]?.status;
+  openSheet(`<div class="sheet-h c-${colorOf(state.me)}">${av(state.me)}<h3>Wo bist du?</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <div class="stgrid c-${colorOf(state.me)}">${STATUS.map(s => `<button class="stb ${cur === s[0] && statusOf(state.me) ? 'on' : ''}" data-action="set-status" data-s="${s[0]}"><span class="e">${s[1]}</span>${s[2]}</button>`).join('')}</div>
+    <p class="hint" style="margin:12px 0 14px">Die anderen sehen das auf der Startseite. Nach 24 Stunden verschwindet der Status von selbst (Urlaub nach 14 Tagen).</p>
+    <button class="btn" style="width:100%" data-action="set-status" data-s="">Kein Status</button>`);
+}
+async function setStatus(s) {
+  try { await patchMe({ status: s || null, status_seit: s ? new Date().toISOString() : null }); closeSheet(); toast(s ? 'Status gesetzt.' : 'Status entfernt.', 'ok'); fill(); }
+  catch (e) { loadErr(e); }
+}
 
-/* ---------- Listen ---------- */
+/* ---------- Listen: Einkauf (nach Regal), To-dos ---------- */
 async function loadItems(quiet) {
   try {
     const since = new Date(Date.now() - 14 * 864e5).toISOString();
     const r = await API.rest(`/familie_eintraege?select=*&order=erstellt.asc&or=${encodeURIComponent(`(erledigt.is.false,erledigt_am.gte."${since}")`)}`);
     if (quiet && same(r, state.items)) return;
+    if (quiet && $('#sheetWrap').classList.contains('open') && state.tab === 'listen') { state.items = r || []; return; }
     state.items = r || [];
-    if (state.tab === 'listen') fillItems();
+    if (state.tab === 'listen' && state.liste !== 'putzplan') fillItems();
     if (state.tab === 'start') fillDash();
   } catch (e) { loadErr(e, quiet); }
 }
+const norm = s => String(s || '').toLowerCase().replace(/[^\p{L}\p{N} ]/gu, ' ').replace(/\s+/g, ' ').trim();
+/* Rate das Regal: gelernt > ganzes Wort > Wortende (Haupt­wort bei Zusammensetzungen) > irgendwo im Wort */
+function guessKat(text) {
+  const n = norm(text), learned = store.get('katLernen', {});
+  if (learned[n]) return learned[n];
+  let best = null, score = 0;
+  for (const word of n.split(' ')) {
+    for (const [kw, k] of KAT_LIST) {
+      let s = 0;
+      if (word === kw) s = 300 + kw.length;
+      else if (kw.length >= 3 && word.endsWith(kw)) s = 200 + kw.length;
+      else if (kw.length >= 4 && word.startsWith(kw)) s = 100 + kw.length;
+      else if (kw.length >= 5 && word.includes(kw)) s = 50 + kw.length;
+      if (s > score) { score = s; best = k; }
+    }
+  }
+  return best || 'sonst';
+}
+/* Dosen, Gläser und Packungen landen im Vorrat, wenn nichts Gelerntes dagegen spricht */
+const katFor = p => { const k = guessKat(p.text); return !store.get('katLernen', {})[norm(p.text)] && /dose|glas|gläser|pkg|packung|pck|pkt/i.test(p.menge || '') && (k === 'obst' || k === 'sonst') ? 'vorrat' : k; };
+const UNIT = '(?:x|×|stk\\.?|stück|g|gr|kg|dag|l|ml|cl|pkg\\.?|pck\\.?|packung(?:en)?|pkt\\.?|dosen?|flaschen?|bund|becher|gläser|glas|kisten?|tafeln?|rollen?|beutel|sackerl|netze?)';
+const RE_VORNE = new RegExp(`^(\\d+(?:[.,]\\d+)?|½|¼)\\s*(${UNIT})?\\.?\\s+(.+)$`, 'i');
+const RE_HINTEN = new RegExp(`^(.+?)\\s+(\\d+(?:[.,]\\d+)?)\\s*(${UNIT})?$`, 'i');
+function parseMenge(raw) {
+  const s = raw.trim().replace(/\s+/g, ' ');
+  let m = s.match(RE_VORNE), num, unit, text;
+  if (m) [, num, unit, text] = m; else if ((m = s.match(RE_HINTEN))) [, text, num, unit] = m; else return { text: s, menge: null };
+  unit = (unit || '').replace(/\.$/, '');
+  const menge = !unit || /^(x|×)$/i.test(unit) ? `${num}×` : `${num} ${unit}`;
+  return { text: text.trim(), menge };
+}
 function listenShell() {
-  const todo = state.liste === 'todo', c = LIST_C[state.liste];
-  return `${header('Listen', '', c, todo ? 'todo' : 'cart')}
-    <div class="seg" id="seg"></div>
-    <form class="addbar c-${c}" id="addForm">
-      <input id="addText" class="input" maxlength="200" placeholder="${todo ? 'Was ist zu tun?' : 'Was fehlt?'}" autocomplete="off" enterkeyhint="done" aria-label="Neuer Eintrag">
-      ${todo ? `<select id="addFuer" class="input" aria-label="Für wen"><option value="">Alle</option>${state.members.map(n => `<option ${store.get('fuer') === n ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}
+  const l = LISTS.find(x => x[0] === state.liste) || LISTS[0], c = l[3];
+  const add = state.liste === 'putzplan'
+    ? `<div class="addbar c-sky"><button class="btn btn-primary" style="width:auto;padding:0 18px;flex:1" data-action="new-aufgabe">${ic('plus', 18)} Neue Aufgabe</button></div>`
+    : `<form class="addbar c-${c}" id="addForm">
+      <input id="addText" class="input" maxlength="200" placeholder="${state.liste === 'todo' ? 'Was ist zu tun?' : 'Was fehlt? z. B. 2 Milch'}" autocomplete="off" enterkeyhint="done" aria-label="Neuer Eintrag">
+      ${state.liste === 'todo' ? `<select id="addFuer" class="input" aria-label="Für wen"><option value="">Alle</option>${state.members.map(n => `<option ${store.get('fuer') === n ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}
       <button class="btn btn-primary icon" aria-label="Hinzufügen">${ic('plus', 22)}</button>
-    </form>
-    <div id="items" class="c-${c}">${state.items ? '' : spinner}</div>`;
+    </form>`;
+  return `${header('Listen', '', c, l[2])}<div class="seg" id="seg"></div>${add}<div id="items" class="c-${c}">${(state.liste === 'putzplan' ? state.aufgaben : state.items) ? '' : spinner}</div>`;
 }
 function fillSeg() {
-  const n = l => (state.items || []).filter(i => i.liste === l && !i.erledigt).length;
+  const n = l => l === 'putzplan' ? aufgabenAm(todayIso()).filter(t => !t.done).length : (state.items || []).filter(i => i.liste === l && !i.erledigt).length;
   const s = $('#seg'); if (!s) return;
-  s.innerHTML = [['einkauf', 'Einkauf', 'cart'], ['todo', 'To-dos', 'todo']].map(([id, l, i]) => `<button class="seg-b c-${LIST_C[id]} ${state.liste === id ? 'on' : ''}" data-action="liste" data-liste="${id}">${ic(i, 17)}${l}${n(id) ? ` <span class="n">${n(id)}</span>` : ''}</button>`).join('');
-  const sub = $('#phSub'); if (sub) { const k = n(state.liste); sub.textContent = state.liste === 'todo' ? (k ? `${k} offen` : 'Alles erledigt') : (k ? `${k} ${k === 1 ? 'Sache' : 'Sachen'} zu kaufen` : 'Nichts zu kaufen'); }
+  s.innerHTML = LISTS.map(([id, l, i, c]) => `<button class="seg-b c-${c} ${state.liste === id ? 'on' : ''}" data-action="liste" data-liste="${id}">${ic(i, 17)}${l}${n(id) ? ` <span class="n">${n(id)}</span>` : ''}</button>`).join('');
+  const sub = $('#phSub'); if (!sub) return;
+  const k = n(state.liste);
+  sub.textContent = state.liste === 'todo' ? (k ? `${k} offen` : 'Alles erledigt') : state.liste === 'putzplan' ? (k ? `${k} heute fällig` : 'Heute nichts fällig') : (k ? `${k} ${k === 1 ? 'Sache' : 'Sachen'} zu kaufen` : 'Nichts zu kaufen');
 }
 function itemRow(i) {
   const meta = i.erledigt ? `<span>erledigt${i.erledigt_von ? ' von ' + esc(i.erledigt_von) : ''}</span>` : `<span>${[i.von ? esc(i.von) : '', esc(rel(i.erstellt))].filter(Boolean).join(' · ')}</span>`;
-  const fuer = i.fuer && !i.erledigt ? `<span class="for c-${colorOf(i.fuer)}">${av(i.fuer)}${i.fuer === state.me ? 'für dich' : 'für ' + esc(i.fuer)}</span>` : '';
+  const fuer = i.fuer && !i.erledigt ? `<span class="who-chip c-${colorOf(i.fuer)}">${av(i.fuer)}${i.fuer === state.me ? 'für dich' : 'für ' + esc(i.fuer)}</span>` : '';
   return `<div class="item ${i.erledigt ? 'done' : ''}">
-    <button class="item-main" data-action="toggle" data-id="${esc(i.id)}" aria-pressed="${i.erledigt}"><span class="tick">${ic('check', 16)}</span><span class="t"><span>${esc(i.text)}</span><small>${fuer}${meta}</small></span></button>
+    <button class="tickb" data-action="toggle" data-id="${esc(i.id)}" aria-pressed="${i.erledigt}" aria-label="„${esc(i.text)}“ ${i.erledigt ? 'wieder offen' : 'abhaken'}"><span class="tick">${ic('check', 16)}</span></button>
+    <button class="item-main text" data-action="edit-item" data-id="${esc(i.id)}"><span class="t"><span>${i.menge ? `<span class="menge">${esc(i.menge)}</span>` : ''}${esc(i.text)}</span><small>${fuer}${meta}</small></span></button>
     <button class="ghost" data-action="del-item" data-id="${esc(i.id)}" aria-label="„${esc(i.text)}“ löschen">${ic('x', 18)}</button></div>`;
 }
 function fillItems() {
   fillSeg();
+  if (state.liste === 'putzplan') return fillAufgaben();
   const box = $('#items'); if (!box || !state.items) return;
   const mine = state.items.filter(i => i.liste === state.liste);
   let open = mine.filter(i => !i.erledigt);
-  if (state.liste === 'todo') open = [...open.filter(i => i.fuer === state.me), ...open.filter(i => i.fuer !== state.me)];
   const done = mine.filter(i => i.erledigt).sort((a, b) => (b.erledigt_am || '').localeCompare(a.erledigt_am || ''));
   const todo = state.liste === 'todo';
-  box.innerHTML = (open.length ? `<div class="items">${open.map(itemRow).join('')}</div>`
-    : `<div class="empty"><span class="shape lg">${ic(todo ? 'todo' : 'cart', 24)}</span><b>${todo ? 'Alles erledigt' : 'Nichts zu kaufen'}</b>${todo ? 'Schreib oben, was zu tun ist – und für wen.' : 'Schreib oben, was fehlt. Die anderen sehen es sofort.'}</div>`)
-    + (done.length ? `<details class="done-sec" ${state.showDone ? 'open' : ''}><summary>${ic('chev', 16)} Erledigt (${done.length})<span class="spacer"></span><button class="btn sm" data-action="clear-done">${ic('trash', 15)} Leeren</button></summary><div class="items">${done.map(itemRow).join('')}</div></details>` : '');
+  let html;
+  if (!open.length) html = emptyBox(LIST_C[state.liste], todo ? 'todo' : 'cart', todo ? 'Alles erledigt' : 'Nichts zu kaufen', todo ? 'Schreib oben, was zu tun ist – und für wen.' : 'Schreib oben, was fehlt – z. B. „2 Milch“ oder „500 g Mehl“. Es landet automatisch im richtigen Regal.');
+  else if (todo) { open = [...open.filter(i => i.fuer === state.me), ...open.filter(i => i.fuer !== state.me)]; html = `<div class="items">${open.map(itemRow).join('')}</div>`; }
+  else html = KATS.map(([k, e, l]) => { const g = open.filter(i => (i.kategorie || 'sonst') === k); return g.length ? `<p class="kat-h"><span class="e">${e}</span>${l}<span class="n">${g.length}</span></p><div class="items">${g.map(itemRow).join('')}</div>` : ''; }).join('');
+  box.innerHTML = html + (done.length ? `<details class="done-sec" ${state.showDone ? 'open' : ''}><summary>${ic('chev', 16)} Erledigt (${done.length})<span class="spacer"></span><button class="btn sm" data-action="clear-done">${ic('trash', 15)} Leeren</button></summary><div class="items">${done.map(itemRow).join('')}</div></details>` : '');
   const d = $('details.done-sec', box); if (d) d.addEventListener('toggle', () => { state.showDone = d.open; });
 }
 async function addItem() {
-  const inp = $('#addText'), text = inp.value.trim(); if (!text || !state.items) { inp.focus(); return; }
+  const inp = $('#addText'), raw = inp.value.trim(); if (!raw || !state.items) { inp.focus(); return; }
   const fuer = state.liste === 'todo' ? ($('#addFuer')?.value || null) : null;
   if (state.liste === 'todo') store.set('fuer', fuer);
+  const p = state.liste === 'einkauf' ? parseMenge(raw) : { text: raw, menge: null };
+  const row = { liste: state.liste, text: p.text, menge: p.menge, kategorie: state.liste === 'einkauf' ? katFor(p) : null, von: state.me, fuer };
   inp.value = ''; inp.focus();
-  const tmp = { id: 'tmp' + Date.now(), liste: state.liste, text, von: state.me, fuer, erledigt: false, erstellt: new Date().toISOString() };
+  const tmp = { id: 'tmp' + Date.now(), ...row, erledigt: false, erstellt: new Date().toISOString() };
   state.items.push(tmp); fillItems();
-  try { const row = await insert('familie_eintraege', { liste: state.liste, text, von: state.me, fuer }); Object.assign(tmp, row); fillItems(); }
-  catch (e) { state.items = state.items.filter(i => i !== tmp); fillItems(); inp.value = inp.value || text; loadErr(e); }
+  try { Object.assign(tmp, await insert('familie_eintraege', row)); fillItems(); }
+  catch (e) { state.items = state.items.filter(i => i !== tmp); fillItems(); inp.value = inp.value || raw; loadErr(e); }
+}
+/* Mehrere Zutaten auf die Einkaufsliste (doppelte überspringen) */
+async function addToShopping(lines) {
+  if (!state.items) await loadItems();
+  const have = new Set((state.items || []).filter(i => i.liste === 'einkauf' && !i.erledigt).map(i => norm(i.text)));
+  const rows = [];
+  for (const l of lines.map(x => x.replace(/^[-•*\s]+/, '').trim()).filter(Boolean)) {
+    const p = parseMenge(l); if (have.has(norm(p.text))) continue; have.add(norm(p.text));
+    rows.push({ liste: 'einkauf', text: p.text.slice(0, 200), menge: p.menge, kategorie: katFor(p), von: state.me, fuer: null });
+  }
+  if (!rows.length) { toast('Steht schon alles auf der Einkaufsliste.'); return 0; }
+  const saved = await insert('familie_eintraege', rows);
+  state.items = [...(state.items || []), ...(saved || [])];
+  toast(`${rows.length} ${rows.length === 1 ? 'Sache' : 'Sachen'} auf die Einkaufsliste gesetzt.`, 'ok');
+  return rows.length;
 }
 async function toggleItem(id) {
   const i = state.items.find(x => x.id === id); if (!i || String(id).startsWith('tmp')) return;
@@ -815,14 +1114,157 @@ async function toggleItem(id) {
 }
 async function delItem(id) {
   const i = state.items.find(x => x.id === id); if (!i) return;
-  state.items = state.items.filter(x => x !== i); fillItems();
+  state.items = state.items.filter(x => x !== i); fillItems(); closeSheet();
   try { await remove('familie_eintraege', id); }
   catch (e) { state.items.push(i); fillItems(); loadErr(e); }
+}
+function itemSheet(id) {
+  const i = state.items.find(x => x.id === id); if (!i || String(id).startsWith('tmp')) return;
+  const ein = i.liste === 'einkauf', c = LIST_C[i.liste];
+  openSheet(`<div class="sheet-h c-${c}"><span class="shape">${ic(ein ? 'cart' : 'todo')}</span><h3>${ein ? 'Einkauf' : 'To-do'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="itemForm" class="c-${c}">
+      <div class="${ein ? 'grid2' : ''}" style="${ein ? 'grid-template-columns:minmax(0,2fr) minmax(0,1fr)' : ''}">
+        <div class="field"><label for="iText">Was?</label><input id="iText" class="input" maxlength="200" required value="${esc(i.text)}"></div>
+        ${ein ? `<div class="field"><label for="iMenge">Menge</label><input id="iMenge" class="input" maxlength="30" value="${esc(i.menge || '')}" placeholder="z. B. 2×"></div>` : ''}
+      </div>
+      ${ein ? `<div class="field" style="margin-bottom:6px"><label>Regal</label></div><div class="chipsel c-amber" id="katSel">${KATS.map(([k, e, l]) => `<button type="button" class="${(i.kategorie || 'sonst') === k ? 'on' : ''}" data-k="${k}">${e} ${l}</button>`).join('')}</div>`
+        : `<div class="field"><label for="iFuer">Für wen?</label><select id="iFuer" class="input"><option value="">Alle</option>${state.members.map(n => `<option ${n === i.fuer ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>`}
+      <p class="hint" style="margin:0 0 16px">Eingetragen${i.von ? ' von ' + esc(i.von) : ''} · ${esc(rel(i.erstellt))}</p>
+      <div class="sheet-actions"><button type="button" class="btn btn-danger" data-action="del-item" data-id="${esc(i.id)}">${ic('trash', 17)} Löschen</button><span class="grow"></span><button class="btn btn-primary">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  $('#katSel')?.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if (!b) return; $$('#katSel button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#itemForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const row = { text: $('#iText').value.trim() };
+    if (!row.text) return;
+    if (ein) { row.menge = $('#iMenge').value.trim() || null; row.kategorie = $('#katSel button.on')?.dataset.k || 'sonst'; }
+    else row.fuer = $('#iFuer').value || null;
+    try {
+      if (ein && row.kategorie !== (i.kategorie || 'sonst')) { const l = store.get('katLernen', {}); l[norm(row.text)] = row.kategorie; store.set('katLernen', l); }
+      Object.assign(i, await patch('familie_eintraege', i.id, row)); closeSheet(); fillItems();
+    } catch (err) { loadErr(err); }
+  });
 }
 async function clearDone() {
   const n = state.items.filter(i => i.liste === state.liste && i.erledigt).length;
   if (!n || !confirm(`${n} erledigte${n === 1 ? 'n Eintrag' : ' Einträge'} endgültig löschen?`)) return;
   try { await API.rest(`/familie_eintraege?liste=eq.${state.liste}&erledigt=is.true`, { method: 'DELETE' }); state.items = state.items.filter(i => !(i.liste === state.liste && i.erledigt)); fillItems(); }
+  catch (e) { loadErr(e); }
+}
+
+/* ---------- Listen: Putzplan (wiederkehrende Aufgaben, reihum) ---------- */
+async function loadAufgaben(quiet) {
+  try {
+    const [a, l] = await Promise.all([
+      API.rest('/familie_aufgaben?select=*&order=erstellt.asc'),
+      API.rest(`/familie_aufgaben_log?select=*&datum=gte.${isoDay(addDays(new Date(), -10))}`)
+    ]);
+    if (quiet && same([a, l], [state.aufgaben, state.alog])) return;
+    state.aufgaben = a || []; state.alog = l || [];
+    if (state.tab === 'listen' && state.liste === 'putzplan' && !$('#sheetWrap').classList.contains('open')) fillItems();
+    if (state.tab === 'start') fillDash();
+    if (state.tab === 'mehr') fillHub();
+  } catch (e) { loadErr(e, quiet); }
+}
+/* gleich wie public.mapq_aufgabe_index in supabase/familie.sql */
+function aufgabeIndex(a, d) {
+  const start = parseDay(a.start); if (d < start) return null;
+  if (a.rhythmus === 'taeglich') return dayDiff(start, d);
+  if (a.rhythmus === 'woechentlich' || a.rhythmus === 'zweiwoechentlich') {
+    const erst = addDays(start, ((a.wochentag || isodow(start)) - isodow(start) + 7) % 7);
+    if (d < erst) return null;
+    const diff = dayDiff(erst, d), step = a.rhythmus === 'woechentlich' ? 7 : 14;
+    return diff % step === 0 ? diff / step : null;
+  }
+  const lastOf = x => new Date(x.getFullYear(), x.getMonth() + 1, 0).getDate();
+  const tag = a.monatstag || start.getDate();
+  if (d.getDate() !== Math.min(tag, lastOf(d))) return null;
+  let diff = (d.getFullYear() * 12 + d.getMonth()) - (start.getFullYear() * 12 + start.getMonth());
+  if (start.getDate() > Math.min(tag, lastOf(start))) diff--;
+  return diff;
+}
+function aufgabenAm(iso) {
+  const d = parseDay(iso), out = [];
+  for (const a of state.aufgaben || []) {
+    const idx = aufgabeIndex(a, d); if (idx === null) continue;
+    const p = a.personen || [], wer = p.length ? p[idx % p.length] : null;
+    const log = state.alog.find(l => l.aufgabe_id === a.id && l.datum === iso);
+    out.push({ a, iso, wer, done: !!log, doneBy: log?.von });
+  }
+  return out;
+}
+const rhythmusText = a => a.rhythmus === 'taeglich' ? 'täglich' : a.rhythmus === 'monatlich' ? `jeden Monat am ${a.monatstag || parseDay(a.start).getDate()}.` : `${a.rhythmus === 'zweiwoechentlich' ? 'alle 2 Wochen' : 'jeden'} ${WD_LONG[(a.wochentag || isodow(parseDay(a.start))) - 1]}`;
+function aufgabeRow(o) {
+  const late = o.iso < todayIso() && !o.done;
+  const who = o.wer ? `<span class="who-chip c-${colorOf(o.wer)}">${av(o.wer)}${o.wer === state.me ? 'du' : esc(o.wer)}</span>` : '<span class="who-chip c-grey">alle</span>';
+  return `<div class="item c-sky ${o.done ? 'done' : ''}">
+    <button class="tickb" data-action="toggle-aufgabe" data-id="${esc(o.a.id)}" data-d="${o.iso}" aria-pressed="${o.done}" aria-label="„${esc(o.a.titel)}“ ${o.done ? 'wieder offen' : 'erledigt'}"><span class="tick">${ic('check', 16)}</span></button>
+    <button class="item-main text" data-action="edit-aufgabe" data-id="${esc(o.a.id)}"><span class="t"><span>${esc(o.a.titel)}</span><small>${who}<span class="${late ? 'overdue' : ''}">${late ? 'überfällig · ' + esc(dayLabel(o.iso)[0]) : o.done ? 'erledigt' + (o.doneBy ? ' von ' + esc(o.doneBy) : '') : esc(rhythmusText(o.a))}</span></small></span></button></div>`;
+}
+function fillAufgaben() {
+  const box = $('#items'); if (!box || !state.aufgaben) return;
+  if (!state.aufgaben.length) { box.innerHTML = emptyBox('sky', 'sparkles', 'Noch kein Putzplan', 'Leg wiederkehrende Aufgaben an – z. B. „Müll raus“ jeden Dienstag, reihum zwischen euch. Wer dran ist, bekommt morgens eine Erinnerung.'); return; }
+  const t = todayIso();
+  const late = [1, 2, 3].flatMap(n => aufgabenAm(isoDay(addDays(new Date(), -n)))).filter(o => !o.done);
+  const heute = aufgabenAm(t);
+  let html = '';
+  if (late.length) html += `<p class="kat-h overdue"><span class="e">⚠️</span>Überfällig</p><div class="items">${late.map(aufgabeRow).join('')}</div>`;
+  html += `<p class="kat-h"><span class="e">📅</span>Heute</p>${heute.length ? `<div class="items">${heute.map(aufgabeRow).join('')}</div>` : '<p class="hint" style="margin:4px 6px 0">Heute ist nichts dran.</p>'}`;
+  for (let n = 1; n <= 6; n++) {
+    const iso = isoDay(addDays(new Date(), n)), list = aufgabenAm(iso);
+    if (list.length) html += `<p class="kat-h">${esc(dayLabel(iso)[0])} <span style="font-weight:500">${esc(dayLabel(iso)[1])}</span></p><div class="items">${list.map(aufgabeRow).join('')}</div>`;
+  }
+  html += `<p class="sub-h">Alle Aufgaben</p><div class="evs">${state.aufgaben.map(a => `<button class="ev c-sky" data-action="edit-aufgabe" data-id="${esc(a.id)}"><span class="shape">${ic('sparkles', 18)}</span><span class="t"><b>${esc(a.titel)}</b><small>${esc(rhythmusText(a))}${(a.personen || []).length ? ' · reihum: ' + a.personen.map(esc).join(' → ') : ' · alle'}${a.erinnerung ? ' · 🔔' : ''}</small></span></button>`).join('')}</div>`;
+  box.innerHTML = html;
+}
+async function toggleAufgabe(id, iso) {
+  const has = state.alog.find(l => l.aufgabe_id === id && l.datum === iso);
+  try {
+    if (has) { await API.rest(`/familie_aufgaben_log?aufgabe_id=eq.${id}&datum=eq.${iso}`, { method: 'DELETE' }); state.alog = state.alog.filter(l => l !== has); }
+    else { const r = await upsert('familie_aufgaben_log', 'aufgabe_id,datum', { aufgabe_id: id, datum: iso, von: state.me }); state.alog.push(r || { aufgabe_id: id, datum: iso, von: state.me }); }
+    fill(); fillSeg();
+  } catch (e) { loadErr(e); }
+}
+function aufgabeSheet(a) {
+  const e = a || { titel: '', rhythmus: 'woechentlich', wochentag: isodow(new Date()), monatstag: new Date().getDate(), start: todayIso(), personen: [], erinnerung: true };
+  let pers = [...(e.personen || [])];
+  openSheet(`<div class="sheet-h c-sky"><span class="shape">${ic('sparkles')}</span><h3>${a ? 'Aufgabe' : 'Neue Aufgabe'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="aufForm" class="c-sky">
+      <div class="field"><label for="aTitel">Was?</label><input id="aTitel" class="input" maxlength="120" required value="${esc(e.titel)}" placeholder="z. B. Müll raus, Bad putzen, Rasen mähen"></div>
+      <div class="field" style="margin-bottom:6px"><label>Wie oft?</label></div>
+      <div class="chipsel" id="rhSel">${RHYTHMUS.map(([k, l]) => `<button type="button" data-r="${k}" class="${e.rhythmus === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="grid2">
+        <div class="field" id="wdF"><label for="aWd">Wochentag</label><select id="aWd" class="input">${WD_LONG.map((w, i) => `<option value="${i + 1}" ${(e.wochentag || 1) === i + 1 ? 'selected' : ''}>${w}</option>`).join('')}</select></div>
+        <div class="field" id="mtF"><label for="aMt">Tag im Monat</label><input id="aMt" class="input" type="number" min="1" max="31" value="${esc(e.monatstag || 1)}"></div>
+        <div class="field"><label for="aStart">Ab</label><input id="aStart" class="input" type="date" value="${esc(e.start)}"></div>
+      </div>
+      <div class="field" style="margin-bottom:6px"><label>Wer? (reihum, in der Reihenfolge, in der du tippst)</label></div>
+      <div class="chipsel" id="perSel"></div>
+      <label class="switch-row"><span><b>Erinnerung</b><small>Am Tag um 8 Uhr an die Person, die dran ist</small></span><input type="checkbox" class="switch" id="aEri" ${e.erinnerung ? 'checked' : ''}></label>
+      <div class="sheet-actions">${a ? `<button type="button" class="btn btn-danger" data-action="del-aufgabe" data-id="${esc(a.id)}">${ic('trash', 17)} Löschen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="aSave">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  const rh = () => $('#rhSel button.on')?.dataset.r || 'woechentlich';
+  const vis = () => { $('#wdF').hidden = !/woechentlich/.test(rh()); $('#mtF').hidden = rh() !== 'monatlich'; };
+  const drawPers = () => { $('#perSel').innerHTML = state.members.map(n => { const i = pers.indexOf(n); return `<button type="button" class="c-${colorOf(n)} ${i >= 0 ? 'on' : ''}" data-n="${esc(n)}">${i >= 0 ? `<span class="ord">${i + 1}</span>` : ''}${esc(n)}</button>`; }).join('') || '<p class="hint">Noch keine Familienmitglieder.</p>'; };
+  vis(); drawPers();
+  $('#rhSel').addEventListener('click', ev => { const b = ev.target.closest('button[data-r]'); if (!b) return; $$('#rhSel button').forEach(x => x.classList.toggle('on', x === b)); vis(); });
+  $('#perSel').addEventListener('click', ev => { const b = ev.target.closest('button[data-n]'); if (!b) return; const n = b.dataset.n; pers = pers.includes(n) ? pers.filter(x => x !== n) : [...pers, n]; drawPers(); });
+  $('#aufForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const r = rh(), row = { titel: $('#aTitel').value.trim(), rhythmus: r, wochentag: /woechentlich/.test(r) ? Number($('#aWd').value) : null, monatstag: r === 'monatlich' ? Math.min(31, Math.max(1, Number($('#aMt').value) || 1)) : null, start: $('#aStart').value || todayIso(), personen: pers, erinnerung: $('#aEri').checked };
+    if (!row.titel) return;
+    $('#aSave').disabled = true;
+    try {
+      if (a) Object.assign(a, await patch('familie_aufgaben', a.id, row));
+      else state.aufgaben.push(await insert('familie_aufgaben', { ...row, von: state.me }));
+      closeSheet(); fill(); toast('Gespeichert.', 'ok');
+    } catch (err) { $('#aSave').disabled = false; loadErr(err); }
+  });
+  if (!a) setTimeout(() => $('#aTitel')?.focus(), 80);
+}
+async function delAufgabe(id) {
+  const a = state.aufgaben.find(x => x.id === id); if (!a || !confirm(`„${a.titel}“ aus dem Putzplan löschen?`)) return;
+  try { await remove('familie_aufgaben', id); state.aufgaben = state.aufgaben.filter(x => x !== a); closeSheet(); fill(); }
   catch (e) { loadErr(e); }
 }
 
@@ -833,7 +1275,7 @@ function hints() {
       <div class="row-actions"><button class="btn sm" data-action="hide-install">Verstanden</button></div></div></div>`;
   }
   if (wpSupported() && Notification.permission === 'default' && state.wp.info?.vapid_public && !state.wp.mine && !store.get('hidePush')) {
-    return `<div class="banner c-purple"><span class="shape">${ic('bell')}</span><div class="body"><b>Benachrichtigungen einschalten?</b><p>Dann meldet sich dein Handy, wenn jemand etwas einträgt, ein Foto teilt oder auf die Pinnwand schreibt.</p>
+    return `<div class="banner c-purple"><span class="shape">${ic('bell')}</span><div class="body"><b>Benachrichtigungen einschalten?</b><p>Dann meldet sich dein Handy, wenn jemand etwas einträgt – und es erinnert dich an Termine und an den Putzplan.</p>
       <div class="row-actions"><button class="btn sm btn-primary" data-action="wp-enable">${ic('bell', 15)} Einschalten</button><button class="btn sm" data-action="hide-push">Später</button></div></div></div>`;
   }
   return '';
@@ -886,7 +1328,7 @@ function fillCal() {
   const sub = $('#phSub'); if (sub && state.termine) { const n = occurrences(t, isoDay(addDays(new Date(), 6))).length; sub.textContent = n ? `${n} Termin${n > 1 ? 'e' : ''} diese Woche` : 'Diese Woche frei'; }
 }
 function evRow(o) {
-  const t = o.t, meta = [t.ort ? esc(t.ort) : '', t.fuer ? (t.fuer === state.me ? 'für dich' : 'für ' + esc(t.fuer)) : '', t.jaehrlich ? (o.jahre > 0 ? `${o.jahre} Jahre` : 'jedes Jahr') : '', t.notiz ? esc(t.notiz.split('\n')[0]).slice(0, 60) : ''].filter(Boolean).join(' · ');
+  const t = o.t, meta = [t.ort ? esc(t.ort) : '', t.fuer ? (t.fuer === state.me ? 'für dich' : 'für ' + esc(t.fuer)) : '', t.jaehrlich ? (o.jahre > 0 ? `${o.jahre} Jahre` : 'jedes Jahr') : '', t.erinnerung != null ? '🔔' : '', t.notiz ? esc(t.notiz.split('\n')[0]).slice(0, 60) : ''].filter(Boolean).join(' · ');
   const c = t.jaehrlich ? 'pink' : t.fuer ? colorOf(t.fuer) : 'orange';
   return `<button class="ev c-${c}" data-action="edit-termin" data-id="${esc(t.id)}"><span class="shape">${ic(t.jaehrlich ? 'cake' : 'cal', 19)}</span><span class="t"><b>${esc(t.titel)}</b>${meta ? `<small>${meta}</small>` : ''}</span><span class="ev-time ${t.zeit ? '' : 'all'}">${t.zeit ? esc(t.zeit.slice(0, 5)) : 'ganztags'}</span></button>`;
 }
@@ -900,15 +1342,20 @@ function fillCalList() {
     return;
   }
   const occ = occurrences(todayIso(), isoDay(addDays(new Date(), 60)));
-  if (!occ.length) { box.innerHTML = `<div class="empty"><span class="shape lg">${ic('cal', 24)}</span><b>Nichts geplant</b>In den nächsten zwei Monaten steht nichts an. Tipp auf „Termin“, um etwas einzutragen – auch Geburtstage.</div>`; return; }
+  if (!occ.length) { box.innerHTML = emptyBox('orange', 'cal', 'Nichts geplant', 'In den nächsten zwei Monaten steht nichts an. Tipp auf „Termin“, um etwas einzutragen – auch Geburtstage.'); return; }
   let html = '', last = '', group = [];
   const flush = () => { if (group.length) { const [a, b] = dayLabel(last); html += `<div class="day-h"><b>${esc(a)}</b>${esc(b)}</div><div class="evs">${group.map(evRow).join('')}</div>`; group = []; } };
   occ.forEach(o => { if (o.iso !== last) { flush(); last = o.iso; } group.push(o); });
   flush();
   box.innerHTML = html;
 }
+function eriOptions(hasTime, cur) {
+  const list = hasTime ? ERI_ZEIT : ERI_TAG, v = cur == null ? '' : String(cur);
+  const known = list.some(([k]) => k === v);
+  return list.map(([k, l]) => `<option value="${k}" ${k === v ? 'selected' : ''}>${l}</option>`).join('') + (known ? '' : `<option value="${esc(v)}" selected>${esc(v)} Min. vorher</option>`);
+}
 function terminSheet(t, day) {
-  const e = t || { titel: '', datum: day || state.day || todayIso(), zeit: '', ort: '', fuer: '', notiz: '', jaehrlich: false };
+  const e = t || { titel: '', datum: day || state.day || todayIso(), zeit: '', ort: '', fuer: '', notiz: '', jaehrlich: false, erinnerung: null };
   openSheet(`<div class="sheet-h c-orange"><span class="shape">${ic('cal')}</span><h3>${t ? 'Termin' : 'Neuer Termin'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
     <form id="terminForm" class="c-orange">
       <div class="field"><label for="tTitel">Was?</label><input id="tTitel" class="input" maxlength="120" required value="${esc(e.titel)}" placeholder="z. B. Zahnarzt, Omas Geburtstag"></div>
@@ -920,14 +1367,18 @@ function terminSheet(t, day) {
         <div class="field"><label for="tOrt">Wo?</label><input id="tOrt" class="input" maxlength="120" value="${esc(e.ort || '')}" placeholder="optional"></div>
         <div class="field"><label for="tFuer">Für wen?</label><select id="tFuer" class="input"><option value="">Alle</option>${[...new Set([...state.members, ...(e.fuer ? [e.fuer] : [])])].map(n => `<option ${n === e.fuer ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
       </div>
+      <div class="field"><label for="tEri">Erinnerung</label><select id="tEri" class="input">${eriOptions(!!e.zeit, e.erinnerung)}</select><small class="hint" id="tEriHint">Geht an ${e.fuer ? esc(e.fuer) : 'alle'} mit Benachrichtigungen.</small></div>
       <div class="field"><label for="tNotiz">Notiz</label><textarea id="tNotiz" class="input" maxlength="1000" rows="2" placeholder="optional">${esc(e.notiz || '')}</textarea></div>
-      <label class="switch-row c-pink"><span><b>Jedes Jahr</b><small>Für Geburtstage und Jahrestage – mit Geburtsjahr eingeben, dann steht das Alter dabei.</small></span><input type="checkbox" class="switch" id="tJahr" ${e.jaehrlich ? 'checked' : ''}></label>
+      <label class="switch-row c-pink"><span><b>Jedes Jahr</b><small>Für Geburtstage und Jahrestage – mit Geburtsjahr eingeben, dann steht das Alter dabei. Am Tag selbst kommt um 8 Uhr eine Nachricht.</small></span><input type="checkbox" class="switch" id="tJahr" ${e.jaehrlich ? 'checked' : ''}></label>
       ${t ? `<p class="hint" style="margin:-6px 0 16px">Eingetragen${t.von ? ' von ' + esc(t.von) : ''} · ${esc(rel(t.erstellt))}</p>` : ''}
       <div class="sheet-actions">${t ? `<button type="button" class="btn btn-danger" data-action="del-termin" data-id="${esc(t.id)}">${ic('trash', 17)} Löschen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="tSave">${ic('check', 18)} Speichern</button></div>
     </form>`);
+  $('#tZeit').addEventListener('change', () => { const v = $('#tEri').value; $('#tEri').innerHTML = eriOptions(!!$('#tZeit').value, v === '' ? null : null); });
+  $('#tFuer').addEventListener('change', () => { $('#tEriHint').textContent = `Geht an ${$('#tFuer').value || 'alle'} mit Benachrichtigungen.`; });
   $('#terminForm').addEventListener('submit', async ev => {
     ev.preventDefault();
-    const row = { titel: $('#tTitel').value.trim(), datum: $('#tDatum').value, zeit: $('#tZeit').value || null, ort: $('#tOrt').value.trim() || null, fuer: $('#tFuer').value || null, notiz: $('#tNotiz').value.trim() || null, jaehrlich: $('#tJahr').checked };
+    const er = $('#tEri').value;
+    const row = { titel: $('#tTitel').value.trim(), datum: $('#tDatum').value, zeit: $('#tZeit').value || null, ort: $('#tOrt').value.trim() || null, fuer: $('#tFuer').value || null, notiz: $('#tNotiz').value.trim() || null, jaehrlich: $('#tJahr').checked, erinnerung: er === '' ? null : Number(er) };
     if (!row.titel || !row.datum) return;
     $('#tSave').disabled = true;
     try {
@@ -942,7 +1393,7 @@ function terminSheet(t, day) {
       if (state.day) state.day = isoDay(d);
       fill();
       toast(t ? 'Termin gespeichert.' : 'Termin eingetragen.', 'ok');
-    } catch (e) { $('#tSave').disabled = false; loadErr(e); }
+    } catch (err) { $('#tSave').disabled = false; loadErr(err); }
   });
   if (!t) setTimeout(() => $('#tTitel')?.focus(), 80);
 }
@@ -952,7 +1403,7 @@ async function delTermin(id) {
   catch (e) { loadErr(e); }
 }
 
-/* ---------- Fotos ---------- */
+/* ---------- Fotos, Videos & Alben ---------- */
 const FOTO_PAGE = 60;
 const URLS = store.get('urls', {});
 async function signed(paths) {
@@ -971,34 +1422,76 @@ async function signed(paths) {
 async function loadFotos(quiet, more) {
   try {
     const off = more ? state.fotos.length : 0, lim = more ? FOTO_PAGE : Math.max(FOTO_PAGE, quiet && state.fotos ? state.fotos.length : 0);
-    const r = await API.rest(`/familie_fotos?select=*&order=erstellt.desc&limit=${lim}&offset=${off}`) || [];
+    const r = await API.rest(`/familie_fotos?select=*&order=erstellt.desc&limit=${lim}&offset=${off}${state.album ? '&album_id=eq.' + state.album : ''}`) || [];
     await signed(r.map(f => f.klein));
     if (more) state.fotos = [...state.fotos, ...r];
     else { if (quiet && same(r, state.fotos)) return; state.fotos = r; }
     state.fotosAlle = r.length < lim;
-    if (state.tab === 'fotos') fillFotos();
+    if (state.tab === 'fotos' && state.fotoView === 'alle') fillFotos();
     if (state.tab === 'start') fillDash();
   } catch (e) { loadErr(e, quiet); }
 }
+async function loadAlben(quiet) {
+  try {
+    const [a, f] = await Promise.all([API.rest('/familie_alben?select=*&order=erstellt.desc'), API.rest('/familie_fotos?select=album_id,klein,erstellt&album_id=not.is.null&order=erstellt.desc&limit=2000')]);
+    const info = {};
+    for (const x of f || []) { const i = info[x.album_id] || (info[x.album_id] = { n: 0, cover: null }); i.n++; if (!i.cover && x.klein) i.cover = x.klein; }
+    await signed(Object.values(info).map(i => i.cover));
+    if (quiet && same([a, info], [state.alben, state.albumInfo])) return;
+    state.alben = a || []; state.albumInfo = info;
+    if (state.tab === 'fotos') fillFotos();
+  } catch (e) { loadErr(e, quiet); }
+}
 function fotosShell() {
-  return `${header('Fotos', '', 'pink', 'image', `<button class="btn btn-primary c-pink" data-action="pick-fotos">${ic('plus', 18)} Fotos</button>`)}
-    <div id="fotoBox">${state.fotos ? '' : spinner}</div>`;
+  const alb = state.album && (state.alben || []).find(a => a.id === state.album);
+  return `${alb ? `<button class="back" data-action="album-close">${ic('left', 18)} Alben</button>` : ''}${header(alb ? esc(alb.name) : 'Fotos', '', 'pink', alb ? 'folder' : 'image', `<button class="btn btn-primary c-pink" data-action="pick-fotos">${ic('plus', 18)} Hochladen</button>`)}
+    ${alb ? '' : `<div class="seg"><button class="seg-b c-pink ${state.fotoView === 'alle' ? 'on' : ''}" data-action="foto-view" data-v="alle">${ic('image', 17)}Alle</button><button class="seg-b c-pink ${state.fotoView === 'alben' ? 'on' : ''}" data-action="foto-view" data-v="alben">${ic('folder', 17)}Alben</button></div>`}
+    <div id="fotoBox">${state.fotoView === 'alben' && !state.album ? (state.alben ? '' : spinner) : (state.fotos ? '' : spinner)}</div>`;
 }
+const fotoTile = (f, i) => `<button class="ftile ${f.klein ? '' : 'noimg'}" data-action="open-foto" data-i="${i}" aria-label="${f.typ === 'video' ? 'Video' : 'Foto'}${f.text ? ': ' + esc(f.text) : ''}${f.von ? ' von ' + esc(f.von) : ''}">${f.klein ? `<img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy" decoding="async" onload="this.classList.add('on')">` : ic('play', 28)}${f.typ === 'video' ? `<span class="vb">${ic('play', 11)}${esc(fmtDauer(f.dauer))}</span>` : ''}</button>`;
 function fillFotos() {
-  const box = $('#fotoBox'); if (!box || !state.fotos) return;
-  const sub = $('#phSub'); if (sub) sub.textContent = state.fotos.length ? `${state.fotos.length}${state.fotosAlle ? '' : '+'} Foto${state.fotos.length === 1 && state.fotosAlle ? '' : 's'} · nur für die Familie` : 'Nur für die Familie sichtbar';
-  if (!state.fotos.length) { box.innerHTML = `<div class="empty c-pink"><span class="shape lg">${ic('camera', 24)}</span><b>Noch keine Fotos</b>Teil das erste Foto mit der Familie – nur ihr könnt es sehen.<div style="margin-top:16px"><button class="btn btn-primary" data-action="pick-fotos">${ic('plus', 18)} Fotos auswählen</button></div></div>`; return; }
-  box.innerHTML = `<div class="fgrid">${state.fotos.map((f, i) => `<button class="ftile" data-action="open-foto" data-i="${i}" aria-label="Foto${f.text ? ': ' + esc(f.text) : ''}${f.von ? ' von ' + esc(f.von) : ''}"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy" decoding="async" onload="this.classList.add('on')"></button>`).join('')}</div>
-    ${state.fotosAlle ? '' : `<div style="text-align:center;margin-top:16px"><button class="btn" data-action="more-fotos">Ältere Fotos laden</button></div>`}`;
+  const box = $('#fotoBox'); if (!box) return;
+  const sub = $('#phSub');
+  if (state.fotoView === 'alben' && !state.album) {
+    if (!state.alben) return;
+    if (sub) sub.textContent = `${state.alben.length} Album${state.alben.length === 1 ? '' : 'en'}`;
+    box.innerHTML = `<div class="agrid c-pink">${state.alben.map(a => { const i = state.albumInfo[a.id] || { n: 0 }; const u = i.cover && URLS[i.cover]?.[0]; return `<button class="acard" data-action="album-open" data-id="${esc(a.id)}"><span class="cov" style="${u ? `background-image:url('${esc(u)}')` : ''}">${u ? '' : ic('folder', 32)}</span><b>${esc(a.name)}</b><small>${i.n} ${i.n === 1 ? 'Datei' : 'Dateien'}</small></button>`; }).join('')}
+      <button class="acard" data-action="album-new"><span class="cov" style="border:2px dashed var(--line-2);background:none">${ic('plus', 32)}</span><b>Neues Album</b><small>z. B. Urlaub 2026</small></button></div>`;
+    return;
+  }
+  if (!state.fotos) return;
+  if (sub) sub.textContent = state.fotos.length ? `${state.fotos.length}${state.fotosAlle ? '' : '+'} ${state.fotos.length === 1 && state.fotosAlle ? 'Datei' : 'Dateien'} · nur für die Familie` : 'Nur für die Familie sichtbar';
+  if (!state.fotos.length) { box.innerHTML = emptyBox('pink', 'camera', state.album ? 'Album ist leer' : 'Noch keine Fotos', 'Teil Fotos und kurze Videos mit der Familie – nur ihr könnt sie sehen.', `<div style="margin-top:16px"><button class="btn btn-primary" data-action="pick-fotos">${ic('plus', 18)} Auswählen</button></div>`); return; }
+  box.innerHTML = `<div class="fgrid">${state.fotos.map(fotoTile).join('')}</div>
+    ${state.fotosAlle ? '' : `<div style="text-align:center;margin-top:16px"><button class="btn" data-action="more-fotos">Ältere laden</button></div>`}
+    ${state.album ? `<div style="text-align:center;margin-top:20px"><button class="btn sm btn-danger" data-action="album-del">${ic('trash', 15)} Album löschen</button></div>` : ''}`;
 }
-function shrink(file, max, q) {
+function albumSheet(cb) {
+  openSheet(`<div class="sheet-h c-pink"><span class="shape">${ic('folder')}</span><h3>Neues Album</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="albForm" class="c-pink"><div class="field"><label for="albName">Name</label><input id="albName" class="input" maxlength="60" required placeholder="z. B. Urlaub 2026, Weihnachten"></div>
+    <div class="sheet-actions"><span class="grow"></span><button class="btn btn-primary">${ic('check', 18)} Anlegen</button></div></form>`);
+  setTimeout(() => $('#albName')?.focus(), 80);
+  $('#albForm').addEventListener('submit', async e => {
+    e.preventDefault(); const name = $('#albName').value.trim(); if (!name) return;
+    try { const a = await insert('familie_alben', { name, von: state.me }); state.alben = [a, ...(state.alben || [])]; closeSheet(); cb ? cb(a) : fill(); }
+    catch (err) { loadErr(err); }
+  });
+}
+async function delAlbum() {
+  const a = (state.alben || []).find(x => x.id === state.album); if (!a || !confirm(`Album „${a.name}“ löschen? Die Fotos bleiben unter „Alle“ erhalten.`)) return;
+  try { await remove('familie_alben', a.id); state.alben = state.alben.filter(x => x !== a); state.album = null; state.fotos = null; renderView(); loadFotos(); loadAlben(); }
+  catch (e) { loadErr(e); }
+}
+function shrink(file, max, q, square) {
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file), img = new Image();
     img.onload = () => {
-      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
+      let sw = img.naturalWidth, sh = img.naturalHeight, sx = 0, sy = 0;
+      if (square) { const s = Math.min(sw, sh); sx = (sw - s) / 2; sy = (sh - s) / 2; sw = sh = s; }
+      const k = Math.min(1, max / Math.max(sw, sh));
+      const w = Math.max(1, Math.round(sw * k)), h = Math.max(1, Math.round(sh * k));
       const c = document.createElement('canvas'); c.width = w; c.height = h;
-      const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, w, h);
+      const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
       URL.revokeObjectURL(url);
       c.toBlob(b => b ? res({ blob: b, w, h }) : rej(new Error('Bild konnte nicht verkleinert werden.')), 'image/jpeg', q);
     };
@@ -1006,60 +1499,109 @@ function shrink(file, max, q) {
     img.src = url;
   });
 }
+/* Vorschaubild aus einem Video (klappt nicht in jedem Browser – dann ohne) */
+function videoThumb(file) {
+  return new Promise(res => {
+    const v = document.createElement('video'), url = URL.createObjectURL(file); let done = false;
+    const fin = x => { if (done) return; done = true; URL.revokeObjectURL(url); res(x); };
+    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+    v.onloadeddata = () => { try { v.currentTime = Math.min(0.5, (v.duration || 1) / 2); } catch { fin(null); } };
+    v.onseeked = () => {
+      try {
+        const k = Math.min(1, 480 / Math.max(v.videoWidth, v.videoHeight)), w = Math.round(v.videoWidth * k), h = Math.round(v.videoHeight * k);
+        const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(v, 0, 0, w, h);
+        c.toBlob(b => fin(b ? { blob: b, w: v.videoWidth, h: v.videoHeight, dauer: v.duration } : { dauer: v.duration }), 'image/jpeg', 0.8);
+      } catch { fin({ dauer: v.duration }); }
+    };
+    v.onerror = () => fin(null);
+    setTimeout(() => fin(null), 10000);
+  });
+}
 let pending = [];
+const isVideo = f => /^video\//.test(f.type) || /\.(mov|mp4|m4v|webm)$/i.test(f.name);
 function uploadSheet(files) {
   pending.forEach(p => URL.revokeObjectURL(p.url));
-  pending = files.slice(0, 30).map(f => ({ f, url: URL.createObjectURL(f) }));
-  if (files.length > 30) toast('Höchstens 30 Fotos auf einmal.', 'warn');
-  openSheet(`<div class="sheet-h c-pink"><span class="shape">${ic('image')}</span><h3>${pending.length} Foto${pending.length > 1 ? 's' : ''} teilen</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
-    <div class="upgrid">${pending.map(p => `<img src="${p.url}" alt="">`).join('')}</div>
+  pending = files.slice(0, 30).map(f => ({ f, url: URL.createObjectURL(f), video: isVideo(f) }));
+  if (files.length > 30) toast('Höchstens 30 auf einmal.', 'warn');
+  const big = pending.filter(p => p.video && p.f.size > 50 * 1048576);
+  const alb = state.alben || [];
+  openSheet(`<div class="sheet-h c-pink"><span class="shape">${ic('image')}</span><h3>${pending.length} ${pending.length > 1 ? 'Dateien' : pending[0].video ? 'Video' : 'Foto'} teilen</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <div class="upgrid">${pending.map(p => p.video ? `<video src="${p.url}" muted playsinline preload="metadata" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;background:var(--card-2)"></video>` : `<img src="${p.url}" alt="">`).join('')}</div>
+    ${big.length ? `<div class="banner c-red" style="background:var(--card-2)"><span class="shape">${ic('alert')}</span><div class="body"><b>${big.length} Video${big.length > 1 ? 's sind' : ' ist'} zu groß</b><p>Höchstens 50 MB pro Video – das sind etwa 30–60 Sekunden. Schneide es am Handy kürzer.</p></div></div>` : ''}
     <div class="field c-pink"><label for="upText">Beschreibung</label><input id="upText" class="input" maxlength="300" placeholder="optional, z. B. Ausflug zum Achensee"></div>
-    <p class="hint" id="upState" style="margin:-4px 0 14px">Die Fotos werden verkleinert (1600 px) und sind nur für die Familie sichtbar.</p>
+    <div class="field c-pink"><label for="upAlbum">Album</label><select id="upAlbum" class="input"><option value="">Kein Album</option>${alb.map(a => `<option value="${esc(a.id)}" ${a.id === state.album ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}<option value="__neu">+ Neues Album …</option></select></div>
+    <p class="hint" id="upState" style="margin:-4px 0 14px">Fotos werden verkleinert (1600 px). Alles ist nur für die Familie sichtbar.</p>
     <div class="sheet-actions c-pink"><span class="grow"></span><button class="btn btn-primary" id="upBtn" data-action="upload">${ic('share', 18)} Teilen</button></div>`);
+  $('#upAlbum').addEventListener('change', e => {
+    if (e.target.value !== '__neu') return;
+    const name = prompt('Name des neuen Albums:'); if (!name || !name.trim()) { e.target.value = ''; return; }
+    insert('familie_alben', { name: name.trim().slice(0, 60), von: state.me }).then(a => { state.alben = [a, ...(state.alben || [])]; const o = document.createElement('option'); o.value = a.id; o.textContent = a.name; e.target.insertBefore(o, e.target.lastElementChild); e.target.value = a.id; }).catch(err => { e.target.value = ''; loadErr(err); });
+  });
 }
 async function upload() {
-  const btn = $('#upBtn'), info = $('#upState'), text = $('#upText').value.trim() || null;
+  const btn = $('#upBtn'), info = $('#upState'), text = $('#upText').value.trim() || null, album = $('#upAlbum').value && $('#upAlbum').value !== '__neu' ? $('#upAlbum').value : null;
   btn.disabled = true; $('#upText').disabled = true;
   const rows = []; let fail = 0;
   for (let i = 0; i < pending.length; i++) {
-    info.textContent = `Foto ${i + 1} von ${pending.length} wird hochgeladen …`;
+    const p = pending[i];
+    info.textContent = `${i + 1} von ${pending.length} wird hochgeladen …`;
     try {
-      const big = await shrink(pending[i].f, 1600, 0.84), small = await shrink(pending[i].f, 480, 0.8);
-      const d = new Date(), id = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-      const pfad = `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${id}.jpg`, klein = `klein/${pfad}`;
-      for (const [p, b] of [[pfad, big.blob], [klein, small.blob]]) {
-        const r = await API.fetch('/storage/v1/object/familie/' + p, { method: 'POST', headers: { 'Content-Type': 'image/jpeg', 'cache-control': 'max-age=31536000', 'x-upsert': 'false' }, body: b });
-        if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.message || j.error || ('Hochladen ging nicht (' + r.status + ')')); }
+      const d = new Date(), id = uuid(), base = `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${id}`;
+      if (p.video) {
+        if (p.f.size > 50 * 1048576) { fail++; continue; }
+        const th = await videoThumb(p.f), ext = (p.f.name.match(/\.(\w+)$/)?.[1] || 'mp4').toLowerCase();
+        const pfad = `${base}.${ext}`, klein = th?.blob ? `klein/${base}.jpg` : null;
+        await API.upload(pfad, p.f, p.f.type || (ext === 'mov' ? 'video/quicktime' : 'video/mp4'));
+        if (klein) await API.upload(klein, th.blob);
+        rows.push({ pfad, klein, typ: 'video', breite: th?.w || null, hoehe: th?.h || null, dauer: th?.dauer && isFinite(th.dauer) ? th.dauer : null, text, von: state.me, album_id: album });
+      } else {
+        const bigI = await shrink(p.f, 1600, 0.84), small = await shrink(p.f, 480, 0.8);
+        const pfad = `${base}.jpg`, klein = `klein/${base}.jpg`;
+        await API.upload(pfad, bigI.blob); await API.upload(klein, small.blob);
+        rows.push({ pfad, klein, typ: 'foto', breite: bigI.w, hoehe: bigI.h, text, von: state.me, album_id: album });
       }
-      rows.push({ pfad, klein, breite: big.w, hoehe: big.h, text, von: state.me });
     } catch (e) { if (e.silent) return; fail++; console.warn(e); if (offline(e)) break; }
   }
   try {
     if (rows.length) {
-      const saved = await API.rest('/familie_fotos', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(rows) });
+      const saved = await insert('familie_fotos', rows);
       await signed((saved || []).map(f => f.klein));
-      state.fotos = [...(saved || []).reverse(), ...(state.fotos || [])];
+      if (!state.album || state.album === album) state.fotos = [...(saved || []).reverse(), ...(state.fotos || [])];
     }
-    closeSheet(); fill();
-    toast(fail ? `${rows.length} geteilt, ${fail} ging${fail > 1 ? 'en' : ''} nicht.` : `${rows.length} Foto${rows.length > 1 ? 's' : ''} geteilt.`, fail ? 'warn' : 'ok');
+    closeSheet(); fill(); if (album) loadAlben(true);
+    toast(fail ? `${rows.length} geteilt, ${fail} ging${fail > 1 ? 'en' : ''} nicht.` : `${rows.length} geteilt.`, fail ? 'warn' : 'ok');
   } catch (e) { btn.disabled = false; loadErr(e); }
 }
 let lbI = -1, lbX = null;
+async function loadZiel(typ, ids) {
+  if (!ids.length) return;
+  const [r, k] = await Promise.all([
+    API.rest(`/familie_reaktionen?select=*&ziel_typ=eq.${typ}&ziel_id=${inList(ids)}`),
+    API.rest(`/familie_kommentare?select=*&ziel_id=${inList(ids)}&order=erstellt.asc`)
+  ]);
+  for (const id of ids) { state.react[typ + ':' + id] = (r || []).filter(x => x.ziel_id === id); state.komm[id] = (k || []).filter(x => x.ziel_id === id); }
+}
+function lbFoot() {
+  const f = state.fotos[lbI]; if (!f) return '';
+  const k = state.komm[f.id] || [];
+  return `${av(f.von)}<div class="t">${f.text ? `<p>${esc(f.text)}</p>` : ''}<small>${f.von ? esc(f.von) + ' · ' : ''}${esc(rel(f.erstellt))}</small></div>
+    <div class="acts c-pink">${reactRow('foto', f.id)}<span class="spacer"></span><button class="kbtn" data-action="foto-komm">${ic('reply', 15)} ${k.length || ''} ${k.length === 1 ? 'Antwort' : 'Antworten'}</button><button class="kbtn" data-action="foto-album">${ic('folder', 15)} Album</button><button class="kbtn" data-action="lb-del" style="color:#FF8A80">${ic('trash', 15)}</button></div>`;
+}
 async function openFoto(i) {
   const f = state.fotos[i]; if (!f) return;
-  lbI = i;
-  const lb = $('#lb');
-  lb.innerHTML = `<div class="lb" role="dialog" aria-modal="true" aria-label="Foto">
+  lbI = i; state.pick = null;
+  const lb = $('#lb'), thumb = esc(URLS[f.klein]?.[0] || '');
+  lb.innerHTML = `<div class="lb" role="dialog" aria-modal="true" aria-label="${f.typ === 'video' ? 'Video' : 'Foto'}">
     <div class="lb-top"><button class="ghost" data-action="lb-close" aria-label="Schließen">${ic('x', 22)}</button><span class="n">${i + 1} / ${state.fotos.length}${state.fotosAlle ? '' : '+'}</span><button class="ghost" data-action="lb-share" aria-label="Teilen oder sichern">${ic('share', 20)}</button></div>
-    <div class="lb-img" id="lbImg"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="${esc(f.text || '')}">
+    <div class="lb-img" id="lbImg">${f.typ === 'video' ? `<video controls playsinline preload="metadata" ${thumb ? `poster="${thumb}"` : ''}></video>` : `<img src="${thumb}" alt="${esc(f.text || '')}">`}
       ${i > 0 ? `<button class="lb-nav l" data-action="lb-go" data-d="-1" aria-label="Vorheriges">${ic('left')}</button>` : ''}${i < state.fotos.length - 1 ? `<button class="lb-nav r" data-action="lb-go" data-d="1" aria-label="Nächstes">${ic('right')}</button>` : ''}</div>
-    <div class="lb-foot">${av(f.von)}<div class="t">${f.text ? `<p>${esc(f.text)}</p>` : ''}<small>${f.von ? esc(f.von) + ' · ' : ''}${esc(rel(f.erstellt))}</small></div>
-      <button class="btn sm btn-danger" data-action="lb-del">${ic('trash', 15)} Löschen</button></div></div>`;
+    <div class="lb-foot" id="lbFoot">${lbFoot()}</div></div>`;
   document.body.style.overflow = 'hidden';
   const box = $('#lbImg');
-  box.addEventListener('touchstart', e => { lbX = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener('touchstart', e => { if (e.target.tagName === 'VIDEO') return; lbX = e.touches[0].clientX; }, { passive: true });
   box.addEventListener('touchend', e => { if (lbX === null) return; const dx = e.changedTouches[0].clientX - lbX; lbX = null; if (Math.abs(dx) > 50) lbGo(dx < 0 ? 1 : -1); }, { passive: true });
-  try { const u = await signed([f.pfad]); if (lbI === i) { const im = $('#lbImg img'); if (im) im.src = u(f.pfad); } } catch {}
+  try { const u = await signed([f.pfad]); if (lbI === i) { const m = $('#lbImg video') || $('#lbImg img'); if (m) m.src = u(f.pfad); } } catch {}
+  try { await loadZiel('foto', [f.id]); if (lbI === i) $('#lbFoot').innerHTML = lbFoot(); } catch {}
 }
 function lbGo(d) {
   const n = lbI + d;
@@ -1072,25 +1614,92 @@ async function shareFoto() {
   try {
     const u = (await signed([f.pfad]))(f.pfad);
     const blob = await fetch(u).then(r => r.blob());
-    const file = new File([blob], `familie-${f.erstellt.slice(0, 10)}.jpg`, { type: 'image/jpeg' });
+    const ext = f.typ === 'video' ? (f.pfad.match(/\.(\w+)$/)?.[1] || 'mp4') : 'jpg';
+    const file = new File([blob], `familie-${f.erstellt.slice(0, 10)}.${ext}`, { type: blob.type || (f.typ === 'video' ? 'video/mp4' : 'image/jpeg') });
     if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   } catch (e) { if (e.name !== 'AbortError') toast(errMsg(e), 'bad'); }
 }
 async function delFoto() {
-  const f = state.fotos[lbI]; if (!f || !confirm('Dieses Foto für alle löschen?')) return;
+  const f = state.fotos[lbI]; if (!f || !confirm(`Dieses ${f.typ === 'video' ? 'Video' : 'Foto'} für alle löschen?`)) return;
   try {
-    await API.fetch('/storage/v1/object/familie', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prefixes: [f.pfad, f.klein] }) });
+    await API.removeFiles([f.pfad, f.klein]);
     await remove('familie_fotos', f.id);
-    state.fotos = state.fotos.filter(x => x !== f); closeFoto(); fill(); toast('Foto gelöscht.');
+    state.fotos = state.fotos.filter(x => x !== f); closeFoto(); fill(); toast('Gelöscht.');
   } catch (e) { loadErr(e); }
 }
+function fotoAlbumSheet() {
+  const f = state.fotos[lbI]; if (!f) return;
+  const alb = state.alben || [];
+  openSheet(`<div class="sheet-h c-pink"><span class="shape">${ic('folder')}</span><h3>In Album</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <div class="chipsel c-pink" id="albSel"><button type="button" data-a="" class="${f.album_id ? '' : 'on'}">Kein Album</button>${alb.map(a => `<button type="button" data-a="${esc(a.id)}" class="${a.id === f.album_id ? 'on' : ''}">${esc(a.name)}</button>`).join('')}<button type="button" data-a="__neu">${ic('plus', 15)} Neues Album</button></div>`);
+  $('#albSel').addEventListener('click', async e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const set = async id => { try { Object.assign(f, await patch('familie_fotos', f.id, { album_id: id || null })); closeSheet(); toast('Album geändert.', 'ok'); loadAlben(true); } catch (err) { loadErr(err); } };
+    if (b.dataset.a === '__neu') albumSheet(a => set(a.id)); else set(b.dataset.a);
+  });
+}
+async function ensureAlben() { if (!state.alben) { try { await loadAlben(true); } catch {} } }
 
-/* ---------- Pinnwand ---------- */
+/* ---------- Reaktionen & Antworten (Pinnwand und Fotos) ---------- */
+function reactRow(typ, id) {
+  const key = typ + ':' + id, list = state.react[key] || [], groups = {};
+  list.forEach(r => { (groups[r.emoji] = groups[r.emoji] || []).push(r.name); });
+  const chips = Object.entries(groups).map(([e, names]) => `<button class="rc ${names.includes(state.me) ? 'mine' : ''}" data-action="react" data-typ="${typ}" data-id="${esc(id)}" data-e="${esc(e)}" title="${esc(names.join(', '))}">${e}<small>${names.length}</small></button>`).join('');
+  return `<span class="reacts" style="margin-top:0">${chips}<button class="rc add" data-action="react-pick" data-key="${esc(key)}" aria-label="Reaktion hinzufügen">${ic('smile', 17)}</button></span>
+    ${state.pick === key ? `<div class="picker">${EMO.map(e => `<button data-action="react" data-typ="${typ}" data-id="${esc(id)}" data-e="${e}" aria-label="${e}">${e}</button>`).join('')}</div>` : ''}`;
+}
+async function toggleReact(typ, id, emoji) {
+  const key = typ + ':' + id, list = state.react[key] || (state.react[key] = []);
+  const mine = list.find(r => r.name === state.me && r.emoji === emoji);
+  state.pick = null;
+  try {
+    if (mine) { await API.rest(`/familie_reaktionen?ziel_typ=eq.${typ}&ziel_id=eq.${id}&name=eq.${encodeURIComponent(state.me)}&emoji=eq.${encodeURIComponent(emoji)}`, { method: 'DELETE' }); state.react[key] = list.filter(r => r !== mine); }
+    else { await API.rest('/familie_reaktionen', { method: 'POST', headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' }, body: JSON.stringify({ ziel_typ: typ, ziel_id: id, name: state.me, emoji }) }); list.push({ ziel_typ: typ, ziel_id: id, name: state.me, emoji }); }
+  } catch (e) { loadErr(e); }
+  redrawZiel(typ);
+}
+function redrawZiel(typ) {
+  if (typ === 'foto' && lbI >= 0) { const f = $('#lbFoot'); if (f) f.innerHTML = lbFoot(); }
+  if (typ === 'nachricht' && state.tab === 'pinnwand') fillPosts();
+}
+const kommList = (id, typ) => `<div class="komm">${(state.komm[id] || []).map(k => `<div class="km">${av(k.von, 'sm')}<div class="b"><b>${esc(k.von || 'Jemand')}</b><small>${esc(relShort(k.erstellt))}</small>${k.von === state.me ? `<button class="ghost" style="float:right;width:26px;height:26px;margin:-4px -6px 0 0" data-action="del-komm" data-id="${esc(k.id)}" data-ziel="${esc(id)}" data-typ="${typ}" aria-label="Antwort löschen">${ic('x', 14)}</button>` : ''}<p>${esc(k.text)}</p></div></div>`).join('')}
+  <form class="kform" data-komm="${esc(id)}" data-typ="${typ}"><input class="input" maxlength="1000" placeholder="Antworten …" aria-label="Antwort schreiben" enterkeyhint="send"><button class="btn btn-primary icon" aria-label="Senden">${ic('send', 17)}</button></form></div>`;
+async function sendKomm(form) {
+  const inp = form.querySelector('input'), text = inp.value.trim(), id = form.dataset.komm, typ = form.dataset.typ; if (!text) return;
+  inp.disabled = true;
+  try { const k = await insert('familie_kommentare', { ziel_typ: typ, ziel_id: id, text, von: state.me }); (state.komm[id] = state.komm[id] || []).push(k); }
+  catch (e) { loadErr(e); }
+  if (typ === 'foto') { if ($('#sheetWrap').classList.contains('open')) fotoKommSheet(); redrawZiel('foto'); } else { redrawZiel(typ); setTimeout(() => $(`form[data-komm="${CSS.escape(id)}"] input`)?.focus(), 30); }
+}
+async function delKomm(id, ziel, typ) {
+  if (!confirm('Antwort löschen?')) return;
+  try { await remove('familie_kommentare', id); state.komm[ziel] = (state.komm[ziel] || []).filter(k => k.id !== id); } catch (e) { loadErr(e); }
+  if (typ === 'foto' && $('#sheetWrap').classList.contains('open')) fotoKommSheet();
+  redrawZiel(typ);
+}
+function fotoKommSheet() {
+  const f = state.fotos[lbI]; if (!f) return;
+  openSheet(`<div class="sheet-h c-pink"><span class="shape">${ic('reply')}</span><h3>Antworten</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div><div class="c-pink">${kommList(f.id, 'foto')}</div>`);
+  setTimeout(() => $('#sheet .kform input')?.focus(), 80);
+}
+
+/* ---------- Pinnwand (mit Umfragen) ---------- */
 async function loadMsgs(quiet) {
   try {
     const r = (await API.rest('/familie_nachrichten?select=*&order=erstellt.desc&limit=100')) || [];
-    if (quiet && same(r, state.msgs)) return;
+    const ids = r.map(m => m.id), polls = r.filter(m => m.optionen).map(m => m.id);
+    let st = [];
+    if (state.tab === 'pinnwand' || !quiet) {
+      await loadZiel('nachricht', ids).catch(() => {});
+      if (polls.length) st = (await API.rest(`/familie_stimmen?select=*&nachricht_id=${inList(polls)}`).catch(() => [])) || [];
+      const sm = {}; polls.forEach(p => { sm[p] = st.filter(s => s.nachricht_id === p); }); state.stimmen = sm;
+    }
+    const snap = JSON.stringify([r, ids.map(i => [state.react['nachricht:' + i], state.komm[i]]), state.stimmen]);
+    if (quiet && snap === state._msnap) return;
+    state._msnap = snap;
+    const ae = document.activeElement;
+    if (quiet && state.tab === 'pinnwand' && $('#posts')?.contains(ae) && ae.value) { state.msgs = r; renderTabbar(); return; }
     const known = new Set((state.msgs || []).map(m => m.id)), first = !state.msgs;
     state.msgs = r;
     if (state.tab === 'pinnwand') { markSeen(); fillPosts(first ? null : known); }
@@ -1102,32 +1711,299 @@ function markSeen() { if (state.msgs?.length) store.set('seen', state.msgs[0].er
 function pinnwandShell() {
   markSeen();
   return `${header('Pinnwand', 'Nachrichten an alle', 'green', 'chat')}
-    <form class="card post-form c-green" id="postForm"><div class="top">${av(state.me)}<textarea id="postText" class="input" maxlength="2000" rows="2" placeholder="Schreib etwas an alle …" aria-label="Nachricht an alle"></textarea></div>
-      <div class="row-actions"><button class="btn btn-primary sm" id="postBtn">${ic('send', 15)} Senden</button></div></form>
+    <form class="card post-form c-green" id="postForm"><div class="top">${av(state.me)}<textarea id="postText" class="input" maxlength="2000" rows="2" placeholder="${state.poll ? 'Deine Frage, z. B. Pizza oder Pasta?' : 'Schreib etwas an alle …'}" aria-label="Nachricht an alle"></textarea></div>
+      <div class="pollin" id="pollIn" ${state.poll ? '' : 'hidden'}>${[0, 1].map(i => `<input class="input popt" maxlength="80" placeholder="Antwort ${i + 1}">`).join('')}<button type="button" class="btn sm" data-action="poll-add" style="align-self:flex-start">${ic('plus', 15)} Antwort</button></div>
+      <div class="row-actions"><button type="button" class="btn sm ${state.poll ? 'btn-primary' : ''}" data-action="poll-toggle">${ic('poll', 15)} Umfrage</button><span class="spacer"></span><button class="btn btn-primary sm" id="postBtn">${ic('send', 15)} Senden</button></div></form>
     <div id="posts">${state.msgs ? '' : spinner}</div>`;
+}
+function pollBlock(m) {
+  const st = state.stimmen[m.id] || [], total = st.length, mine = st.find(s => s.name === state.me);
+  return `<div class="poll c-${colorOf(m.von)}">${m.optionen.map((o, i) => { const v = st.filter(s => s.option === i), pct = total ? Math.round(v.length / total * 100) : 0;
+    return `<button class="opt ${mine?.option === i ? 'mine' : ''}" data-action="vote" data-id="${esc(m.id)}" data-o="${i}"><i style="width:${pct}%"></i><span>${esc(o)}</span><span class="vt">${v.slice(0, 4).map(s => av(s.name)).join('')}${v.length ? ` ${pct} %` : ''}</span></button>`; }).join('')}
+    <p class="hint" style="margin:0 2px">${total ? `${total} Stimme${total > 1 ? 'n' : ''}` : 'Noch keine Stimmen'}${mine ? ' · nochmal tippen zum Zurücknehmen' : ''}</p></div>`;
 }
 function fillPosts(known) {
   const box = $('#posts'); if (!box || !state.msgs) return;
-  if (!state.msgs.length) { box.innerHTML = `<div class="empty c-green"><span class="shape lg">${ic('chat', 24)}</span><b>Noch leer</b>Schreib die erste Nachricht – alle mit Benachrichtigungen bekommen sie sofort.</div>`; return; }
+  if (!state.msgs.length) { box.innerHTML = emptyBox('green', 'chat', 'Noch leer', 'Schreib die erste Nachricht – oder starte eine Umfrage.'); return; }
   box.innerHTML = `<div class="posts">${state.msgs.map(m => {
-    const me = m.von === state.me;
+    const me = m.von === state.me, k = state.komm[m.id] || [], open = state.openKomm.has(m.id);
     return `<article class="post c-${colorOf(m.von)} ${known && !known.has(m.id) ? 'new' : ''}">${av(m.von)}<div class="body">
       <div class="who"><b>${esc(m.von || 'Jemand')}</b><span>${esc(rel(m.erstellt))}</span>${me ? `<span class="spacer"></span><button class="ghost" style="width:32px;height:32px;margin:-6px -6px -6px 0" data-action="del-post" data-id="${esc(m.id)}" aria-label="Nachricht löschen">${ic('trash', 15)}</button>` : ''}</div>
-      <p class="txt">${esc(m.text)}</p></div></article>`; }).join('')}</div>`;
+      <p class="txt">${m.optionen ? '📊 ' : ''}${esc(m.text)}</p>
+      ${m.optionen ? pollBlock(m) : ''}
+      <div class="reacts">${reactRow('nachricht', m.id)}<button class="kbtn" data-action="komm-toggle" data-id="${esc(m.id)}">${ic('reply', 15)} ${k.length ? k.length + ' ' : ''}${k.length === 1 ? 'Antwort' : 'Antworten'}</button></div>
+      ${open ? kommList(m.id, 'nachricht') : ''}</div></article>`; }).join('')}</div>`;
 }
 async function sendPost() {
   const ta = $('#postText'), text = ta.value.trim(); if (!text) { ta.focus(); return; }
+  let optionen = null;
+  if (state.poll) {
+    optionen = $$('.popt').map(i => i.value.trim()).filter(Boolean).slice(0, 6);
+    if (optionen.length < 2) { toast('Eine Umfrage braucht mindestens 2 Antworten.', 'warn'); return; }
+  }
   $('#postBtn').disabled = true;
   try {
-    const row = await insert('familie_nachrichten', { text, von: state.me });
-    ta.value = ''; state.msgs = [row, ...(state.msgs || [])]; markSeen(); fillPosts(); renderTabbar();
+    const row = await insert('familie_nachrichten', { text, von: state.me, optionen });
+    state.poll = false; state.msgs = [row, ...(state.msgs || [])]; if (optionen) state.stimmen[row.id] = [];
+    markSeen(); renderView(); renderTabbar();
+  } catch (e) { loadErr(e); const b = $('#postBtn'); if (b) b.disabled = false; }
+}
+async function vote(id, o) {
+  const list = state.stimmen[id] || (state.stimmen[id] = []), mine = list.find(s => s.name === state.me);
+  try {
+    if (mine && mine.option === o) { await API.rest(`/familie_stimmen?nachricht_id=eq.${id}&name=eq.${encodeURIComponent(state.me)}`, { method: 'DELETE' }); state.stimmen[id] = list.filter(s => s !== mine); }
+    else { const r = await upsert('familie_stimmen', 'nachricht_id,name', { nachricht_id: id, name: state.me, option: o }); state.stimmen[id] = [...list.filter(s => s !== mine), r || { nachricht_id: id, name: state.me, option: o }]; }
   } catch (e) { loadErr(e); }
-  const b = $('#postBtn'); if (b) b.disabled = false;
+  fillPosts();
 }
 async function delPost(id) {
   if (!confirm('Nachricht löschen?')) return;
   try { await remove('familie_nachrichten', id); state.msgs = state.msgs.filter(m => m.id !== id); fillPosts(); }
   catch (e) { loadErr(e); }
+}
+
+/* ---------- Mehr ---------- */
+function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); }
+function hubShell() { return `${header('Mehr', 'Alles Weitere für die Familie', 'purple', 'grid')}<div id="hub"></div>`; }
+function fillHub() {
+  const box = $('#hub'); if (!box) return;
+  const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
+  const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
+  box.innerHTML = `<div class="tiles hub">
+    ${tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
+    ${tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte')}
+    ${tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"')}
+    ${tile('countdowns', 'purple', ic('hourglass'), 'Countdowns', cd ? `${esc(cd.titel)} ${inDays(dayDiff(new Date(), parseDay(cd.datum)))}` : 'Worauf freut ihr euch?')}
+    ${tile('infos', 'red', ic('siren'), 'Wichtige Infos', state.infos ? `${state.infos.length} Einträge` : 'Notfall, Arzt, WLAN …')}
+    ${tile('ich', colorOf(state.me), av(state.me, 'sm'), 'Mein Profil', 'Foto, Farbe, Status, Benachrichtigungen')}
+  </div>`;
+}
+
+/* ---------- Essensplan ---------- */
+const weekStart = off => addDays(new Date(), -(isodow(new Date()) - 1) + off * 7);
+async function loadEssen(quiet) {
+  try {
+    const a = weekStart(state.essenWoche), b = addDays(a, 6);
+    const from = isoDay(state.essenWoche === 0 ? new Date(Math.min(new Date(), a)) : a);
+    const r = await API.rest(`/familie_essen?select=*&and=${encodeURIComponent(`(datum.gte.${from},datum.lte.${isoDay(b)})`)}`) || [];
+    const m = { ...state.essen }; r.forEach(x => { m[x.datum] = x; });
+    for (let i = 0; i < 7; i++) { const iso = isoDay(addDays(a, i)); if (!r.find(x => x.datum === iso)) delete m[iso]; }
+    if (quiet && same(m, state.essen)) return;
+    state.essen = m;
+    if (state.tab === 'essen' && !$('#sheetWrap').classList.contains('open')) fillEssen();
+    if (state.tab === 'start') fillDash();
+    if (state.tab === 'mehr') fillHub();
+  } catch (e) { loadErr(e, quiet); }
+}
+function essenShell() {
+  return `${header('Essensplan', 'Wer kocht was?', 'lime', 'utensils', '', true)}
+    <div class="wnav c-lime"><button class="ghost" data-action="woche" data-d="-1" aria-label="Vorige Woche">${ic('left')}</button><b id="wTitle"></b><button class="ghost" data-action="woche" data-d="1" aria-label="Nächste Woche">${ic('right')}</button></div>
+    <div class="days c-lime" id="days"></div>`;
+}
+function fillEssen() {
+  const box = $('#days'); if (!box) return;
+  const a = weekStart(state.essenWoche), b = addDays(a, 6), kw = (() => { const d = new Date(Date.UTC(a.getFullYear(), a.getMonth(), a.getDate() + 3)); const y = new Date(Date.UTC(d.getUTCFullYear(), 0, 4)); return 1 + Math.round(((d - y) / 864e5 - 3 + ((y.getUTCDay() + 6) % 7)) / 7); })();
+  $('#wTitle').textContent = `${state.essenWoche === 0 ? 'Diese Woche' : state.essenWoche === 1 ? 'Nächste Woche' : 'KW ' + kw} · ${a.getDate()}.${a.getMonth() + 1}.–${b.getDate()}.${b.getMonth() + 1}.`;
+  box.innerHTML = Array.from({ length: 7 }, (_, i) => {
+    const d = addDays(a, i), iso = isoDay(d), e = state.essen[iso];
+    return `<button class="dayc ${iso === todayIso() ? 'today' : ''}" data-action="essen-edit" data-d="${iso}"><span class="d"><small>${WD[i]}</small><b>${d.getDate()}</b></span><span class="t">${e ? `<b>${esc(e.gericht)}</b><small>${e.koch ? av(e.koch, 'sm') + esc(e.koch) + ' kocht' : 'Wer kocht?'}${e.rezept_id ? ' · 📖 Rezept' : ''}</small>` : `<b class="none">Noch nichts geplant</b>`}</span>${e ? '' : `<span class="shape sm">${ic('plus', 16)}</span>`}</button>`;
+  }).join('');
+}
+function essenSheet(iso) {
+  const e = state.essen[iso] || { datum: iso, gericht: '', koch: '', rezept_id: null, zutaten: '', notiz: '' }, rez = state.rezepte || [];
+  const [a, b] = dayLabel(iso);
+  openSheet(`<div class="sheet-h c-lime"><span class="shape">${ic('utensils')}</span><h3>${esc(a)} <span style="font-weight:600;font-size:16px;color:var(--muted)">${esc(b)}</span></h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="essenForm" class="c-lime">
+      ${rez.length ? `<div class="field"><label for="eRez">Aus den Rezepten</label><select id="eRez" class="input"><option value="">– kein Rezept –</option>${rez.map(r => `<option value="${esc(r.id)}" ${r.id === e.rezept_id ? 'selected' : ''}>${esc(r.titel)}</option>`).join('')}</select></div>` : ''}
+      <div class="field"><label for="eGer">Was gibt's?</label><input id="eGer" class="input" maxlength="120" required value="${esc(e.gericht)}" placeholder="z. B. Spaghetti, Schnitzel, Kaspressknödel"></div>
+      <div class="field"><label for="eKoch">Wer kocht?</label><select id="eKoch" class="input"><option value="">–</option>${state.members.map(n => `<option ${n === e.koch ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
+      <div class="field"><label for="eZut">Zutaten (eine pro Zeile)</label><textarea id="eZut" class="input" maxlength="4000" rows="4" placeholder="500 g Spaghetti&#10;1 Dose Tomaten">${esc(e.zutaten || '')}</textarea></div>
+      <div class="field"><label for="eNotiz">Notiz</label><input id="eNotiz" class="input" maxlength="500" value="${esc(e.notiz || '')}" placeholder="optional"></div>
+      <div class="sheet-actions">${state.essen[iso] ? `<button type="button" class="btn btn-danger icon" data-action="essen-del" data-d="${iso}" aria-label="Löschen">${ic('trash', 17)}</button>` : ''}<button type="button" class="btn c-amber" data-action="essen-zutaten">${ic('cart', 17)} Auf die Liste</button><span class="grow"></span><button class="btn btn-primary" id="eSave">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  $('#eRez')?.addEventListener('change', ev => { const r = rez.find(x => x.id === ev.target.value); if (!r) return; $('#eGer').value = r.titel; if (!$('#eZut').value.trim()) $('#eZut').value = r.zutaten || ''; });
+  $('#essenForm').addEventListener('submit', async ev => { ev.preventDefault(); if (await saveEssen(iso)) { closeSheet(); fill(); toast('Gespeichert.', 'ok'); } });
+}
+async function saveEssen(iso) {
+  const row = { datum: iso, gericht: $('#eGer').value.trim(), koch: $('#eKoch').value || null, rezept_id: $('#eRez')?.value || null, zutaten: $('#eZut').value.trim() || null, notiz: $('#eNotiz').value.trim() || null, von: state.me };
+  if (!row.gericht) { $('#eGer').focus(); return false; }
+  try { state.essen[iso] = await upsert('familie_essen', 'datum', row); return true; } catch (e) { loadErr(e); return false; }
+}
+async function essenZutaten() {
+  const lines = $('#eZut').value.split('\n');
+  if (!lines.some(l => l.trim())) { toast('Trag zuerst Zutaten ein.', 'warn'); $('#eZut').focus(); return; }
+  try { await addToShopping(lines); } catch (e) { loadErr(e); }
+}
+async function delEssen(iso) {
+  try { await API.rest(`/familie_essen?datum=eq.${iso}`, { method: 'DELETE' }); delete state.essen[iso]; closeSheet(); fill(); } catch (e) { loadErr(e); }
+}
+
+/* ---------- Rezepte ---------- */
+async function loadRezepte(quiet) {
+  try {
+    const r = await API.rest('/familie_rezepte?select=*&order=titel') || [];
+    await signed(r.map(x => x.klein)).catch(() => {});
+    if (quiet && same(r, state.rezepte)) return;
+    state.rezepte = r;
+    if (state.tab === 'rezepte' && !$('#sheetWrap').classList.contains('open')) fillRezepte();
+    if (state.tab === 'mehr') fillHub();
+  } catch (e) { loadErr(e, quiet); }
+}
+function rezepteShell() {
+  return `${header('Rezepte', 'Familienrezepte', 'amber', 'book', `<button class="btn btn-primary c-amber" data-action="rezept-neu">${ic('plus', 18)} Rezept</button>`, true)}
+    <div class="addbar c-amber" style="position:static"><input id="rSuche" class="input" placeholder="Suchen …" value="${esc(state.rsuche)}" autocomplete="off" aria-label="Rezepte suchen"></div>
+    <div id="rList">${state.rezepte ? '' : spinner}</div>`;
+}
+function fillRezepte() {
+  const box = $('#rList'); if (!box || !state.rezepte) return;
+  const q = norm(state.rsuche), list = state.rezepte.filter(r => !q || norm(r.titel + ' ' + (r.zutaten || '')).includes(q));
+  if (!state.rezepte.length) { box.innerHTML = emptyBox('amber', 'book', 'Noch keine Rezepte', 'Sammelt eure Lieblingsrezepte – Omas Knödel, Papas Gulasch. Die Zutaten landen mit einem Tipp auf der Einkaufsliste.'); return; }
+  box.innerHTML = list.length ? `<div class="rgrid c-amber">${list.map(r => { const u = r.klein && URLS[r.klein]?.[0]; return `<button class="rcard" data-action="rezept-open" data-id="${esc(r.id)}"><span class="img" style="${u ? `background-image:url('${esc(u)}')` : ''}">${u ? '' : '🍲'}</span><span class="t"><b>${esc(r.titel)}</b><small>${[r.dauer ? r.dauer + ' Min.' : '', r.portionen ? r.portionen + ' Port.' : '', r.von ? 'von ' + esc(r.von) : ''].filter(Boolean).join(' · ') || '&nbsp;'}</small></span></button>`; }).join('')}</div>` : '<p class="hint" style="margin:8px 4px">Nichts gefunden.</p>';
+}
+async function rezeptOpen(id) {
+  const r = state.rezepte.find(x => x.id === id); if (!r) return;
+  let hero = '';
+  if (r.bild) { try { hero = (await signed([r.bild]))(r.bild); } catch {} }
+  const zut = (r.zutaten || '').split('\n').map(z => z.trim()).filter(Boolean);
+  openSheet(`${hero ? `<div class="rhero" style="background-image:url('${esc(hero)}')"></div>` : ''}<div class="sheet-h c-amber"><span class="shape">${ic('book')}</span><h3>${esc(r.titel)}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <div class="c-amber">
+      <p class="hint" style="margin:-8px 0 14px">${[r.dauer ? '⏱ ' + r.dauer + ' Min.' : '', r.portionen ? '🍽 ' + r.portionen + ' Portionen' : '', r.von ? 'von ' + esc(r.von) : ''].filter(Boolean).join(' · ')}</p>
+      ${zut.length ? `<p class="sub-h" style="margin-top:0">Zutaten</p><div class="zl" id="zl">${zut.map(z => `<label><input type="checkbox" checked value="${esc(z)}">${esc(z)}</label>`).join('')}</div>
+        <button class="btn btn-primary" data-action="rezept-liste" style="width:100%;margin-bottom:18px">${ic('cart', 17)} Ausgewählte auf die Einkaufsliste</button>` : ''}
+      ${r.anleitung ? `<p class="sub-h" style="margin-top:0">Zubereitung</p><p class="anl">${esc(r.anleitung)}</p>` : ''}
+      <div class="field"><label for="rPlan">Im Essensplan einplanen</label><div class="row-actions" style="flex-wrap:nowrap"><input id="rPlan" type="date" class="input" value="${todayIso()}"><button class="btn c-lime" data-action="rezept-plan" data-id="${esc(r.id)}">${ic('utensils', 16)} Einplanen</button></div></div>
+      <div class="sheet-actions"><button class="btn btn-danger icon" data-action="rezept-del" data-id="${esc(r.id)}" aria-label="Rezept löschen">${ic('trash', 17)}</button><span class="grow"></span><button class="btn" data-action="rezept-edit" data-id="${esc(r.id)}">${ic('edit', 16)} Bearbeiten</button></div>
+    </div>`);
+}
+async function rezeptPlan(id) {
+  const r = state.rezepte.find(x => x.id === id), iso = $('#rPlan').value; if (!r || !iso) return;
+  try { state.essen[iso] = await upsert('familie_essen', 'datum', { datum: iso, gericht: r.titel, rezept_id: r.id, zutaten: r.zutaten || null, von: state.me }); toast(`Eingeplant: ${dayLabel(iso).join(', ').replace(/\.$/, '')}.`, 'ok'); }
+  catch (e) { loadErr(e); }
+}
+let rezeptFoto = null;
+function rezeptEdit(r) {
+  const e = r || { titel: '', zutaten: '', anleitung: '', portionen: 4, dauer: null };
+  rezeptFoto = null;
+  openSheet(`<div class="sheet-h c-amber"><span class="shape">${ic('book')}</span><h3>${r ? 'Rezept bearbeiten' : 'Neues Rezept'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="rezForm" class="c-amber">
+      <div class="field"><label for="rTitel">Name</label><input id="rTitel" class="input" maxlength="120" required value="${esc(e.titel)}" placeholder="z. B. Omas Kaspressknödel"></div>
+      <div class="grid2"><div class="field"><label for="rPort">Portionen</label><input id="rPort" class="input" type="number" min="1" max="50" value="${esc(e.portionen || '')}"></div><div class="field"><label for="rDauer">Dauer (Min.)</label><input id="rDauer" class="input" type="number" min="1" max="1440" value="${esc(e.dauer || '')}"></div></div>
+      <div class="field"><label for="rZut">Zutaten (eine pro Zeile)</label><textarea id="rZut" class="input" rows="5" maxlength="4000" placeholder="250 g Knödelbrot&#10;3 Eier&#10;200 g Bergkäse">${esc(e.zutaten || '')}</textarea></div>
+      <div class="field"><label for="rAnl">Zubereitung</label><textarea id="rAnl" class="input" rows="6" maxlength="8000" placeholder="Schritt für Schritt …">${esc(e.anleitung || '')}</textarea></div>
+      <div class="field"><label>Foto</label><div class="row-actions"><button type="button" class="btn sm" data-action="rezept-foto">${ic('camera', 15)} ${r?.bild ? 'Foto ändern' : 'Foto wählen'}</button><span class="hint" id="rFotoInfo">${r?.bild ? 'Hat schon ein Foto' : 'optional'}</span></div></div>
+      <div class="sheet-actions"><span class="grow"></span><button class="btn btn-primary" id="rSave">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  $('#rezForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const row = { titel: $('#rTitel').value.trim(), portionen: Number($('#rPort').value) || null, dauer: Number($('#rDauer').value) || null, zutaten: $('#rZut').value.trim() || null, anleitung: $('#rAnl').value.trim() || null };
+    if (!row.titel) return;
+    $('#rSave').disabled = true;
+    try {
+      if (rezeptFoto) {
+        const id = uuid(), big = await shrink(rezeptFoto, 1200, 0.84), small = await shrink(rezeptFoto, 480, 0.8);
+        row.bild = `rezepte/${id}.jpg`; row.klein = `rezepte/klein/${id}.jpg`;
+        await API.upload(row.bild, big.blob); await API.upload(row.klein, small.blob);
+        if (r) API.removeFiles([r.bild, r.klein]);
+        await signed([row.klein, row.bild]).catch(() => {});
+      }
+      if (r) Object.assign(r, await patch('familie_rezepte', r.id, row));
+      else state.rezepte.push(await insert('familie_rezepte', { ...row, von: state.me }));
+      state.rezepte.sort((a, b) => a.titel.localeCompare(b.titel, 'de'));
+      closeSheet(); fill(); toast('Rezept gespeichert.', 'ok');
+    } catch (err) { $('#rSave').disabled = false; loadErr(err); }
+  });
+  if (!r) setTimeout(() => $('#rTitel')?.focus(), 80);
+}
+async function rezeptDel(id) {
+  const r = state.rezepte.find(x => x.id === id); if (!r || !confirm(`Rezept „${r.titel}“ löschen?`)) return;
+  try { await remove('familie_rezepte', id); API.removeFiles([r.bild, r.klein]); state.rezepte = state.rezepte.filter(x => x !== r); closeSheet(); fill(); }
+  catch (e) { loadErr(e); }
+}
+
+/* ---------- Countdowns ---------- */
+async function loadCountdowns(quiet) {
+  try {
+    const r = await API.rest('/familie_countdowns?select=*&order=datum') || [];
+    if (quiet && same(r, state.countdowns)) return;
+    state.countdowns = r;
+    if (state.tab === 'countdowns') fillCd();
+    if (state.tab === 'start') fillDash();
+    if (state.tab === 'mehr') fillHub();
+  } catch (e) { loadErr(e, quiet); }
+}
+function cdShell() { return `${header('Countdowns', 'Worauf freut ihr euch?', 'purple', 'hourglass', `<button class="btn btn-primary c-purple" data-action="cd-neu">${ic('plus', 18)} Neu</button>`, true)}<div id="cdList">${state.countdowns ? '' : spinner}</div>`; }
+function fillCd() {
+  const box = $('#cdList'); if (!box || !state.countdowns) return;
+  if (!state.countdowns.length) { box.innerHTML = emptyBox('purple', 'hourglass', 'Noch kein Countdown', 'Urlaub, Weihnachten, die Hochzeit – die Tage bis dahin stehen dann auch auf der Startseite.'); return; }
+  const t = todayIso(), up = state.countdowns.filter(c => c.datum >= t), past = state.countdowns.filter(c => c.datum < t).reverse();
+  const row = c => { const n = dayDiff(new Date(), parseDay(c.datum)); return `<button class="cd c-purple ${n < 0 ? 'past' : ''}" data-action="cd-edit" data-id="${esc(c.id)}"><span class="shape lg">${esc(c.emoji || '⏳')}</span><span class="t"><b>${esc(c.titel)}</b><small>${esc(parseDay(c.datum).toLocaleDateString('de-AT', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' }))}</small></span><span class="num">${n === 0 ? '🎉' : Math.abs(n)}<small>${n === 0 ? 'Heute!' : n === 1 ? 'Tag' : n < 0 ? 'Tage her' : 'Tage'}</small></span></button>`; };
+  box.innerHTML = `<div class="cds">${up.map(row).join('')}</div>${past.length ? `<p class="sub-h">Vorbei</p><div class="cds">${past.map(row).join('')}</div>` : ''}`;
+}
+function cdSheet(c) {
+  const e = c || { titel: '', datum: isoDay(addDays(new Date(), 30)), emoji: '✈️' };
+  openSheet(`<div class="sheet-h c-purple"><span class="shape">${ic('hourglass')}</span><h3>${c ? 'Countdown' : 'Neuer Countdown'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="cdForm" class="c-purple">
+      <div class="field"><label for="cTitel">Worauf?</label><input id="cTitel" class="input" maxlength="80" required value="${esc(e.titel)}" placeholder="z. B. Urlaub in Kroatien"></div>
+      <div class="field"><label for="cDatum">Datum</label><input id="cDatum" class="input" type="date" required value="${esc(e.datum)}"></div>
+      <div class="field" style="margin-bottom:6px"><label>Symbol</label></div>
+      <div class="emo" id="cdEmo">${CD_EMO.map(x => `<button type="button" class="${x === e.emoji ? 'on' : ''}" data-e="${x}">${x}</button>`).join('')}</div>
+      <div class="sheet-actions">${c ? `<button type="button" class="btn btn-danger" data-action="cd-del" data-id="${esc(c.id)}">${ic('trash', 17)} Löschen</button>` : ''}<span class="grow"></span><button class="btn btn-primary">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  $('#cdEmo').addEventListener('click', ev => { const b = ev.target.closest('button[data-e]'); if (!b) return; $$('#cdEmo button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#cdForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const row = { titel: $('#cTitel').value.trim(), datum: $('#cDatum').value, emoji: $('#cdEmo button.on')?.dataset.e || '⏳' };
+    if (!row.titel || !row.datum) return;
+    try {
+      if (c) Object.assign(c, await patch('familie_countdowns', c.id, row)); else state.countdowns.push(await insert('familie_countdowns', { ...row, von: state.me }));
+      state.countdowns.sort((a, b) => a.datum.localeCompare(b.datum)); closeSheet(); fill();
+    } catch (err) { loadErr(err); }
+  });
+}
+async function cdDel(id) {
+  if (!confirm('Countdown löschen?')) return;
+  try { await remove('familie_countdowns', id); state.countdowns = state.countdowns.filter(x => x.id !== id); closeSheet(); fill(); } catch (e) { loadErr(e); }
+}
+
+/* ---------- Wichtige Infos ---------- */
+async function loadInfos(quiet) {
+  try {
+    const r = await API.rest('/familie_infos?select=*&order=titel') || [];
+    if (quiet && same(r, state.infos)) return;
+    state.infos = r;
+    if (state.tab === 'infos') fillInfos();
+    if (state.tab === 'mehr') fillHub();
+  } catch (e) { loadErr(e, quiet); }
+}
+function infosShell() { return `${header('Wichtige Infos', 'Für alle schnell griffbereit', 'red', 'siren', `<button class="btn btn-primary c-red" data-action="info-neu">${ic('plus', 18)} Neu</button>`, true)}<div id="infoList">${state.infos ? '' : spinner}</div>`; }
+function fillInfos() {
+  const box = $('#infoList'); if (!box || !state.infos) return;
+  if (!state.infos.length) { box.innerHTML = emptyBox('red', 'siren', 'Noch nichts eingetragen', 'Zum Beispiel: Rettung 144, Hausarzt mit Telefonnummer, WLAN-Passwort, wann die Müllabfuhr kommt.'); return; }
+  box.innerHTML = INFO_ART.map(([k, e, l, c]) => { const g = state.infos.filter(i => i.art === k); return g.length ? `<section class="card infos c-${c}"><div class="card-h"><span class="shape" style="font-size:20px">${e}</span><span class="t"><b>${l}</b></span></div>
+    ${g.map(i => `<div class="en"><div class="h"><b>${esc(i.titel)}</b>${i.inhalt ? `<button class="ghost" style="width:34px;height:34px" data-action="info-copy" data-id="${esc(i.id)}" aria-label="Kopieren">${ic('copy', 16)}</button>` : ''}<button class="ghost" style="width:34px;height:34px" data-action="info-edit" data-id="${esc(i.id)}" aria-label="Bearbeiten">${ic('edit', 16)}</button></div>${i.inhalt ? `<p>${linkify(esc(i.inhalt))}</p>` : ''}</div>`).join('')}</section>` : ''; }).join('');
+}
+function infoSheet(i) {
+  const e = i || { art: 'notfall', titel: '', inhalt: '' };
+  openSheet(`<div class="sheet-h c-red"><span class="shape">${ic('siren')}</span><h3>${i ? 'Info bearbeiten' : 'Neue Info'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="infoForm" class="c-red">
+      <div class="field" style="margin-bottom:6px"><label>Bereich</label></div>
+      <div class="chipsel" id="artSel">${INFO_ART.map(([k, em, l, c]) => `<button type="button" class="c-${c} ${e.art === k ? 'on' : ''}" data-k="${k}">${em} ${l}</button>`).join('')}</div>
+      <div class="field"><label for="inTitel">Titel</label><input id="inTitel" class="input" maxlength="80" required value="${esc(e.titel)}" placeholder="z. B. Hausarzt Dr. Huber, WLAN"></div>
+      <div class="field"><label for="inText">Inhalt</label><textarea id="inText" class="input" rows="4" maxlength="4000" placeholder="Telefonnummern werden zum Antippen">${esc(e.inhalt || '')}</textarea></div>
+      <div class="sheet-actions">${i ? `<button type="button" class="btn btn-danger" data-action="info-del" data-id="${esc(i.id)}">${ic('trash', 17)} Löschen</button>` : ''}<span class="grow"></span><button class="btn btn-primary">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  $('#artSel').addEventListener('click', ev => { const b = ev.target.closest('button[data-k]'); if (!b) return; $$('#artSel button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#infoForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const row = { art: $('#artSel button.on')?.dataset.k || 'sonstiges', titel: $('#inTitel').value.trim(), inhalt: $('#inText').value.trim() || null, aktualisiert: new Date().toISOString() };
+    if (!row.titel) return;
+    try { if (i) Object.assign(i, await patch('familie_infos', i.id, row)); else state.infos.push(await insert('familie_infos', { ...row, von: state.me })); closeSheet(); fill(); }
+    catch (err) { loadErr(err); }
+  });
+}
+async function infoDel(id) {
+  if (!confirm('Eintrag löschen?')) return;
+  try { await remove('familie_infos', id); state.infos = state.infos.filter(x => x.id !== id); closeSheet(); fill(); } catch (e) { loadErr(e); }
 }
 
 /* ---------- Benachrichtigungen ---------- */
@@ -1139,7 +2015,7 @@ async function loadPushInfo() {
   try { state.wp.info = await API.rest('/rpc/mapq_familie_info', { method: 'POST', body: '{}' }); } catch { state.wp.info = null; }
   try { const reg = wpSupported() ? await navigator.serviceWorker.getRegistration('/familie/') : null; const sub = reg ? await reg.pushManager.getSubscription() : null; state.wp.mine = sub ? sub.endpoint : null; } catch { state.wp.mine = null; }
   state.wp.loaded = true;
-  if (!$('#sheetWrap').classList.contains('open') && !$('#app').hidden && (state.tab === 'mehr' || state.tab === 'start')) renderView();
+  if (!$('#sheetWrap').classList.contains('open') && !$('#app').hidden && (state.tab === 'ich' || state.tab === 'start')) renderView();
 }
 async function wpEnable() {
   if (!wpSupported() || !state.wp.info?.vapid_public) return;
@@ -1185,24 +2061,46 @@ function pushCard() {
     ? `<p class="muted" style="margin:0;font-size:14px">Am iPhone gehen Benachrichtigungen nur in der App vom Home-Bildschirm: in Safari auf <b style="color:var(--text)">Teilen → „Zum Home-Bildschirm“</b>, dann die App „Familie“ öffnen.</p>`
     : '<p class="hint" style="margin:0">Dieser Browser kann keine Benachrichtigungen empfangen.</p>';
   else if (Notification.permission === 'denied') body = `<p class="muted" style="margin:0;font-size:14px">Blockiert. ${platform() === 'ios' ? 'iPhone-Einstellungen → Mitteilungen → <b style="color:var(--text)">Familie</b> → „Mitteilungen erlauben“.' : 'In den Browser- bzw. Handy-Einstellungen erlauben.'}</p>`;
-  else if (wp.mine) { chip = '<span class="chip c-green">An</span>'; body = `<p class="hint" style="margin:0 0 12px">Du bekommst Bescheid, wenn jemand anderes etwas einträgt – deine eigenen Einträge melden sich nicht.</p>
+  else if (wp.mine) { chip = '<span class="chip c-green">An</span>'; body = `<p class="hint" style="margin:0 0 12px">Du bekommst Bescheid, wenn jemand anderes etwas einträgt, und Erinnerungen an Termine und den Putzplan.</p>
     <div class="row-actions"><button class="btn sm" data-action="wp-test">${ic('bell', 15)} Test</button><button class="btn sm" data-action="wp-disable">Ausschalten</button></div>`; }
-  else body = `<p class="muted" style="margin:0 0 12px;font-size:14px">Dein Handy meldet sich, wenn jemand etwas einträgt, ein Foto teilt oder auf die Pinnwand schreibt.</p><button class="btn btn-primary" data-action="wp-enable" ${wp.busy ? 'disabled' : ''}>${ic('bell', 18)} ${wp.busy ? 'Einen Moment …' : 'Einschalten'}</button>`;
+  else body = `<p class="muted" style="margin:0 0 12px;font-size:14px">Dein Handy meldet sich, wenn jemand etwas einträgt – und erinnert dich an Termine und den Putzplan.</p><button class="btn btn-primary" data-action="wp-enable" ${wp.busy ? 'disabled' : ''}>${ic('bell', 18)} ${wp.busy ? 'Einen Moment …' : 'Einschalten'}</button>`;
   return `<section class="card c-purple"><div class="card-h"><span class="shape">${ic('bell')}</span><span class="t"><b>Benachrichtigungen</b></span>${chip}</div>${body}</section>`;
 }
 
 /* ---------- Ich ---------- */
-function mehrView() {
-  const m = state.members;
-  return `${header(esc(state.me), 'auf diesem ' + esc(deviceLabel()), colorOf(state.me), 'users', '<button class="btn sm" data-action="who">Wechseln</button>')}
+function ichView() {
+  const m = state.members, c = colorOf(state.me), s = statusOf(state.me), cur = state.mem[state.me]?.status;
+  return `<button class="back" data-action="go" data-tab="mehr">${ic('left', 18)} Mehr</button>
+    <section class="card c-${c}"><div class="prof">${av(state.me)}<div class="t"><b>${esc(state.me)}</b><small>auf diesem ${esc(deviceLabel())}${s ? ' · ' + s.emoji + ' ' + esc(s.label) : ''}</small></div><button class="btn sm" data-action="who">Wechseln</button></div>
+      <div class="row-actions" style="margin-top:14px"><button class="btn sm" data-action="avatar-pick">${ic('camera', 15)} ${state.mem[state.me]?.bild ? 'Foto ändern' : 'Profilfoto'}</button>${state.mem[state.me]?.bild ? `<button class="btn sm" data-action="avatar-del">Foto entfernen</button>` : ''}</div>
+      <p class="sub-h" style="margin:18px 0 10px">Deine Farbe</p>
+      <div class="palette">${PALETTE.map(p => `<button class="c-${p} ${p === c ? 'on' : ''}" data-action="set-farbe" data-f="${p}" aria-label="Farbe ${p}"></button>`).join('')}</div>
+      <p class="sub-h" style="margin:18px 0 10px">Status</p>
+      <div class="stgrid">${STATUS.map(x => `<button class="stb ${cur === x[0] && s ? 'on' : ''}" data-action="set-status" data-s="${x[0]}"><span class="e">${x[1]}</span>${x[2]}</button>`).join('')}</div>
+      ${s ? `<button class="btn sm" style="margin-top:10px" data-action="set-status" data-s="">Status entfernen</button>` : ''}</section>
     ${pushCard()}
     <section class="card c-sky"><div class="card-h"><span class="shape">${ic('pin')}</span><span class="t"><b>Ort fürs Wetter</b><small>${esc(place().name)}</small></span></div>
       <form id="ortForm" class="row-actions" style="flex-wrap:nowrap"><input id="ortName" class="input" placeholder="z. B. Schwaz, Kufstein" maxlength="60" autocomplete="address-level2"><button class="btn btn-primary c-sky">Ändern</button></form></section>
     ${!isStandalone() && platform() !== 'desktop' ? `<section class="card c-teal"><div class="card-h"><span class="shape">${ic('phone')}</span><span class="t"><b>Als App aufs Handy</b></span></div><ol class="steps">${platform() === 'ios' ? '<li>In <b>Safari</b> unten auf <b>Teilen</b> tippen.</li><li><b>„Zum Home-Bildschirm“</b> wählen, dann <b>Hinzufügen</b>.</li><li>Ab jetzt über das neue Icon öffnen.</li>' : '<li>Im Browser-Menü <b>⋮</b> öffnen.</li><li><b>„App installieren“</b> oder „Zum Startbildschirm“ wählen.</li>'}</ol></section>` : ''}
     <section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>${m.length} ${m.length === 1 ? 'Person' : 'Personen'}</small></span></div>
-      ${m.length ? m.map(n => `<div class="mrow">${av(n)}<span class="t">${esc(n)}${n === state.me ? '<small>du</small>' : ''}</span>${n === state.me ? '' : `<button class="ghost" data-action="del-member" data-name="${esc(n)}" aria-label="${esc(n)} entfernen">${ic('x', 18)}</button>`}</div>`).join('') : '<p class="hint" style="margin:0">Noch niemand.</p>'}
+      ${m.length ? m.map(n => { const st = statusOf(n); return `<div class="mrow">${av(n)}<span class="t">${esc(n)}<small>${n === state.me ? 'du' : ''}${st ? (n === state.me ? ' · ' : '') + st.emoji + ' ' + esc(st.label) : ''}</small></span>${n === state.me ? '' : `<button class="ghost" data-action="del-member" data-name="${esc(n)}" aria-label="${esc(n)} entfernen">${ic('x', 18)}</button>`}</div>`; }).join('') : '<p class="hint" style="margin:0">Noch niemand.</p>'}
       <p class="hint" style="margin:12px 0 0">Neue Familienmitglieder öffnen <b style="color:var(--text)">mapq.at/familie</b>, melden sich mit dem Familien-Passwort an und tippen ihren Namen ein.</p></section>
     <button class="btn btn-danger" data-action="logout" style="width:100%">${ic('logout', 17)} Auf diesem Handy abmelden</button>`;
+}
+async function setFarbe(f) { try { await patchMe({ farbe: f }); $('#meBtn').innerHTML = av(state.me, 'sm'); renderView(); } catch (e) { loadErr(e); } }
+async function setAvatar(file) {
+  try {
+    const p = await shrink(file, 320, 0.85, true), path = `profil/${uuid()}.jpg`, old = state.mem[state.me]?.bild;
+    await API.upload(path, p.blob);
+    await signed([path]);
+    await patchMe({ bild: path });
+    if (old) API.removeFiles([old]);
+    $('#meBtn').innerHTML = av(state.me, 'sm'); renderView(); toast('Profilfoto gespeichert.', 'ok');
+  } catch (e) { loadErr(e); }
+}
+async function delAvatar() {
+  const old = state.mem[state.me]?.bild; if (!old) return;
+  try { await patchMe({ bild: null }); API.removeFiles([old]); $('#meBtn').innerHTML = av(state.me, 'sm'); renderView(); } catch (e) { loadErr(e); }
 }
 async function setOrt(name) {
   try {
@@ -1214,39 +2112,53 @@ async function setOrt(name) {
 }
 async function delMember(name) {
   if (!confirm(`„${name}“ aus der Liste entfernen? Einträge von ${name} bleiben erhalten.`)) return;
-  try { await API.rest('/familie_mitglieder?name=eq.' + encodeURIComponent(name), { method: 'DELETE' }); state.members = state.members.filter(n => n !== name); renderView(); }
+  try { await API.rest('/familie_mitglieder?name=eq.' + encodeURIComponent(name), { method: 'DELETE' }); state.members = state.members.filter(n => n !== name); delete state.mem[name]; renderView(); }
   catch (e) { loadErr(e); }
 }
 async function logout() {
   if (!confirm('Auf diesem Handy abmelden?')) return;
   await wpDisable(true);
-  API.logout(); store.del('name'); state.me = null; state.items = state.termine = state.fotos = state.msgs = null;
+  API.logout(); store.del('name'); state.me = null; state.items = state.termine = state.fotos = state.msgs = state.aufgaben = state.rezepte = state.countdowns = state.infos = state.alben = null;
   showLogin();
 }
 
 /* ---------- Dialog ---------- */
 function openSheet(html) { $('#sheet').innerHTML = html; $('#sheetWrap').classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeSheet() { $('#sheetWrap').classList.remove('open'); $('#sheet').innerHTML = ''; document.body.style.overflow = ''; pending.forEach(p => URL.revokeObjectURL(p.url)); pending = []; }
+function closeSheet() {
+  if (!$('#sheetWrap').classList.contains('open')) return;
+  $('#sheetWrap').classList.remove('open'); $('#sheet').innerHTML = ''; document.body.style.overflow = lbI >= 0 ? 'hidden' : '';
+  pending.forEach(p => URL.revokeObjectURL(p.url)); pending = [];
+}
 
 /* ---------- Aktionen ---------- */
 function quick(q) {
-  if (q === 'foto') return $('#fotoInput').click();
+  if (q === 'foto') { ensureAlben(); return $('#fotoInput').click(); }
   if (q === 'termin') { if (state.termine === null) loadTermine(); return terminSheet(null, todayIso()); }
   if (q === 'einkauf') { state.liste = 'einkauf'; store.set('liste', 'einkauf'); go('listen'); setTimeout(() => $('#addText')?.focus(), 60); return; }
   if (q === 'nachricht') { go('pinnwand'); setTimeout(() => $('#postText')?.focus(), 60); }
 }
 const ACTIONS = {
-  go: el => { closeFoto(); if (el.dataset.liste) { state.liste = el.dataset.liste; store.set('liste', state.liste); } go(el.dataset.tab); },
+  go: el => { closeFoto(); closeSheet(); if (el.dataset.liste) { state.liste = el.dataset.liste; store.set('liste', state.liste); } go(el.dataset.tab); },
   quick: el => quick(el.dataset.q),
   'refresh-weather': () => loadWeather(true),
   'toggle-pass': el => { const i = el.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; },
   'pick-name': el => pickName(el.dataset.name, false),
   'who-cancel': () => startApp(),
   who: () => showWho(),
-  liste: el => { state.liste = el.dataset.liste; store.set('liste', state.liste); renderView(); },
+  status: () => statusSheet(),
+  'set-status': el => setStatus(el.dataset.s),
+  'set-farbe': el => setFarbe(el.dataset.f),
+  'avatar-pick': () => $('#avatarInput').click(),
+  'avatar-del': () => delAvatar(),
+  liste: el => { state.liste = el.dataset.liste; store.set('liste', state.liste); renderView(); LOADERS.listen(); },
   toggle: el => toggleItem(el.dataset.id),
+  'edit-item': el => itemSheet(el.dataset.id),
   'del-item': el => delItem(el.dataset.id),
   'clear-done': (el, e) => { e.preventDefault(); clearDone(); },
+  'new-aufgabe': () => aufgabeSheet(null),
+  'edit-aufgabe': el => aufgabeSheet((state.aufgaben || []).find(a => a.id === el.dataset.id)),
+  'del-aufgabe': el => delAufgabe(el.dataset.id),
+  'toggle-aufgabe': el => toggleAufgabe(el.dataset.id, el.dataset.d),
   'hide-install': () => { store.set('hideInstall', true); renderView(); },
   'hide-push': () => { store.set('hidePush', true); renderView(); },
   'cal-move': el => { const d = new Date(state.cal.y, state.cal.m + Number(el.dataset.d), 1); state.cal = { y: d.getFullYear(), m: d.getMonth() }; fillCal(); },
@@ -1255,7 +2167,12 @@ const ACTIONS = {
   'new-termin': el => terminSheet(null, el.dataset.day),
   'edit-termin': el => terminSheet(state.termine.find(t => t.id === el.dataset.id)),
   'del-termin': el => delTermin(el.dataset.id),
-  'pick-fotos': () => $('#fotoInput').click(),
+  'pick-fotos': () => { ensureAlben(); $('#fotoInput').click(); },
+  'foto-view': el => { state.fotoView = el.dataset.v; renderView(); LOADERS.fotos(); },
+  'album-open': el => { state.album = el.dataset.id; state.fotos = null; renderView(); loadFotos(); },
+  'album-close': () => { state.album = null; state.fotos = null; state.fotoView = 'alben'; renderView(); loadFotos(); loadAlben(); },
+  'album-new': () => albumSheet(),
+  'album-del': () => delAlbum(),
   upload: () => upload(),
   'more-fotos': el => { el.disabled = true; loadFotos(false, true); },
   'open-foto': el => openFoto(Number(el.dataset.i)),
@@ -1263,7 +2180,34 @@ const ACTIONS = {
   'lb-go': el => lbGo(Number(el.dataset.d)),
   'lb-share': () => shareFoto(),
   'lb-del': () => delFoto(),
+  'foto-komm': () => fotoKommSheet(),
+  'foto-album': async () => { await ensureAlben(); fotoAlbumSheet(); },
+  react: el => toggleReact(el.dataset.typ, el.dataset.id, el.dataset.e),
+  'react-pick': el => { state.pick = state.pick === el.dataset.key ? null : el.dataset.key; redrawZiel(el.dataset.key.split(':')[0]); },
+  'komm-toggle': el => { const id = el.dataset.id; state.openKomm.has(id) ? state.openKomm.delete(id) : state.openKomm.add(id); fillPosts(); if (state.openKomm.has(id)) setTimeout(() => $(`form[data-komm="${CSS.escape(id)}"] input`)?.focus(), 30); },
+  'del-komm': el => delKomm(el.dataset.id, el.dataset.ziel, el.dataset.typ),
   'del-post': el => delPost(el.dataset.id),
+  'poll-toggle': () => { state.poll = !state.poll; const t = $('#postText').value; renderView(); $('#postText').value = t; },
+  'poll-add': el => { const n = $$('.popt').length; if (n >= 6) return; const i = document.createElement('input'); i.className = 'input popt'; i.maxLength = 80; i.placeholder = `Antwort ${n + 1}`; el.before(i); i.focus(); if (n + 1 >= 6) el.hidden = true; },
+  vote: el => vote(el.dataset.id, Number(el.dataset.o)),
+  woche: el => { state.essenWoche += Number(el.dataset.d); fillEssen(); loadEssen(); },
+  'essen-edit': el => { if (!state.rezepte) loadRezepte(true); essenSheet(el.dataset.d); },
+  'essen-del': el => delEssen(el.dataset.d),
+  'essen-zutaten': () => essenZutaten(),
+  'rezept-neu': () => rezeptEdit(null),
+  'rezept-open': el => rezeptOpen(el.dataset.id),
+  'rezept-edit': el => rezeptEdit(state.rezepte.find(r => r.id === el.dataset.id)),
+  'rezept-del': el => rezeptDel(el.dataset.id),
+  'rezept-plan': el => rezeptPlan(el.dataset.id),
+  'rezept-liste': async () => { const l = $$('#zl input:checked').map(i => i.value); if (!l.length) return; try { await addToShopping(l); } catch (e) { loadErr(e); } },
+  'rezept-foto': () => $('#rezeptInput').click(),
+  'cd-neu': () => cdSheet(null),
+  'cd-edit': el => cdSheet(state.countdowns.find(c => c.id === el.dataset.id)),
+  'cd-del': el => cdDel(el.dataset.id),
+  'info-neu': () => infoSheet(null),
+  'info-edit': el => infoSheet(state.infos.find(i => i.id === el.dataset.id)),
+  'info-del': el => infoDel(el.dataset.id),
+  'info-copy': async el => { const i = state.infos.find(x => x.id === el.dataset.id); try { await navigator.clipboard.writeText(i.inhalt || ''); toast('Kopiert.', 'ok'); } catch { toast('Kopieren ging nicht.', 'bad'); } },
   'wp-enable': () => wpEnable(),
   'wp-disable': () => wpDisable(),
   'wp-test': () => wpTest(),
@@ -1281,13 +2225,18 @@ document.addEventListener('submit', e => {
   if (e.target.id === 'addForm') { e.preventDefault(); addItem(); }
   if (e.target.id === 'postForm') { e.preventDefault(); sendPost(); }
   if (e.target.id === 'ortForm') { e.preventDefault(); const n = $('#ortName').value.trim(); if (n) setOrt(n); }
+  if (e.target.matches('form.kform')) { e.preventDefault(); sendKomm(e.target); }
 });
+document.addEventListener('input', e => { if (e.target.id === 'rSuche') { state.rsuche = e.target.value; fillRezepte(); } });
 document.addEventListener('keydown', e => {
   if (e.target.id === 'postText' && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); sendPost(); }
+  if (e.key === 'Enter' && e.target.closest?.('[data-action="status"]')) statusSheet();
+  if ($('#sheetWrap').classList.contains('open')) { if (e.key === 'Escape') closeSheet(); return; }
   if (lbI >= 0) { if (e.key === 'Escape') closeFoto(); if (e.key === 'ArrowLeft') lbGo(-1); if (e.key === 'ArrowRight') lbGo(1); }
-  else if (e.key === 'Escape' && $('#sheetWrap').classList.contains('open')) closeSheet();
 });
-$('#fotoInput').addEventListener('change', e => { const f = [...e.target.files].filter(x => /^image\//.test(x.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(x.name)); e.target.value = ''; if (f.length) uploadSheet(f); });
+$('#fotoInput').addEventListener('change', e => { const f = [...e.target.files].filter(x => /^(image|video)\//.test(x.type) || /\.(jpe?g|png|heic|heif|webp|mov|mp4|m4v|webm)$/i.test(x.name)); e.target.value = ''; if (f.length) uploadSheet(f); });
+$('#avatarInput').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) setAvatar(f); });
+$('#rezeptInput').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; rezeptFoto = f; const i = $('#rFotoInfo'); if (i) i.textContent = '✓ ' + f.name; });
 window.addEventListener('popstate', () => { if (lbI >= 0) closeFoto(); });
 boot();
 </script>

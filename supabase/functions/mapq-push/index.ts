@@ -2,7 +2,8 @@
 //
 // Aufrufe:
 //  • vom Datenbank-Trigger bei neuer Anfrage: Header "x-mapq-secret" (aus mapq_einstellungen.push_secret)
-//  • vom Datenbank-Trigger der Familien-App: gleicher Header, Body { ziel: "familie", titel, text, url, tag, von }
+//  • vom Datenbank-Trigger der Familien-App: gleicher Header, Body { ziel: "familie", titel, text, url, tag, von?, an? }
+//    (von = an alle außer dieser Person, an = nur an diese Person – z. B. Erinnerungen)
 //  • vom Panel als Test: Header "Authorization: Bearer <Login-Token>" + "apikey" – nur für den Admin
 //  • vom Panel { aktion: "familie-passwort", passwort } – legt das Familien-Konto an bzw. ändert sein Passwort (nur Admin)
 //  • von der Familien-App { aktion: "familie-test", endpoint } – Test an dieses eine Gerät (nur Familien-Konto)
@@ -146,7 +147,8 @@ async function handler(req: Request): Promise<Response> {
       // Familien-App: an alle Familien-Geräte außer an die der Person, die etwas eingetragen hat
       tabelle = "familie_abos";
       const von = typeof data.von === "string" && data.von ? data.von : null;
-      passt = (a) => !von || a.name !== von;
+      const an = typeof data.an === "string" && data.an ? data.an : null;
+      passt = (a) => an ? a.name === an : (!von || a.name !== von);
       msg = {
         title: String(data.titel ?? "Familie").slice(0, 80),
         body: String(data.text ?? "").slice(0, 240),
@@ -168,7 +170,7 @@ async function handler(req: Request): Promise<Response> {
       if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
       tabelle = "familie_abos";
       passt = (a) => a.endpoint === data.endpoint;
-      msg = { title: "Familie", body: "Test: Benachrichtigungen funktionieren.", url: "/familie/#mehr", tag: "familie-test" };
+      msg = { title: "Familie", body: "Test: Benachrichtigungen funktionieren.", url: "/familie/#ich", tag: "familie-test" };
     } else {
       // Test aus dem Panel – nur wenn der Login-Token zum Admin gehört
       if (!(await rolle("mapq_ist_admin"))) return json({ error: "Kein Zugriff" }, 401);
