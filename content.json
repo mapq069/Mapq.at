@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T17:32:22.868Z",
+  "updatedAt": "2026-10-29T15:27:09.698Z",
   "site": {
     "kicker": "Fotografie · Tirol, Österreich",
     "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
@@ -20,6 +20,15 @@
     "tiktok": ""
   },
   "photos": [
+    {
+      "f": "dsc01267-m1ae",
+      "t": "",
+      "c": [
+        "moto"
+      ],
+      "ar": 0.5625,
+      "hl": true
+    },
     {
       "f": "dsc00778-re8u",
       "t": "",
@@ -83,15 +92,6 @@
       ],
       "ar": 0.5625,
       "hl": true
-    },
-    {
-      "f": "supermoto-strasse",
-      "t": "Fahrerin mit Supermoto auf einer Bergstraße",
-      "c": [
-        "moto"
-      ],
-      "ar": 1.7778,
-      "hl": false
     },
     {
       "f": "cockpit",
