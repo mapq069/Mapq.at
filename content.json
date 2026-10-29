@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T15:30:36.106Z",
+  "updatedAt": "2026-10-29T17:28:44.872Z",
   "site": {
     "kicker": "Fotografie · Tirol, Österreich",
     "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
@@ -164,5 +164,79 @@
     "url": "https://hrtmghsuuoqhfwffqvui.supabase.co",
     "key": "sb_publishable_XvMY8rn4eJMRAaA6ZgSqAg_fPBGbLV-"
   },
-  "stats": true
+  "stats": true,
+  "familie": {
+    "titel": "Familie",
+    "tabs": [
+      {
+        "id": "start",
+        "label": "Start",
+        "farbe": "indigo",
+        "an": true
+      },
+      {
+        "id": "listen",
+        "label": "Listen",
+        "farbe": "amber",
+        "an": true
+      },
+      {
+        "id": "kalender",
+        "label": "Kalender",
+        "farbe": "orange",
+        "an": true
+      },
+      {
+        "id": "karte",
+        "label": "Karte",
+        "farbe": "sky",
+        "an": true
+      },
+      {
+        "id": "fotos",
+        "label": "Fotos",
+        "farbe": "pink",
+        "an": false
+      },
+      {
+        "id": "pinnwand",
+        "label": "Pinnwand",
+        "farbe": "green",
+        "an": true
+      },
+      {
+        "id": "zuhause",
+        "label": "Zuhause",
+        "farbe": "teal",
+        "an": true
+      },
+      {
+        "id": "mehr",
+        "label": "Mehr",
+        "farbe": "purple",
+        "an": true
+      }
+    ],
+    "mehr": {
+      "karte": true,
+      "fotos": true,
+      "essen": true,
+      "rezepte": true,
+      "putzplan": true,
+      "countdowns": true,
+      "infos": true
+    },
+    "start": {
+      "wetter": true,
+      "schnell": true,
+      "leiste": true,
+      "kacheln": true,
+      "zuhause": true,
+      "putzplan": true,
+      "pinnwand": true,
+      "termine": true,
+      "familie": true,
+      "fotos": true
+    }
+  }
 }
