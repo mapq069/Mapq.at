@@ -522,7 +522,12 @@ details.dev-set[open]>summary{margin-bottom:10px}
 .karte-w{position:relative;margin-bottom:12px}
 .karte{height:46vh;min-height:260px;max-height:520px;border-radius:var(--r);overflow:hidden;background:var(--card);z-index:0}
 .leaflet-container{background:#191a1d!important;font:inherit}
-.karte.hell.leaflet-container{background:#dedad2!important}
+.karte.hell.leaflet-container{background:#f2efe9!important}
+/* „Dunkel“: dieselbe OpenStreetMap-Karte, abgedunkelt (Wasser bleibt bläulich) */
+.karte:not(.hell) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.88) saturate(.55)}
+/* Leaflet setzt Bilder in Markierungen auf width:auto – Profilbild sonst riesig und abgeschnitten */
+.kpin .av{overflow:hidden}
+.kpin .av img{width:100%!important;height:100%!important;object-fit:cover;border-radius:50%}
 .kstatus{position:absolute;top:10px;left:10px;right:60px;z-index:2;min-height:40px;padding:9px 13px;border-radius:14px;background:rgba(20,20,23,.9);color:var(--text);font-size:13.5px;line-height:1.4;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.4)}
 .kstatus[hidden]{display:none}
 .btn.kstil{position:absolute;top:10px;right:10px;z-index:2;width:40px;min-height:40px;box-shadow:0 4px 12px rgba(0,0,0,.35)}
@@ -2660,11 +2665,12 @@ async function loadOrte(quiet) {
     const j = await smartFn({ aktion: 'standort-liste' });
     // Antwort ohne Liste = in Supabase läuft noch die alte Funktion
     if (!Array.isArray(j?.standorte)) throw Object.assign(new Error('Die Karte braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=5 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
+    ortNamenEinsetzen(j.standorte);
     state.orte = j; state.orteErr = null;
+    fehlendeOrte();
   }
   catch (e) { if (e.silent) return; state.orteErr = e; if (!quiet && !e.alt) toast(errMsg(e), 'bad'); }
-  if ($('#sheetWrap').classList.contains('open')) return;
-  if (state.tab === 'karte') fillKarte(); else if (state.tab === 'start') fillDash(); else if (state.tab === 'mehr') fillHub(); else if (state.tab === 'ich') renderView();
+  orteZeigen();
 }
 function position() {
   return new Promise((res, rej) => {
@@ -2683,6 +2689,7 @@ async function ortTeilen(still) {
     store.set('ortZuletzt', Date.now());
     if (state.orte) state.orte.standorte = [...state.orte.standorte.filter(x => x.name !== state.me), j.standort];
     else state.orte = { standorte: [j.standort], kurzbefehl: [], zuhause: null };
+    if (!j.standort.ort) { ortNamenEinsetzen([j.standort]); fehlendeOrte(); }
     if (!still) toast(`Standort geteilt${j.standort.ort ? ' – ' + ortName(j.standort) : ''}.`, 'ok');
     if (state.tab === 'karte') fillKarte(); else if (state.tab === 'ich') renderView(); else if (state.tab === 'start') fillDash();
   } catch (e) { if (!still && !e.silent) toast(errMsg(e), 'bad'); }
@@ -2724,30 +2731,29 @@ function ladeLeaflet() {
     document.head.appendChild(s);
   }));
 }
-/* Kartenbilder: hell (CARTO Voyager, wie Apple Karten) oder dunkel (CARTO Dark Matter), pro Handy wählbar.
-   Kommen von CARTO keine Bilder an, springt die Karte auf OpenStreetMap um. */
-const OSM_A = '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>';
-const KACHELN = {
-  hell: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', att: OSM_A + ' · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a>' },
-  dunkel: { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', sub: 'abcd', att: OSM_A + ' · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a>' },
-  osm: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: 'abc', att: OSM_A }
-};
+/* Kartenbilder von OpenStreetMap – ohne Schlüssel. (CARTO liefert ohne API-Schlüssel nur noch „API KEY REQUIRED“.)
+   „Dunkel“ ist dieselbe Karte per Filter abgedunkelt, pro Handy wählbar. Antwortet der Server nicht,
+   nimmt die Karte den von OpenStreetMap Frankreich. */
+const OSM_A = '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap-Mitwirkende</a>';
+const KACHELN = [
+  { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: 'abc', att: OSM_A },
+  { url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', sub: 'abc', att: OSM_A + ' · <a href="https://www.openstreetmap.fr/" target="_blank" rel="noopener">OSM France</a>' }
+];
 const karteStil = () => store.get('karteStil', 'hell') === 'dunkel' ? 'dunkel' : 'hell';
 const stilKnopf = s => `${ic(s === 'hell' ? 'moon' : 'sun', 18)}`;
 function kStatus(text) { const s = $('#kStatus'); if (s) { s.hidden = !text; s.textContent = text || ''; } }
-function kacheln(L, name) {
-  const k = KACHELN[name], m = karte;
+function kacheln(L, i = 0) {
+  const k = KACHELN[i], m = karte;
   if (m._kacheln) m.removeLayer(m._kacheln);
   let geladen = 0, fehler = 0;
   const layer = L.tileLayer(k.url, { subdomains: k.sub, maxZoom: 19, attribution: k.att });
   layer.on('tileload', () => { if (!geladen++) { clearTimeout(m._kTimer); kStatus(''); } });
   layer.on('tileerror', () => {
     if (geladen || ++fehler < 3 || m._kacheln !== layer) return;
-    if (name !== 'osm') kacheln(L, 'osm');
+    if (i + 1 < KACHELN.length) kacheln(L, i + 1);
     else kStatus('Die Kartenbilder kommen gerade nicht an. Die Liste unten geht trotzdem – das Karten-Symbol öffnet Apple Karten.');
   });
   m._kacheln = layer.addTo(m);
-  m.getContainer().classList.toggle('hell', name !== 'dunkel');
   clearTimeout(m._kTimer);
   m._kTimer = setTimeout(() => { if (!geladen && m._kacheln === layer) kStatus('Die Kartenbilder laden gerade sehr langsam …'); }, 10000);
 }
@@ -2755,7 +2761,39 @@ function karteStilWechseln(btn) {
   const neu = karteStil() === 'hell' ? 'dunkel' : 'hell';
   store.set('karteStil', neu);
   btn.innerHTML = stilKnopf(neu); btn.setAttribute('aria-label', neu === 'hell' ? 'Dunkle Karte' : 'Helle Karte');
-  if (karte && window.L?.map) kacheln(window.L, neu);
+  $('#karte')?.classList.toggle('hell', neu === 'hell');
+}
+/* Ortsname, wenn ihn der Server nicht holen konnte: direkt vom Handy bei OpenStreetMap nachschlagen
+   (höchstens 1 Anfrage pro Sekunde, Ergebnis pro ~100 m gemerkt) */
+const ortKey = o => `${Number(o.lat).toFixed(3)},${Number(o.lon).toFixed(3)}`;
+const ortCache = () => store.get('ortNamen', {});
+function ortNamenEinsetzen(liste) { const c = ortCache(); (liste || []).forEach(x => { if (!x.ort && c[ortKey(x)]) x.ort = c[ortKey(x)]; }); }
+let ortSuche = false;
+async function fehlendeOrte() {
+  if (ortSuche) return; ortSuche = true;
+  let neu = false;
+  try {
+    for (const x of state.orte?.standorte || []) {
+      if (x.ort || daheim(x)) continue;
+      const k = ortKey(x), c = ortCache();
+      if (!(k in c)) {
+        try {
+          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=de&lat=${x.lat}&lon=${x.lon}`);
+          if (!r.ok) break;
+          const a = (await r.json())?.address || {};
+          c[k] = String(a.suburb || a.village || a.town || a.city_district || a.city || a.municipality || a.county || '').slice(0, 60) || null;
+          store.set('ortNamen', Object.fromEntries(Object.entries(c).slice(-60)));
+        } catch { break; }
+        await new Promise(r => setTimeout(r, 1100));
+      }
+      if (c[k]) { x.ort = c[k]; neu = true; }
+    }
+  } finally { ortSuche = false; }
+  if (neu) orteZeigen();
+}
+function orteZeigen() {
+  if ($('#sheetWrap').classList.contains('open')) return;
+  if (state.tab === 'karte') fillKarte(); else if (state.tab === 'start') fillDash(); else if (state.tab === 'mehr') fillHub(); else if (state.tab === 'ich') renderView();
 }
 function karteShell() {
   const s = karteStil();
@@ -2793,7 +2831,7 @@ async function zeichneKarte(o) {
   if (!karte || karte.getContainer() !== el) {
     if (karte) { clearTimeout(karte._kTimer); karte.remove(); }
     karte = L.map(el, { zoomControl: false, attributionControl: true });
-    kacheln(L, karteStil());
+    kacheln(L);
     L.control.zoom({ position: 'bottomright' }).addTo(karte);
     karte._mapq = L.layerGroup().addTo(karte);
   }
