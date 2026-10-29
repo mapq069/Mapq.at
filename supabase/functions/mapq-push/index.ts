@@ -8,11 +8,13 @@
 //  • vom Panel { aktion: "familie-passwort", passwort } – legt das Familien-Konto an bzw. ändert sein Passwort (nur Admin)
 //  • von der Familien-App { aktion: "familie-test", endpoint } – Test an dieses eine Gerät (nur Familien-Konto)
 //  • von der Familien-App { aktion: "smart-…" } – Smart Home (Govee, Shelly, Smart Life / Tuya), siehe smart.ts
+//  • { aktion: "standort-…" } – Familien-Karte (Familie); { aktion: "standort", token } vom iPhone-Kurzbefehl, siehe standort.ts
 //
 // Nur Standard-WebCrypto: VAPID (RFC 8292) und aes128gcm-Verschlüsselung (RFC 8291 / RFC 8188).
 // In Supabase mit ausgeschalteter „JWT-Verifizierung“ bereitstellen – die Prüfung passiert hier.
 
 import { Fehler, smartAktion } from "./smart.ts?v=2";
+import { standortAktion } from "./standort.ts?v=1";
 
 const te = new TextEncoder();
 
@@ -169,6 +171,16 @@ async function handler(req: Request): Promise<Response> {
     } else if (data.aktion === "familie-passwort") {
       if (!(await rolle("mapq_ist_admin"))) return json({ error: "Kein Zugriff" }, 401);
       return json(await familienPasswort(String(data.passwort ?? ""), s));
+    } else if (typeof data.aktion === "string" && (data.aktion === "standort" || data.aktion.startsWith("standort-"))) {
+      // „standort“ kommt vom Kurzbefehl und weist sich mit dem persönlichen Schlüssel aus, alles andere nur die Familie
+      if (data.aktion !== "standort" && !(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
+      try {
+        return json(await standortAktion(data, { db, s }));
+      } catch (e) {
+        if (e instanceof Fehler) return json({ error: e.message }, e.status);
+        console.error("Standort", e);
+        return json({ error: "Standort: " + (e as Error).message }, 500);
+      }
     } else if (typeof data.aktion === "string" && data.aktion.startsWith("smart-")) {
       if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
       try {
@@ -183,6 +195,9 @@ async function handler(req: Request): Promise<Response> {
       tabelle = "familie_abos";
       passt = (a) => a.endpoint === data.endpoint;
       msg = { title: "Familie", body: "Test: Benachrichtigungen funktionieren.", url: "/familie/#ich", tag: "familie-test" };
+    } else if (data.aktion) {
+      // unbekannte Aktion (z. B. aus einer neueren App) – nie als Test-Push behandeln
+      return json({ error: "Unbekannte Aktion" }, 400);
     } else {
       // Test aus dem Panel – nur wenn der Login-Token zum Admin gehört
       if (!(await rolle("mapq_ist_admin"))) return json({ error: "Kein Zugriff" }, 401);

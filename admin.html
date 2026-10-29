@@ -1724,10 +1724,10 @@ function familieSection() {
    wird mit „Veröffentlichen“ live), Inhalte (Tabellen familie_* direkt in Supabase)
    und Zuhause (Smart Home über mapq-push, Aktionen smart-…).
    ===================================================================== */
-const FN_VERSION = 4; // ?v= der Code-Zeile von mapq-push in Supabase
+const FN_VERSION = 5; // ?v= der Code-Zeile von mapq-push in Supabase
 const FAM_FARBEN = { indigo: '#7986CB', amber: '#FFC107', orange: '#FF7043', pink: '#F06292', green: '#66BB6A', teal: '#26A69A', purple: '#BA68C8', blue: '#42A5F5', sky: '#4FC3F7', red: '#EF5350', lime: '#9CCC65', grey: '#B0BEC5' };
 const FAM_TABS = [['start', 'Start', 'indigo'], ['listen', 'Listen', 'amber'], ['kalender', 'Kalender', 'orange'], ['fotos', 'Fotos', 'pink'], ['pinnwand', 'Pinnwand', 'green'], ['zuhause', 'Zuhause', 'teal'], ['mehr', 'Mehr', 'purple']];
-const FAM_MEHR = [['essen', 'Essensplan'], ['rezepte', 'Rezepte'], ['putzplan', 'Putzplan', 'Unter „Listen“ und als Kachel'], ['countdowns', 'Countdowns'], ['infos', 'Wichtige Infos']];
+const FAM_MEHR = [['karte', 'Wo sind alle?', 'Familien-Karte mit geteilten Standorten'], ['essen', 'Essensplan'], ['rezepte', 'Rezepte'], ['putzplan', 'Putzplan', 'Unter „Listen“ und als Kachel'], ['countdowns', 'Countdowns'], ['infos', 'Wichtige Infos']];
 const FAM_START = [['wetter', 'Wetter'], ['schnell', 'Schnell-Knöpfe', 'Einkauf, Termin, Foto, Nachricht'], ['leiste', 'Geburtstage & Countdowns'], ['kacheln', 'Kacheln', 'Einkauf, To-dos, Essen, nächster Termin, Fotos'], ['zuhause', 'Zuhause-Geräte'], ['putzplan', 'Heute dran', 'Putzplan'], ['pinnwand', 'Pinnwand'], ['termine', 'Heute & morgen'], ['familie', 'Familie', 'Wer ist wo'], ['fotos', 'Neueste Fotos']];
 const FAM_SEG = [['uebersicht', 'Übersicht'], ['aussehen', 'Aussehen'], ['inhalte', 'Inhalte'], ['zuhause', 'Zuhause']];
 Object.assign(state, { famTab: 'uebersicht', famInh: 'eintraege', famRows: {}, famErr: {}, famQuery: '', famUrls: {}, famSmart: null, famSmartErr: null });

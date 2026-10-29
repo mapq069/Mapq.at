@@ -518,6 +518,30 @@ details.dev-set[open]>summary{margin-bottom:10px}
 .setup-row>.ic{color:var(--dim)}
 .setup-err{color:#FF8A80;font-size:14px;min-height:1.3em;margin:-4px 2px 12px}
 .banner .shape{width:36px;height:36px}
+/* Familien-Karte */
+.karte{height:46vh;min-height:260px;max-height:520px;margin-bottom:12px;border-radius:var(--r);overflow:hidden;background:var(--card);z-index:0}
+.leaflet-container{background:#191a1d!important;font:inherit}
+.leaflet-control-attribution{background:rgba(14,14,16,.7)!important;color:#8a8a93!important;font-size:10px!important}
+.leaflet-control-attribution a{color:#b5b5bd!important}
+.leaflet-bar a{background:var(--card-2)!important;color:var(--text)!important;border-color:var(--line)!important}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card-2);color:var(--text);box-shadow:0 10px 24px rgba(0,0,0,.5)}
+.leaflet-popup-content{margin:10px 14px;font-size:13.5px;line-height:1.45}
+.kpin{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.55)}
+.kpin .av{width:38px;height:38px;font-size:15px}
+.kpin.alt{opacity:.55;filter:grayscale(.6)}
+.kheim{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(79,195,247,.2);color:#4FC3F7;border:2px solid #4FC3F7}
+.orte{padding:2px 6px 2px 12px}
+.orow{width:100%;color:var(--text)}
+.orow+.orow{border-top:1px solid var(--line)}
+.orow[disabled]{opacity:.55;cursor:default}
+.orow .t{text-align:left}
+.orow .t>span{display:block;font-size:16px;line-height:1.35}
+.orow .t small{display:block;margin-top:2px;color:var(--muted);font-size:13px}
+.orow.alt .t small{color:var(--dim)}
+.orow>.ic{color:var(--dim);margin-right:6px}
+.kopie{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:var(--r-sm);background:var(--card-2)}
+.kopie code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12.5px;color:var(--text)}
+.steps code{font-size:12.5px;background:var(--card-2);padding:1px 6px;border-radius:5px;color:var(--text)}
 /* Räume */
 .rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
 @media(min-width:600px){.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -654,7 +678,7 @@ const TABS_STD = [
   { id: 'zuhause', label: 'Zuhause', icon: 'hplug', c: 'teal' },
   { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
-const SUB = ['essen', 'rezepte', 'countdowns', 'infos', 'ich'];
+const SUB = ['karte', 'essen', 'rezepte', 'countdowns', 'infos', 'ich'];
 let TABS = TABS_STD.slice(), ALL_TABS = [...TABS.map(t => t.id), ...SUB];
 /* Aussehen & Bereiche – stellt Matteo im Admin-Panel ein (content.json → familie) */
 let DESIGN = { titel: 'Familie', mehr: {}, start: {} };
@@ -834,7 +858,7 @@ const state = {
   cal: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
   day: null, showDone: false, weather: null,
   wp: { info: null, loaded: false, mine: null, busy: false },
-  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null, raum: null
+  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null, raum: null, orte: null, orteErr: null
 };
 const unread = () => {
   const seen = store.get('seen', '');
@@ -957,6 +981,7 @@ function startApp() {
   loadMsgs(true);
   startTimer();
   if (!started) { started = true; loadPushInfo(); }
+  if (store.get('ortAuto') && bereich('karte') && Date.now() - store.get('ortZuletzt', 0) > 10 * 60e3) setTimeout(() => ortTeilen(true), 1500);
 }
 function renderTabbar() {
   const u = unread(), cur = tabOf(state.tab);
@@ -966,8 +991,8 @@ function renderTabbar() {
 const LOADERS = {
   start: q => loadDash(q), listen: q => { loadItems(q); if (state.liste === 'putzplan') loadAufgaben(q); }, kalender: q => loadTermine(q),
   fotos: q => { loadFotos(q); if (state.fotoView === 'alben') loadAlben(q); }, pinnwand: q => loadMsgs(q), mehr: q => loadHub(q),
-  essen: q => { loadEssen(q); loadRezepte(true); }, rezepte: q => loadRezepte(q), countdowns: q => loadCountdowns(q), infos: q => loadInfos(q), ich: () => loadPushInfo(),
-  zuhause: q => loadSmart(q)
+  essen: q => { loadEssen(q); loadRezepte(true); }, rezepte: q => loadRezepte(q), countdowns: q => loadCountdowns(q), infos: q => loadInfos(q), ich: () => { loadPushInfo(); loadOrte(true); },
+  zuhause: q => loadSmart(q), karte: q => loadOrte(q)
 };
 function go(tab, replace) {
   if (!ALL_TABS.includes(tab)) tab = 'start';
@@ -978,10 +1003,10 @@ function go(tab, replace) {
 }
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (ALL_TABS.includes(h) && h !== state.tab && !$('#app').hidden) go(h, true); });
 
-const VIEWS = { zuhause: () => zuhauseShell(), start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView() };
+const VIEWS = { karte: () => karteShell(), zuhause: () => zuhauseShell(), start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView() };
 function renderView() { $('#view').innerHTML = VIEWS[state.tab](); fill(); }
 function fill() {
-  ({ zuhause: fillZuhause, start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos })[state.tab]?.();
+  ({ karte: fillKarte, zuhause: fillZuhause, start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos })[state.tab]?.();
 }
 const spinner = '<div class="loading"><div class="ring"></div></div>';
 const header = (title, sub, c, icon, action = '', back = false) => `${back ? `<button class="back" data-action="go" data-tab="mehr">${ic('left', 18)} Mehr</button>` : ''}<div class="ph c-${c}"><span class="shape lg">${ic(icon, 24)}</span><div><h1>${title}</h1><p id="phSub">${sub || ''}</p></div>${action}</div>`;
@@ -1003,6 +1028,7 @@ function startTimer() {
     if (tick % 10 === 0) loadMembers().then(() => { if (state.tab === 'start') fillDash(); }).catch(() => {});
     if (t === 'essen' && tick % 10 === 0) loadEssen(true);
     if (smartAktiv() && !state.smartErr?.alt && ((t === 'zuhause' && tick % 4 === 0) || (t === 'start' && tick % 5 === 0))) loadSmart(true);
+    if ((t === 'karte' && tick % 10 === 0) || (t === 'start' && tick % 20 === 0)) loadOrte(true);
   }, 6000);
 }
 function stopTimer() { if (timer) clearInterval(timer); timer = null; }
@@ -1050,6 +1076,7 @@ function weatherCard() {
 function loadDash(quiet) {
   loadItems(quiet); loadTermine(quiet); loadFotos(quiet); loadMsgs(quiet); loadWeather(); loadAufgaben(quiet); loadEssen(quiet); loadCountdowns(quiet);
   if (!state.smartErr?.alt && (smartAktiv() || !state.smartGeprueft)) loadSmart(true);
+  loadOrte(true);
 }
 function greeting() {
   const h = new Date().getHours();
@@ -1120,7 +1147,7 @@ function fillDash() {
     ${!zeigeStart('termine') || !bereich('kalender') ? '' : `<section class="card c-orange"><div class="card-h"><span class="shape">${ic('cal')}</span><span class="t"><b>Heute & morgen</b><small>${agenda.length ? agenda.length + ' Termin' + (agenda.length > 1 ? 'e' : '') : 'Nichts eingetragen'}</small></span><button class="btn sm" data-action="quick" data-q="termin">${ic('plus', 15)} Termin</button></div>
       ${agenda.length ? `<div class="evs" style="background:var(--card-2)">${agenda.map(evRow).join('')}</div>` : ''}</section>`}
     ${!zeigeStart('familie') ? '' : `<section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>Tipp auf dich, um deinen Status zu setzen</small></span></div>
-      <div class="people">${people.map(n => { const s = statusOf(n); return `<div class="person ${n === state.me ? 'me-p' : ''}" ${n === state.me ? 'data-action="status" role="button" tabindex="0"' : ''}>${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b>${s ? `<span class="st">${s.emoji} ${esc(s.label)}</span>` : `<small>${n === state.me ? 'Status setzen' : act[n] ? esc(relShort(act[n])) : '–'}</small>`}</div>`; }).join('')}</div></section>`}
+      <div class="people">${people.map(n => { const s = statusOf(n); return `<div class="person ${n === state.me ? 'me-p' : ''}" ${n === state.me ? 'data-action="status" role="button" tabindex="0"' : ''}>${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b>${s ? `<span class="st">${s.emoji} ${esc(s.label)}</span>` : bereich('karte') && ortVon(n) && !ortAlt(ortVon(n)) ? `<span class="st" data-action="go" data-tab="karte">${daheim(ortVon(n)) ? '🏠' : '📍'} ${esc(ortName(ortVon(n)))}</span>` : `<small>${n === state.me ? 'Status setzen' : act[n] ? esc(relShort(act[n])) : '–'}</small>`}</div>`; }).join('')}</div></section>`}
     ${(state.fotos || []).length > 1 && zeigeStart('fotos') && bereich('fotos') ? `<p class="sub-h">Neueste Fotos</p><div class="strip">${state.fotos.slice(0, 12).map((f, i) => `<button data-action="open-foto" data-i="${i}" aria-label="Foto öffnen"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}`;
 }
 function statusSheet() {
@@ -1908,13 +1935,14 @@ async function delPost(id) {
 }
 
 /* ---------- Mehr ---------- */
-function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); }
+function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); loadOrte(true); }
 function hubShell() { return `${header('Mehr', 'Alles Weitere für die Familie', 'purple', 'grid')}<div id="hub"></div>`; }
 function fillHub() {
   const box = $('#hub'); if (!box) return;
   const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
   const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
   box.innerHTML = `<div class="tiles hub">
+    ${bereich('karte') ? tile('karte', 'sky', ic('pin'), 'Wo sind alle?', state.orte ? (state.orte.standorte.length ? `${state.orte.standorte.length} teilen ihren Standort` : 'Standort teilen') : 'Familien-Karte') : ''}
     ${!bereich('essen') ? '' : tile('essen', 'lime', ic('utensils'), 'Essensplan', e ? 'Heute: ' + esc(e.gericht) : 'Was gibt\'s diese Woche?')}
     ${bereich('rezepte') ? tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte') : ''}
     ${bereich('putzplan') && bereich('listen') ? tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"') : ''}
@@ -2172,7 +2200,7 @@ async function smartFn(body) {
   const j = await r.json().catch(() => ({}));
   if (!r.ok) {
     const e = new Error(j.error || j.message || ('Fehler ' + r.status)); e.status = r.status;
-    if (r.status === 401) { e.alt = true; e.message = 'Smart Home ist noch nicht freigeschaltet: Die Funktion „mapq-push“ muss in Supabase neu bereitgestellt werden.'; }
+    if (r.status === 401) { e.alt = true; e.message = 'Das ist noch nicht freigeschaltet: Die Funktion „mapq-push“ muss in Supabase neu bereitgestellt werden.'; }
     throw e;
   }
   return j;
@@ -2603,6 +2631,151 @@ async function smartTrennen(k) {
   catch (e) { toast(errMsg(e), 'bad'); }
 }
 
+/* ---------- Wo sind alle? (Familien-Karte) ----------
+   Jede Person teilt ihren Standort freiwillig – in der App oder automatisch per iPhone-Kurzbefehl
+   (Aktionen „standort-…“ in mapq-push, siehe supabase/functions/mapq-push/standort.ts).
+   Karte: Leaflet mit dunklen Kacheln von CARTO (OpenStreetMap). */
+const ortVon = n => (state.orte?.standorte || []).find(x => x.name === n) || null;
+const abstandM = (a, b) => { const r = Math.PI / 180, x = Math.sin((b.lat - a.lat) * r / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin((b.lon - a.lon) * r / 2) ** 2; return 2 * 6371000 * Math.asin(Math.sqrt(x)); };
+const daheim = o => !!(o && state.orte?.zuhause && abstandM(o, state.orte.zuhause) < 200);
+const ortName = o => daheim(o) ? 'Zuhause' : o.ort || 'Unterwegs';
+const ortAlt = o => Date.now() - o.zeit > 24 * 3600e3;
+const ortZeit = o => relShort(new Date(o.zeit).toISOString());
+async function loadOrte(quiet) {
+  if (!bereich('karte') || state.smartErr?.alt) return;
+  try { state.orte = await smartFn({ aktion: 'standort-liste' }); state.orteErr = null; }
+  catch (e) { if (e.silent) return; state.orteErr = e; if (!quiet && !e.alt) toast(errMsg(e), 'bad'); }
+  if ($('#sheetWrap').classList.contains('open')) return;
+  if (state.tab === 'karte') fillKarte(); else if (state.tab === 'start') fillDash(); else if (state.tab === 'mehr') fillHub(); else if (state.tab === 'ich') renderView();
+}
+function position() {
+  return new Promise((res, rej) => {
+    if (!navigator.geolocation) return rej(Object.assign(new Error('Dieses Gerät kann keinen Standort bestimmen.'), { code: 0 }));
+    navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+}
+const posFehler = e => e.code === 1 ? 'Standort ist nicht erlaubt – iPhone-Einstellungen → Datenschutz → Ortungsdienste → Safari-Websites (bzw. „Familie“) → „Beim Verwenden“.' : e.code === 0 ? e.message : 'Der Standort konnte gerade nicht bestimmt werden – versuch es draußen nochmal.';
+async function ortTeilen(still) {
+  let p;
+  try { p = await position(); } catch (e) { if (!still) toast(posFehler(e), 'warn'); return; }
+  try {
+    const j = await smartFn({ aktion: 'standort-setzen', name: state.me, lat: p.coords.latitude, lon: p.coords.longitude, gen: p.coords.accuracy });
+    store.set('ortZuletzt', Date.now());
+    if (state.orte) state.orte.standorte = [...state.orte.standorte.filter(x => x.name !== state.me), j.standort];
+    else state.orte = { standorte: [j.standort], kurzbefehl: [], zuhause: null };
+    if (!still) toast(`Standort geteilt${j.standort.ort ? ' – ' + ortName(j.standort) : ''}.`, 'ok');
+    if (state.tab === 'karte') fillKarte(); else if (state.tab === 'ich') renderView(); else if (state.tab === 'start') fillDash();
+  } catch (e) { if (!still && !e.silent) toast(errMsg(e), 'bad'); }
+}
+async function ortStopp() {
+  if (!confirm('Standort nicht mehr teilen? Dein letzter Standort wird gelöscht und ein Kurzbefehl funktioniert nicht mehr.')) return;
+  try {
+    await smartFn({ aktion: 'standort-stopp', name: state.me });
+    store.set('ortAuto', false);
+    if (state.orte) { state.orte.standorte = state.orte.standorte.filter(x => x.name !== state.me); state.orte.kurzbefehl = (state.orte.kurzbefehl || []).filter(n => n !== state.me); }
+    toast('Du teilst deinen Standort nicht mehr.', 'ok'); renderView();
+  } catch (e) { if (!e.silent) toast(errMsg(e), 'bad'); }
+}
+async function zuhauseSetzen() {
+  if (state.orte?.zuhause && !confirm('Zuhause auf deinen jetzigen Standort ändern?')) return;
+  let p;
+  try { p = await position(); } catch (e) { toast(posFehler(e), 'warn'); return; }
+  try {
+    const j = await smartFn({ aktion: 'standort-zuhause', lat: p.coords.latitude, lon: p.coords.longitude });
+    state.orte = { ...(state.orte || { standorte: [], kurzbefehl: [] }), zuhause: j.zuhause };
+    toast('Zuhause festgelegt – wer in der Nähe ist, steht jetzt als „Zuhause“ da.', 'ok'); fillKarte();
+  } catch (e) { if (!e.silent) toast(errMsg(e), 'bad'); }
+}
+
+let leafletP = null, karte = null;
+// nicht „leaflet“ nennen – Leaflet legt selbst window.leaflet an
+function ladeLeaflet() {
+  return leafletP || (leafletP = new Promise((res, rej) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(l);
+    const s = document.createElement('script'); s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    s.onload = () => res(window.L); s.onerror = () => { leafletP = null; rej(new Error('Die Karte konnte nicht laden.')); };
+    document.head.appendChild(s);
+  }));
+}
+function karteShell() {
+  return `${header('Wo sind alle?', 'Familien-Karte', 'sky', 'pin', `<button class="btn btn-primary c-sky" data-action="ort-teilen">${ic('pin', 17)} Teilen</button>`, true)}
+    <div class="karte" id="karte" role="img" aria-label="Karte mit den geteilten Standorten"></div><div id="orte">${state.orte ? '' : spinner}</div>`;
+}
+async function fillKarte() {
+  const box = $('#orte'); if (!box) return;
+  if (state.orteErr?.alt || state.smartErr?.alt) { box.innerHTML = emptyBox('sky', 'alert', 'Noch nicht freigeschaltet', esc((state.orteErr || state.smartErr).message)); $('#karte')?.remove(); return; }
+  if (!state.orte) { box.innerHTML = state.orteErr ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(state.orteErr))) : spinner; return; }
+  const o = state.orte, leute = [...new Set([state.me, ...state.members])];
+  const sub = $('#phSub'), n = o.standorte.length; if (sub) sub.textContent = n ? `${n} ${n === 1 ? 'Person teilt' : 'Personen teilen'} den Standort` : 'Noch teilt niemand den Standort';
+  box.innerHTML = `<div class="items orte">${leute.map(name => {
+      const x = ortVon(name);
+      return `<button class="item-main orow ${x && ortAlt(x) ? 'alt' : ''}" data-action="ort-zeigen" data-name="${esc(name)}" ${x ? '' : 'disabled'}>${av(name)}<span class="t"><span>${esc(name)}${name === state.me ? ' <small style="display:inline;color:var(--dim)">(du)</small>' : ''}</span>
+        <small>${x ? `${daheim(x) ? '🏠' : '📍'} ${esc(ortName(x))} · ${esc(ortZeit(x))}${x.quelle === 'kurzbefehl' ? ' · automatisch' : ''}` : 'teilt den Standort nicht'}</small></span>${x ? ic('right', 18) : ''}</button>`;
+    }).join('')}</div>
+    <div class="row-actions" style="margin:12px 2px 0"><button class="btn sm" data-action="zuhause-setzen">${ic('home', 15)} ${o.zuhause ? 'Zuhause ändern' : 'Hier ist Zuhause'}</button><button class="btn sm" data-action="go" data-tab="ich">${ic('settings', 15)} Mein Standort</button></div>
+    <p class="hint" style="margin:14px 4px 0">Freiwillig: Jede Person entscheidet selbst, ob und wann sie ihren Standort teilt. Gezeigt wird nur der zuletzt geteilte Standort – automatisch geht es mit einem iPhone-Kurzbefehl (unter „Mein Standort“).</p>`;
+  const el = $('#karte'); if (!el) return;
+  let L;
+  try { L = await ladeLeaflet(); } catch (e) { el.innerHTML = `<p class="hint" style="padding:16px">${esc(e.message)}</p>`; return; }
+  if (!document.body.contains(el)) return;
+  if (!karte || karte.getContainer() !== el) {
+    if (karte) karte.remove();
+    karte = L.map(el, { zoomControl: false, attributionControl: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }).addTo(karte);
+    L.control.zoom({ position: 'bottomright' }).addTo(karte);
+    karte._mapq = L.layerGroup().addTo(karte);
+  }
+  const g = karte._mapq; g.clearLayers();
+  const punkte = [];
+  if (o.zuhause) { L.marker([o.zuhause.lat, o.zuhause.lon], { icon: L.divIcon({ className: '', html: `<span class="kheim">${ic('home', 18)}</span>`, iconSize: [34, 34], iconAnchor: [17, 17] }), keyboard: false }).addTo(g); punkte.push([o.zuhause.lat, o.zuhause.lon]); }
+  o.standorte.forEach(x => {
+    const m = L.marker([x.lat, x.lon], { icon: L.divIcon({ className: '', html: `<span class="kpin ${ortAlt(x) ? 'alt' : ''}">${av(x.name)}</span>`, iconSize: [44, 44], iconAnchor: [22, 22] }), title: x.name }).addTo(g);
+    m.bindPopup(`<b>${esc(x.name)}</b><br>${esc(ortName(x))} · ${esc(ortZeit(x))}`);
+    if (x.gen && x.gen > 30 && x.gen < 5000) L.circle([x.lat, x.lon], { radius: x.gen, color: '#4FC3F7', weight: 1, fillOpacity: .08 }).addTo(g);
+    punkte.push([x.lat, x.lon]);
+  });
+  if (punkte.length > 1) karte.fitBounds(punkte, { padding: [44, 44], maxZoom: 15 });
+  else if (punkte.length) karte.setView(punkte[0], 14);
+  else karte.setView([place().lat, place().lon], 11);
+  setTimeout(() => karte && karte.invalidateSize(), 60);
+}
+function ortZeigen(name) {
+  const x = ortVon(name); if (!x || !karte) return;
+  karte.setView([x.lat, x.lon], 15); window.scrollTo({ top: 0, behavior: 'smooth' });
+  karte._mapq.eachLayer(l => { if (l.options?.title === name) l.openPopup(); });
+}
+function ortCard() {
+  const o = ortVon(state.me), kb = (state.orte?.kurzbefehl || []).includes(state.me);
+  return `<section class="card c-sky" id="ortCard"><div class="card-h"><span class="shape">${ic('pin')}</span><span class="t"><b>Mein Standort</b><small>${o ? `Geteilt: ${esc(ortName(o))} · ${esc(ortZeit(o))}` : 'Wird nicht geteilt'}</small></span>${kb ? '<span class="chip c-green">Kurzbefehl</span>' : ''}</div>
+    <p class="muted" style="margin:0 0 12px;font-size:14px">Freiwillig: Die Familie sieht deinen zuletzt geteilten Standort auf der Karte „Wo sind alle?“.</p>
+    <div class="row-actions"><button class="btn sm btn-primary c-sky" data-action="ort-teilen">${ic('pin', 15)} Jetzt teilen</button>${o || kb ? `<button class="btn sm" data-action="ort-stopp">Nicht mehr teilen</button>` : ''}</div>
+    <label class="switch-row" style="margin:14px 0 10px"><span><b>Beim Öffnen der App teilen</b><small>Auf diesem Handy, höchstens alle 10 Minuten</small></span><input type="checkbox" class="switch" id="ortAuto" ${store.get('ortAuto') ? 'checked' : ''}></label>
+    <button class="btn sm" data-action="ort-kurzbefehl">${ic('phone', 15)} ${kb ? 'Kurzbefehl neu einrichten' : 'Automatisch per iPhone-Kurzbefehl'}</button>
+  </section>`;
+}
+function kurzbefehlSheet(token) {
+  const url = API.url + '/functions/v1/mapq-push';
+  const kopie = (wert, label) => `<div class="kopie"><code>${esc(wert)}</code><button class="btn sm" data-action="kopieren" data-wert="${esc(wert)}" aria-label="${esc(label)} kopieren">${ic('copy', 15)}</button></div>`;
+  openSheet(`<div class="sheet-h c-sky"><span class="shape">${ic('phone')}</span><h3>Standort per Kurzbefehl</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <p class="muted" style="margin:-6px 2px 14px;font-size:14px">Dein iPhone schickt den Standort dann von selbst – z. B. wenn du heimkommst oder losfährst. Einmal einrichten, dauert 3 Minuten.</p>
+    ${token ? `<div class="c-sky" style="margin-bottom:16px"><p class="sub-h" style="margin:0 2px 6px">Adresse</p>${kopie(url, 'Adresse')}<p class="sub-h" style="margin:12px 2px 6px">Dein Schlüssel</p>${kopie(token, 'Schlüssel')}
+      <p class="hint" style="margin:8px 2px 0">Nur einmal sichtbar. Gib ihn nicht weiter – wer ihn hat, kann deinen Standort setzen.</p></div>`
+      : `<button class="btn btn-primary c-sky" style="width:100%;margin-bottom:16px" data-action="kb-token">${ic('plus', 17)} Schlüssel erstellen</button>`}
+    <ol class="steps" style="margin:0 0 14px">
+      <li>App <b>Kurzbefehle</b> öffnen → <b>+</b> → Aktion <b>„Aktuellen Standort abrufen“</b>.</li>
+      <li>Aktion <b>„Inhalte von URL abrufen“</b> dazu und die <b>Adresse</b> einfügen.</li>
+      <li>In der Aktion auf den Pfeil tippen: Methode <b>POST</b>, Anforderungstext <b>JSON</b>, vier Felder vom Typ <b>Text</b>:<br>
+        <code>aktion</code> = <code>standort</code><br><code>token</code> = dein Schlüssel<br><code>lat</code> = Variable <b>Aktueller Standort → Breitengrad</b><br><code>lon</code> = <b>Aktueller Standort → Längengrad</b></li>
+      <li>Kurzbefehl „Standort an Familie“ nennen und einmal antippen – auf der Karte steht dann „automatisch“.</li>
+      <li>Von selbst: Reiter <b>Automation</b> → <b>+</b> → <b>„Ankommen“</b> oder <b>„Verlassen“</b> (Ort: Zuhause) oder <b>„Tageszeit“</b> → deinen Kurzbefehl wählen → <b>„Sofort ausführen“</b>.</li>
+    </ol>
+    ${token ? '' : '<p class="hint" style="margin:0 2px">Ein neuer Schlüssel macht den alten ungültig – ein schon eingerichteter Kurzbefehl braucht dann den neuen.</p>'}`);
+}
+async function kbToken() {
+  try { const j = await smartFn({ aktion: 'standort-token', name: state.me }); state.orte && !(state.orte.kurzbefehl || []).includes(state.me) && (state.orte.kurzbefehl = [...(state.orte.kurzbefehl || []), state.me]); kurzbefehlSheet(j.token); }
+  catch (e) { if (!e.silent) toast(errMsg(e), 'bad'); }
+}
+
 /* ---------- Benachrichtigungen ---------- */
 const wpSupported = () => window.isSecureContext && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 const b64uToBytes = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
@@ -2676,6 +2849,7 @@ function ichView() {
       <div class="stgrid">${STATUS.map(x => `<button class="stb ${cur === x[0] && s ? 'on' : ''}" data-action="set-status" data-s="${x[0]}"><span class="e">${x[1]}</span>${x[2]}</button>`).join('')}</div>
       ${s ? `<button class="btn sm" style="margin-top:10px" data-action="set-status" data-s="">Status entfernen</button>` : ''}</section>
     ${pushCard()}
+    ${bereich('karte') ? ortCard() : ''}
     <section class="card c-sky"><div class="card-h"><span class="shape">${ic('pin')}</span><span class="t"><b>Ort fürs Wetter</b><small>${esc(place().name)}</small></span></div>
       <form id="ortForm" class="row-actions" style="flex-wrap:nowrap"><input id="ortName" class="input" placeholder="z. B. Schwaz, Kufstein" maxlength="60" autocomplete="address-level2"><button class="btn btn-primary c-sky">Ändern</button></form></section>
     ${!isStandalone() && platform() !== 'desktop' ? `<section class="card c-teal"><div class="card-h"><span class="shape">${ic('phone')}</span><span class="t"><b>Als App aufs Handy</b></span></div><ol class="steps">${platform() === 'ios' ? '<li>In <b>Safari</b> unten auf <b>Teilen</b> tippen.</li><li><b>„Zum Home-Bildschirm“</b> wählen, dann <b>Hinzufügen</b>.</li><li>Ab jetzt über das neue Icon öffnen.</li>' : '<li>Im Browser-Menü <b>⋮</b> öffnen.</li><li><b>„App installieren“</b> oder „Zum Startbildschirm“ wählen.</li>'}</ol></section>` : ''}
@@ -2715,7 +2889,7 @@ async function delMember(name) {
 async function logout() {
   if (!confirm('Auf diesem Handy abmelden?')) return;
   await wpDisable(true);
-  API.logout(); store.del('name'); store.del('smart'); state.smart = null; state.szenen = {}; state.me = null; state.items = state.termine = state.fotos = state.msgs = state.aufgaben = state.rezepte = state.countdowns = state.infos = state.alben = null;
+  API.logout(); store.del('name'); store.del('smart'); state.smart = null; state.szenen = {}; state.orte = null; state.me = null; state.items = state.termine = state.fotos = state.msgs = state.aufgaben = state.rezepte = state.countdowns = state.infos = state.alben = null;
   showLogin();
 }
 
@@ -2829,6 +3003,13 @@ const ACTIONS = {
   'raum-neu': () => raumSheet(null),
   'raum-edit': () => raumSheet(state.raum),
   'raum-weg': () => { const f = $('#raumForm'); if (f && confirm(`Raum „${f.dataset.r}“ auflösen? Die Geräte bleiben, nur ohne Raum.`)) raumSpeichern(f, true); },
+  'ort-teilen': () => ortTeilen(false),
+  'ort-stopp': () => ortStopp(),
+  'ort-zeigen': el => ortZeigen(el.dataset.name),
+  'zuhause-setzen': () => zuhauseSetzen(),
+  'ort-kurzbefehl': () => kurzbefehlSheet(null),
+  'kb-token': () => kbToken(),
+  kopieren: async el => { try { await navigator.clipboard.writeText(el.dataset.wert); toast('Kopiert.', 'ok'); } catch { toast('Kopieren ging nicht – lang drücken und kopieren.', 'warn'); } },
   'sheet-close': () => closeSheet()
 };
 document.addEventListener('click', e => {
@@ -2858,6 +3039,7 @@ document.addEventListener('change', e => {
   if (t.id === 'hellRng') devSet(id, { hell: Number(t.value) });
   if (t.id === 'kRng') devSet(id, { kelvin: Number(t.value) });
   if (t.id === 'posRng') devSet(id, { position: Number(t.value) });
+  if (t.id === 'ortAuto') { store.set('ortAuto', t.checked); if (t.checked) ortTeilen(false); }
   if (t.id === 'farbIn' && isHex(t.value)) { $$('.swatches button').forEach(b => b.classList.remove('on')); devSet(id, { farbe: t.value.toLowerCase() }); }
 });
 document.addEventListener('keydown', e => {
