@@ -644,6 +644,36 @@ details.dev-set[open]>summary{margin-bottom:10px}
 .pick-row input{flex:none;width:22px;height:22px;accent-color:#26A69A}
 .pick-row .t{flex:1;min-width:0;overflow-wrap:anywhere}
 .pick-row small{display:block;color:var(--dim);font-size:12px}
+/* ---------- Weihnachts-Design (fix an: WEIHNACHTEN in der App) – Schnee, Lichterkette, Schneehauben, Mütze, Advent ---------- */
+.xmas body{background:transparent}
+.xmas main{padding-top:20px}
+#schnee{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;
+  background:radial-gradient(900px 520px at 50% -160px,rgba(198,40,40,.22),transparent 70%),radial-gradient(640px 460px at 110% 108%,rgba(46,125,50,.18),transparent 70%),radial-gradient(520px 420px at -12% 70%,rgba(46,125,50,.10),transparent 70%),var(--bg)}
+.xmas .card::after,.xmas .tile:not(.photo)::after,.xmas .room::after{content:"";position:absolute;left:0;right:0;top:0;height:20px;border-radius:var(--r) var(--r) 0 0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 20'%3E%3Cpath fill='%23EEF3F8' d='M0 0H90V4C85 4 84 8.5 81 8.5S78 5 73 5 67 7.5 63 7.5 59 4 53 4 48 9.5 44 9.5 41 5 35 5 29 7 25 7 21 4 16 4 12 8.5 8.5 8.5 5 4 0 4Z'/%3E%3Cpath fill='%23fff' d='M0 0H90V1.6H0Z'/%3E%3C/svg%3E") repeat-x 0 0/90px 20px;pointer-events:none;z-index:2;opacity:.95}
+.xmas .tile:nth-child(2n)::after,.xmas .room:nth-child(2n)::after{background-position:-37px 0}
+.xmas .tabbar::before{content:"";position:absolute;left:0;right:0;top:-1px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 20'%3E%3Cpath fill='%23EEF3F8' d='M0 0H90V4C85 4 84 8.5 81 8.5S78 5 73 5 67 7.5 63 7.5 59 4 53 4 48 9.5 44 9.5 41 5 35 5 29 7 25 7 21 4 16 4 12 8.5 8.5 8.5 5 4 0 4Z'/%3E%3Cpath fill='%23fff' d='M0 0H90V1.6H0Z'/%3E%3C/svg%3E") repeat-x -12px 0/90px 20px;pointer-events:none;opacity:.9}
+.xmas .brand{position:relative}
+.xmas .brand::before{content:"";position:absolute;left:-8px;top:-12px;width:27px;height:22px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath fill='%23E53935' d='M5 24C7 12 15 4 27 3c5 0 8 2 9.5 6.5-4-1.5-7.5-.5-9.5 3.5-1.6 3.4-1 7.6 1 11Z'/%3E%3Cpath fill='%23B71C1C' d='M27 3c5 0 8 2 9.5 6.5-2-.8-4-.8-5.6 0C30 6 28.5 4 27 3Z'/%3E%3Crect x='2' y='21.5' width='30' height='8' rx='4' fill='%23F5F5F5'/%3E%3Ccircle cx='36.5' cy='11' r='4' fill='%23fff'/%3E%3C/svg%3E") no-repeat center/contain;transform:rotate(-22deg);pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+.lichter{position:absolute;left:0;right:0;top:100%;height:24px;margin-top:-3px;pointer-events:none;overflow:hidden;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 10'%3E%3Cpath d='M0 1Q17 11 34 1' fill='none' stroke='%234a4a52' stroke-width='1.3'/%3E%3C/svg%3E") repeat-x 0 0/34px 10px}
+.lichter i{position:absolute;top:5px;width:7px;height:11px;border-radius:50% 50% 46% 46%/60% 60% 40% 40%;background:var(--l);box-shadow:0 0 7px 1px var(--l);animation:funkeln 2.6s ease-in-out infinite;animation-delay:var(--d)}
+.lichter i::before{content:"";position:absolute;top:-2px;left:1.5px;width:4px;height:3px;border-radius:1px;background:#6b6b73}
+@keyframes funkeln{0%,100%{opacity:1}50%{opacity:.35;box-shadow:0 0 2px 0 var(--l)}}
+.advent{display:flex;align-items:center;gap:14px;overflow:hidden;padding-top:20px;background:linear-gradient(125deg,rgba(198,40,40,.26),rgba(198,40,40,.06) 55%,rgba(46,125,50,.2)),var(--card)}
+.adv-t{flex:1;min-width:0}
+.adv-t small{display:block;color:#FFAB91;font-size:13px;font-weight:600}
+.adv-t b{display:block;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:25px;line-height:1.08;margin-top:3px;overflow-wrap:anywhere}
+.adv-t span{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+.kranz{flex:none;position:relative;display:flex;align-items:flex-end;gap:8px;height:66px;padding:0 12px 10px}
+.kranz::before{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;border-radius:50%;
+  background:radial-gradient(circle at 16% 45%,#E53935 0 2.6px,transparent 3.2px),radial-gradient(circle at 44% 70%,#E53935 0 2.4px,transparent 3px),radial-gradient(circle at 70% 35%,#E53935 0 2.6px,transparent 3.2px),radial-gradient(circle at 90% 62%,#FFD54F 0 2px,transparent 2.6px),linear-gradient(#388E3C,#1B5E20)}
+.kerze{position:relative;z-index:1;width:11px;height:32px;border-radius:3px 3px 2px 2px;background:linear-gradient(90deg,#6A3FB5,#9575CD 50%,#6A3FB5)}
+.kerze.k2{background:linear-gradient(90deg,#D81B60,#F48FB1 50%,#D81B60)}
+.kerze::before{content:"";position:absolute;top:-4px;left:5px;width:1.5px;height:5px;background:#3d3d44}
+.kerze i{display:none;position:absolute;top:-18px;left:1.5px;width:8px;height:14px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:radial-gradient(circle at 50% 72%,#FFF8E1,#FFCA28 45%,#FF6F00);box-shadow:0 0 12px 4px rgba(255,179,0,.4);transform-origin:50% 90%;animation:flackern 1.7s ease-in-out infinite}
+.kerze.an i{display:block}
+.kerze.an::before{background:#222}
+.kerze:nth-child(2) i{animation-delay:-.4s}.kerze:nth-child(3) i{animation-delay:-.9s}.kerze:nth-child(4) i{animation-delay:-1.3s}
+@keyframes flackern{0%,100%{transform:scale(1) rotate(-3deg)}35%{transform:scale(.9,1.08) rotate(2deg)}70%{transform:scale(1.04,.95) rotate(-1deg)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -984,9 +1014,67 @@ const patchMe = row => API.rest('/familie_mitglieder?name=eq.' + encodeURICompon
 
 /* ---------- Start ---------- */
 let swReg = null;
+/* ---------- Weihnachts-Design (fix an) – zum Abschalten WEIHNACHTEN auf false setzen ---------- */
+const WEIHNACHTEN = true;
+function schnee() {
+  if ($('#schnee')) return;
+  const c = document.createElement('canvas'); c.id = 'schnee'; c.setAttribute('aria-hidden', 'true'); document.body.prepend(c);
+  const ctx = c.getContext('2d'), ruhig = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w = 0, h = 0, flocken = [];
+  const flocke = y => ({ x: Math.random() * w, y: y ?? Math.random() * h, r: .7 + Math.random() * 2.1, v: .25 + Math.random() * .65, s: Math.random() * 6.28, a: .3 + Math.random() * .5 });
+  const malen = () => { ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#fff'; for (const f of flocken) { ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill(); } };
+  const groesse = () => {
+    const neuB = innerWidth !== w, dpr = Math.min(2, devicePixelRatio || 1);
+    w = innerWidth; h = innerHeight; c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (neuB) flocken = Array.from({ length: Math.round(Math.min(70, w * h / 9000)) }, () => flocke());
+    malen();
+  };
+  groesse(); addEventListener('resize', groesse);
+  if (ruhig) return;
+  let zuletzt = 0;
+  const lauf = t => {
+    if (t - zuletzt > 33) { zuletzt = t; for (const f of flocken) { f.y += f.v; f.s += .012; f.x += Math.sin(f.s) * .35; if (f.y > h + 4) Object.assign(f, flocke(-4)); } malen(); }
+    requestAnimationFrame(lauf);
+  };
+  requestAnimationFrame(lauf);
+}
+function lichterkette() {
+  const bar = $('.topbar'); if (!bar) return;
+  const l = bar.querySelector('.lichter') || bar.appendChild(Object.assign(document.createElement('div'), { className: 'lichter' }));
+  l.setAttribute('aria-hidden', 'true');
+  const farben = ['#FF5252', '#FFD740', '#69F0AE', '#40C4FF', '#FF80AB'], n = Math.ceil(innerWidth / 34) + 1;
+  if (l.childElementCount === n) return;
+  l.innerHTML = Array.from({ length: n }, (_, i) => `<i style="left:${17 + 34 * i - 3.5}px;--l:${farben[i % farben.length]};--d:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
+}
+/* Advent: Adventkranz (3 violett, 1 rosa), Countdown bis zum Heiligen Abend, Grüße über die Feiertage */
+function adventKarte() {
+  const t = parseDay(todayIso()), y = t.getFullYear(), m = t.getMonth(), d = t.getDate();
+  const abend = new Date(y, 11, 24), a4 = addDays(abend, -abend.getDay()), a1 = addDays(a4, -21);
+  let titel, sub, info = '', kerzen = 0;
+  if (m === 11 && d >= 24 || m === 0 && d <= 6) {
+    kerzen = 4;
+    [sub, titel] = m === 11 && d === 24 ? ['Heiliger Abend', 'Frohe Weihnachten!'] : m === 11 && d <= 26 ? [d === 25 ? 'Christtag' : 'Stefanitag', 'Frohe Weihnachten'] : m === 11 && d === 31 ? ['Silvester', 'Guten Rutsch! 🎆'] : m === 0 && d === 1 ? ['Neujahr', 'Prosit Neujahr! 🥂'] : m === 0 && d === 6 ? ['Heilige Drei Könige', 'Schöne Feiertage ⭐'] : ['Zwischen den Jahren', 'Schöne Feiertage'];
+    info = m === 11 && d === 24 ? 'Heute kommt das Christkind 🎁' : '';
+  } else {
+    const n = dayDiff(t, abend);
+    if (t >= a1) kerzen = Math.min(4, Math.floor(dayDiff(a1, t) / 7) + 1);
+    titel = n === 1 ? 'Morgen ist Heiliger Abend' : `Noch ${n} Tage bis Weihnachten`;
+    sub = kerzen ? `${kerzen}. Advent` : 'Bald ist Advent';
+    info = kerzen ? (kerzen < 4 ? `${kerzen + 1}. Advent am ${dayShort(isoDay(addDays(a1, kerzen * 7)))}` : 'Das Christkind kommt bald') : `1. Advent am ${dayShort(isoDay(a1))}`;
+  }
+  return `<section class="card advent" aria-label="${esc(titel)}"><div class="adv-t"><small>${esc(sub)}</small><b>${esc(titel)}</b>${info ? `<span>${esc(info)}</span>` : ''}</div>
+    <div class="kranz" aria-hidden="true">${[0, 1, 2, 3].map(i => `<span class="kerze k${i} ${i < kerzen ? 'an' : ''}"><i></i></span>`).join('')}</div></section>`;
+}
+function weihnachten() {
+  if (!WEIHNACHTEN) return;
+  document.documentElement.classList.add('xmas');
+  schnee(); lichterkette();
+  addEventListener('resize', lichterkette);
+}
+
 async function boot() {
   if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('/familie/sw.js', { scope: '/familie/' }).then(r => { swReg = r; }).catch(() => {});
-  clearBadge();
+  clearBadge(); weihnachten();
   try {
     const c = await fetch('/content.json', { cache: 'no-cache' }).then(r => r.json());
     if (!c.inbox?.url || !c.inbox?.key) throw new Error('nicht eingerichtet');
@@ -1185,7 +1273,10 @@ function loadDash(quiet) {
   if (sl && bereich('sprit') && zeigeStart('sprit') && !state.spritErr && Date.now() - sl.t > 30 * 60e3) loadSprit(true);
 }
 function greeting() {
-  const h = new Date().getHours();
+  const h = new Date().getHours(), t = todayIso().slice(5);
+  if (WEIHNACHTEN && (t === '12-24' || t === '12-25' || t === '12-26')) return 'Frohe Weihnachten';
+  if (WEIHNACHTEN && t === '12-31') return 'Guten Rutsch';
+  if (WEIHNACHTEN && t === '01-01') return 'Prosit Neujahr';
   return h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 17 ? 'Hallo' : h < 22 ? 'Guten Abend' : 'Gute Nacht';
 }
 function dashShell() {
@@ -1237,6 +1328,7 @@ function fillDash() {
   const strip = [...(bereich('kalender') ? bdays : []).map(o => { const n = dayDiff(new Date(), parseDay(o.iso)); return `<button class="tile c-pink" data-action="go" data-tab="kalender"><span class="e">🎂</span><span><b>${esc(o.t.titel)}</b><small>${n === 0 ? 'Heute!' : inDays(n)}${o.jahre > 0 ? ` · ${o.jahre} Jahre` : ''}</small></span></button>`; }),
     ...(bereich('countdowns') ? cds : []).map(c => { const n = dayDiff(new Date(), parseDay(c.datum)); return `<button class="tile c-purple" data-action="go" data-tab="countdowns"><span class="top"><span class="e">${esc(c.emoji || '⏳')}</span><span class="num">${n}</span></span><span><b>${esc(c.titel)}</b><small>${n === 0 ? 'Heute! 🎉' : n === 1 ? 'Morgen' : 'Tage'}</small></span></button>`; })].join('');
   box.innerHTML = `<div class="chips">${chips}</div>
+    ${WEIHNACHTEN ? adventKarte() : ''}
     ${zeigeStart('wetter') ? weatherCard() : ''}
     ${zeigeStart('schnell') && quickB.length ? `<div class="quick" style="grid-template-columns:repeat(${quickB.length},1fr)">${quickB.map(([, c, q, i, l]) => `<button class="qb c-${c}" data-action="quick" data-q="${q}"><span class="shape">${ic(i)}</span>${l}</button>`).join('')}</div>` : ''}
     ${strip && zeigeStart('leiste') ? `<div class="cdstrip">${strip}</div>` : ''}
