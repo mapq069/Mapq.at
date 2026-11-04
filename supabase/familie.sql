@@ -176,6 +176,30 @@ create table if not exists public.familie_infos (
   von text
 );
 
+-- Punkte & Belohnungen: Putzplan und To-dos bringen Punkte, die man gegen Belohnungen eintauschen kann
+alter table public.familie_aufgaben add column if not exists punkte int not null default 10 check (punkte between 0 and 1000);
+alter table public.familie_eintraege add column if not exists punkte int check (punkte between 0 and 1000);
+create table if not exists public.familie_punkte (
+  id uuid primary key default gen_random_uuid(),
+  erstellt timestamptz not null default now(),
+  name text not null check (char_length(name) between 1 and 30),
+  punkte int not null check (punkte between -100000 and 100000 and punkte <> 0),
+  art text not null check (art in ('putzplan', 'todo', 'bonus', 'einloesung')),
+  grund text check (char_length(grund) <= 120),
+  ref text check (char_length(ref) <= 120),
+  von text
+);
+create unique index if not exists familie_punkte_ref on public.familie_punkte (ref);
+create index if not exists familie_punkte_name on public.familie_punkte (name, erstellt desc);
+create table if not exists public.familie_belohnungen (
+  id uuid primary key default gen_random_uuid(),
+  erstellt timestamptz not null default now(),
+  titel text not null check (char_length(titel) between 1 and 80),
+  emoji text check (char_length(emoji) <= 16),
+  kosten int not null check (kosten between 1 and 100000),
+  von text
+);
+
 create table if not exists public.familie_abos (
   id uuid primary key default gen_random_uuid(),
   erstellt timestamptz not null default now(),
@@ -202,7 +226,7 @@ declare t text;
 begin
   foreach t in array array['familie_mitglieder', 'familie_eintraege', 'familie_termine', 'familie_alben', 'familie_fotos',
     'familie_nachrichten', 'familie_stimmen', 'familie_reaktionen', 'familie_kommentare', 'familie_aufgaben', 'familie_aufgaben_log',
-    'familie_rezepte', 'familie_essen', 'familie_countdowns', 'familie_infos', 'familie_abos'] loop
+    'familie_rezepte', 'familie_essen', 'familie_countdowns', 'familie_infos', 'familie_abos', 'familie_punkte', 'familie_belohnungen'] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('drop policy if exists "familie" on public.%I', t);
     execute format('create policy "familie" on public.%I for all to authenticated using (public.mapq_ist_familie()) with check (public.mapq_ist_familie())', t);
@@ -295,9 +319,12 @@ begin
     when 'familie_termine' then 'termin'
     when 'familie_fotos' then 'foto'
     when 'familie_kommentare' then 'kommentar'
+    when 'familie_punkte' then 'punkte'
     else 'nachricht' end;
-  -- Bündeln: pro Person und Bereich höchstens alle 3 Minuten eine Mitteilung (Pinnwand und Antworten immer)
-  if v_art not in ('nachricht', 'kommentar') then
+  -- Punkte: nur Bonus und Einlösen melden (Putzplan und To-dos zählen still mit)
+  if v_art = 'punkte' and r->>'art' not in ('bonus', 'einloesung') then return new; end if;
+  -- Bündeln: pro Person und Bereich höchstens alle 3 Minuten eine Mitteilung (Pinnwand, Antworten und Punkte immer)
+  if v_art not in ('nachricht', 'kommentar', 'punkte') then
     if exists (select 1 from public.familie_push_log l where l.art = v_art and l.von = wer and l.zeit > now() - interval '3 minutes') then
       return new;
     end if;
@@ -310,6 +337,7 @@ begin
     when 'termin' then 'Neuer Termin'
     when 'foto' then case when r->>'typ' = 'video' then 'Neues Video' else 'Neue Fotos' end
     when 'kommentar' then coalesce(nullif(wer, ''), 'Jemand') || ' hat geantwortet'
+    when 'punkte' then case when r->>'art' = 'einloesung' then '🎁 ' || (r->>'name') || ' löst ein' else '⭐ Punkte für ' || (r->>'name') end
     else coalesce(nullif(wer, ''), 'Pinnwand') end;
   txt := case v_art
     when 'einkauf' then coalesce(nullif(wer, '') || ': ', '') || coalesce(nullif(r->>'menge', '') || ' ', '') || (r->>'text')
@@ -317,11 +345,13 @@ begin
     when 'termin' then (r->>'titel') || ' · ' || to_char((r->>'datum')::date, 'DD.MM.') || coalesce(' ' || left(r->>'zeit', 5), '') || coalesce(' (' || nullif(wer, '') || ')', '')
     when 'foto' then coalesce(nullif(wer, ''), 'Jemand') || case when r->>'typ' = 'video' then ' hat ein Video geteilt' else ' hat Fotos geteilt' end || coalesce(': ' || nullif(r->>'text', ''), '')
     when 'kommentar' then left(r->>'text', 180)
+    when 'punkte' then coalesce(nullif(r->>'grund', ''), 'Belohnung') || ' (' || case when (r->>'punkte')::int > 0 then '+' else '' end || (r->>'punkte') || ')'
+      || case when r->>'art' = 'bonus' and nullif(wer, '') is not null then ' · von ' || wer else '' end
     else case when r->'optionen' is not null and r->>'optionen' <> 'null' then '📊 Umfrage: ' else '' end || left(r->>'text', 180) end;
   tab := case v_art when 'einkauf' then 'listen' when 'todo' then 'listen' when 'termin' then 'kalender' when 'foto' then 'fotos'
-    when 'kommentar' then case when r->>'ziel_typ' = 'foto' then 'fotos' else 'pinnwand' end else 'pinnwand' end;
+    when 'kommentar' then case when r->>'ziel_typ' = 'foto' then 'fotos' else 'pinnwand' end when 'punkte' then 'punkte' else 'pinnwand' end;
   perform public.mapq_familie_senden(titel, txt, '/familie/#' || tab,
-    case when v_art in ('nachricht', 'kommentar') then 'familie-n-' || (r->>'id') else 'familie-' || v_art end,
+    case when v_art in ('nachricht', 'kommentar', 'punkte') then 'familie-n-' || (r->>'id') else 'familie-' || v_art end,
     null, nullif(wer, ''));
   return new;
 exception when others then
@@ -338,6 +368,84 @@ drop trigger if exists familie_push on public.familie_nachrichten;
 create trigger familie_push after insert on public.familie_nachrichten for each row execute function public.mapq_familie_push();
 drop trigger if exists familie_push on public.familie_kommentare;
 create trigger familie_push after insert on public.familie_kommentare for each row execute function public.mapq_familie_push();
+drop trigger if exists familie_push on public.familie_punkte;
+create trigger familie_push after insert on public.familie_punkte for each row execute function public.mapq_familie_push();
+
+-- ---------- Punkte ----------
+-- Putzplan abgehakt → Punkte für die Person, die es erledigt hat (wieder aufgehoben → Punkte weg)
+create or replace function public.mapq_familie_punkte_putzplan()
+returns trigger language plpgsql security definer set search_path = ''
+as $$
+declare a record;
+begin
+  if tg_op = 'DELETE' then
+    delete from public.familie_punkte where ref = 'aufgabe:' || old.aufgabe_id || ':' || old.datum;
+    return old;
+  end if;
+  select titel, punkte into a from public.familie_aufgaben where id = new.aufgabe_id;
+  if coalesce(a.punkte, 0) > 0 and nullif(new.von, '') is not null then
+    insert into public.familie_punkte (name, punkte, art, grund, ref, von)
+      values (new.von, a.punkte, 'putzplan', left(a.titel, 120), 'aufgabe:' || new.aufgabe_id || ':' || new.datum, new.von)
+      on conflict (ref) do nothing;
+  end if;
+  return new;
+exception when others then
+  return coalesce(new, old); -- Punkte dürfen das Abhaken nie verhindern
+end $$;
+drop trigger if exists familie_punkte on public.familie_aufgaben_log;
+create trigger familie_punkte after insert or delete on public.familie_aufgaben_log for each row execute function public.mapq_familie_punkte_putzplan();
+
+-- To-do mit Punkten erledigt → Punkte für die Person, die es abgehakt hat (wieder offen → Punkte weg)
+create or replace function public.mapq_familie_punkte_todo()
+returns trigger language plpgsql security definer set search_path = ''
+as $$
+begin
+  if new.liste <> 'todo' then return new; end if;
+  if new.erledigt and not coalesce(old.erledigt, false) and coalesce(new.punkte, 0) > 0 and nullif(new.erledigt_von, '') is not null then
+    insert into public.familie_punkte (name, punkte, art, grund, ref, von)
+      values (new.erledigt_von, new.punkte, 'todo', left(new.text, 120), 'todo:' || new.id, new.erledigt_von)
+      on conflict (ref) do nothing;
+  elsif not new.erledigt and coalesce(old.erledigt, false) then
+    delete from public.familie_punkte where ref = 'todo:' || new.id;
+  end if;
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists familie_punkte on public.familie_eintraege;
+create trigger familie_punkte after update of erledigt on public.familie_eintraege for each row execute function public.mapq_familie_punkte_todo();
+
+-- Einlösen nur mit genug Punkten; Einlösen zieht ab, alles andere zählt dazu
+create or replace function public.mapq_familie_punkte_pruefen()
+returns trigger language plpgsql security definer set search_path = ''
+as $$
+declare stand int;
+begin
+  if new.art = 'einloesung' then
+    if new.punkte > 0 then new.punkte := -new.punkte; end if;
+    select coalesce(sum(punkte), 0) into stand from public.familie_punkte where name = new.name;
+    if stand + new.punkte < 0 then
+      raise exception 'Nicht genug Punkte: % hat % Punkte.', new.name, stand using errcode = 'P0001';
+    end if;
+  elsif new.art in ('putzplan', 'todo') and new.punkte < 0 then
+    raise exception 'Ungültige Punkte.' using errcode = 'P0001';
+  end if;
+  return new;
+end $$;
+drop trigger if exists familie_punkte_pruefen on public.familie_punkte;
+create trigger familie_punkte_pruefen before insert on public.familie_punkte for each row execute function public.mapq_familie_punkte_pruefen();
+
+-- Punktestand je Person: stand (zum Einlösen), woche und monat (gesammelt, für die Rangliste)
+create or replace function public.mapq_familie_punktestand()
+returns jsonb language sql stable security definer set search_path = ''
+as $$ select case when public.mapq_ist_familie() then coalesce((select jsonb_object_agg(name, jsonb_build_object('stand', stand, 'woche', woche, 'monat', monat, 'gesamt', gesamt))
+  from (select name, sum(punkte)::int as stand,
+      coalesce(sum(punkte) filter (where punkte > 0 and erstellt >= (date_trunc('week', now() at time zone 'Europe/Vienna') at time zone 'Europe/Vienna')), 0)::int as woche,
+      coalesce(sum(punkte) filter (where punkte > 0 and erstellt >= (date_trunc('month', now() at time zone 'Europe/Vienna') at time zone 'Europe/Vienna')), 0)::int as monat,
+      coalesce(sum(punkte) filter (where punkte > 0), 0)::int as gesamt
+    from public.familie_punkte group by name) x), '{}'::jsonb) end $$;
+revoke all on function public.mapq_familie_punktestand() from public, anon;
+grant execute on function public.mapq_familie_punktestand() to authenticated;
 
 -- ---------- Erinnerungen (läuft alle 5 Minuten) ----------
 -- Jahrestag im Jahr y (29. Februar → 28. Februar)
@@ -435,13 +543,41 @@ begin
 end $$;
 revoke all on function public.mapq_familie_erinnern(timestamp) from public, anon, authenticated;
 
+-- ---------- Automationen für „Zuhause“ (Zeitpläne) ----------
+-- Jede Minute: Ist eine Zeit-Regel dran (smart_auto_naechste – setzt die Funktion mapq-push selbst), wird sie aufgerufen.
+-- Sonst passiert nichts, die Funktion läuft also nur, wenn wirklich etwas zu tun ist.
+create or replace function public.mapq_smart_automatik()
+returns void language plpgsql security definer set search_path = ''
+as $$
+declare faellig text; ziel text; geheim text;
+begin
+  select wert into faellig from public.mapq_einstellungen where schluessel = 'smart_auto_naechste';
+  if coalesce(faellig, '') = '' or now() < faellig::timestamptz then return; end if;
+  select wert into ziel from public.mapq_einstellungen where schluessel = 'push_url';
+  select wert into geheim from public.mapq_einstellungen where schluessel = 'push_secret';
+  if ziel is null or geheim is null then return; end if;
+  -- antwortet die Funktion nicht, frühestens in 5 Minuten wieder (sonst setzt sie den nächsten Termin selbst)
+  update public.mapq_einstellungen set wert = to_char(now() at time zone 'UTC' + interval '5 minutes', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')
+    where schluessel = 'smart_auto_naechste';
+  perform net.http_post(
+    url := ziel,
+    body := jsonb_build_object('aktion', 'auto-lauf'),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-mapq-secret', geheim),
+    timeout_milliseconds := 30000
+  );
+exception when others then
+  raise notice 'Automationen: %', sqlerrm;
+end $$;
+revoke all on function public.mapq_smart_automatik() from public, anon, authenticated;
+
 -- Zeitplan (pg_cron). Fehlt die Erweiterung, läuft der Rest trotzdem.
 do $$ begin
   create extension if not exists pg_cron with schema pg_catalog;
 exception when others then raise notice 'pg_cron nicht verfügbar: %', sqlerrm; end $$;
 do $$ begin
   perform cron.schedule('mapq-familie-erinnerungen', '*/5 * * * *', 'select public.mapq_familie_erinnern()');
+  perform cron.schedule('mapq-smart-automatik', '* * * * *', 'select public.mapq_smart_automatik()');
 exception when others then raise notice 'Zeitplan nicht angelegt: %', sqlerrm; end $$;
 
 select 'Fertig ✓' as ergebnis,
-  case when exists (select 1 from pg_extension where extname = 'pg_cron') then 'Erinnerungen aktiv' else 'Erinnerungen: pg_cron fehlt' end as erinnerungen;
+  case when exists (select 1 from pg_extension where extname = 'pg_cron') then 'Erinnerungen und Automationen aktiv' else 'Erinnerungen und Automationen: pg_cron fehlt' end as zeitplan;

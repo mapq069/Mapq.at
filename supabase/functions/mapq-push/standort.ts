@@ -13,8 +13,11 @@
 //   standort-token    { name }                   – neuer Kurzbefehl-Schlüssel (alter wird ungültig)
 //   standort-stopp    { name }                   – nicht mehr teilen: Standort und Schlüssel weg
 //   standort-zuhause  { lat, lon } | { loeschen } – Zuhause festlegen
+//
+// Nach jedem neuen Standort wird die Anwesenheit neu bestimmt – für die Automationen „alle weg“ / „Erster heim“ (regeln.ts).
 
 import { Fehler } from "./smart.ts?v=3";
+import { anwesenheit } from "./regeln.ts?v=1";
 
 // deno-lint-ignore no-explicit-any
 type Db = (path: string, init?: RequestInit) => Promise<any>;
@@ -94,6 +97,7 @@ export async function standortAktion(data: Roh, ctx: Ctx): Promise<unknown> {
     const name = token.length >= 20 ? s[TP + await sha(token)] : "";
     if (!name) throw new Fehler("Unbekannter Schlüssel – in der Familien-App unter „Ich → Standort“ einen neuen erstellen.", 401);
     const o = await setzen(ctx, name, pruefe(data), "kurzbefehl");
+    await anwesenheit(ctx, { name, pos: o });
     return { ok: true, name, ort: o.ort };
   }
 
@@ -107,7 +111,9 @@ export async function standortAktion(data: Roh, ctx: Ctx): Promise<unknown> {
   if (a === "standort-setzen") {
     const name = nameAus(data);
     if (!(await istMitglied(db, name))) throw new Fehler("Diese Person gibt es in der Familie nicht.");
-    return { ok: true, standort: { name, ...(await setzen(ctx, name, pruefe(data), "app")) } };
+    const o = await setzen(ctx, name, pruefe(data), "app");
+    await anwesenheit(ctx, { name, pos: o });
+    return { ok: true, standort: { name, ...o } };
   }
 
   if (a === "standort-token") {
@@ -125,6 +131,7 @@ export async function standortAktion(data: Roh, ctx: Ctx): Promise<unknown> {
     const werte: Record<string, string> = { [SP + name]: "" };
     for (const [k, v] of Object.entries(s)) if (k.startsWith(TP) && v === name) werte[k] = "";
     await schreibe(db, werte);
+    await anwesenheit(ctx, { name, pos: null }, false); // nicht mehr teilen ist kein „weggehen“
     return { ok: true };
   }
 
@@ -132,6 +139,8 @@ export async function standortAktion(data: Roh, ctx: Ctx): Promise<unknown> {
     if (data.loeschen === true) { await schreibe(db, { familie_zuhause: "" }); return { ok: true, zuhause: null }; }
     const p = pruefe(data);
     await schreibe(db, { familie_zuhause: JSON.stringify({ lat: p.lat, lon: p.lon }) });
+    s.familie_zuhause = JSON.stringify({ lat: p.lat, lon: p.lon });
+    await anwesenheit(ctx, null, false);
     return { ok: true, zuhause: { lat: p.lat, lon: p.lon } };
   }
 

@@ -10,12 +10,16 @@
 //  • von der Familien-App { aktion: "smart-…" } – Smart Home (Govee, Shelly, Smart Life / Tuya, SmartThings), siehe smart.ts
 //    { aktion: "smart-st-code", code, state } – Rückkehr von der Samsung-Anmeldung, ohne Login (der einmalige state weist aus)
 //  • { aktion: "standort-…" } – Familien-Karte (Familie); { aktion: "standort", token } vom iPhone-Kurzbefehl, siehe standort.ts
+//  • { aktion: "auto-…" } – Automationen für „Zuhause“ (Familie), siehe regeln.ts; { aktion: "auto-lauf" } vom Zeitplan mit x-mapq-secret
+//  • { aktion: "sprit", lat, lon, art } – Spritpreise der E-Control (Familie), siehe sprit.ts
 //
 // Nur Standard-WebCrypto: VAPID (RFC 8292) und aes128gcm-Verschlüsselung (RFC 8291 / RFC 8188).
 // In Supabase mit ausgeschalteter „JWT-Verifizierung“ bereitstellen – die Prüfung passiert hier.
 
 import { Fehler, smartAktion } from "./smart.ts?v=3";
-import { standortAktion } from "./standort.ts?v=2";
+import { standortAktion } from "./standort.ts?v=3";
+import { autoLauf, regelAktion } from "./regeln.ts?v=1";
+import { spritAktion } from "./sprit.ts?v=1";
 
 const te = new TextEncoder();
 
@@ -149,7 +153,22 @@ async function handler(req: Request): Promise<Response> {
     let passt = (_a: Abo) => true;
 
     const secret = req.headers.get("x-mapq-secret");
-    if (secret && s.push_secret && secret === s.push_secret && data.ziel === "familie") {
+    const geheim = !!(secret && s.push_secret && secret === s.push_secret);
+    // Aufrufe für die Familie (Smart Home, Karte, Automationen, Tanken): Rolle prüfen, Fehler als Meldung zurück
+    const familie = async (was: string, f: () => Promise<unknown>, ohneLogin = false) => {
+      if (!ohneLogin && !(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
+      try {
+        return json(await f());
+      } catch (e) {
+        if (e instanceof Fehler) return json({ error: e.message }, e.status);
+        console.error(was, e);
+        return json({ error: `${was}: ${(e as Error).message}` }, 500);
+      }
+    };
+    if (geheim && data.aktion === "auto-lauf") {
+      // vom Zeitplan (pg_cron → mapq_smart_automatik), nie ein Push
+      return await familie("Automation", () => autoLauf({ db, s }), true);
+    } else if (geheim && data.ziel === "familie") {
       // Familien-App: an alle Familien-Geräte außer an die der Person, die etwas eingetragen hat
       tabelle = "familie_abos";
       const von = typeof data.von === "string" && data.von ? data.von : null;
@@ -161,7 +180,7 @@ async function handler(req: Request): Promise<Response> {
         url: typeof data.url === "string" && data.url.startsWith("/familie/") ? data.url : "/familie/",
         tag: String(data.tag ?? "familie").slice(0, 80),
       };
-    } else if (secret && s.push_secret && secret === s.push_secret) {
+    } else if (geheim && !data.aktion) {
       const vorname = String(data.name ?? "").trim().split(/\s+/)[0];
       msg = {
         title: "Neue Anfrage",
@@ -174,23 +193,13 @@ async function handler(req: Request): Promise<Response> {
       return json(await familienPasswort(String(data.passwort ?? ""), s));
     } else if (typeof data.aktion === "string" && (data.aktion === "standort" || data.aktion.startsWith("standort-"))) {
       // „standort“ kommt vom Kurzbefehl und weist sich mit dem persönlichen Schlüssel aus, alles andere nur die Familie
-      if (data.aktion !== "standort" && !(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
-      try {
-        return json(await standortAktion(data, { db, s }));
-      } catch (e) {
-        if (e instanceof Fehler) return json({ error: e.message }, e.status);
-        console.error("Standort", e);
-        return json({ error: "Standort: " + (e as Error).message }, 500);
-      }
+      return await familie("Standort", () => standortAktion(data, { db, s }), data.aktion === "standort");
     } else if (typeof data.aktion === "string" && data.aktion.startsWith("smart-")) {
-      if (data.aktion !== "smart-st-code" && !(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
-      try {
-        return json(await smartAktion(data, { db, s }));
-      } catch (e) {
-        if (e instanceof Fehler) return json({ error: e.message }, e.status);
-        console.error("Smart Home", e);
-        return json({ error: "Smart Home: " + (e as Error).message }, 500);
-      }
+      return await familie("Smart Home", () => smartAktion(data, { db, s }), data.aktion === "smart-st-code");
+    } else if (typeof data.aktion === "string" && data.aktion.startsWith("auto-")) {
+      return await familie("Automation", () => regelAktion(data, { db, s }));
+    } else if (data.aktion === "sprit") {
+      return await familie("Tanken", () => spritAktion(data, { db, s }));
     } else if (data.aktion === "familie-test") {
       if (!(await rolle("mapq_ist_familie"))) return json({ error: "Kein Zugriff" }, 401);
       tabelle = "familie_abos";

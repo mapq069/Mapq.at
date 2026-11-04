@@ -230,7 +230,65 @@ details.done-sec[open]>summary .ic{transform:rotate(90deg)}
 .cal-d.out{color:#45454c}
 .cal-d.today{color:var(--c);font-weight:800;background:var(--cb)}
 .cal-d.sel{background:var(--c);color:var(--on-light);font-weight:800}
+.cal-d.fer:not(.sel):not(.today){background:rgba(79,195,247,.1)}
+.cal-d.fei:not(.sel){color:#FF8A80;font-weight:800}
+.cal-d.fei.out:not(.sel){color:#6b4744}
 .cal-d .dots{display:flex;gap:3px;height:5px}
+.tanks{display:flex;flex-direction:column;gap:8px}
+.tank{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border-radius:var(--r);text-decoration:none;color:var(--text);min-height:68px}
+.tank .rank{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--card-2);font-weight:700;font-size:13px;color:var(--muted)}
+.tank.top .rank{background:var(--cb);color:var(--c)}
+.tank .t{flex:1;min-width:0}
+.tank .t b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tank .t small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tank .preis{flex:none;text-align:right;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:25px;line-height:1;font-variant-numeric:tabular-nums}
+.tank .preis sup{font-size:14px;vertical-align:top;position:relative;top:1px;margin-left:1px}
+.tank .preis small{display:block;font-family:var(--font-b);font-stretch:100%;font-size:11.5px;font-weight:500;color:var(--dim);margin-top:5px}
+.tank.top .preis{color:var(--c)}
+.pk-me{display:flex;align-items:center;gap:14px}
+.pk-me .t{flex:1;min-width:0}
+.pk-me .t small{display:block;color:var(--muted);font-size:12.5px}
+.pk-me .t b{display:block;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:40px;line-height:1.05;color:var(--c);font-variant-numeric:tabular-nums}
+.pk-woche{flex:none;text-align:right;font-weight:700;font-size:18px;color:var(--c)}
+.pk-woche small{display:block;font-size:11.5px;font-weight:500;color:var(--dim)}
+.rang{background:var(--card);border-radius:var(--r);padding:4px 14px;margin-bottom:4px}
+.rang-r{display:flex;align-items:center;gap:12px;padding:11px 0}
+.rang-r+.rang-r{border-top:1px solid var(--line)}
+.rang-r .pl{flex:none;width:26px;text-align:center;font-size:20px;line-height:1}
+.rang-r .pl-n{font-size:13px;font-weight:700;color:var(--dim)}
+.rang-r .t{flex:1;min-width:0}
+.rang-r .t b{display:block;font-weight:600;font-size:15px}
+.rang-r .t b small{font-weight:500;color:var(--dim);font-size:12px}
+.rang-bar{display:block;height:6px;border-radius:3px;background:var(--card-2);margin-top:6px;overflow:hidden}
+.rang-bar i{display:block;height:100%;background:var(--c);border-radius:3px;min-width:6px}
+.rang-r .pk{flex:none;font-family:var(--font-h);font-stretch:75%;font-weight:800;font-size:23px;color:var(--c);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.bels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bel{display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--card);border-radius:var(--r)}
+.bel-e{display:flex;flex-direction:column;align-items:flex-start;gap:3px;border:0;background:none;padding:0;text-align:left;color:var(--text)}
+.bel-e .e{font-size:30px;line-height:1.1;margin-bottom:4px}
+.bel-e b{font-weight:600;font-size:14.5px;line-height:1.3;overflow-wrap:anywhere}
+.bel-e small{color:var(--c);font-weight:700;font-size:13px}
+.bel .btn{width:100%}
+.bel .btn:disabled{opacity:.55}
+.pk-chip{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:10px;background:rgba(255,193,7,.14);color:#FFC107;font-size:11.5px;font-weight:700;margin-right:6px}
+.autos{background:var(--card);border-radius:var(--r);padding:2px 14px}
+.auto{display:flex;align-items:center;gap:12px;padding:10px 0}
+.auto+.auto{border-top:1px solid var(--line)}
+.auto-main{flex:1;min-width:0;display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;text-align:left;color:var(--text);min-height:48px}
+.auto-main .t{flex:1;min-width:0}
+.auto-main .t b{display:block;font-weight:600;font-size:15px;line-height:1.3}
+.auto-main .t small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.auto-main .t small.st{color:var(--dim);font-size:12px}
+.auto.aus .auto-main .shape{filter:grayscale(1);opacity:.55}
+.auto.aus .auto-main .t b{color:var(--muted)}
+.chipsel.wt{flex-wrap:nowrap;gap:6px}
+.chipsel.wt button{flex:1;min-width:0;padding:0;justify-content:center}
+.cal-leg{display:flex;gap:16px;justify-content:center;margin:10px 0 2px;font-size:12px;color:var(--dim)}
+.cal-leg span{display:flex;align-items:center;gap:6px}
+.cal-leg i{width:10px;height:10px;border-radius:50%}
+.cal-leg i.fei{background:#FF8A80}
+.cal-leg i.fer{background:rgba(79,195,247,.45)}
+.ev.fest{cursor:default}
 .cal-d .dots i{width:5px;height:5px;border-radius:50%;background:var(--c)}
 .cal-d.sel .dots i{background:var(--on-light)}
 .day-h{display:flex;align-items:center;gap:10px;margin:20px 4px 8px;font-size:13px;color:var(--muted)}
@@ -690,6 +748,10 @@ const ICONS = {
   up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>', stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>',
   tv: '<rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><path d="m17 2-5 5-5-5"/>',
   minus: '<path d="M5 12h14"/>',
+  fuel: '<line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+  zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
   pause: '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
   vol: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
   volx: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>'
@@ -707,7 +769,7 @@ const TABS_STD = [
   { id: 'mehr', label: 'Mehr', icon: 'grid', c: 'purple' }
 ];
 /* Bereiche, die unter „Mehr“ stehen – „Karte“ und „Fotos“ nur, wenn sie nicht unten in der Leiste sind */
-const SUB = ['karte', 'fotos', 'essen', 'rezepte', 'countdowns', 'infos', 'ich'];
+const SUB = ['karte', 'fotos', 'essen', 'rezepte', 'countdowns', 'punkte', 'sprit', 'infos', 'ich'];
 let TABS = TABS_STD.filter(t => !t.aus), ALL_TABS = [];
 /* Aussehen & Bereiche – stellt Matteo im Admin-Panel ein (content.json → familie) */
 let DESIGN = { titel: 'Familie', mehr: {}, start: {} };
@@ -891,7 +953,8 @@ const state = {
   cal: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
   day: null, showDone: false, weather: null,
   wp: { info: null, loaded: false, mine: null, busy: false },
-  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null, raum: null, orte: null, orteErr: null
+  smart: store.get('smart'), smartErr: null, smartGeprueft: false, smartBusy: new Set(), smartAlle: false, szenen: {}, devOpen: null, raum: null, orte: null, orteErr: null,
+  sprit: null, spritErr: null, spritLaeuft: false, punkte: null, punkteErr: null, punkteOk: null, auto: null, autoErr: null
 };
 const unread = () => {
   const seen = store.get('seen', '');
@@ -1031,7 +1094,7 @@ const LOADERS = {
   start: q => loadDash(q), listen: q => { loadItems(q); if (state.liste === 'putzplan') loadAufgaben(q); }, kalender: q => loadTermine(q),
   fotos: q => { loadFotos(q); if (state.fotoView === 'alben') loadAlben(q); }, pinnwand: q => loadMsgs(q), mehr: q => loadHub(q),
   essen: q => { loadEssen(q); loadRezepte(true); }, rezepte: q => loadRezepte(q), countdowns: q => loadCountdowns(q), infos: q => loadInfos(q), ich: () => { loadPushInfo(); loadOrte(true); },
-  zuhause: q => loadSmart(q), karte: q => loadOrte(q)
+  zuhause: q => { loadSmart(q); loadAuto(true); }, karte: q => loadOrte(q), sprit: q => loadSprit(q), punkte: q => loadPunkte(q)
 };
 function go(tab, replace) {
   if (!ALL_TABS.includes(tab)) tab = 'start';
@@ -1042,10 +1105,10 @@ function go(tab, replace) {
 }
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (ALL_TABS.includes(h) && h !== state.tab && !$('#app').hidden) go(h, true); });
 
-const VIEWS = { karte: () => karteShell(), zuhause: () => zuhauseShell(), start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView() };
+const VIEWS = { karte: () => karteShell(), zuhause: () => zuhauseShell(), start: () => dashShell(), listen: () => listenShell(), kalender: () => kalenderShell(), fotos: () => fotosShell(), pinnwand: () => pinnwandShell(), mehr: () => hubShell(), essen: () => essenShell(), rezepte: () => rezepteShell(), countdowns: () => cdShell(), infos: () => infosShell(), ich: () => ichView(), sprit: () => spritShell(), punkte: () => punkteShell() };
 function renderView() { $('#view').innerHTML = VIEWS[state.tab](); fill(); }
 function fill() {
-  ({ karte: fillKarte, zuhause: fillZuhause, start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos })[state.tab]?.();
+  ({ karte: fillKarte, zuhause: fillZuhause, start: fillDash, listen: fillItems, kalender: () => { fillCal(); fillCalList(); }, fotos: fillFotos, pinnwand: fillPosts, mehr: fillHub, essen: fillEssen, rezepte: fillRezepte, countdowns: fillCd, infos: fillInfos, sprit: fillSprit, punkte: fillPunkte })[state.tab]?.();
 }
 const spinner = '<div class="loading"><div class="ring"></div></div>';
 const header = (title, sub, c, icon, action = '', back = false) => `${back ? `<button class="back" data-action="go" data-tab="mehr">${ic('left', 18)} Mehr</button>` : ''}<div class="ph c-${c}"><span class="shape lg">${ic(icon, 24)}</span><div><h1>${title}</h1><p id="phSub">${sub || ''}</p></div>${action}</div>`;
@@ -1116,6 +1179,10 @@ function loadDash(quiet) {
   loadItems(quiet); loadTermine(quiet); loadFotos(quiet); loadMsgs(quiet); loadWeather(); loadAufgaben(quiet); loadEssen(quiet); loadCountdowns(quiet);
   if (!state.smartErr?.alt && (smartAktiv() || !state.smartGeprueft)) loadSmart(true);
   loadOrte(true);
+  if (bereich('punkte') && zeigeStart('punkte') && state.punkteOk !== false) loadPunkte(true);
+  const sl = store.get('spritLetzt');
+  // Spritpreis auf Start nur auf Handys, die „Tanken“ schon benutzt haben
+  if (sl && bereich('sprit') && zeigeStart('sprit') && !state.spritErr && Date.now() - sl.t > 30 * 60e3) loadSprit(true);
 }
 function greeting() {
   const h = new Date().getHours();
@@ -1147,7 +1214,7 @@ function fillDash() {
   const foto = (state.fotos || [])[0], fotoUrl = foto && URLS[foto.klein]?.[0];
   const w = state.weather, wc = w ? WMO(w.now.weather_code) : null;
   const tasks = aufgabenAm(todayIso()), myTasks = tasks.filter(t => !t.done && (t.wer === state.me || !t.wer));
-  const essen = state.essen[todayIso()];
+  const essen = state.essen[todayIso()], fh = bereich('kalender') ? festAm(todayIso()) : {}, sl = store.get('spritLetzt');
   const smartAn = smartAktiv() ? lichterAn() : [], smartStart = smartAktiv() ? startGeraete() : [];
   const cds = (state.countdowns || []).filter(c => c.datum >= todayIso()).slice(0, 4), bdays = nextBirthdays(21).filter(o => o.iso !== todayIso() || true).slice(0, 2);
   const chips = [
@@ -1157,11 +1224,15 @@ function fillDash() {
     myTasks.length && bereich('listen') && bereich('putzplan') ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="putzplan"><span class="shape c-sky">${ic('sparkles', 16)}</span>${myTasks.length} dran</button>` : '',
     bereich('listen') ? `<button class="dchip" data-action="go" data-tab="listen" data-liste="todo"><span class="shape c-blue">${ic('todo', 16)}</span>${mine.length ? mine.length + ' für dich' : todo.length ? todo.length + ' To-dos' : 'Keine To-dos'}</button>` : '',
     bereich('kalender') ? `<button class="dchip" data-action="go" data-tab="kalender"><span class="shape c-orange">${ic('cal', 16)}</span>${heute.length ? heute.length + ' heute' : 'Heute frei'}</button>` : '',
-    u && bereich('pinnwand') ? `<button class="dchip" data-action="go" data-tab="pinnwand"><span class="shape c-green">${ic('chat', 16)}</span>${u} neu</button>` : ''
+    fh.feiertag ? `<button class="dchip" data-action="go" data-tab="kalender"><span class="shape c-red" style="font-size:15px">🎉</span>${esc(fh.feiertag)}</button>`
+      : fh.ferien ? `<button class="dchip" data-action="go" data-tab="kalender"><span class="shape c-sky" style="font-size:15px">🏖️</span>${esc(fh.ferien.name.replace(' – schulfrei', ''))}${fh.ferien.von !== fh.ferien.bis ? ' bis ' + esc(dayShort(fh.ferien.bis)) : ''}</button>` : '',
+    u && bereich('pinnwand') ? `<button class="dchip" data-action="go" data-tab="pinnwand"><span class="shape c-green">${ic('chat', 16)}</span>${u} neu</button>` : '',
+    state.punkte && (state.punkte.log.length || state.punkte.bel.length) && bereich('punkte') && zeigeStart('punkte') ? `<button class="dchip" data-action="go" data-tab="punkte"><span class="shape c-amber">${ic('trophy', 16)}</span>${standVon(state.me)} Punkte</button>` : '',
+    sl?.preis && bereich('sprit') && zeigeStart('sprit') && Date.now() - sl.t < 3 * 3600e3 ? `<button class="dchip" data-action="go" data-tab="sprit"><span class="shape c-orange">${ic('fuel', 16)}</span>${spritName(sl.art)} ${fmtPreis(sl.preis)}</button>` : ''
   ].join('');
   const nextTxt = next ? esc(next.t.titel) : 'Nichts geplant';
   const nextSub = next ? `${esc(dayLabel(next.iso)[0])}${next.t.zeit ? ', ' + esc(next.t.zeit.slice(0, 5)) : ''}${next.t.ort ? ' · ' + esc(next.t.ort) : ''}` : 'Die nächsten 30 Tage sind frei.';
-  const agenda = occ.filter(o => o.iso <= isoDay(addDays(new Date(), 1)));
+  const agenda = [...festeImBereich(todayIso(), isoDay(addDays(new Date(), 1))).filter(o => o.fest.emoji === '🎉'), ...occ.filter(o => o.iso <= isoDay(addDays(new Date(), 1)))].sort((a, b) => a.iso.localeCompare(b.iso));
   const quickB = [['listen', 'amber', 'einkauf', 'cart', 'Einkauf'], ['kalender', 'orange', 'termin', 'cal', 'Termin'], ['fotos', 'pink', 'foto', 'camera', 'Foto'], ['pinnwand', 'green', 'nachricht', 'chat', 'Nachricht']].filter(q => bereich(q[0]));
   const strip = [...(bereich('kalender') ? bdays : []).map(o => { const n = dayDiff(new Date(), parseDay(o.iso)); return `<button class="tile c-pink" data-action="go" data-tab="kalender"><span class="e">🎂</span><span><b>${esc(o.t.titel)}</b><small>${n === 0 ? 'Heute!' : inDays(n)}${o.jahre > 0 ? ` · ${o.jahre} Jahre` : ''}</small></span></button>`; }),
     ...(bereich('countdowns') ? cds : []).map(c => { const n = dayDiff(new Date(), parseDay(c.datum)); return `<button class="tile c-purple" data-action="go" data-tab="countdowns"><span class="top"><span class="e">${esc(c.emoji || '⏳')}</span><span class="num">${n}</span></span><span><b>${esc(c.titel)}</b><small>${n === 0 ? 'Heute! 🎉' : n === 1 ? 'Morgen' : 'Tage'}</small></span></button>`; })].join('');
@@ -1183,8 +1254,8 @@ function fillDash() {
       <div class="items" style="background:var(--card-2)">${tasks.map(aufgabeRow).join('')}</div></section>` : ''}
     ${!zeigeStart('pinnwand') || !bereich('pinnwand') ? '' : `<section class="card c-green"><div class="card-h"><span class="shape">${ic('chat')}</span><span class="t"><b>Pinnwand</b><small>${lastMsg ? (u ? u + ' neue Nachricht' + (u > 1 ? 'en' : '') : 'zuletzt ' + esc(rel(lastMsg.erstellt))) : 'Noch keine Nachrichten'}</small></span><button class="btn sm" data-action="go" data-tab="pinnwand">Öffnen</button></div>
       ${lastMsg ? `<div class="msgs-mini">${state.msgs.slice(0, 2).map(m => `<div class="m">${av(m.von, 'sm')}<div style="min-width:0"><small>${esc(m.von || 'Jemand')} · ${esc(relShort(m.erstellt))}</small><p>${m.optionen ? '📊 ' : ''}${esc(m.text)}</p></div></div>`).join('')}</div>` : ''}</section>`}
-    ${!zeigeStart('termine') || !bereich('kalender') ? '' : `<section class="card c-orange"><div class="card-h"><span class="shape">${ic('cal')}</span><span class="t"><b>Heute & morgen</b><small>${agenda.length ? agenda.length + ' Termin' + (agenda.length > 1 ? 'e' : '') : 'Nichts eingetragen'}</small></span><button class="btn sm" data-action="quick" data-q="termin">${ic('plus', 15)} Termin</button></div>
-      ${agenda.length ? `<div class="evs" style="background:var(--card-2)">${agenda.map(evRow).join('')}</div>` : ''}</section>`}
+    ${!zeigeStart('termine') || !bereich('kalender') ? '' : `<section class="card c-orange"><div class="card-h"><span class="shape">${ic('cal')}</span><span class="t"><b>Heute & morgen</b><small>${(n => n ? n + ' Termin' + (n > 1 ? 'e' : '') : 'Nichts eingetragen')(agenda.filter(o => !o.fest).length)}</small></span><button class="btn sm" data-action="quick" data-q="termin">${ic('plus', 15)} Termin</button></div>
+      ${agenda.length ? `<div class="evs" style="background:var(--card-2)">${agenda.map(o => o.fest ? festRow(o) : evRow(o)).join('')}</div>` : ''}</section>`}
     ${!zeigeStart('familie') ? '' : `<section class="card c-purple"><div class="card-h"><span class="shape">${ic('users')}</span><span class="t"><b>Familie</b><small>Tipp auf dich, um deinen Status zu setzen</small></span></div>
       <div class="people">${people.map(n => { const s = statusOf(n); return `<div class="person ${n === state.me ? 'me-p' : ''}" ${n === state.me ? 'data-action="status" role="button" tabindex="0"' : ''}>${av(n, n === state.me ? 'me' : '')}<b>${esc(n)}</b>${s ? `<span class="st">${s.emoji} ${esc(s.label)}</span>` : bereich('karte') && ortVon(n) && !ortAlt(ortVon(n)) ? `<span class="st" data-action="go" data-tab="karte">${daheim(ortVon(n)) ? '🏠' : '📍'} ${esc(ortName(ortVon(n)))}</span>` : `<small>${n === state.me ? 'Status setzen' : act[n] ? esc(relShort(act[n])) : '–'}</small>`}</div>`; }).join('')}</div></section>`}
     ${(state.fotos || []).length > 1 && zeigeStart('fotos') && bereich('fotos') ? `<p class="sub-h">Neueste Fotos</p><div class="strip">${state.fotos.slice(0, 12).map((f, i) => `<button data-action="open-foto" data-i="${i}" aria-label="Foto öffnen"><img src="${esc(URLS[f.klein]?.[0] || '')}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}`;
@@ -1267,7 +1338,8 @@ function fillSeg() {
 }
 function itemRow(i) {
   const meta = i.erledigt ? `<span>erledigt${i.erledigt_von ? ' von ' + esc(i.erledigt_von) : ''}</span>` : `<span>${[i.von ? esc(i.von) : '', esc(rel(i.erstellt))].filter(Boolean).join(' · ')}</span>`;
-  const fuer = i.fuer && !i.erledigt ? `<span class="who-chip c-${colorOf(i.fuer)}">${av(i.fuer)}${i.fuer === state.me ? 'für dich' : 'für ' + esc(i.fuer)}</span>` : '';
+  const fuer = (i.fuer && !i.erledigt ? `<span class="who-chip c-${colorOf(i.fuer)}">${av(i.fuer)}${i.fuer === state.me ? 'für dich' : 'für ' + esc(i.fuer)}</span>` : '')
+    + (i.punkte && i.liste === 'todo' && bereich('punkte') ? `<span class="pk-chip">⭐ ${i.punkte}</span>` : '');
   return `<div class="item ${i.erledigt ? 'done' : ''}">
     <button class="tickb" data-action="toggle" data-id="${esc(i.id)}" aria-pressed="${i.erledigt}" aria-label="„${esc(i.text)}“ ${i.erledigt ? 'wieder offen' : 'abhaken'}"><span class="tick">${ic('check', 16)}</span></button>
     <button class="item-main text" data-action="edit-item" data-id="${esc(i.id)}"><span class="t"><span>${i.menge ? `<span class="menge">${esc(i.menge)}</span>` : ''}${esc(i.text)}</span><small>${fuer}${meta}</small></span></button>
@@ -1320,7 +1392,7 @@ async function toggleItem(id) {
   const before = { ...i };
   Object.assign(i, i.erledigt ? { erledigt: false, erledigt_von: null, erledigt_am: null } : { erledigt: true, erledigt_von: state.me, erledigt_am: new Date().toISOString() });
   fillItems();
-  try { await patch('familie_eintraege', id, { erledigt: i.erledigt, erledigt_von: i.erledigt_von, erledigt_am: i.erledigt_am }); }
+  try { await patch('familie_eintraege', id, { erledigt: i.erledigt, erledigt_von: i.erledigt_von, erledigt_am: i.erledigt_am }); if (i.liste === 'todo') i.erledigt ? punkteGeholt(i.punkte) : state.punkte && i.punkte && loadPunkte(true); }
   catch (e) { Object.assign(i, before); fillItems(); loadErr(e); }
 }
 async function delItem(id) {
@@ -1339,7 +1411,8 @@ function itemSheet(id) {
         ${ein ? `<div class="field"><label for="iMenge">Menge</label><input id="iMenge" class="input" maxlength="30" value="${esc(i.menge || '')}" placeholder="z. B. 2×"></div>` : ''}
       </div>
       ${ein ? `<div class="field" style="margin-bottom:6px"><label>Regal</label></div><div class="chipsel c-amber" id="katSel">${KATS.map(([k, e, l]) => `<button type="button" class="${(i.kategorie || 'sonst') === k ? 'on' : ''}" data-k="${k}">${e} ${l}</button>`).join('')}</div>`
-        : `<div class="field"><label for="iFuer">Für wen?</label><select id="iFuer" class="input"><option value="">Alle</option>${state.members.map(n => `<option ${n === i.fuer ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>`}
+        : `<div class="${'punkte' in i && punkteSpalte() ? 'grid2' : ''}"><div class="field"><label for="iFuer">Für wen?</label><select id="iFuer" class="input"><option value="">Alle</option>${state.members.map(n => `<option ${n === i.fuer ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
+          ${'punkte' in i && punkteSpalte() ? `<div class="field"><label for="iPk">Punkte ⭐</label><input id="iPk" class="input" type="number" inputmode="numeric" min="0" max="1000" value="${esc(i.punkte || '')}" placeholder="keine"></div>` : ''}</div>`}
       <p class="hint" style="margin:0 0 16px">Eingetragen${i.von ? ' von ' + esc(i.von) : ''} · ${esc(rel(i.erstellt))}</p>
       <div class="sheet-actions"><button type="button" class="btn btn-danger" data-action="del-item" data-id="${esc(i.id)}">${ic('trash', 17)} Löschen</button><span class="grow"></span><button class="btn btn-primary">${ic('check', 18)} Speichern</button></div>
     </form>`);
@@ -1349,7 +1422,7 @@ function itemSheet(id) {
     const row = { text: $('#iText').value.trim() };
     if (!row.text) return;
     if (ein) { row.menge = $('#iMenge').value.trim() || null; row.kategorie = $('#katSel button.on')?.dataset.k || 'sonst'; }
-    else row.fuer = $('#iFuer').value || null;
+    else { row.fuer = $('#iFuer').value || null; if ($('#iPk')) row.punkte = Math.max(0, Math.min(1000, Math.round(Number($('#iPk').value) || 0))) || null; }
     try {
       if (ein && row.kategorie !== (i.kategorie || 'sonst')) { const l = store.get('katLernen', {}); l[norm(row.text)] = row.kategorie; store.set('katLernen', l); }
       Object.assign(i, await patch('familie_eintraege', i.id, row)); closeSheet(); fillItems();
@@ -1407,7 +1480,8 @@ function aufgabenAm(iso) {
 const rhythmusText = a => a.rhythmus === 'taeglich' ? 'täglich' : a.rhythmus === 'monatlich' ? `jeden Monat am ${a.monatstag || parseDay(a.start).getDate()}.` : `${a.rhythmus === 'zweiwoechentlich' ? 'alle 2 Wochen' : 'jeden'} ${WD_LONG[(a.wochentag || isodow(parseDay(a.start))) - 1]}`;
 function aufgabeRow(o) {
   const late = o.iso < todayIso() && !o.done;
-  const who = o.wer ? `<span class="who-chip c-${colorOf(o.wer)}">${av(o.wer)}${o.wer === state.me ? 'du' : esc(o.wer)}</span>` : '<span class="who-chip c-grey">alle</span>';
+  const who = (o.wer ? `<span class="who-chip c-${colorOf(o.wer)}">${av(o.wer)}${o.wer === state.me ? 'du' : esc(o.wer)}</span>` : '<span class="who-chip c-grey">alle</span>')
+    + (o.a.punkte && bereich('punkte') && !o.done ? `<span class="pk-chip">⭐ ${o.a.punkte}</span>` : '');
   return `<div class="item c-sky ${o.done ? 'done' : ''}">
     <button class="tickb" data-action="toggle-aufgabe" data-id="${esc(o.a.id)}" data-d="${o.iso}" aria-pressed="${o.done}" aria-label="„${esc(o.a.titel)}“ ${o.done ? 'wieder offen' : 'erledigt'}"><span class="tick">${ic('check', 16)}</span></button>
     <button class="item-main text" data-action="edit-aufgabe" data-id="${esc(o.a.id)}"><span class="t"><span>${esc(o.a.titel)}</span><small>${who}<span class="${late ? 'overdue' : ''}">${late ? 'überfällig · ' + esc(dayLabel(o.iso)[0]) : o.done ? 'erledigt' + (o.doneBy ? ' von ' + esc(o.doneBy) : '') : esc(rhythmusText(o.a))}</span></small></span></button></div>`;
@@ -1431,8 +1505,8 @@ function fillAufgaben() {
 async function toggleAufgabe(id, iso) {
   const has = state.alog.find(l => l.aufgabe_id === id && l.datum === iso);
   try {
-    if (has) { await API.rest(`/familie_aufgaben_log?aufgabe_id=eq.${id}&datum=eq.${iso}`, { method: 'DELETE' }); state.alog = state.alog.filter(l => l !== has); }
-    else { const r = await upsert('familie_aufgaben_log', 'aufgabe_id,datum', { aufgabe_id: id, datum: iso, von: state.me }); state.alog.push(r || { aufgabe_id: id, datum: iso, von: state.me }); }
+    if (has) { await API.rest(`/familie_aufgaben_log?aufgabe_id=eq.${id}&datum=eq.${iso}`, { method: 'DELETE' }); state.alog = state.alog.filter(l => l !== has); if (state.punkte) loadPunkte(true); }
+    else { const r = await upsert('familie_aufgaben_log', 'aufgabe_id,datum', { aufgabe_id: id, datum: iso, von: state.me }); state.alog.push(r || { aufgabe_id: id, datum: iso, von: state.me }); punkteGeholt(state.aufgaben.find(a => a.id === id)?.punkte); }
     fill(); fillSeg();
   } catch (e) { loadErr(e); }
 }
@@ -1448,6 +1522,7 @@ function aufgabeSheet(a) {
         <div class="field" id="wdF"><label for="aWd">Wochentag</label><select id="aWd" class="input">${WD_LONG.map((w, i) => `<option value="${i + 1}" ${(e.wochentag || 1) === i + 1 ? 'selected' : ''}>${w}</option>`).join('')}</select></div>
         <div class="field" id="mtF"><label for="aMt">Tag im Monat</label><input id="aMt" class="input" type="number" min="1" max="31" value="${esc(e.monatstag || 1)}"></div>
         <div class="field"><label for="aStart">Ab</label><input id="aStart" class="input" type="date" value="${esc(e.start)}"></div>
+        ${punkteSpalte() ? `<div class="field"><label for="aPk">Punkte ⭐</label><input id="aPk" class="input" type="number" inputmode="numeric" min="0" max="1000" value="${esc(e.punkte ?? 10)}"></div>` : ''}
       </div>
       <div class="field" style="margin-bottom:6px"><label>Wer? (reihum, in der Reihenfolge, in der du tippst)</label></div>
       <div class="chipsel" id="perSel"></div>
@@ -1463,6 +1538,7 @@ function aufgabeSheet(a) {
   $('#aufForm').addEventListener('submit', async ev => {
     ev.preventDefault();
     const r = rh(), row = { titel: $('#aTitel').value.trim(), rhythmus: r, wochentag: /woechentlich/.test(r) ? Number($('#aWd').value) : null, monatstag: r === 'monatlich' ? Math.min(31, Math.max(1, Number($('#aMt').value) || 1)) : null, start: $('#aStart').value || todayIso(), personen: pers, erinnerung: $('#aEri').checked };
+    if ($('#aPk')) row.punkte = Math.max(0, Math.min(1000, Math.round(Number($('#aPk').value) || 0)));
     if (!row.titel) return;
     $('#aSave').disabled = true;
     try {
@@ -1491,6 +1567,52 @@ function hints() {
   }
   return '';
 }
+
+/* ---------- Feiertage (Österreich) und Schulferien (Tirol) ----------
+   Feiertage nach dem Feiertagsruhegesetz, Ostern nach Gauß. Schulferien nach dem Schulzeitgesetz für Tirol;
+   die Semesterferien wechseln je Jahr – bekannte Termine von oesterreich.gv.at, sonst 2. Montag im Februar (voraussichtlich). */
+const SEMESTER_TIROL = { 2026: '2026-02-09', 2027: '2027-02-15', 2028: '2028-02-14' };
+function ostersonntag(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  return new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1);
+}
+const FEST = {};
+function festeDesJahres(y) {
+  if (FEST[y]) return FEST[y];
+  const E = ostersonntag(y), d = (m, t) => isoDay(new Date(y, m - 1, t)), e = n => isoDay(addDays(E, n));
+  const feiertage = [[d(1, 1), 'Neujahr'], [d(1, 6), 'Heilige Drei Könige'], [e(0), 'Ostersonntag'], [e(1), 'Ostermontag'], [d(5, 1), 'Staatsfeiertag'], [e(39), 'Christi Himmelfahrt'],
+    [e(49), 'Pfingstsonntag'], [e(50), 'Pfingstmontag'], [e(60), 'Fronleichnam'], [d(8, 15), 'Mariä Himmelfahrt'], [d(10, 26), 'Nationalfeiertag'], [d(11, 1), 'Allerheiligen'],
+    [d(12, 8), 'Mariä Empfängnis'], [d(12, 25), 'Christtag'], [d(12, 26), 'Stefanitag']].map(([iso, name]) => ({ iso, name }));
+  const f1 = new Date(y, 1, 1), sem = SEMESTER_TIROL[y] ? parseDay(SEMESTER_TIROL[y]) : addDays(f1, (8 - f1.getDay()) % 7 + 7);
+  let so = new Date(y, 6, 5); while (so.getDay() !== 6) so = addDays(so, 1); // Samstag zwischen 5. und 11. Juli
+  const ferien = [[isoDay(sem), isoDay(addDays(sem, 5)), 'Semesterferien', !SEMESTER_TIROL[y]], [d(3, 19), d(3, 19), 'Josefitag – schulfrei'], [e(-8), e(1), 'Osterferien'],
+    [e(48), e(50), 'Pfingstferien'], [isoDay(so), isoDay(addDays(so, 64)), 'Sommerferien'], [d(10, 27), d(10, 31), 'Herbstferien'], [d(11, 2), d(11, 2), 'Allerseelen – schulfrei'],
+    [d(12, 24), isoDay(new Date(y + 1, 0, 6)), 'Weihnachtsferien']].map(([von, bis, name, vor]) => ({ von, bis, name, vor: !!vor }));
+  return (FEST[y] = { feiertage, ferien });
+}
+const festAn = () => zeigeStart('feiertage');
+function festAm(iso) {
+  if (!festAn()) return {};
+  const y = +iso.slice(0, 4), a = festeDesJahres(y), b = festeDesJahres(y - 1);
+  return { feiertag: a.feiertage.find(f => f.iso === iso)?.name || null, ferien: [...a.ferien, ...b.ferien].find(f => f.von <= iso && iso <= f.bis) || null };
+}
+/* Feiertage und Ferien-Beginne zwischen zwei Tagen – als Zeilen für die Terminliste */
+function festeImBereich(fromIso, toIso) {
+  if (!festAn()) return [];
+  const out = [], y0 = +fromIso.slice(0, 4), y1 = +toIso.slice(0, 4);
+  for (let y = y0 - 1; y <= y1; y++) {
+    const j = festeDesJahres(y);
+    j.feiertage.forEach(f => { if (y >= y0 && f.iso >= fromIso && f.iso <= toIso) out.push({ iso: f.iso, fest: { emoji: '🎉', name: f.name, sub: 'Feiertag' } }); });
+    j.ferien.forEach(f => {
+      const start = f.von < fromIso && f.bis >= fromIso ? fromIso : f.von;
+      if (start >= fromIso && start <= toIso && f.bis >= fromIso) out.push({ iso: start, fest: { emoji: '🏖️', name: f.name, sub: f.von === f.bis ? 'Schulfrei in Tirol' : `Schulferien Tirol${start > f.von ? ' – noch' : ''} bis ${dayShort(f.bis)}${f.vor ? ' (voraussichtlich)' : ''}` } });
+    });
+  }
+  return out;
+}
+const dayShort = iso => parseDay(iso).toLocaleDateString('de-AT', { weekday: 'short', day: 'numeric', month: 'numeric' });
+const festRow = o => `<div class="ev fest c-${o.fest.emoji === '🎉' ? 'red' : 'sky'}"><span class="shape" style="font-size:18px">${o.fest.emoji}</span><span class="t"><b>${esc(o.fest.name)}</b><small>${esc(o.fest.sub)}</small></span><span class="ev-time all">ganztags</span></div>`;
 
 /* ---------- Kalender ---------- */
 async function loadTermine(quiet) {
@@ -1534,8 +1656,9 @@ function fillCal() {
       ${y !== new Date().getFullYear() || m !== new Date().getMonth() ? `<button class="btn sm" data-action="cal-today">Heute</button>` : ''}
       <button class="ghost" data-action="cal-move" data-d="-1" aria-label="Voriger Monat">${ic('left')}</button><button class="ghost" data-action="cal-move" data-d="1" aria-label="Nächster Monat">${ic('right')}</button></div>
     <div class="cal-g">${WD.map(w => `<span class="wd">${w}</span>`).join('')}
-      ${days.slice(0, rows * 7).map(d => { const iso = isoDay(d), n = per[iso] || 0;
-        return `<button class="cal-d ${d.getMonth() !== m ? 'out' : ''} ${iso === t ? 'today' : ''} ${iso === state.day ? 'sel' : ''}" data-action="cal-day" data-day="${iso}" aria-label="${d.toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' })}${n ? ', ' + n + ' Termin' + (n > 1 ? 'e' : '') : ''}">${d.getDate()}<span class="dots">${'<i></i>'.repeat(Math.min(n, 3))}</span></button>`; }).join('')}</div>`;
+      ${days.slice(0, rows * 7).map(d => { const iso = isoDay(d), n = per[iso] || 0, f = festAm(iso);
+        return `<button class="cal-d ${d.getMonth() !== m ? 'out' : ''} ${iso === t ? 'today' : ''} ${iso === state.day ? 'sel' : ''} ${f.feiertag ? 'fei' : ''} ${f.ferien ? 'fer' : ''}" data-action="cal-day" data-day="${iso}" aria-label="${d.toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' })}${f.feiertag ? ', ' + f.feiertag : ''}${f.ferien ? ', ' + f.ferien.name : ''}${n ? ', ' + n + ' Termin' + (n > 1 ? 'e' : '') : ''}">${d.getDate()}<span class="dots">${'<i></i>'.repeat(Math.min(n, 3))}</span></button>`; }).join('')}</div>
+    ${festAn() ? `<div class="cal-leg"><span><i class="fei"></i>Feiertag</span><span><i class="fer"></i>Schulferien Tirol</span></div>` : ''}`;
   const sub = $('#phSub'); if (sub && state.termine) { const n = occurrences(t, isoDay(addDays(new Date(), 6))).length; sub.textContent = n ? `${n} Termin${n > 1 ? 'e' : ''} diese Woche` : 'Diese Woche frei'; }
 }
 function evRow(o) {
@@ -1546,19 +1669,21 @@ function evRow(o) {
 function fillCalList() {
   const box = $('#calList'); if (!box || !state.termine) return;
   if (state.day) {
-    const occ = occurrences(state.day, state.day), [a, b] = dayLabel(state.day);
+    const occ = occurrences(state.day, state.day), [a, b] = dayLabel(state.day), f = festAm(state.day);
+    const fz = [f.feiertag ? { fest: { emoji: '🎉', name: f.feiertag, sub: 'Feiertag' } } : null, f.ferien ? { fest: { emoji: '🏖️', name: f.ferien.name, sub: f.ferien.von === f.ferien.bis ? 'Schulfrei in Tirol' : `Schulferien Tirol bis ${dayShort(f.ferien.bis)}${f.ferien.vor ? ' (voraussichtlich)' : ''}` } } : null].filter(Boolean);
     box.innerHTML = `<div class="day-h"><b>${esc(a)}</b>${esc(b)}<span class="spacer"></span><button class="btn sm" data-action="new-termin" data-day="${state.day}">${ic('plus', 15)} Termin</button></div>
-      ${occ.length ? `<div class="evs">${occ.map(evRow).join('')}</div>` : '<p class="hint" style="margin:8px 4px">An diesem Tag ist nichts eingetragen.</p>'}
+      ${occ.length || fz.length ? `<div class="evs">${fz.map(festRow).join('')}${occ.map(evRow).join('')}</div>` : '<p class="hint" style="margin:8px 4px">An diesem Tag ist nichts eingetragen.</p>'}
       <button class="btn sm" style="margin-top:14px" data-action="cal-day" data-day="">Alle kommenden Termine</button>`;
     return;
   }
-  const occ = occurrences(todayIso(), isoDay(addDays(new Date(), 60)));
+  const bis = isoDay(addDays(new Date(), 60));
+  const occ = [...festeImBereich(todayIso(), bis), ...occurrences(todayIso(), bis)].sort((a, b) => a.iso.localeCompare(b.iso) || (b.fest ? 1 : 0) - (a.fest ? 1 : 0));
   if (!occ.length) { box.innerHTML = emptyBox('orange', 'cal', 'Nichts geplant', 'In den nächsten zwei Monaten steht nichts an. Tipp auf „Termin“, um etwas einzutragen – auch Geburtstage.'); return; }
   let html = '', last = '', group = [];
-  const flush = () => { if (group.length) { const [a, b] = dayLabel(last); html += `<div class="day-h"><b>${esc(a)}</b>${esc(b)}</div><div class="evs">${group.map(evRow).join('')}</div>`; group = []; } };
+  const flush = () => { if (group.length) { const [a, b] = dayLabel(last); html += `<div class="day-h"><b>${esc(a)}</b>${esc(b)}</div><div class="evs">${group.map(o => o.fest ? festRow(o) : evRow(o)).join('')}</div>`; group = []; } };
   occ.forEach(o => { if (o.iso !== last) { flush(); last = o.iso; } group.push(o); });
   flush();
-  box.innerHTML = html;
+  box.innerHTML = (occ.some(o => !o.fest) ? '' : '<p class="hint" style="margin:18px 4px 0">Keine eigenen Termine in den nächsten zwei Monaten – tipp auf „Termin“, um etwas einzutragen, auch Geburtstage.</p>') + html;
 }
 function eriOptions(hasTime, cur) {
   const list = hasTime ? ERI_ZEIT : ERI_TAG, v = cur == null ? '' : String(cur);
@@ -1974,12 +2099,341 @@ async function delPost(id) {
   catch (e) { loadErr(e); }
 }
 
+/* ---------- Tanken: die günstigsten Tankstellen (Spritpreisrechner der E-Control, über mapq-push) ---------- */
+const SPRIT = [['DIE', 'Diesel'], ['SUP', 'Super']];
+const spritArt = () => store.get('spritArt', 'DIE');
+const spritName = a => (SPRIT.find(x => x[0] === a) || SPRIT[0])[1];
+const fmtPreis = p => Number(p).toFixed(3).replace('.', ',');
+const preisHtml = p => { const t = fmtPreis(p); return `${t.slice(0, -1)}<sup>${t.slice(-1)}</sup>`; };
+const unbekannt = e => e && e.status === 400 && /Unbekannte Aktion/.test(e.message) ? neueFunktion() : e;
+function spritHier(quiet) {
+  const h = store.get('spritHier');
+  if (h && Date.now() - h.t < 30 * 60e3) return Promise.resolve({ ...h, name: 'Mein Standort' });
+  return new Promise(res => {
+    if (!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(p => {
+      const x = { lat: Math.round(p.coords.latitude * 1e4) / 1e4, lon: Math.round(p.coords.longitude * 1e4) / 1e4, t: Date.now() };
+      store.set('spritHier', x); res({ ...x, name: 'Mein Standort' });
+    }, e => { if (!quiet) toast(posFehler(e), 'bad'); res(null); }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+  });
+}
+async function loadSprit(quiet, frisch) {
+  if (state.spritLaeuft || !API.on) return;
+  state.spritLaeuft = true;
+  const art = spritArt();
+  try {
+    const hier = store.get('spritModus') === 'hier' ? await spritHier(quiet) : null;
+    const pos = hier || place();
+    const j = await smartFn({ aktion: 'sprit', lat: pos.lat, lon: pos.lon, art, frisch: !!frisch });
+    if (!Array.isArray(j?.stationen)) throw neueFunktion();
+    state.sprit = { ...j, art, ort: pos.name, hier: !!hier }; state.spritErr = null;
+    store.set('spritLetzt', { art, preis: j.stationen[0]?.preis ?? null, t: Date.now() });
+  } catch (err) {
+    const e = unbekannt(err);
+    state.spritLaeuft = false;
+    if (e.silent) return;
+    state.spritErr = e;
+    if (!quiet && !e.alt) toast(errMsg(e), 'bad');
+  }
+  state.spritLaeuft = false;
+  if (state.tab === 'sprit') fillSprit(); else if (state.tab === 'start') fillDash(); else if (state.tab === 'mehr') fillHub();
+}
+function spritShell() {
+  return `${header('Tanken', 'Die günstigsten Tankstellen', 'orange', 'fuel', `<button class="btn sm icon" data-action="sprit-neu" aria-label="Preise aktualisieren">${ic('refresh', 18)}</button>`, true)}
+    <div class="seg c-orange" id="spritArt"></div><div class="seg c-orange" id="spritOrt"></div><div id="spritList">${spinner}</div>`;
+}
+function fillSprit() {
+  const box = $('#spritList'); if (!box) return;
+  const art = spritArt(), hier = store.get('spritModus') === 'hier', s = state.sprit, e = state.spritErr;
+  $('#spritArt').innerHTML = SPRIT.map(([k, l]) => `<button class="seg-b ${art === k ? 'on' : ''}" data-action="sprit-art" data-a="${k}" aria-pressed="${art === k}">${ic('fuel', 16)} ${l}</button>`).join('');
+  $('#spritOrt').innerHTML = `<button class="seg-b ${hier ? '' : 'on'}" data-action="sprit-ort" data-m="ort" aria-pressed="${!hier}">${ic('pin', 16)} ${esc(place().name)}</button><button class="seg-b ${hier ? 'on' : ''}" data-action="sprit-ort" data-m="hier" aria-pressed="${hier}">${ic('route', 16)} Mein Standort</button>`;
+  const sub = $('#phSub');
+  if (e?.alt) { box.innerHTML = emptyBox('amber', 'alert', 'Noch nicht freigeschaltet', esc(e.message)); return; }
+  if (!s || s.art !== art || s.hier !== hier) {
+    box.innerHTML = e && !state.spritLaeuft ? emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(e)), `<div style="margin-top:16px"><button class="btn" data-action="sprit-neu">${ic('refresh', 17)} Nochmal</button></div>`) : spinner;
+    return;
+  }
+  if (sub) sub.textContent = `${spritName(art)} · ${hier && !s.hier ? place().name : s.ort}`;
+  if (!s.stationen.length) { box.innerHTML = emptyBox('orange', 'fuel', 'Keine Preise gefunden', 'In der Nähe hat gerade keine Tankstelle einen Preis gemeldet.'); return; }
+  const min = s.stationen[0].preis;
+  box.innerHTML = `<div class="tanks">${s.stationen.map((t, i) => `<a class="tank c-orange ${t.preis === min ? 'top' : ''}" href="${esc(appleRoute(t))}" target="_blank" rel="noopener" aria-label="${esc(t.name)}, ${fmtPreis(t.preis)} Euro – Route">
+      <span class="rank">${i + 1}</span><span class="t"><b>${esc(t.name)}</b><small>${esc([t.km != null ? fmtNum(t.km) + ' km' : '', t.adresse].filter(Boolean).join(' · '))}</small></span>
+      <span class="preis">${preisHtml(t.preis)}<small>${t.preis === min ? 'am günstigsten' : '+' + fmtNum((t.preis - min) * 100) + ' ct'}</small></span></a>`).join('')}</div>
+    <p class="hint" style="margin:12px 4px 0">Preise pro Liter vom Spritpreisrechner der E-Control, Stand ${esc(new Date(s.zeit).toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' }))} Uhr. Er zeigt nur die günstigeren Tankstellen mit Preis. Tipp auf eine Tankstelle für den Weg dorthin.</p>`;
+}
+
+/* ---------- Punkte & Belohnungen: Putzplan und To-dos bringen Punkte, Belohnungen kosten welche ---------- */
+const BEL_EMO = ['🍦', '🎬', '🎮', '📱', '🍕', '⏰', '🍫', '🏊', '🚲', '💶', '🎁', '🛍️'];
+const BEL_VORSCHLAG = [['🍦', 'Ein Eis', 50], ['⏰', '30 Min. länger aufbleiben', 100], ['🍕', 'Lieblingsessen aussuchen', 150], ['🎬', 'Kinoabend', 300]];
+const standVon = n => state.punkte?.stand?.[n]?.stand || 0;
+/* Gibt es die Punkte-Spalten schon (Familien-SQL neu ausgeführt)? Sonst schickt die App sie nicht mit. */
+const punkteSpalte = () => bereich('punkte') && state.punkteOk !== false && (state.punkteOk === true || (state.aufgaben || []).some(a => 'punkte' in a) || (state.items || []).some(i => 'punkte' in i));
+async function loadPunkte(quiet) {
+  try {
+    const [stand, log, bel] = await Promise.all([
+      API.rest('/rpc/mapq_familie_punktestand', { method: 'POST', body: '{}' }),
+      API.rest('/familie_punkte?select=*&order=erstellt.desc&limit=30'),
+      API.rest('/familie_belohnungen?select=*&order=kosten.asc')
+    ]);
+    const neu = { stand: stand || {}, log: log || [], bel: bel || [] };
+    state.punkteOk = true; state.punkteErr = null;
+    if (quiet && same(neu, state.punkte)) return;
+    state.punkte = neu;
+  } catch (e) {
+    if (e.silent) return;
+    state.punkteErr = e; if (e.setup) state.punkteOk = false;
+    if (!quiet && !e.setup) loadErr(e);
+  }
+  if (state.tab === 'punkte') { if (!$('#sheetWrap').classList.contains('open')) fillPunkte(); }
+  else if (state.tab === 'start') fillDash(); else if (state.tab === 'mehr') fillHub();
+}
+function punkteShell() {
+  return `${header('Punkte', 'Sammeln und einlösen', 'amber', 'trophy', `<button class="btn btn-primary c-amber" data-action="pk-bonus">${ic('plus', 18)} Bonus</button>`, true)}<div id="pkBox">${state.punkte ? '' : spinner}</div>`;
+}
+const PK_ZEIT = [['woche', 'Woche'], ['monat', 'Monat'], ['gesamt', 'Gesamt']];
+function fillPunkte() {
+  const box = $('#pkBox'); if (!box) return;
+  const p = state.punkte, e = state.punkteErr;
+  if (!p) {
+    box.innerHTML = !e ? spinner : e.setup ? emptyBox('amber', 'alert', 'Noch nicht eingerichtet', 'Für Punkte muss Matteo im Admin-Panel unter „Familie“ das SQL nochmal in Supabase ausführen.')
+      : emptyBox('red', 'alert', 'Hat nicht geklappt', esc(errMsg(e)), `<div style="margin-top:16px"><button class="btn" data-action="pk-neu">${ic('refresh', 17)} Nochmal</button></div>`);
+    return;
+  }
+  const zeit = store.get('pkZeit', 'woche'), wert = n => p.stand[n]?.[zeit] || 0, mein = standVon(state.me);
+  const leute = [...new Set([...state.members, ...Object.keys(p.stand)])].sort((a, b) => wert(b) - wert(a) || a.localeCompare(b, 'de'));
+  const max = Math.max(1, ...leute.map(wert)), medal = i => ['🥇', '🥈', '🥉'][i] || `<span class="pl-n">${i + 1}</span>`;
+  const sub = $('#phSub'); if (sub) sub.textContent = `Du hast ${mein} Punkte`;
+  box.innerHTML = `<section class="card c-amber pk-me"><span class="shape lg">${ic('trophy', 26)}</span><div class="t"><small>Dein Stand</small><b>${mein}</b><small>Punkte zum Einlösen</small></div>
+      ${p.stand[state.me]?.woche ? `<span class="pk-woche">+${p.stand[state.me].woche}<small>diese Woche</small></span>` : ''}</section>
+    <div class="seg c-amber">${PK_ZEIT.map(([k, l]) => `<button class="seg-b ${zeit === k ? 'on' : ''}" data-action="pk-zeit" data-z="${k}" aria-pressed="${zeit === k}">${l}</button>`).join('')}</div>
+    <div class="rang">${leute.map((n, i) => `<div class="rang-r c-${colorOf(n)}"><span class="pl">${wert(n) ? medal(i) : ''}</span>${av(n)}<span class="t"><b>${esc(n)}${n === state.me ? ' <small>du</small>' : ''}</b><span class="rang-bar"><i style="width:${Math.round(wert(n) / max * 100)}%"></i></span></span><span class="pk">${wert(n)}</span></div>`).join('') || '<p class="hint" style="padding:12px 0">Noch keine Familienmitglieder.</p>'}</div>
+    <div class="sec-h"><span class="shape sm c-pink">${ic('gift', 16)}</span><b>Belohnungen</b><small></small><button class="btn sm" data-action="pk-bel-neu">${ic('plus', 15)} Neu</button></div>
+    ${p.bel.length ? `<div class="bels">${p.bel.map(b => belTile(b, mein)).join('')}</div>`
+      : `<div class="banner c-pink"><span class="shape">${ic('gift', 18)}</span><div class="body"><b>Wofür gibt's was?</b><p>Leg Belohnungen fest, gegen die man Punkte eintauschen kann – z. B. ein Eis, länger aufbleiben oder einen Kinoabend.</p><div class="row-actions"><button class="btn sm btn-primary c-pink" data-action="pk-vorschlag">Vorschläge übernehmen</button><button class="btn sm" data-action="pk-bel-neu">Eigene</button></div></div></div>`}
+    <div class="sec-h"><span class="shape sm c-grey">${ic('clock', 16)}</span><b>Zuletzt</b></div>
+    ${p.log.length ? `<div class="evs">${p.log.slice(0, 15).map(pkRow).join('')}</div>` : '<p class="hint" style="margin:0 4px">Noch keine Punkte – hakt Putzplan-Aufgaben und To-dos mit Punkten ab.</p>'}
+    <p class="hint" style="margin:16px 4px 0">Punkte gibt's fürs Abhaken im Putzplan (wie viele, steht bei der Aufgabe – Standard 10) und für To-dos mit Punkten. Mit „Bonus“ kann jeder einem anderen Punkte schenken.</p>`;
+}
+function belTile(b, mein) {
+  const ok = mein >= b.kosten;
+  return `<div class="bel c-pink"><button class="bel-e" data-action="pk-bel-edit" data-id="${esc(b.id)}" aria-label="${esc(b.titel)} bearbeiten"><span class="e">${esc(b.emoji || '🎁')}</span><b>${esc(b.titel)}</b><small>${b.kosten} Punkte</small></button>
+    <button class="btn sm ${ok ? 'btn-primary' : ''}" data-action="pk-einloesen" data-id="${esc(b.id)}" ${ok ? '' : 'disabled'}>${ok ? 'Einlösen' : `noch ${b.kosten - mein}`}</button></div>`;
+}
+const PK_ART = { putzplan: '🧹', todo: '✅', bonus: '⭐', einloesung: '🎁' };
+function pkRow(x) {
+  const plus = x.punkte > 0;
+  return `<div class="ev fest c-${plus ? 'amber' : 'pink'}"><span class="shape" style="font-size:17px">${PK_ART[x.art] || '⭐'}</span><span class="t"><b>${esc(x.grund || (x.art === 'bonus' ? 'Bonus' : 'Punkte'))}</b><small>${esc(x.name)}${x.art === 'bonus' && x.von && x.von !== x.name ? ' · von ' + esc(x.von) : ''} · ${esc(rel(x.erstellt))}</small></span><span class="ev-time" style="${plus ? '' : 'color:#FF8A80'}">${plus ? '+' : '−'}${Math.abs(x.punkte)}</span></div>`;
+}
+function bonusSheet() {
+  const andere = state.members.filter(n => n !== state.me), leute = andere.length ? andere : state.members;
+  let wer = leute[0], n = 10;
+  openSheet(`<div class="sheet-h c-amber"><span class="shape">${ic('trophy')}</span><h3>Bonus-Punkte<small>Für etwas, das nicht auf der Liste stand</small></h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="bonusForm" class="c-amber">
+      <div class="field" style="margin-bottom:6px"><label>Für wen?</label></div>
+      <div class="chipsel" id="bWer">${leute.map(m => `<button type="button" class="c-${colorOf(m)} ${m === wer ? 'on' : ''}" data-n="${esc(m)}">${esc(m)}</button>`).join('')}</div>
+      <div class="field" style="margin-bottom:6px"><label>Wie viele?</label></div>
+      <div class="chipsel" id="bN">${[5, 10, 20, 50, 100].map(x => `<button type="button" class="${x === n ? 'on' : ''}" data-v="${x}">+${x}</button>`).join('')}</div>
+      <div class="field"><label for="bGrund">Wofür?</label><input id="bGrund" class="input" maxlength="100" required placeholder="z. B. Oma beim Einkaufen geholfen"></div>
+      <div class="sheet-actions"><span class="grow"></span><button class="btn btn-primary" id="bSave">⭐ Schenken</button></div>
+    </form>`);
+  $('#bWer').addEventListener('click', ev => { const b = ev.target.closest('button[data-n]'); if (!b) return; wer = b.dataset.n; $$('#bWer button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#bN').addEventListener('click', ev => { const b = ev.target.closest('button[data-v]'); if (!b) return; n = Number(b.dataset.v); $$('#bN button').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#bonusForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const grund = $('#bGrund').value.trim(); if (!grund || !wer) return;
+    $('#bSave').disabled = true;
+    try { await insert('familie_punkte', { name: wer, punkte: n, art: 'bonus', grund, von: state.me }); closeSheet(); toast(`+${n} Punkte für ${wer} ⭐`, 'ok'); loadPunkte(); }
+    catch (e) { $('#bSave').disabled = false; loadErr(e); }
+  });
+}
+function einloesenSheet(b) {
+  const mein = standVon(state.me);
+  openSheet(`<div class="sheet-h c-pink"><span class="shape" style="font-size:22px">${esc(b.emoji || '🎁')}</span><h3>${esc(b.titel)}<small>${b.kosten} Punkte · du hast ${mein}</small></h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <p style="margin:0 2px 18px;color:var(--muted)">Einlösen zieht dir ${b.kosten} Punkte ab – danach hast du noch ${mein - b.kosten}. Die anderen bekommen Bescheid.</p>
+    <div class="sheet-actions"><span class="grow"></span><button class="btn" data-action="sheet-close">Abbrechen</button><button class="btn btn-primary c-pink" id="pkGo">${ic('gift', 18)} Einlösen</button></div>`);
+  $('#pkGo').addEventListener('click', async () => {
+    $('#pkGo').disabled = true;
+    try { await insert('familie_punkte', { name: state.me, punkte: -b.kosten, art: 'einloesung', grund: `${b.emoji || '🎁'} ${b.titel}`.slice(0, 120), von: state.me }); closeSheet(); toast(`Eingelöst: ${b.titel} 🎉`, 'ok'); loadPunkte(); }
+    catch (e) { $('#pkGo').disabled = false; toast(/Nicht genug Punkte/.test(e.message) ? e.message : errMsg(e), 'bad'); }
+  });
+}
+function belSheet(b) {
+  const e = b || { titel: '', emoji: '🎁', kosten: 100 };
+  let emo = e.emoji || '🎁';
+  openSheet(`<div class="sheet-h c-pink"><span class="shape" id="belE" style="font-size:22px">${esc(emo)}</span><h3>${b ? 'Belohnung' : 'Neue Belohnung'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="belForm" class="c-pink">
+      <div class="chipsel" id="belEmo">${BEL_EMO.map(x => `<button type="button" class="${x === emo ? 'on' : ''}" data-e="${x}" aria-label="${x}" style="font-size:19px">${x}</button>`).join('')}</div>
+      <div class="field"><label for="belT">Was?</label><input id="belT" class="input" maxlength="80" required value="${esc(e.titel)}" placeholder="z. B. Kinoabend, ein Eis, Taschengeld"></div>
+      <div class="field"><label for="belK">Wie viele Punkte kostet das?</label><input id="belK" class="input" type="number" inputmode="numeric" min="1" max="100000" required value="${esc(e.kosten)}"></div>
+      <div class="sheet-actions">${b ? `<button type="button" class="btn btn-danger" data-action="pk-bel-del" data-id="${esc(b.id)}">${ic('trash', 17)} Löschen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="belSave">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  $('#belEmo').addEventListener('click', ev => { const x = ev.target.closest('button[data-e]'); if (!x) return; emo = x.dataset.e; $('#belE').textContent = emo; $$('#belEmo button').forEach(y => y.classList.toggle('on', y === x)); });
+  $('#belForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const row = { titel: $('#belT').value.trim(), emoji: emo, kosten: Math.max(1, Math.min(100000, Math.round(Number($('#belK').value) || 0))) };
+    if (!row.titel) return;
+    $('#belSave').disabled = true;
+    try { if (b) await patch('familie_belohnungen', b.id, row); else await insert('familie_belohnungen', { ...row, von: state.me }); closeSheet(); loadPunkte(); }
+    catch (err) { $('#belSave').disabled = false; loadErr(err); }
+  });
+}
+async function belVorschlag() {
+  try { await insert('familie_belohnungen', BEL_VORSCHLAG.map(([emoji, titel, kosten]) => ({ emoji, titel, kosten, von: state.me }))); loadPunkte(); }
+  catch (e) { loadErr(e); }
+}
+async function belDel(id) {
+  const b = state.punkte?.bel.find(x => x.id === id); if (!b || !confirm(`„${b.titel}“ löschen?`)) return;
+  try { await remove('familie_belohnungen', id); closeSheet(); loadPunkte(); } catch (e) { loadErr(e); }
+}
+/* nach dem Abhaken: Punkte kurz zeigen und den Stand neu holen */
+function punkteGeholt(n) {
+  if (!n || !punkteSpalte()) return;
+  toast(`+${n} Punkte für dich ⭐`, 'ok');
+  if (state.punkte) setTimeout(() => loadPunkte(true), 600);
+}
+
+/* ---------- Automationen (Zuhause): Zeitpläne, Sonne, Anwesenheit – laufen auf dem Server (regeln.ts) ---------- */
+const AUTO_WANN = [['zeit', 'Uhrzeit', '⏰'], ['sonnenuntergang', 'Sonnenuntergang', '🌇'], ['sonnenaufgang', 'Sonnenaufgang', '🌅'], ['weg', 'Alle weg', '🚪'], ['heim', 'Erster heim', '🏠']];
+const AUTO_TUN = [['an', 'Einschalten'], ['aus', 'Ausschalten'], ['auf', 'Rollos auf'], ['zu', 'Rollos zu']];
+const AUTO_C = { zeit: 'indigo', sonnenuntergang: 'orange', sonnenaufgang: 'amber', weg: 'teal', heim: 'green' };
+const AUTO_VORLAGEN = [
+  { n: 'Licht bei Sonnenuntergang', s: '15 Min. vorher alle Lichter an', r: { wann: 'sonnenuntergang', versatz: -15, tun: 'an', geraete: ['alle:licht'] } },
+  { n: 'Nachts alles aus', s: 'Um 23:00 Lichter und Steckdosen aus', r: { wann: 'zeit', zeit: '23:00', tun: 'aus', geraete: ['alle:licht', 'alle:schalter'] } },
+  { n: 'Alle weg → alles aus', s: 'Wenn die Letzte das Haus verlässt', r: { wann: 'weg', tun: 'aus', geraete: ['alle:licht', 'alle:schalter'] } },
+  { n: 'Heimkommen → Licht an', s: 'Wenn der Erste heimkommt und es dunkel ist', r: { wann: 'heim', dunkel: true, tun: 'an', geraete: ['alle:licht'] } }
+];
+async function loadAuto(quiet) {
+  if (!API.on || state.autoLaeuft) return;
+  state.autoLaeuft = true;
+  try { state.auto = await smartFn({ aktion: 'auto-liste' }); if (!Array.isArray(state.auto?.regeln)) throw neueFunktion(); state.autoErr = null; }
+  catch (err) { const e = unbekannt(err); state.autoLaeuft = false; if (e.silent) return; state.auto = null; state.autoErr = e; if (!quiet && !e.alt) toast(errMsg(e), 'bad'); }
+  state.autoLaeuft = false;
+  if (state.tab === 'zuhause' && state.raum == null && !$('#sheetWrap').classList.contains('open')) fillZuhause();
+}
+const tageText = t => !t?.length ? '' : same(t, [1, 2, 3, 4, 5]) ? 'Mo–Fr' : same(t, [6, 7]) ? 'Sa & So' : t.map(x => WD[x - 1]).join(', ');
+const hm = ms => new Date(ms).toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
+function geraeteText(l) {
+  const n = (l || []).map(g => g === 'alle:licht' ? 'alle Lichter' : g === 'alle:schalter' ? 'alle Steckdosen' : g === 'alle:rollo' ? 'alle Rollos' : g.startsWith('raum:') ? g.slice(5) : (devById(g) ? devName(devById(g)) : 'Gerät'));
+  return n.length > 2 ? `${n.slice(0, 2).join(', ')} +${n.length - 2}` : n.join(' & ');
+}
+function wannText(r) {
+  const v = r.versatz ? ` ${r.versatz < 0 ? '−' : '+'}${Math.abs(r.versatz)} Min.` : '', t = tageText(r.tage);
+  if (r.wann === 'zeit') return `${t || 'Täglich'} um ${r.zeit}`;
+  if (r.wann === 'sonnenuntergang' || r.wann === 'sonnenaufgang') return `${r.wann === 'sonnenuntergang' ? 'Sonnenuntergang' : 'Sonnenaufgang'}${v}${t ? ' · ' + t : ''}`;
+  return r.wann === 'weg' ? 'Wenn alle weg sind' : `Wenn der Erste heimkommt${r.dunkel ? ', im Dunkeln' : ''}`;
+}
+const autoName = r => r.name && r.name !== 'Automation' ? r.name : `${wannText(r)} → ${AUTO_TUN.find(x => x[0] === r.tun)?.[1].toLowerCase() || ''}`;
+function autoStatus(r) {
+  const a = state.auto, l = a?.lauf?.[r.id], n = a?.naechste?.[r.id];
+  const x = [];
+  if (l?.zeit) x.push(`${l.ok ? '✓' : '⚠️'} ${relShort(new Date(l.zeit).toISOString())}: ${l.text}`);
+  if (r.aktiv && n) x.push(`nächstes Mal ${dayDiff(new Date(), new Date(n)) === 0 ? 'heute' : dayDiff(new Date(), new Date(n)) === 1 ? 'morgen' : dayShort(isoDay(new Date(n)))} ${hm(n)}`);
+  return x.join(' · ');
+}
+function autoRow(r) {
+  const em = AUTO_WANN.find(x => x[0] === r.wann)?.[2] || '⚡', st = autoStatus(r);
+  return `<div class="auto ${r.aktiv ? '' : 'aus'}"><button class="auto-main" data-action="auto-edit" data-id="${esc(r.id)}"><span class="shape c-${AUTO_C[r.wann] || 'purple'}" style="font-size:19px">${em}</span>
+    <span class="t"><b>${esc(autoName(r))}</b><small>${esc(r.name && r.name !== 'Automation' ? wannText(r) + ' · ' : '')}${esc(geraeteText(r.geraete))} ${esc(r.tun)}</small>${st ? `<small class="st">${esc(st)}</small>` : ''}</span></button>
+    <input type="checkbox" class="switch auto-sw c-purple" data-id="${esc(r.id)}" ${r.aktiv ? 'checked' : ''} aria-label="${esc(autoName(r))} ${r.aktiv ? 'ausschalten' : 'einschalten'}"></div>`;
+}
+function autoSection() {
+  const a = state.auto, e = state.autoErr;
+  if (!a && !e) return '';
+  const daheim = a?.zuhause && Array.isArray(a.daheim) ? (a.daheim.length ? 'Daheim: ' + a.daheim.join(', ') : 'Niemand daheim') : '';
+  const head = `<div class="sec-h"><span class="shape sm c-purple">${ic('zap', 16)}</span><b>Automationen</b><small>${esc(daheim)}</small>${a ? `<button class="btn sm" data-action="auto-neu">${ic('plus', 15)} Neu</button>` : ''}</div>`;
+  if (!a) return head + `<p class="hint" style="margin:0 4px">${esc(e.alt ? e.message : errMsg(e))}</p>`;
+  if (!a.regeln.length) return head + `<div class="autos">${AUTO_VORLAGEN.map((v, i) => `<div class="auto"><button class="auto-main" data-action="auto-vorlage" data-i="${i}"><span class="shape c-${AUTO_C[v.r.wann]}" style="font-size:19px">${AUTO_WANN.find(x => x[0] === v.r.wann)[2]}</span><span class="t"><b>${esc(v.n)}</b><small>${esc(v.s)}</small></span></button><span class="shape sm c-purple">${ic('plus', 16)}</span></div>`).join('')}</div>
+    <p class="hint" style="margin:8px 4px 0">Tipp auf eine Vorlage, um sie anzupassen – oder leg mit „Neu“ eine eigene an.</p>`;
+  return head + `<div class="autos">${a.regeln.map(autoRow).join('')}</div>`;
+}
+/* Auswahl für „Welche Geräte?“ – Gruppen, Räume und einzelne Geräte, passend zu an/aus bzw. auf/zu */
+function autoZiele(tun) {
+  const rollo = tun === 'auf' || tun === 'zu', g = (state.smart?.geraete || []).filter(d => !einstOf(d.id).aus);
+  const passt = d => rollo ? d.art === 'rollo' : ['licht', 'schalter', 'geraet', 'tv'].includes(d.art) && d.kann?.an !== false;
+  const out = [];
+  if (rollo) { if (g.some(d => d.art === 'rollo')) out.push(['alle:rollo', 'Alle Rollos', ic('blinds', 16), 'c-purple']); }
+  else {
+    if (g.some(d => d.art === 'licht')) out.push(['alle:licht', 'Alle Lichter', ic('bulb', 16), 'c-amber']);
+    if (g.some(d => d.art === 'schalter' || d.art === 'geraet')) out.push(['alle:schalter', 'Alle Steckdosen', ic('plug', 16), 'c-blue']);
+  }
+  raeume().forEach(r => { if (imRaum(r).some(d => passt(d) && d.art !== 'tv')) out.push(['raum:' + r, `Raum: ${r}`, raumIcon(r), 'c-teal']); });
+  g.filter(passt).sort(devSort).forEach(d => out.push([d.id, devName(d), ic(DEV_ICON[d.art] || 'power', 16), devLook(d).cls || 'c-grey']));
+  return out;
+}
+function autoSheet(r, vorlage) {
+  const e = r || { name: '', aktiv: true, wann: 'zeit', zeit: '23:00', versatz: 0, tage: [], dunkel: false, tun: 'aus', geraete: [], ...(vorlage || {}) };
+  let wann = e.wann, tun = e.tun, tage = [...(e.tage || [])];
+  const sel = new Set(e.geraete || []), a = state.auto || {};
+  openSheet(`<div class="sheet-h c-purple"><span class="shape">${ic('zap')}</span><h3>${r ? 'Automation' : vorlage ? autoName({ ...e, name: '' }) : 'Neue Automation'}</h3><button class="btn sm icon" data-action="sheet-close" aria-label="Schließen">${ic('x', 18)}</button></div>
+    <form id="autoForm" class="c-purple">
+      <div class="field" style="margin-bottom:6px"><label>Wann?</label></div>
+      <div class="chipsel" id="auWann">${AUTO_WANN.map(([k, l, em]) => `<button type="button" data-w="${k}" class="${wann === k ? 'on' : ''}">${em} ${l}</button>`).join('')}</div>
+      <div class="field" id="auZeitF"><label for="auZeit">Uhrzeit</label><input id="auZeit" class="input" type="time" value="${esc(e.zeit || '23:00')}"></div>
+      <div class="field" id="auVersF"><label for="auVers">Wann genau?</label><select id="auVers" class="input">${[-60, -45, -30, -15, 0, 15, 30, 45, 60].map(v => `<option value="${v}" ${(e.versatz || 0) === v ? 'selected' : ''}>${v === 0 ? 'Genau dann' : v < 0 ? `${-v} Min. vorher` : `${v} Min. danach`}</option>`).join('')}</select></div>
+      <div id="auTageF"><div class="field" style="margin-bottom:6px"><label>An welchen Tagen? (nichts gewählt = jeden Tag)</label></div><div class="chipsel wt" id="auTage"></div></div>
+      <label class="switch-row" id="auDunkelF" style="margin-bottom:12px"><span><b>Nur wenn es dunkel ist</b><small>Ab einer halben Stunde vor Sonnenuntergang</small></span><input type="checkbox" class="switch" id="auDunkel" ${e.dunkel ? 'checked' : ''}></label>
+      <p class="hint" id="auInfo" style="margin:-4px 2px 16px"></p>
+      <div class="field" style="margin-bottom:6px"><label>Was soll passieren?</label></div>
+      <div class="chipsel" id="auTun"></div>
+      <div class="field" style="margin-bottom:6px"><label>Mit welchen Geräten?</label></div>
+      <div class="pick" id="auGer"></div>
+      <div class="field"><label for="auName">Name (optional)</label><input id="auName" class="input" maxlength="40" value="${esc(e.name && e.name !== 'Automation' ? e.name : '')}" placeholder="z. B. Gute Nacht"></div>
+      <p class="hint" id="auErr" role="alert" style="color:#FF8A80;margin:-6px 2px 12px"></p>
+      <div class="sheet-actions">${r ? `<button type="button" class="btn btn-danger icon" data-action="auto-del" data-id="${esc(r.id)}" aria-label="Löschen">${ic('trash', 17)}</button><button type="button" class="btn" data-action="auto-jetzt" data-id="${esc(r.id)}">${ic('play', 16)} Jetzt testen</button>` : ''}<span class="grow"></span><button class="btn btn-primary" id="auSave">${ic('check', 18)} Speichern</button></div>
+    </form>`);
+  const rollos = (state.smart?.geraete || []).some(d => d.art === 'rollo');
+  const draw = () => {
+    const zeitArt = wann === 'zeit', sonne = wann === 'sonnenuntergang' || wann === 'sonnenaufgang', anw = wann === 'weg' || wann === 'heim';
+    $('#auZeitF').hidden = !zeitArt; $('#auVersF').hidden = !sonne; $('#auTageF').hidden = anw; $('#auDunkelF').hidden = wann !== 'heim';
+    $('#auTage').innerHTML = WD.map((w, i) => `<button type="button" data-t="${i + 1}" class="${tage.includes(i + 1) ? 'on' : ''}" aria-pressed="${tage.includes(i + 1)}">${w}</button>`).join('');
+    const s = a.sonne;
+    $('#auInfo').textContent = anw ? (a.zuhause ? 'Zählt nur, wer seinen Standort teilt (in der App oder per Kurzbefehl). Daheim heißt: bis 150 m von „Zuhause“ auf der Karte.' : '⚠️ Leg zuerst auf der Karte „Zuhause“ fest – sonst weiß die App nicht, wer daheim ist. Es zählt nur, wer seinen Standort teilt.')
+      : sonne && s ? `Heute: Sonnenaufgang ${hm(s.auf)}, Sonnenuntergang ${hm(s.unter)} Uhr.` : zeitArt ? 'Läuft auf eine Minute genau, auch wenn kein Handy offen ist.' : '';
+    $('#auTun').innerHTML = AUTO_TUN.filter(([k]) => rollos || k === 'an' || k === 'aus' || k === tun).map(([k, l]) => `<button type="button" data-t="${k}" class="${tun === k ? 'on' : ''}">${l}</button>`).join('');
+    const z = autoZiele(tun);
+    $('#auGer').innerHTML = z.length ? z.map(([id, l, icon, cls]) => `<label class="pick-row"><input type="checkbox" value="${esc(id)}" ${sel.has(id) ? 'checked' : ''}><span class="shape sm ${cls}">${icon}</span><span class="t">${esc(l)}</span></label>`).join('') : '<p class="hint" style="padding:14px 0">Keine passenden Geräte.</p>';
+  };
+  draw();
+  $('#auWann').addEventListener('click', ev => { const b = ev.target.closest('button[data-w]'); if (!b) return; wann = b.dataset.w; $$('#auWann button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  $('#auTage').addEventListener('click', ev => { const b = ev.target.closest('button[data-t]'); if (!b) return; const t = Number(b.dataset.t); tage = tage.includes(t) ? tage.filter(x => x !== t) : [...tage, t].sort(); draw(); });
+  $('#auTun').addEventListener('click', ev => { const b = ev.target.closest('button[data-t]'); if (!b) return; tun = b.dataset.t; draw(); });
+  $('#auGer').addEventListener('change', ev => { const c = ev.target; if (c.type === 'checkbox') c.checked ? sel.add(c.value) : sel.delete(c.value); });
+  $('#autoForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const ok = new Set(autoZiele(tun).map(x => x[0])), geraete = [...sel].filter(g => ok.has(g));
+    if (!geraete.length) { $('#auErr').textContent = 'Wähl mindestens ein Gerät aus.'; return; }
+    const regel = { id: r?.id, name: $('#auName').value.trim(), aktiv: r ? r.aktiv : true, wann, tun, geraete, zeit: $('#auZeit').value || '23:00', versatz: Number($('#auVers').value) || 0, tage, dunkel: $('#auDunkel').checked };
+    $('#auSave').disabled = true; $('#auErr').textContent = '';
+    try { state.auto = await smartFn({ aktion: 'auto-speichern', regel }); closeSheet(); fillZuhause(); toast('Automation gespeichert.', 'ok'); }
+    catch (err) { const e2 = unbekannt(err); $('#auSave').disabled = false; $('#auErr').textContent = e2.alt ? e2.message : errMsg(e2); }
+  });
+}
+async function autoAktiv(id, an) {
+  const r = state.auto?.regeln.find(x => x.id === id); if (!r) return;
+  r.aktiv = an;
+  try { state.auto = await smartFn({ aktion: 'auto-speichern', regel: { ...r, aktiv: an } }); toast(an ? 'Automation an.' : 'Automation aus.', 'ok'); }
+  catch (e) { r.aktiv = !an; toast(errMsg(unbekannt(e)), 'bad'); }
+  fillZuhause();
+}
+async function autoJetzt(id, btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const j = await smartFn({ aktion: 'auto-jetzt', id }); state.auto = j;
+    toast(j.ergebnis?.text || 'Erledigt.', j.ergebnis?.ok ? 'ok' : 'bad'); loadSmart(true, true);
+  } catch (e) { toast(errMsg(unbekannt(e)), 'bad'); }
+  if (btn) btn.disabled = false;
+}
+async function autoDel(id) {
+  const r = state.auto?.regeln.find(x => x.id === id); if (!r || !confirm(`„${autoName(r)}“ löschen?`)) return;
+  try { state.auto = await smartFn({ aktion: 'auto-loeschen', id }); closeSheet(); fillZuhause(); } catch (e) { toast(errMsg(unbekannt(e)), 'bad'); }
+}
+
 /* ---------- Mehr ---------- */
-function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); loadOrte(true); if (unterMehr('fotos') && bereich('fotos')) loadFotos(true); }
+function loadHub(quiet) { loadEssen(quiet); loadRezepte(quiet); loadAufgaben(quiet); loadCountdowns(quiet); loadInfos(quiet); loadOrte(true); if (unterMehr('fotos') && bereich('fotos')) loadFotos(true); if (bereich('punkte')) loadPunkte(true); }
 function hubShell() { return `${header('Mehr', 'Alles Weitere für die Familie', 'purple', 'grid')}<div id="hub"></div>`; }
 function fillHub() {
   const box = $('#hub'); if (!box) return;
-  const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length;
+  const e = state.essen[todayIso()], cd = (state.countdowns || []).find(c => c.datum >= todayIso()), dran = aufgabenAm(todayIso()).filter(t => !t.done).length, sl = store.get('spritLetzt');
   const tile = (tab, c, icon, title, sub, extra = '') => `<button class="tile c-${c}" data-action="go" data-tab="${tab}" ${extra}><span class="top"><span class="shape">${icon}</span></span><span><b>${title}</b><small>${sub}</small></span><i class="bar"></i></button>`;
   box.innerHTML = `<div class="tiles hub">
     ${bereich('karte') && unterMehr('karte') ? tile('karte', 'sky', ic('pin'), 'Wo sind alle?', state.orte ? (state.orte.standorte.length ? `${state.orte.standorte.length} teilen ihren Standort` : 'Standort teilen') : 'Familien-Karte') : ''}
@@ -1988,6 +2442,8 @@ function fillHub() {
     ${bereich('rezepte') ? tile('rezepte', 'amber', ic('book'), 'Rezepte', state.rezepte ? `${state.rezepte.length} Rezept${state.rezepte.length === 1 ? '' : 'e'}` : 'Familienrezepte') : ''}
     ${bereich('putzplan') && bereich('listen') ? tile('listen', 'sky', ic('sparkles'), 'Putzplan', dran ? `${dran} heute fällig` : 'Wer ist dran?', 'data-liste="putzplan"') : ''}
     ${bereich('countdowns') ? tile('countdowns', 'purple', ic('hourglass'), 'Countdowns', cd ? `${esc(cd.titel)} ${inDays(dayDiff(new Date(), parseDay(cd.datum)))}` : 'Worauf freut ihr euch?') : ''}
+    ${bereich('punkte') ? tile('punkte', 'amber', ic('trophy'), 'Punkte', state.punkte ? `Du hast ${standVon(state.me)} Punkte` : 'Sammeln & Belohnungen') : ''}
+    ${bereich('sprit') ? tile('sprit', 'orange', ic('fuel'), 'Tanken', sl?.preis ? `${spritName(sl.art)} ab ${fmtPreis(sl.preis)} €` : 'Günstigste Tankstellen') : ''}
     ${bereich('infos') ? tile('infos', 'red', ic('siren'), 'Wichtige Infos', state.infos ? `${state.infos.length} Einträge` : 'Notfall, Arzt, WLAN …') : ''}
     ${tile('ich', colorOf(state.me), av(state.me, 'sm'), 'Mein Profil', 'Foto, Farbe, Status, Benachrichtigungen')}
   </div>`;
@@ -2396,7 +2852,8 @@ function fillZuhause() {
       <button class="btn sm" style="margin:2px 0 4px" data-action="raum" data-r="*">${ic('grid', 15)} Alle Geräte</button>`
     : `<div class="banner c-teal"><span class="shape">${ic('home', 18)}</span><div class="body"><b>Räume anlegen</b><p>Ordne die Geräte Räumen zu – z. B. Wohnzimmer, Küche oder Matteo. Dann ist hier alles nach Zimmern sortiert.</p><div class="row-actions"><button class="btn sm btn-primary c-teal" data-action="raum-neu">${ic('plus', 15)} Ersten Raum anlegen</button></div></div></div>
       ${alle.length ? `<div class="devs">${alle.sort(devSort).map(devTile).join('')}</div>` : emptyBox('teal', 'hplug', 'Keine Geräte gefunden', 'Prüf in der App des Herstellers, ob die Geräte dort angemeldet und online sind.')}`}
-    <p class="hint" style="margin:16px 4px 0">${rs.length ? 'Tipp auf einen Raum für seine Geräte – die Lampe rechts schaltet das ganze Licht im Raum.' : 'Tipp aufs Symbol schaltet ein und aus. Tipp auf den Namen: Helligkeit, Farbe, Raum und Name.'}</p>`;
+    <p class="hint" style="margin:16px 4px 0">${rs.length ? 'Tipp auf einen Raum für seine Geräte – die Lampe rechts schaltet das ganze Licht im Raum.' : 'Tipp aufs Symbol schaltet ein und aus. Tipp auf den Namen: Helligkeit, Farbe, Raum und Name.'}</p>
+    ${autoSection()}`;
 }
 function fillRaum(box) {
   const r = state.raum, alleAuch = r === '*' && state.smartAlle;
@@ -2708,7 +3165,7 @@ async function stVerbinden(body, btn, err) {
     location.href = j.weiter; // zur Samsung-Anmeldung – zurück kommt man auf mapq.at/familie/
   } catch (e) {
     if (e.silent) return;
-    const m = /Unbekannter Anbieter/.test(e.message) ? 'Dafür muss die Funktion „mapq-push“ in Supabase neu bereitgestellt werden (?v=6) – danach „Verify JWT“ ausschalten.' : errMsg(e);
+    const m = /Unbekannter Anbieter/.test(e.message) ? `Dafür muss die Funktion „mapq-push“ in Supabase neu bereitgestellt werden (?v=${FN_V}) – danach „Verify JWT“ ausschalten.` : errMsg(e);
     if (err) err.textContent = m; else toast(m, 'bad');
     if (btn) { btn.disabled = false; btn.textContent = 'Weiter zu Samsung'; }
   }
@@ -2772,7 +3229,7 @@ async function loadOrte(quiet) {
   try {
     const j = await smartFn({ aktion: 'standort-liste' });
     // Antwort ohne Liste = in Supabase läuft noch die alte Funktion
-    if (!Array.isArray(j?.standorte)) throw Object.assign(new Error('Die Karte braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=6 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
+    if (!Array.isArray(j?.standorte)) throw Object.assign(new Error(`Die Karte braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=${FN_V} bereitstellen und danach „Verify JWT“ ausschalten.`), { alt: true });
     ortNamenEinsetzen(j.standorte);
     state.orte = j; state.orteErr = null;
     fehlendeOrte();
@@ -2786,7 +3243,8 @@ function position() {
     navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
   });
 }
-const neueFunktion = () => Object.assign(new Error('Das braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=6 bereitstellen und danach „Verify JWT“ ausschalten.'), { alt: true });
+const FN_V = 7; // so muss „mapq-push“ in Supabase bereitgestellt sein (siehe admin.html → FN_VERSION)
+const neueFunktion = () => Object.assign(new Error(`Das braucht die neue Funktion: In Supabase „mapq-push“ mit ?v=${FN_V} bereitstellen und danach „Verify JWT“ ausschalten.`), { alt: true });
 const posFehler = e => e.code === 1 ? 'Standort ist nicht erlaubt – iPhone-Einstellungen → Datenschutz → Ortungsdienste → Safari-Websites (bzw. „Familie“) → „Beim Verwenden“.' : e.code === 0 ? e.message : 'Der Standort konnte gerade nicht bestimmt werden – versuch es draußen nochmal.';
 async function ortTeilen(still) {
   let p;
@@ -3127,6 +3585,22 @@ function quick(q) {
   if (q === 'nachricht') { go('pinnwand'); setTimeout(() => $('#postText')?.focus(), 60); }
 }
 const ACTIONS = {
+  'sprit-art': el => { store.set('spritArt', el.dataset.a); fillSprit(); loadSprit(); },
+  'sprit-ort': el => { store.set('spritModus', el.dataset.m); if (el.dataset.m === 'hier') store.del('spritHier'); fillSprit(); loadSprit(); },
+  'sprit-neu': () => { state.spritErr = null; fillSprit(); loadSprit(false, true); },
+  'pk-zeit': el => { store.set('pkZeit', el.dataset.z); fillPunkte(); },
+  'pk-neu': () => { state.punkteErr = null; fillPunkte(); loadPunkte(); },
+  'pk-bonus': () => bonusSheet(),
+  'pk-bel-neu': () => belSheet(null),
+  'pk-bel-edit': el => belSheet(state.punkte?.bel.find(b => b.id === el.dataset.id)),
+  'pk-bel-del': el => belDel(el.dataset.id),
+  'pk-einloesen': el => { const b = state.punkte?.bel.find(x => x.id === el.dataset.id); if (b) einloesenSheet(b); },
+  'pk-vorschlag': () => belVorschlag(),
+  'auto-neu': () => autoSheet(null),
+  'auto-vorlage': el => autoSheet(null, { ...AUTO_VORLAGEN[Number(el.dataset.i)].r, name: AUTO_VORLAGEN[Number(el.dataset.i)].n }),
+  'auto-edit': el => { const r = state.auto?.regeln.find(x => x.id === el.dataset.id); if (r) autoSheet(r); },
+  'auto-jetzt': el => autoJetzt(el.dataset.id, el),
+  'auto-del': el => autoDel(el.dataset.id),
   go: el => { closeFoto(); closeSheet(); if (el.dataset.liste) { state.liste = el.dataset.liste; store.set('liste', state.liste); } if (el.dataset.tab === 'zuhause' && (state.tab === 'zuhause' || 'raum' in el.dataset)) state.raum = null; go(el.dataset.tab); },
   quick: el => quick(el.dataset.q),
   'refresh-weather': () => loadWeather(true),
@@ -3265,6 +3739,7 @@ document.addEventListener('change', e => {
   if (t.id === 'posRng') devSet(id, { position: Number(t.value) });
   if (t.id === 'lautRng') devSet(id, { lautst: Number(t.value) });
   if (t.id === 'ortAuto') { store.set('ortAuto', t.checked); if (t.checked) ortTeilen(false); }
+  if (t.classList?.contains('auto-sw')) autoAktiv(id, t.checked);
   if (t.id === 'farbIn' && isHex(t.value)) { $$('.swatches button').forEach(b => b.classList.remove('on')); devSet(id, { farbe: t.value.toLowerCase() }); }
 });
 document.addEventListener('keydown', e => {
