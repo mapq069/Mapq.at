@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin
 Disallow: /familie
 Disallow: /pcon
+Disallow: /bewerbung
 
 Sitemap: https://mapq.at/sitemap.xml

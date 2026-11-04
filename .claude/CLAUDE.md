@@ -47,6 +47,12 @@ Eine Seite: `index.html`. Google-Drive-Fotoordner: Button „Ordner“ in der Ko
 - Auf dem PC läuft `pcon/mapq-pc.ps1` (Vorlage, die Seite setzt Adresse und Schlüssel ein): meldet sich alle 5 s, Infos (Name, MAC, IP) alle 10 Min., läuft per Autostart-Verknüpfung ohne Admin-Rechte. Eingerichtet wird es mit einem Befehl zum Einfügen in PowerShell (Here-String, kein Base64).
 - Einschalten: Matteos Magenta-Router kann kein Wake-on-LAN von außen. Optional über eine smarte Steckdose aus „Zuhause“ (`steckdose` in `mapq_pc`, `smart-set` an/aus mit 10 s Pause; BIOS „Restore on AC Power Loss“ = Power On) – nur, wenn der PC aus ist. Im Heimnetz: Knopf „Einschalten“ öffnet `shortcuts://run-shortcut?name=…` (iPhone-Kurzbefehl, Name pro Gerät in `mapq_pc_kurzbefehl`, Standard „PC einschalten“), der über die App „Wake Me Up – Wake-on-LAN“ das Magic Packet schickt – eine Webseite kann selbst kein UDP senden. Die Seite zeigt MAC/IP/Broadcast/Maske mit Kopier-Knöpfen. Matteos PC: MSI B450, Intel I211 (BIOS: ErP aus, PCI-E-Wake an; Schnellstart aus).
 
+## Model-Bewerbung (mapq.at/bewerbung)
+
+- `bewerbung/index.html` (eine Datei), bewusst nirgends verlinkt – Matteo verschickt den Link selbst. noindex, `robots.txt` sperrt /bewerbung, `404.html` leitet /berwerbung und Groß-/Kleinschreibung auf /bewerbung/ um.
+- Sieht aus wie ein PDF im Viewer (Leiste mit Dateiname, Seite x/2, Zoom, „Als PDF speichern“ = Drucken auf zwei A4-Seiten), darin ein ausfüllbares Formular: Kriterien (ab 18, Tirol, zuverlässig, Instagram, Veröffentlichung), Angaben, Shooting-Arten, Erfahrung, Zeit, Bestätigungen, Unterschrift.
+- Absenden wie das Kontaktformular in Supabase-Tabelle `anfragen` (`art: Model-Bewerbung`, `kontakt` = @Instagram, alles andere in `nachricht`) → erscheint im Panel-Postfach mit Push. Kein eigenes SQL. Danach Stempel „Eingegangen“; das Handy merkt sich die Bewerbung (`mapq_bewerbung_gesendet`).
+
 ## Design-System
 
 Gültig für mapq.at: `design-system/mapq-raw/MASTER.md` (erstellt mit dem Skill ui-ux-pro-max).

@@ -8,7 +8,7 @@
 <script>
 // GitHub Pages unterscheidet Groß- und Kleinschreibung: mapq.at/Pcon, /PCON, /Familie … → richtige Seite
 (function () {
-  var ziele = { '/pcon': '/pcon/', '/familie': '/familie/', '/admin': '/admin.html', '/bilder': '/#ordner', '/ordner': '/#ordner' };
+  var ziele = { '/pcon': '/pcon/', '/familie': '/familie/', '/admin': '/admin.html', '/bilder': '/#ordner', '/ordner': '/#ordner', '/bewerbung': '/bewerbung/', '/berwerbung': '/bewerbung/' };
   var p = location.pathname.toLowerCase().replace(/\/+$/, '').replace(/\.html$/, '');
   var z = ziele[p];
   if (z && z !== location.pathname) location.replace(z + location.search + (z.indexOf('#') < 0 ? location.hash : ''));
