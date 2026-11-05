@@ -71,6 +71,7 @@ Messwert = RMS (125 ms) in dBFS + Kalibrierung, Standard +120. Pro Auto nur der 
 Öffentlich (in `sitemap.xml`), `404.html` leitet /Dezi und /dezibel auf /dezi/ um.
 Einreichen wie die Model-Bewerbung: POST in Supabase-Tabelle `anfragen` (`art` = „Dezi-Contest · 128,4 dB“, `kontakt` = @Instagram oder E-Mail, in `nachricht` Messart/Einstellungen, Foto-Links und eine fertige JSON-Zeile für `rangliste.json`) → Panel-Postfach mit Push. Beweis ist ein Foto, kein Video (Matteos Wunsch): 1–3 Fotos Pflicht, verkleinert auf 1600 px JPEG, hochgeladen in den öffentlichen Storage-Bucket `dezi` (Ordner `einreichungen/`, zufällige Namen; nur Hochladen für anon, SQL in `supabase/dezi.sql`). Nach dem Burp hängt die Seite ein selbst gezeichnetes Ergebnis-Bild (1080×1350) an. Klappt der Upload nicht (z. B. Bucket fehlt), geht die Anfrage trotzdem raus mit Hinweis „Fotos kommen per Instagram“. Das Panel zeigt Links in Nachrichten anklickbar und Fotos aus dem eigenen `dezi`-Bucket als Vorschau (`msgHtml` in `admin.html`). Spam-Falle Feld `website`. Beim Testen Upload und Anfrage abfangen, nie echt absenden.
 Gestaltung bewusst bunt (Neon Cyan/Violett/Magenta, Werte in `pages/dezi.md`), auf Matteos Wunsch – nicht auf Schwarz-Weiß zurückbauen.
+Verlinkt von der Hauptseite: Neon-Karte im Abschnitt `#dezi` vor „Kontakt“ (statisches HTML in `index.html`, nicht über `content.json`; die einzige bunte Stelle auf mapq.at, bewusst so gewollt) und Link „Dezi · Bass-Contest“ in der Fußzeile. Nicht ins Menü oben.
 
 ## Versteckte Extras (nicht entfernen, Besuchern nicht verraten)
 

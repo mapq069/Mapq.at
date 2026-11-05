@@ -249,6 +249,24 @@ h1,h2,h3,p,dl,dd,figure{margin:0}
 .price .btn{margin-top:auto;align-self:flex-start}
 
 /* ---------- Kontakt ---------- */
+/* ---------- Dezi-Karte: bewusst bunt (Neon wie mapq.at/dezi), sonst bleibt die Seite schwarz-weiß ---------- */
+.dezi-card{--dz-c:#00E5FF;--dz-v:#7C4DFF;--dz-m:#FF2BD6;position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:clamp(1.5rem,4vw,3rem);padding:clamp(1.5rem,4vw,3rem);border-radius:var(--radius-card);text-decoration:none;color:var(--color-foreground);background:linear-gradient(#07040D,#07040D) padding-box,linear-gradient(90deg,var(--dz-c),var(--dz-v) 45%,var(--dz-m) 75%,#FF3B3B) border-box;border:2px solid transparent;box-shadow:0 0 40px rgba(255,43,214,.25),0 0 18px rgba(0,229,255,.15);transition:transform var(--ease),box-shadow var(--ease)}
+.dezi-card::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(60% 80% at 100% 0%,rgba(255,43,214,.22),transparent 70%),radial-gradient(50% 70% at 0% 100%,rgba(0,229,255,.16),transparent 70%)}
+.dezi-card:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(255,43,214,.42),0 0 24px rgba(0,229,255,.3)}
+.dz-woofer{position:relative;width:clamp(100px,16vw,170px);aspect-ratio:1;border-radius:50%;animation:dzthump .47s cubic-bezier(.3,0,.3,1) infinite}
+.dz-woofer i{position:absolute;border-radius:50%}
+.dz-woofer i:nth-child(1){inset:0;border:3px solid rgba(0,229,255,.6);box-shadow:0 0 24px rgba(0,229,255,.4),inset 0 0 20px rgba(0,229,255,.25)}
+.dz-woofer i:nth-child(2){inset:16%;background:radial-gradient(circle,#1a1030,#0b0714 70%);border:2px solid rgba(124,77,255,.55)}
+.dz-woofer i:nth-child(3){inset:35%;background:radial-gradient(circle at 40% 35%,#3a2a55,#120c20 70%);border:2px solid rgba(255,43,214,.75);box-shadow:0 0 28px rgba(255,43,214,.6)}
+@keyframes dzthump{0%,100%{transform:scale(1)}12%{transform:scale(1.05)}35%{transform:scale(.99)}}
+.dz-kick{display:flex;align-items:center;gap:.6rem;color:#A3A8C3}
+.dz-kick::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--dz-m);box-shadow:0 0 10px var(--dz-m)}
+.dz-title{display:block;margin:.4rem 0 .6rem;font-family:var(--font-heading);font-stretch:62%;font-weight:900;font-size:clamp(3.5rem,10vw,6.5rem);line-height:.9;text-transform:uppercase;background:linear-gradient(90deg,var(--dz-c),var(--dz-v) 45%,var(--dz-m) 75%,#FF3B3B);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(255,43,214,.45))}
+.dz-sub{display:block;max-width:44ch;color:#D9DBEA}
+.dz-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.25rem;min-height:46px;padding:12px 24px;border-radius:var(--radius-btn);background:linear-gradient(90deg,var(--dz-c),var(--dz-m));color:#06020D;font-weight:700;box-shadow:0 0 24px rgba(255,43,214,.45)}
+@media (max-width:600px){.dezi-card{grid-template-columns:1fr}.dz-woofer{width:104px}}
+footer a.link{text-decoration:underline}
+
 .contact{background:var(--color-card);border-top:1px solid var(--color-border)}
 .contact-grid{display:grid;gap:clamp(2.5rem,5vw,5rem)}
 @media (min-width:900px){.contact-grid{grid-template-columns:5fr 6fr}}
@@ -468,6 +486,20 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
     </div>
   </section>
 
+  <section class="sec" id="dezi" style="padding-top:0" aria-label="Bass-Contest Dezi">
+    <div class="wrap">
+      <a class="dezi-card reveal" href="/dezi/">
+        <span class="dz-woofer" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>
+          <span class="label dz-kick">Neu · Bass-Contest</span>
+          <strong class="dz-title">Dezi</strong>
+          <span class="dz-sub">Wer hat mehr Bass im Auto? Miss deinen Wert mit dem Handy und hol dir Platz 1 in der Rangliste.</span>
+          <span class="dz-btn">Jetzt messen <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </section>
+
   <section class="sec contact" id="kontakt">
     <div class="wrap contact-grid">
       <div class="reveal">
@@ -504,6 +536,7 @@ main.drift{animation:drift 900ms cubic-bezier(.3,.7,.2,1)}
   <div class="wrap">
     <span>© 2026 Matteo Hanser</span>
     <span class="label" id="c-stand">Stand: Oktober 2026</span>
+    <a class="link" href="/dezi/">Dezi · Bass-Contest</a>
     <button type="button" class="link" id="imp-open">Impressum</button>
   </div>
 </footer>
