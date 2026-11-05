@@ -2703,8 +2703,11 @@ async function patchInquiry(id, patch, okMsg) {
   catch (e) { Object.assign(q, prev); renderChrome(); if (state.view === 'inquiries') renderView(); toast('Speichern fehlgeschlagen: ' + e.message, 'bad'); }
 }
 async function deleteInquiry(id) {
-  const q = inqById(id); if (!q || !confirm(`Anfrage von ${q.name} endgültig löschen?`)) return;
-  if (inqMode() === 'live') { try { await SB.remove(q.id); } catch (e) { toast('Löschen fehlgeschlagen: ' + e.message, 'bad'); return; } }
+  const q = inqById(id); if (!q || !confirm(`Anfrage von ${q.name} endgültig löschen?${isDezi(q) && (state.dezi || {})[q.id] ? ' Ihr Eintrag in der Dezi-Rangliste wird mit gelöscht.' : ''}`)) return;
+  if (inqMode() === 'live') {
+    try { await SB.remove(q.id); } catch (e) { toast('Löschen fehlgeschlagen: ' + e.message, 'bad'); return; }
+    if (isDezi(q)) { try { await SB.req('/dezi_rangliste?anfrage=eq.' + encodeURIComponent(q.id), { method: 'DELETE' }); } catch {} if (state.dezi) delete state.dezi[q.id]; }
+  }
   state.inquiries = state.inquiries.filter(x => x !== q);
   renderChrome(); renderView(); toast('Anfrage gelöscht.');
 }

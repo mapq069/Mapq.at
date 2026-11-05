@@ -75,3 +75,20 @@ end $$;
 drop trigger if exists dezi_bremse on public.dezi_rangliste;
 create trigger dezi_bremse before insert on public.dezi_rangliste
   for each row execute function public.dezi_bremse();
+
+-- ---------- Aufräumen ----------
+-- Wird eine Dezi-Anfrage im Panel gelöscht, verschwindet auch ihr Eintrag in der Rangliste
+create or replace function public.dezi_mit_anfrage_loeschen()
+returns trigger language plpgsql security definer set search_path = ''
+as $$
+begin
+  delete from public.dezi_rangliste where anfrage = old.id;
+  return old;
+end $$;
+drop trigger if exists dezi_mit_anfrage_loeschen on public.anfragen;
+create trigger dezi_mit_anfrage_loeschen after delete on public.anfragen
+  for each row execute function public.dezi_mit_anfrage_loeschen();
+
+-- Einträge, deren Anfrage schon gelöscht ist, einmal entfernen
+delete from public.dezi_rangliste r
+where r.anfrage is not null and not exists (select 1 from public.anfragen a where a.id = r.anfrage);
