@@ -200,6 +200,12 @@ details.cal[open]{padding-bottom:1rem}
 .result{position:relative;display:grid;gap:.25rem;padding:var(--space-lg);margin-top:var(--space-lg);border-radius:var(--radius-card);text-align:center;background:linear-gradient(var(--color-card),var(--color-card)) padding-box,var(--grad-hot) border-box;border:2px solid transparent;box-shadow:var(--glow-m)}
 .result b{font-stretch:62%;font-weight:850;font-size:clamp(3.4rem,11vw,5rem);line-height:1;font-variant-numeric:tabular-nums}
 .result .acts{justify-content:center;margin-top:var(--space-sm)}
+.quick{margin-top:var(--space-lg);padding-top:var(--space-lg);border-top:1px solid var(--color-border);text-align:left}
+.quick-h{font-family:var(--font-heading);font-stretch:75%;font-weight:800;font-size:1.4rem;margin-bottom:var(--space-md)}
+.quick .acts{justify-content:flex-start}
+.three{display:grid;gap:0 var(--space-md)}
+@media (min-width:720px){.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.result .sent{padding:var(--space-lg) 0 0}
 .confetti{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;background:none;border:0;border-radius:0}
 .mine{margin-top:var(--space-xl)}
 .mine ul{list-style:none;padding:0;margin-top:.5rem;border-top:1px solid var(--color-border)}
@@ -288,7 +294,8 @@ p.empty{display:block}
 .foto i{position:absolute;left:6px;bottom:6px;padding:2px 7px;border-radius:6px;background:var(--grad);color:var(--on-neon);font-style:normal;font-size:.72rem;font-weight:700}
 .foto button{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(5,3,10,.8);color:#fff;display:grid;place-items:center;cursor:pointer;transition:border-color var(--ease)}
 .foto button:hover{border-color:var(--neon-red)}
-.add-foto{display:inline-flex;align-items:center;gap:.5rem;min-height:46px;padding:0 16px;border-radius:var(--radius-btn);border:2px dashed rgba(0,229,255,.55);color:#E6FDFF;font-weight:600;cursor:pointer;transition:border-color var(--ease),box-shadow var(--ease)}
+.add-foto{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:.5rem;min-height:46px;padding:0 16px;border-radius:var(--radius-btn);border:2px dashed rgba(0,229,255,.55);color:#E6FDFF;font-weight:600;cursor:pointer;transition:border-color var(--ease),box-shadow var(--ease)}
+.add-foto input{top:0;left:0}
 .add-foto:hover{border-style:solid;border-color:var(--neon-cyan);box-shadow:var(--glow-c)}
 .add-foto:focus-within{outline:2px solid var(--color-ring);outline-offset:3px}
 .fld.bad .add-foto{border-color:var(--color-danger)}
@@ -446,9 +453,35 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <span class="label mute">Dein Burp</span>
         <b class="neon" id="res-num">–</b>
         <span class="mute" id="res-info"></span>
-        <div class="acts">
-          <a class="btn" href="#einreichen" id="res-send">Wert einreichen</a>
-          <button type="button" class="btn ghost" id="res-again">Nochmal</button>
+        <form class="quick" id="qreq" novalidate>
+          <p class="quick-h">Gleich einreichen</p>
+          <div class="three">
+            <label class="fld"><span class="label mute">Name *</span><input name="name" autocomplete="name" maxlength="120" required></label>
+            <label class="fld"><span class="label mute">Instagram oder E-Mail *</span><input name="kontakt" placeholder="@deinname" autocomplete="off" maxlength="200" required></label>
+            <label class="fld"><span class="label mute">Auto *</span><input name="auto" placeholder="z. B. Golf 4 Variant" maxlength="80" required></label>
+          </div>
+          <label class="fld"><span class="label mute">Anlage</span><input name="anlage" placeholder="Subwoofer, Endstufe, Gehäuse" maxlength="160"></label>
+          <div class="fld">
+            <span class="label mute">Fotos * (1 bis 3)</span>
+            <div class="fotos"></div>
+            <label class="add-foto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Foto von der Anlage<input type="file" name="foto" accept="image/*" multiple class="sr"></label>
+          </div>
+          <input type="hidden" name="db">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="acts">
+            <button type="submit" class="btn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.64l-19 6.5a.5.5 0 0 0-.03.94l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></svg>Jetzt abschicken</button>
+            <button type="button" class="btn ghost" id="res-again">Nochmal messen</button>
+          </div>
+          <output class="out" aria-live="polite"></output>
+        </form>
+        <div class="sent" id="q-done" hidden tabindex="-1">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
+          <h3 class="done-h">Eingereicht!</h3>
+          <p class="mute done-p">Matteo prüft deinen Wert und trägt ihn in die Rangliste ein.</p>
+          <div class="acts">
+            <a class="btn done-ig" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Fotos auf Instagram schicken</a>
+            <button type="button" class="btn ghost done-again">Nochmal messen</button>
+          </div>
         </div>
       </div>
 
@@ -496,7 +529,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <li class="step"><b class="neon">01</b><h3>Handy hinlegen</h3><p class="mute">Flach in die Mitte vom Armaturenbrett, Mikrofon (Unterseite) frei. Türen und Fenster zu.</p></li>
         <li class="step"><b class="neon">02</b><h3>Burp starten</h3><p class="mute">„3-Sek-Burp“ tippen. Mit 10 Sekunden Vorlauf hast du Zeit, auszusteigen.</p></li>
         <li class="step"><b class="neon">03</b><h3>Foto machen</h3><p class="mute">Nach dem Burp macht die Seite selbst ein Ergebnis-Bild. Dazu gern ein Foto von deiner Anlage.</p></li>
-        <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Unten das Formular mit Foto abschicken. Matteo prüft es, dann kommt dein Wert in die Rangliste.</p></li>
+        <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Gleich nach dem Burp Name, Kontakt und Auto eintragen und abschicken. Matteo prüft es, dann kommt dein Wert in die Rangliste.</p></li>
       </ol>
       <div class="rules">
         <div>
@@ -532,34 +565,34 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <div id="req-form">
           <h3>Einreichung</h3>
           <div class="two">
-            <label class="fld" for="f-name"><span class="label mute">Name *</span><input id="f-name" autocomplete="name" maxlength="120" required></label>
-            <label class="fld" for="f-kontakt"><span class="label mute">Instagram oder E-Mail *</span><input id="f-kontakt" placeholder="@deinname" autocomplete="off" maxlength="200" required></label>
+            <label class="fld" for="f-name"><span class="label mute">Name *</span><input id="f-name" name="name" autocomplete="name" maxlength="120" required></label>
+            <label class="fld" for="f-kontakt"><span class="label mute">Instagram oder E-Mail *</span><input id="f-kontakt" name="kontakt" placeholder="@deinname" autocomplete="off" maxlength="200" required></label>
           </div>
           <div class="two">
-            <label class="fld" for="f-auto"><span class="label mute">Auto *</span><input id="f-auto" placeholder="z. B. Golf 4 Variant" maxlength="80" required></label>
-            <label class="fld" for="f-db"><span class="label mute">Wert in dB *</span><input id="f-db" inputmode="decimal" placeholder="z. B. 128,4" required></label>
+            <label class="fld" for="f-auto"><span class="label mute">Auto *</span><input id="f-auto" name="auto" placeholder="z. B. Golf 4 Variant" maxlength="80" required></label>
+            <label class="fld" for="f-db"><span class="label mute">Wert in dB *</span><input id="f-db" name="db" inputmode="decimal" placeholder="z. B. 128,4" required></label>
           </div>
-          <label class="fld" for="f-anlage"><span class="label mute">Anlage</span><input id="f-anlage" placeholder="Subwoofer, Endstufe, Gehäuse" maxlength="160"></label>
+          <label class="fld" for="f-anlage"><span class="label mute">Anlage</span><input id="f-anlage" name="anlage" placeholder="Subwoofer, Endstufe, Gehäuse" maxlength="160"></label>
           <div class="fld">
             <span class="label mute">Fotos * (1 bis 3)</span>
-            <div class="fotos" id="fotos"></div>
-            <label class="add-foto" for="f-foto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Foto hinzufügen<input type="file" id="f-foto" accept="image/*" multiple class="sr"></label>
+            <div class="fotos"></div>
+            <label class="add-foto" for="f-foto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Foto hinzufügen<input type="file" id="f-foto" name="foto" accept="image/*" multiple class="sr"></label>
             <small class="hint mute">Nach einem Burp hängt die Seite dein Ergebnis-Bild automatisch an. Dazu gern ein Foto von deiner Anlage.</small>
           </div>
-          <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" placeholder="Was du noch sagen willst" maxlength="1500"></textarea></label>
+          <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" name="msg" placeholder="Was du noch sagen willst" maxlength="1500"></textarea></label>
           <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="acts">
             <button type="submit" class="btn" id="f-send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.64l-19 6.5a.5.5 0 0 0-.03.94l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></svg>Einreichen</button>
           </div>
-          <output class="out" id="f-out" aria-live="polite"></output>
+          <output class="out" aria-live="polite"></output>
         </div>
         <div class="sent" id="req-done" hidden tabindex="-1">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
-          <h3 id="done-h">Eingereicht!</h3>
-          <p class="mute" id="done-p">Matteo prüft deinen Wert und trägt ihn in die Rangliste ein.</p>
+          <h3 class="done-h">Eingereicht!</h3>
+          <p class="mute done-p">Matteo prüft deinen Wert und trägt ihn in die Rangliste ein.</p>
           <div class="acts">
-            <a class="btn" id="done-ig" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Fotos auf Instagram schicken</a>
-            <button type="button" class="btn ghost" id="done-again">Noch ein Auto einreichen</button>
+            <a class="btn done-ig" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Fotos auf Instagram schicken</a>
+            <button type="button" class="btn ghost done-again">Noch ein Auto einreichen</button>
           </div>
         </div>
       </form>
@@ -884,6 +917,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     $("#result").hidden=false;
     addMine({db:v,hz:hz,t:Date.now(),typ:"Burp",off:offset});
     fillForm(v,{typ:"3-Sek-Burp",hz:hz});
+    zeigeSchnell(v);
     beleg(v,hz).then(function(b){ if(b) addFoto(b,true); });
     toast("Burp gemessen: "+fmt(v)+" dB");
     confetti();
@@ -921,15 +955,19 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   $("#b-savemax").addEventListener("click",function(){ if(M.max>0){ addMine({db:M.max,hz:M.hz,t:Date.now(),typ:"Maximum",off:offset}); toast("Gespeichert: "+fmt(M.max)+" dB"); } else toast("Noch kein Wert gemessen."); });
   renderMine();
 
-  /* ---------- Einreichen: landet im Admin-Postfach (Supabase-Tabelle anfragen), wie die Model-Bewerbung ---------- */
+  /* ---------- Einreichen: landet im Admin-Postfach (Supabase-Tabelle anfragen), wie die Model-Bewerbung ----------
+     Zwei Formulare: das kurze direkt in der Ergebnis-Karte nach dem Burp und das ganze unten. Beide schicken gleich ab. */
   var INBOX=null, IG="mapq.raw";
   fetch("/content.json",{cache:"no-cache"}).then(function(r){ return r.json(); }).then(function(c){
     if(c.inbox&&/^https:\/\//.test(c.inbox.url||"")&&c.inbox.key) INBOX=c.inbox;
-    if(c.site&&c.site.instagram){ IG=String(c.site.instagram).replace(/^@/,""); $("#done-ig").href="https://ig.me/m/"+IG; }
+    if(c.site&&c.site.instagram){ IG=String(c.site.instagram).replace(/^@/,""); document.querySelectorAll(".done-ig").forEach(function(a){ a.href="https://ig.me/m/"+IG; }); }
   }).catch(function(){});
-  var F={name:$("#f-name"),kontakt:$("#f-kontakt"),auto:$("#f-auto"),db:$("#f-db"),anlage:$("#f-anlage"),foto:$("#f-foto"),msg:$("#f-msg")};
+  var meta={typ:"selbst eingetragen",hz:0};
+  function num(s){ var v=parseFloat(String(s).replace(",",".")); return isFinite(v)?v:NaN; }
+  function clearErr(inp){ var f=inp.closest(".fld"); f.classList.remove("bad"); var e=f.querySelector("em"); if(e) e.remove(); }
+  function err(inp,msg){ var f=inp.closest(".fld"); clearErr(inp); f.classList.add("bad"); var e=document.createElement("em"); e.textContent=msg; f.appendChild(e); }
 
-  /* Fotos: verkleinert auf 1600 px, als JPEG */
+  /* Fotos: verkleinert auf 1600 px, als JPEG – gelten für beide Formulare */
   var FOTOS=[], MAXF=3;
   function shrink(file){
     return new Promise(function(res,rej){
@@ -949,27 +987,24 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     if(FOTOS.length>=MAXF){ toast("Höchstens "+MAXF+" Fotos."); return; }
     var f={blob:blob,url:URL.createObjectURL(blob),auto:!!auto};
     if(auto) FOTOS.unshift(f); else FOTOS.push(f);
-    renderFotos(); clearErr(F.foto);
+    renderFotos(); FORMS.forEach(function(o){ clearErr(o.f.foto); });
   }
+  function clearFotos(){ FOTOS.forEach(function(f){ URL.revokeObjectURL(f.url); }); FOTOS=[]; renderFotos(); }
   function renderFotos(){
-    var box=$("#fotos"); box.textContent="";
-    FOTOS.forEach(function(f,i){
-      var d=document.createElement("div"), im=document.createElement("img"), x=document.createElement("button");
-      d.className="foto"; im.src=f.url; im.alt=f.auto?"Ergebnis-Bild":"Foto "+(i+1);
-      x.type="button"; x.setAttribute("aria-label","Foto entfernen"); x.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-      x.addEventListener("click",function(){ URL.revokeObjectURL(f.url); FOTOS.splice(FOTOS.indexOf(f),1); renderFotos(); });
-      d.appendChild(im);
-      if(f.auto){ var t=document.createElement("i"); t.textContent="Ergebnis"; d.appendChild(t); }
-      d.appendChild(x); box.appendChild(d);
+    document.querySelectorAll(".fotos").forEach(function(box){
+      box.textContent="";
+      FOTOS.forEach(function(f,i){
+        var d=document.createElement("div"), im=document.createElement("img"), x=document.createElement("button");
+        d.className="foto"; im.src=f.url; im.alt=f.auto?"Ergebnis-Bild":"Foto "+(i+1);
+        x.type="button"; x.setAttribute("aria-label","Foto entfernen"); x.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+        x.addEventListener("click",function(){ URL.revokeObjectURL(f.url); FOTOS.splice(FOTOS.indexOf(f),1); renderFotos(); });
+        d.appendChild(im);
+        if(f.auto){ var t=document.createElement("i"); t.textContent="Ergebnis"; d.appendChild(t); }
+        d.appendChild(x); box.appendChild(d);
+      });
     });
-    $(".add-foto").hidden=FOTOS.length>=MAXF;
+    document.querySelectorAll(".add-foto").forEach(function(l){ l.hidden=FOTOS.length>=MAXF; });
   }
-  F.foto.addEventListener("change",function(){
-    var files=Array.prototype.slice.call(F.foto.files||[]).slice(0,Math.max(0,MAXF-FOTOS.length));
-    if((F.foto.files||[]).length>files.length) toast("Höchstens "+MAXF+" Fotos.");
-    files.reduce(function(p,file){ return p.then(function(){ return shrink(file).then(function(b){ addFoto(b,false); },function(){ toast("Dieses Bild konnte nicht gelesen werden."); }); }); },Promise.resolve());
-    F.foto.value="";
-  });
   /* Ergebnis-Bild nach dem Burp */
   function beleg(v,hz){
     var c=document.createElement("canvas"), W=c.width=1080, H=c.height=1350, x=c.getContext("2d");
@@ -995,93 +1030,116 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     x.fillStyle=gr; x.font="800 44px "+HEAD; x.fillText("mapq.at/dezi",W/2,1262);
     return new Promise(function(res){ c.toBlob(res,"image/jpeg",.9); });
   }
-  var meta={typ:"selbst eingetragen",hz:0};
-  function fillForm(v,m){ F.db.value=fmt(v); meta={typ:(m&&m.typ)||"selbst eingetragen",hz:(m&&m.hz)||0,v:v}; clearErr(F.db); }
-  function num(s){ var v=parseFloat(String(s).replace(",",".")); return isFinite(v)?v:NaN; }
-  function clearErr(inp){ var f=inp.closest(".fld"); f.classList.remove("bad"); var e=f.querySelector("em"); if(e) e.remove(); }
-  function err(inp,msg){ var f=inp.closest(".fld"); clearErr(inp); f.classList.add("bad"); var e=document.createElement("em"); e.textContent=msg; f.appendChild(e); }
-  function kontakt(){
-    var k=F.kontakt.value.trim();
+  /* Name, Kontakt, Auto und Anlage merkt sich das Handy fürs nächste Mal */
+  function ich(){ try{ return JSON.parse(load("dezi-ich")||"null")||{}; }catch(e){ return {}; } }
+  function vorbelegen(o){ var m=ich(); ["name","kontakt","auto","anlage"].forEach(function(k){ if(o.f[k]&&!o.f[k].value&&m[k]) o.f[k].value=m[k]; }); }
+
+  var FORMS=[];
+  function formular(form,box,doneBox){
+    function el(n){ return form.elements.namedItem(n); }
+    var o={form:form,box:box,done:doneBox,out:form.querySelector(".out"),btn:form.querySelector("button[type=submit]"),sending:false,
+      f:{name:el("name"),kontakt:el("kontakt"),auto:el("auto"),db:el("db"),anlage:el("anlage"),msg:el("msg"),foto:el("foto"),website:el("website")}};
+    form.addEventListener("input",function(e){ if(e.target.closest(".fld.bad")) clearErr(e.target); });
+    o.f.foto.addEventListener("change",function(){
+      var all=Array.prototype.slice.call(o.f.foto.files||[]), files=all.slice(0,Math.max(0,MAXF-FOTOS.length));
+      if(all.length>files.length) toast("Höchstens "+MAXF+" Fotos.");
+      files.reduce(function(p,file){ return p.then(function(){ return shrink(file).then(function(b){ addFoto(b,false); },function(){ toast("Dieses Bild konnte nicht gelesen werden."); }); }); },Promise.resolve());
+      o.f.foto.value="";
+    });
+    form.addEventListener("submit",function(e){ e.preventDefault(); senden(o); });
+    vorbelegen(o); FORMS.push(o); return o;
+  }
+  function kontakt(o){
+    var k=o.f.kontakt.value.trim();
     if(/@.+\./.test(k)&&!/^@/.test(k)) return k;
     k=k.replace(/^https?:\/\/(www\.)?instagram\.com\//i,"").replace(/[/?#].*$/,"").replace(/^@/,"");
     return k?"@"+k:"";
   }
-  function valid(){
-    var ok=true;
-    [F.name,F.kontakt,F.auto,F.db,F.foto].forEach(clearErr);
-    if(!F.name.value.trim()){ err(F.name,"Bitte gib deinen Namen an."); ok=false; }
-    if(kontakt().length<3){ err(F.kontakt,"Wie erreicht dich Matteo? Instagram oder E-Mail."); ok=false; }
-    if(!F.auto.value.trim()){ err(F.auto,"Welches Auto?"); ok=false; }
-    var v=num(F.db.value); if(!(v>0&&v<200)){ err(F.db,"Bitte einen Wert wie 128,4 eingeben."); ok=false; }
-    if(!FOTOS.length){ err(F.foto,"Bitte mindestens ein Foto anhängen."); ok=false; }
-    if(!ok){ var b=document.querySelector("#req .fld.bad input:not([type=file])"); if(b) b.focus(); else document.querySelector("#req .fld.bad").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"}); }
+  function valid(o){
+    var ok=true, f=o.f;
+    [f.name,f.kontakt,f.auto,f.db,f.foto].forEach(function(x){ if(x.type!=="hidden") clearErr(x); });
+    if(!f.name.value.trim()){ err(f.name,"Bitte gib deinen Namen an."); ok=false; }
+    if(kontakt(o).length<3){ err(f.kontakt,"Wie erreicht dich Matteo? Instagram oder E-Mail."); ok=false; }
+    if(!f.auto.value.trim()){ err(f.auto,"Welches Auto?"); ok=false; }
+    var v=num(f.db.value); if(!(v>0&&v<200)){ if(f.db.type==="hidden") toast("Miss zuerst deinen Wert."); else err(f.db,"Bitte einen Wert wie 128,4 eingeben."); ok=false; }
+    if(!FOTOS.length){ err(f.foto,"Bitte mindestens ein Foto anhängen."); ok=false; }
+    if(!ok){ var b=o.form.querySelector(".fld.bad input:not([type=file])"); if(b) b.focus(); else { var fb=o.form.querySelector(".fld.bad"); if(fb) fb.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"}); } }
     return ok;
   }
-  function nachricht(v,urls,fotoFehler){
-    var k=kontakt(), ig=k[0]==="@"?k:"", heute=new Date().toISOString().slice(0,10),
-        same=meta.v!=null&&Math.abs(meta.v-v)<.05,
-        eintrag={name:F.name.value.trim(),instagram:ig||undefined,auto:F.auto.value.trim(),anlage:F.anlage.value.trim()||undefined,db:Math.round(v*10)/10,datum:heute};
+  function nachricht(o,v,urls,fotoFehler){
+    var f=o.f, k=kontakt(o), ig=k[0]==="@"?k:"", heute=new Date().toISOString().slice(0,10),
+        same=meta.v!=null&&Math.abs(meta.v-v)<.05, msg=f.msg?f.msg.value.trim():"",
+        eintrag={name:f.name.value.trim(),instagram:ig||undefined,auto:f.auto.value.trim(),anlage:f.anlage.value.trim()||undefined,db:Math.round(v*10)/10,datum:heute};
     return [
       "Wert: "+fmt(v)+" dB",
       "Messung: "+(same?meta.typ:"selbst eingetragen")+(same&&meta.hz?" · Bass-Spitze "+meta.hz+" Hz":"")+" · "+(bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":" (NICHT Standard)"),
-      "Auto: "+F.auto.value.trim(),
-      F.anlage.value.trim()&&"Anlage: "+F.anlage.value.trim(),
+      "Auto: "+f.auto.value.trim(),
+      f.anlage.value.trim()&&"Anlage: "+f.anlage.value.trim(),
       urls.length?"Fotos:\n"+urls.join("\n"):"",
       fotoFehler?"Fotos: Hochladen hat nicht geklappt, kommen per Instagram":"",
-      F.msg.value.trim()&&"\nBemerkung:\n"+F.msg.value.trim(),
+      msg&&"\nBemerkung:\n"+msg,
       "\nFür die Rangliste (dezi/rangliste.json):\n"+JSON.stringify(eintrag)
     ].filter(Boolean).join("\n").slice(0,4000);
   }
-  var out=$("#f-out"), sendBtn=$("#f-send"), sending=false;
-  function fallback(msg){
-    out.className="out bad"; out.textContent=msg+" Schreib Matteo direkt auf Instagram: ";
-    var a=document.createElement("a"); a.href="https://ig.me/m/"+IG; a.target="_blank"; a.rel="noopener"; a.textContent="@"+IG; out.appendChild(a);
+  function fallback(o,msg){
+    o.out.className="out bad"; o.out.textContent=msg+" Schreib Matteo direkt auf Instagram: ";
+    var a=document.createElement("a"); a.href="https://ig.me/m/"+IG; a.target="_blank"; a.rel="noopener"; a.textContent="@"+IG; o.out.appendChild(a);
   }
-  $("#req").addEventListener("input",function(e){ if(e.target.closest(".fld.bad")) clearErr(e.target); });
-  $("#req").addEventListener("submit",function(e){
-    e.preventDefault();
-    if(sending||!valid()) return;
-    var v=num(F.db.value);
-    if($("#f-website").value){ done(v,true); return; } /* Spam-Falle */
-    if(!INBOX){ fallback("Senden geht gerade nicht."); return; }
-    sending=true; sendBtn.disabled=true; out.className="out";
+  function senden(o){
+    if(o.sending||!valid(o)) return;
+    var f=o.f, v=num(f.db.value);
+    if(f.website.value){ fertig(o,v,true); return; } /* Spam-Falle */
+    if(!INBOX){ fallback(o,"Senden geht gerade nicht."); return; }
+    o.sending=true; o.btn.disabled=true; o.out.className="out";
     var base=INBOX.url.replace(/\/+$/,""), h={apikey:INBOX.key};
     if(/^eyJ/.test(INBOX.key)) h.Authorization="Bearer "+INBOX.key;
     var urls=[], fehler=false, n=0;
     function id(){ return window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12); }
     function hoch(){
       if(n>=FOTOS.length||fehler) return Promise.resolve();
-      out.textContent="Foto "+(n+1)+" von "+FOTOS.length+" wird hochgeladen …";
+      o.out.textContent="Foto "+(n+1)+" von "+FOTOS.length+" wird hochgeladen …";
       var path="einreichungen/"+new Date().toISOString().slice(0,10)+"-"+id()+".jpg";
       return fetch(base+"/storage/v1/object/dezi/"+path,{method:"POST",headers:Object.assign({"Content-Type":"image/jpeg","x-upsert":"false","cache-control":"31536000"},h),body:FOTOS[n].blob})
         .then(function(r){ if(!r.ok) throw new Error(r.status); urls.push(base+"/storage/v1/object/public/dezi/"+path); n++; return hoch(); })
         .catch(function(){ fehler=true; });
     }
     hoch().then(function(){
-      out.textContent="Wird gesendet …";
+      o.out.textContent="Wird gesendet …";
       return fetch(base+"/rest/v1/anfragen",{method:"POST",headers:Object.assign({"Content-Type":"application/json",Prefer:"return=minimal"},h),body:JSON.stringify({
-        name:F.name.value.trim().slice(0,120), kontakt:kontakt().slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(v,urls,fehler)
+        name:f.name.value.trim().slice(0,120), kontakt:kontakt(o).slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(o,v,urls,fehler)
       })});
     }).then(function(r){
       if(!r.ok) throw new Error(r.status);
-      done(v,!fehler);
-    }).catch(function(){ fallback("Das hat leider nicht geklappt. Versuch es gleich nochmal."); })
-      .then(function(){ sending=false; sendBtn.disabled=false; });
-  });
-  function done(v,fotosOk){
-    out.textContent="";
-    $("#done-h").textContent="Eingereicht: "+fmt(v)+" dB";
-    $("#done-p").textContent=fotosOk?"Matteo prüft deine Fotos und trägt deinen Wert in die Rangliste ein.":"Deine Fotos konnten nicht hochgeladen werden. Schick sie Matteo bitte auf Instagram, dann kommt dein Wert in die Rangliste.";
-    $("#done-ig").hidden=fotosOk;
-    $("#req-form").hidden=true; $("#req-done").hidden=false; $("#req-done").focus({preventScroll:true}); $("#req-done").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+      save("dezi-ich",JSON.stringify({name:f.name.value.trim(),kontakt:f.kontakt.value.trim(),auto:f.auto.value.trim(),anlage:f.anlage.value.trim()}));
+      FORMS.forEach(vorbelegen);
+      fertig(o,v,!fehler);
+    }).catch(function(){ fallback(o,"Das hat leider nicht geklappt. Versuch es gleich nochmal."); })
+      .then(function(){ o.sending=false; o.btn.disabled=false; });
+  }
+  function fertig(o,v,fotosOk){
+    o.out.textContent="";
+    o.done.querySelector(".done-h").textContent="Eingereicht: "+fmt(v)+" dB";
+    o.done.querySelector(".done-p").textContent=fotosOk?"Matteo prüft deine Fotos und trägt deinen Wert in die Rangliste ein.":"Deine Fotos konnten nicht hochgeladen werden. Schick sie Matteo bitte auf Instagram, dann kommt dein Wert in die Rangliste.";
+    o.done.querySelector(".done-ig").hidden=fotosOk;
+    o.box.hidden=true; o.done.hidden=false; o.done.focus({preventScroll:true}); o.done.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
     toast("Eingereicht. Danke!");
   }
-  $("#done-again").addEventListener("click",function(){
-    ["auto","db","anlage","msg"].forEach(function(k){ F[k].value=""; });
-    FOTOS.forEach(function(f){ URL.revokeObjectURL(f.url); }); FOTOS=[]; renderFotos();
+
+  var QF=formular($("#qreq"),$("#qreq"),$("#q-done"));
+  var MF=formular($("#req"),$("#req-form"),$("#req-done"));
+  var F=MF.f;
+  function fillForm(v,m){ F.db.value=fmt(v); meta={typ:(m&&m.typ)||"selbst eingetragen",hz:(m&&m.hz)||0,v:v}; clearErr(F.db); }
+  function zeigeSchnell(v){
+    QF.f.db.value=fmt(v); QF.out.textContent=""; QF.out.className="out";
+    [QF.f.name,QF.f.kontakt,QF.f.auto,QF.f.foto].forEach(clearErr);
+    vorbelegen(QF); QF.box.hidden=false; QF.done.hidden=true;
+  }
+  MF.done.querySelector(".done-again").addEventListener("click",function(){
+    ["db","msg"].forEach(function(k){ F[k].value=""; }); clearFotos();
     meta={typ:"selbst eingetragen",hz:0};
-    $("#req-done").hidden=true; $("#req-form").hidden=false; F.auto.focus();
+    MF.done.hidden=true; MF.box.hidden=false; F.db.focus();
   });
+  QF.done.querySelector(".done-again").addEventListener("click",function(){ clearFotos(); doBurp(); });
 
   /* Impressum */
   var imp=$("#imp");
