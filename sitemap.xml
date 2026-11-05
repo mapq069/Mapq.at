@@ -12,4 +12,10 @@
     <image:image><image:loc>https://mapq.at/fotos/cockpit.jpg</image:loc></image:image>
     <image:image><image:loc>https://mapq.at/fotos/wasserfall.jpg</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://mapq.at/dezi/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

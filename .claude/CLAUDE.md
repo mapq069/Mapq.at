@@ -68,6 +68,7 @@ Rangliste steht in `dezi/rangliste.json`, nur geprüfte Werte mit Video eintrage
 (Reihenfolge egal, die Seite sortiert) und `stand` aufs Datum setzen:
 `{"name":"…","instagram":"@…","auto":"…","anlage":"…","db":128.4,"datum":"2026-11-05"}` (nur name, auto, db Pflicht).
 Messwert = RMS (125 ms) in dBFS + Kalibrierung, Standard +120. Pro Auto nur der beste Wert.
+Öffentlich (in `sitemap.xml`), `404.html` leitet /Dezi und /dezibel auf /dezi/ um.
 
 ## Versteckte Extras (nicht entfernen, Besuchern nicht verraten)
 
