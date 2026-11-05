@@ -69,6 +69,7 @@ Rangliste steht in `dezi/rangliste.json`, nur geprüfte Werte mit Video eintrage
 `{"name":"…","instagram":"@…","auto":"…","anlage":"…","db":128.4,"datum":"2026-11-05"}` (nur name, auto, db Pflicht).
 Messwert = RMS (125 ms) in dBFS + Kalibrierung, Standard +120. Pro Auto nur der beste Wert.
 Öffentlich (in `sitemap.xml`), `404.html` leitet /Dezi und /dezibel auf /dezi/ um.
+Einreichen wie die Model-Bewerbung: POST in Supabase-Tabelle `anfragen` (`art` = „Dezi-Contest · 128,4 dB“, `kontakt` = @Instagram oder E-Mail, in `nachricht` Messart/Einstellungen/Video-Link und eine fertige JSON-Zeile für `rangliste.json`) → Panel-Postfach mit Push. Kein eigenes SQL. Spam-Falle Feld `website`. Beim Testen die Anfrage abfangen, nie echt absenden.
 Gestaltung bewusst bunt (Neon Cyan/Violett/Magenta, Werte in `pages/dezi.md`), auf Matteos Wunsch – nicht auf Schwarz-Weiß zurückbauen.
 
 ## Versteckte Extras (nicht entfernen, Besuchern nicht verraten)

@@ -280,6 +280,13 @@ p.empty{display:block}
 .two{display:grid;gap:0 var(--space-md)}
 @media (min-width:560px){.two{grid-template-columns:1fr 1fr}}
 .out{display:block;min-height:1.5em;margin-top:.9rem;font-size:.92rem;color:#E6FDFF}
+.out.bad{color:#FF8A8A}
+.out a{color:var(--neon-cyan)}
+.sent{display:grid;justify-items:center;gap:var(--space-md);padding:var(--space-xl) 0;text-align:center;outline:none}
+.sent svg{width:84px;height:84px;fill:none;stroke:var(--neon-cyan);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 12px rgba(0,229,255,.8))}
+.sent h3{margin:0}
+.sent p{max-width:36ch}
+.sent .acts{justify-content:center}
 
 /* FAQ */
 .faq{display:grid;gap:.5rem}
@@ -477,7 +484,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <li class="step"><b class="neon">01</b><h3>Handy hinlegen</h3><p class="mute">Flach in die Mitte vom Armaturenbrett, Mikrofon (Unterseite) frei. Türen und Fenster zu.</p></li>
         <li class="step"><b class="neon">02</b><h3>Burp starten</h3><p class="mute">„3-Sek-Burp“ tippen. Mit 10 Sekunden Vorlauf hast du Zeit, auszusteigen.</p></li>
         <li class="step"><b class="neon">03</b><h3>Video drehen</h3><p class="mute">Bildschirm und Anlage in einem Video ohne Schnitt filmen, mit dem Ergebnis am Ende.</p></li>
-        <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Unten das Formular ausfüllen und das Video an @mapq.raw schicken. Geprüfte Werte kommen in die Rangliste.</p></li>
+        <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Unten das Formular abschicken, mit Link zum Video oder das Video an @mapq.raw. Geprüfte Werte kommen in die Rangliste.</p></li>
       </ol>
       <div class="rules">
         <div>
@@ -507,25 +514,37 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       <div>
         <p class="kicker label">Dein Wert</p>
         <h2 class="display neon" style="font-size:clamp(3rem,9vw,6rem);margin-top:.6rem">Einreichen</h2>
-        <p class="mute" style="margin-top:1rem;max-width:40ch">Füll das Formular aus, kopier den Text und schick ihn zusammen mit deinem Video an <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener">@mapq.raw</a>. Ohne Video kann der Wert nicht in die Rangliste.</p>
+        <p class="mute" style="margin-top:1rem;max-width:40ch">Füll das Formular aus und schick es ab, es landet direkt bei Matteo. Häng einen Link zu deinem Video an oder schick es danach an <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener">@mapq.raw</a>. Ohne Video kann der Wert nicht in die Rangliste.</p>
       </div>
       <form class="req" id="req" novalidate>
-        <h3>Einreichung</h3>
-        <div class="two">
-          <label class="fld" for="f-name"><span class="label mute">Name *</span><input id="f-name" autocomplete="name" required></label>
-          <label class="fld" for="f-ig"><span class="label mute">Instagram</span><input id="f-ig" placeholder="@deinname" autocomplete="off"></label>
+        <div id="req-form">
+          <h3>Einreichung</h3>
+          <div class="two">
+            <label class="fld" for="f-name"><span class="label mute">Name *</span><input id="f-name" autocomplete="name" maxlength="120" required></label>
+            <label class="fld" for="f-kontakt"><span class="label mute">Instagram oder E-Mail *</span><input id="f-kontakt" placeholder="@deinname" autocomplete="off" maxlength="200" required></label>
+          </div>
+          <div class="two">
+            <label class="fld" for="f-auto"><span class="label mute">Auto *</span><input id="f-auto" placeholder="z. B. Golf 4 Variant" maxlength="80" required></label>
+            <label class="fld" for="f-db"><span class="label mute">Wert in dB *</span><input id="f-db" inputmode="decimal" placeholder="z. B. 128,4" required></label>
+          </div>
+          <label class="fld" for="f-anlage"><span class="label mute">Anlage</span><input id="f-anlage" placeholder="Subwoofer, Endstufe, Gehäuse" maxlength="160"></label>
+          <label class="fld" for="f-video"><span class="label mute">Link zum Video</span><input id="f-video" type="url" inputmode="url" placeholder="Instagram, TikTok, YouTube oder Google Drive" maxlength="300"></label>
+          <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" placeholder="Was du noch sagen willst" maxlength="1500"></textarea></label>
+          <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="acts">
+            <button type="submit" class="btn" id="f-send"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.64l-19 6.5a.5.5 0 0 0-.03.94l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></svg>Einreichen</button>
+          </div>
+          <output class="out" id="f-out" aria-live="polite"></output>
         </div>
-        <div class="two">
-          <label class="fld" for="f-auto"><span class="label mute">Auto *</span><input id="f-auto" placeholder="z. B. Golf 4 Variant" required></label>
-          <label class="fld" for="f-db"><span class="label mute">Wert in dB *</span><input id="f-db" inputmode="decimal" placeholder="z. B. 128,4" required></label>
+        <div class="sent" id="req-done" hidden tabindex="-1">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
+          <h3 id="done-h">Eingereicht!</h3>
+          <p class="mute" id="done-p">Matteo prüft deinen Wert und trägt ihn in die Rangliste ein.</p>
+          <div class="acts">
+            <a class="btn" id="done-ig" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Video auf Instagram schicken</a>
+            <button type="button" class="btn ghost" id="done-again">Noch ein Auto einreichen</button>
+          </div>
         </div>
-        <label class="fld" for="f-anlage"><span class="label mute">Anlage</span><input id="f-anlage" placeholder="Subwoofer, Endstufe, Gehäuse"></label>
-        <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" placeholder="Was du noch sagen willst"></textarea></label>
-        <div class="acts">
-          <button type="button" class="btn" id="f-ig-send">Text kopieren &amp; Instagram öffnen</button>
-          <a class="btn ghost" id="f-mail" href="mailto:Matteohanser8@gmail.com">Per E-Mail senden</a>
-        </div>
-        <output class="out" id="f-out" aria-live="polite"></output>
       </form>
     </div>
   </section>
@@ -537,6 +556,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <details><summary>Wie genau ist die Messung mit dem Handy?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Es ist ein Richtwert. Handy-Mikrofone sind nicht geeicht und hören tiefe Töne schwächer als ein Profi-Messgerät. Weil alle mit derselben Seite und derselben Einstellung messen, ist der Vergleich trotzdem fair.</p></details>
         <details><summary>Warum zeigt mein Handy weniger als ein echtes Messgerät?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Die meisten Handy-Mikrofone übersteuern irgendwo zwischen 110 und 130 dB. Dann erscheint „Mikro übersteuert“ und der echte Wert liegt höher. Für die Rangliste zählt trotzdem die Anzeige.</p></details>
         <details><summary>Wird mein Ton aufgenommen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Nein. Die Seite misst nur die Lautstärke, direkt auf deinem Handy. Es wird nichts gespeichert oder hochgeladen. Deine eigenen Messwerte bleiben nur in deinem Browser.</p></details>
+        <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht nur an Matteo. Er schaut sich dein Video an und trägt dann Name, Instagram, Auto, Anlage und Wert in die Rangliste ein. Deine E-Mail-Adresse kommt nie in die Rangliste.</p></details>
         <details><summary>Das Mikrofon geht nicht. Was tun?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Tipp auf das Schloss oder „aA“ neben der Adresse und erlaube das Mikrofon für mapq.at, dann neu laden. Am iPhone geht es in Safari, am Android-Handy in Chrome. In Apps wie Instagram die Seite lieber im Browser öffnen.</p></details>
         <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier misst die Seite 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
       </div>
@@ -846,7 +866,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     $("#res-info").textContent=(BOARD.length?"Platz "+rankFor(v)+" von "+(BOARD.length+1):"Platz 1, die Rangliste ist noch leer")+(hz?" · Bass-Spitze "+hz+" Hz":"")+(offset!==STD_OFFSET?" · Kalibrierung nicht Standard":"");
     $("#result").hidden=false;
     addMine({db:v,hz:hz,t:Date.now(),typ:"Burp",off:offset});
-    fillForm(v);
+    fillForm(v,{typ:"3-Sek-Burp",hz:hz});
     toast("Burp gemessen: "+fmt(v)+" dB");
     confetti();
   }
@@ -876,51 +896,93 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       i.textContent=m.typ+(m.hz?" · "+m.hz+" Hz":"")+" · "+new Date(m.t).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"});
       l.appendChild(b); l.appendChild(i);
       a.type="button"; a.className="link"; a.textContent="Einreichen";
-      a.addEventListener("click",function(){ fillForm(m.db); document.getElementById("einreichen").scrollIntoView({behavior:reduce?"auto":"smooth"}); });
+      a.addEventListener("click",function(){ fillForm(m.db,{typ:m.typ,hz:m.hz}); document.getElementById("einreichen").scrollIntoView({behavior:reduce?"auto":"smooth"}); });
       li.appendChild(l); li.appendChild(a); ul.appendChild(li);
     });
   }
   $("#b-savemax").addEventListener("click",function(){ if(M.max>0){ addMine({db:M.max,hz:M.hz,t:Date.now(),typ:"Maximum",off:offset}); toast("Gespeichert: "+fmt(M.max)+" dB"); } else toast("Noch kein Wert gemessen."); });
   renderMine();
 
-  /* ---------- Einreichen ---------- */
-  var F={name:$("#f-name"),ig:$("#f-ig"),auto:$("#f-auto"),db:$("#f-db"),anlage:$("#f-anlage"),msg:$("#f-msg")};
-  function fillForm(v){ F.db.value=fmt(v); clearErr(F.db); syncMail(); }
+  /* ---------- Einreichen: landet im Admin-Postfach (Supabase-Tabelle anfragen), wie die Model-Bewerbung ---------- */
+  var INBOX=null, IG="mapq.raw";
+  fetch("/content.json",{cache:"no-cache"}).then(function(r){ return r.json(); }).then(function(c){
+    if(c.inbox&&/^https:\/\//.test(c.inbox.url||"")&&c.inbox.key) INBOX=c.inbox;
+    if(c.site&&c.site.instagram){ IG=String(c.site.instagram).replace(/^@/,""); $("#done-ig").href="https://ig.me/m/"+IG; }
+  }).catch(function(){});
+  var F={name:$("#f-name"),kontakt:$("#f-kontakt"),auto:$("#f-auto"),db:$("#f-db"),anlage:$("#f-anlage"),video:$("#f-video"),msg:$("#f-msg")};
+  var meta={typ:"selbst eingetragen",hz:0};
+  function fillForm(v,m){ F.db.value=fmt(v); meta={typ:(m&&m.typ)||"selbst eingetragen",hz:(m&&m.hz)||0,v:v}; clearErr(F.db); }
   function num(s){ var v=parseFloat(String(s).replace(",",".")); return isFinite(v)?v:NaN; }
   function clearErr(inp){ var f=inp.closest(".fld"); f.classList.remove("bad"); var e=f.querySelector("em"); if(e) e.remove(); }
   function err(inp,msg){ var f=inp.closest(".fld"); clearErr(inp); f.classList.add("bad"); var e=document.createElement("em"); e.textContent=msg; f.appendChild(e); }
+  function kontakt(){
+    var k=F.kontakt.value.trim();
+    if(/@.+\./.test(k)&&!/^@/.test(k)) return k;
+    k=k.replace(/^https?:\/\/(www\.)?instagram\.com\//i,"").replace(/[/?#].*$/,"").replace(/^@/,"");
+    return k?"@"+k:"";
+  }
   function valid(){
     var ok=true;
-    [F.name,F.auto,F.db].forEach(clearErr);
+    [F.name,F.kontakt,F.auto,F.db,F.video].forEach(clearErr);
     if(!F.name.value.trim()){ err(F.name,"Bitte gib deinen Namen an."); ok=false; }
+    if(kontakt().length<3){ err(F.kontakt,"Wie erreicht dich Matteo? Instagram oder E-Mail."); ok=false; }
     if(!F.auto.value.trim()){ err(F.auto,"Welches Auto?"); ok=false; }
     var v=num(F.db.value); if(!(v>0&&v<200)){ err(F.db,"Bitte einen Wert wie 128,4 eingeben."); ok=false; }
-    if(!ok){ var b=document.querySelector(".fld.bad input"); if(b) b.focus(); }
+    if(F.video.value.trim()&&!/^https?:\/\/\S+\.\S+/.test(F.video.value.trim())){ err(F.video,"Bitte den ganzen Link einfügen, mit https://"); ok=false; }
+    if(!ok){ var b=document.querySelector("#req .fld.bad input"); if(b) b.focus(); }
     return ok;
   }
-  function text(){
-    var v=num(F.db.value), ig=F.ig.value.trim();
-    return "Dezi-Contest Einreichung\n\nName: "+F.name.value.trim()+(ig?"\nInstagram: "+(ig[0]==="@"?ig:"@"+ig):"")+"\nAuto: "+F.auto.value.trim()+
-      (F.anlage.value.trim()?"\nAnlage: "+F.anlage.value.trim():"")+"\nWert: "+(isFinite(v)?fmt(v):F.db.value.trim())+" dB"+
-      "\nEinstellung: "+(bassOnly?"Nur Bass":"Ganzer Ton")+", Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":"")+
-      (F.msg.value.trim()?"\n\n"+F.msg.value.trim():"")+"\n\nDas Video schicke ich mit.";
+  function nachricht(v){
+    var k=kontakt(), ig=k[0]==="@"?k:"", heute=new Date().toISOString().slice(0,10),
+        same=meta.v!=null&&Math.abs(meta.v-v)<.05,
+        eintrag={name:F.name.value.trim(),instagram:ig||undefined,auto:F.auto.value.trim(),anlage:F.anlage.value.trim()||undefined,db:Math.round(v*10)/10,datum:heute};
+    return [
+      "Wert: "+fmt(v)+" dB",
+      "Messung: "+(same?meta.typ:"selbst eingetragen")+(same&&meta.hz?" · Bass-Spitze "+meta.hz+" Hz":"")+" · "+(bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":" (NICHT Standard)"),
+      "Auto: "+F.auto.value.trim(),
+      F.anlage.value.trim()&&"Anlage: "+F.anlage.value.trim(),
+      "Video: "+(F.video.value.trim()||"kommt per Instagram"),
+      F.msg.value.trim()&&"\nBemerkung:\n"+F.msg.value.trim(),
+      "\nFür die Rangliste (dezi/rangliste.json):\n"+JSON.stringify(eintrag)
+    ].filter(Boolean).join("\n").slice(0,4000);
   }
-  function syncMail(){
+  var out=$("#f-out"), sendBtn=$("#f-send"), sending=false;
+  function fallback(msg){
+    out.className="out bad"; out.textContent=msg+" Schreib Matteo direkt auf Instagram: ";
+    var a=document.createElement("a"); a.href="https://ig.me/m/"+IG; a.target="_blank"; a.rel="noopener"; a.textContent="@"+IG; out.appendChild(a);
+  }
+  $("#req").addEventListener("input",function(e){ if(e.target.closest(".fld.bad")) clearErr(e.target); });
+  $("#req").addEventListener("submit",function(e){
+    e.preventDefault();
+    if(sending||!valid()) return;
     var v=num(F.db.value);
-    $("#f-mail").href="mailto:Matteohanser8@gmail.com?subject="+encodeURIComponent("Dezi-Contest: "+(F.auto.value.trim()||"Einreichung")+(isFinite(v)?" – "+fmt(v)+" dB":""))+"&body="+encodeURIComponent(text());
-  }
-  $("#req").addEventListener("input",function(e){ if(e.target.closest(".fld.bad")) clearErr(e.target); syncMail(); });
-  $("#req").addEventListener("submit",function(e){ e.preventDefault(); });
-  syncMail();
-  var out=$("#f-out");
-  $("#f-ig-send").addEventListener("click",function(){
-    if(!valid()) return;
-    function ok(){ out.textContent="Text kopiert. In Instagram einfügen und dein Video mitschicken."; }
-    function fail(){ out.textContent="Kopieren ging nicht. Schreib an @mapq.raw und schick dein Video mit."; }
-    try{ navigator.clipboard.writeText(text()).then(ok,fail); }catch(err2){ fail(); }
-    window.open("https://ig.me/m/mapq.raw","_blank","noopener");
+    if($("#f-website").value){ done(v); return; } /* Spam-Falle */
+    if(!INBOX){ fallback("Senden geht gerade nicht."); return; }
+    sending=true; sendBtn.disabled=true; out.className="out"; out.textContent="Wird gesendet …";
+    var h={apikey:INBOX.key,"Content-Type":"application/json",Prefer:"return=minimal"};
+    if(/^eyJ/.test(INBOX.key)) h.Authorization="Bearer "+INBOX.key;
+    fetch(INBOX.url.replace(/\/+$/,"")+"/rest/v1/anfragen",{method:"POST",headers:h,body:JSON.stringify({
+      name:F.name.value.trim().slice(0,120), kontakt:kontakt().slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(v)
+    })}).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      done(v);
+    }).catch(function(){ fallback("Das hat leider nicht geklappt. Versuch es gleich nochmal."); })
+      .then(function(){ sending=false; sendBtn.disabled=false; });
   });
-  $("#f-mail").addEventListener("click",function(e){ if(!valid()) e.preventDefault(); });
+  function done(v){
+    var hatVideo=!!F.video.value.trim();
+    out.textContent="";
+    $("#done-h").textContent="Eingereicht: "+fmt(v)+" dB";
+    $("#done-p").textContent=hatVideo?"Matteo prüft dein Video und trägt deinen Wert in die Rangliste ein.":"Jetzt fehlt nur noch dein Video. Schick es Matteo auf Instagram, dann kommt dein Wert in die Rangliste.";
+    $("#done-ig").hidden=hatVideo;
+    $("#req-form").hidden=true; $("#req-done").hidden=false; $("#req-done").focus({preventScroll:true}); $("#req-done").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+    toast("Eingereicht. Danke!");
+  }
+  $("#done-again").addEventListener("click",function(){
+    ["auto","db","anlage","video","msg"].forEach(function(k){ F[k].value=""; });
+    meta={typ:"selbst eingetragen",hz:0};
+    $("#req-done").hidden=true; $("#req-form").hidden=false; F.auto.focus();
+  });
 
   /* Impressum */
   var imp=$("#imp");
