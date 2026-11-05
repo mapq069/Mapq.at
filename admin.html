@@ -2249,6 +2249,7 @@ function inqCard(q) {
         <div>${ic(k.icon, 16)}${k.href ? `<a href="${esc(k.href)}" ${k.type === 'ig' ? 'target="_blank" rel="noopener"' : ''}>${esc(k.label)}</a>` : `<b>${esc(k.label)}</b>`}</div>
         ${q.zeit && q.zeit !== 'Egal' ? `<div>${ic('clock', 16)}<span>Am liebsten <b>${esc(q.zeit.toLowerCase())}</b></span></div>` : ''}
       </div>
+      ${isDezi(q) ? deziBlock(q) : ''}
       <div class="field"><label>Status</label><div class="seg">${Object.entries(STATUS).map(([s, l]) => `<button class="seg-b ${q.status === s ? 'on' : ''}" data-action="inq-status" data-id="${esc(q.id)}" data-status="${s}">${l}</button>`).join('')}</div></div>
       <div class="field"><label>Notiz (nur für dich)</label><textarea class="input" rows="2" data-inq-note="${esc(q.id)}" placeholder="z. B. Termin fixiert, Location Kühtai">${esc(q.notiz || '')}</textarea></div>
       <div class="row-actions">${reply}<span style="flex:1"></span><button class="btn btn-danger" data-action="inq-del" data-id="${esc(q.id)}">${ic('trash', 17)}<span class="hide-xs">Löschen</span></button></div>
@@ -2650,11 +2651,48 @@ async function loadInquiries(quiet) {
   if (inqMode() !== 'live') return;
   state.inqLoading = true;
   if (!quiet && state.view === 'inquiries') renderView();
-  try { state.inquiries = (await SB.list()) || []; state.inqError = null; }
+  try { state.inquiries = (await SB.list()) || []; state.inqError = null; await loadDezi(); }
   catch (e) { state.inqError = e.message; if (!SB.loggedIn) state.inquiries = []; }
   state.inqLoading = false;
   renderChrome();
   if (['inquiries', 'dashboard'].includes(state.view) && !$('#sheetWrap').classList.contains('open')) renderView();
+}
+/* ---------- Dezi-Contest: Rangliste in Supabase (Tabelle dezi_rangliste, SQL in supabase/dezi.sql) ----------
+   Werte vom Burp mit Foto trägt mapq.at/dezi selbst ein; hier lassen sie sich ausblenden oder andere bestätigen. */
+const isDezi = q => /^Dezi-Contest/.test(q.art || '');
+const deziEintrag = q => { const m = String(q.nachricht || '').match(/Für die Rangliste[^\n]*\n(\{[^\n]*\})/); try { return m ? JSON.parse(m[1]) : null; } catch { return null; } };
+async function loadDezi() {
+  if (!state.inquiries.some(isDezi)) return;
+  try {
+    const rows = (await SB.req('/dezi_rangliste?select=id,anfrage,sichtbar,db&order=erstellt.desc&limit=2000')) || [];
+    state.dezi = {}; rows.forEach(r => { if (r.anfrage && !state.dezi[r.anfrage]) state.dezi[r.anfrage] = r; });
+  } catch { state.dezi = null; }
+}
+function deziBlock(q) {
+  if (inqMode() !== 'live') return '';
+  const zeile = inner => `<div class="field"><label>Rangliste</label><div class="row-actions">${inner}</div></div>`;
+  if (state.dezi === null) return `<div class="field"><label>Rangliste</label><p class="hint">Automatische Rangliste noch nicht eingerichtet: das SQL aus supabase/dezi.sql einmal in Supabase ausführen.</p></div>`;
+  const r = (state.dezi || {})[q.id];
+  if (r) return zeile(`<span>${r.sichtbar ? 'Steht in der Rangliste' : 'Ausgeblendet'} · <b>${esc(String(r.db).replace('.', ','))} dB</b></span><span style="flex:1"></span><button class="btn" data-action="dezi-toggle" data-id="${esc(q.id)}">${ic(r.sichtbar ? 'eye' : 'star', 17)}${r.sichtbar ? 'Ausblenden' : 'Wieder zeigen'}</button>`);
+  return zeile(`<span>Noch nicht in der Rangliste</span><span style="flex:1"></span>${deziEintrag(q) ? `<button class="btn" data-action="dezi-add" data-id="${esc(q.id)}">${ic('star', 17)}Bestätigen &amp; eintragen</button>` : ''}`);
+}
+async function deziToggle(aid) {
+  const r = (state.dezi || {})[aid]; if (!r) return;
+  const neu = !r.sichtbar;
+  try {
+    await SB.req('/dezi_rangliste?id=eq.' + encodeURIComponent(r.id), { method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ sichtbar: neu }) });
+    r.sichtbar = neu; renderView(); toast(neu ? 'Steht wieder in der Rangliste.' : 'Aus der Rangliste genommen.', 'ok');
+  } catch (e) { toast('Ging nicht: ' + e.message, 'bad'); }
+}
+async function deziAdd(aid) {
+  const q = inqById(aid), e = q && deziEintrag(q); if (!e) return;
+  const row = { anfrage: aid, name: String(e.name || q.name).slice(0, 60), instagram: e.instagram ? String(e.instagram).slice(0, 60) : null, auto: String(e.auto || '–').slice(0, 80), anlage: e.anlage ? String(e.anlage).slice(0, 160) : null, db: Number(e.db) };
+  try {
+    const res = await SB.req('/dezi_rangliste', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) });
+    const r = Array.isArray(res) ? res[0] : res;
+    state.dezi = state.dezi || {}; state.dezi[aid] = { id: r.id, anfrage: aid, sichtbar: true, db: r.db };
+    renderView(); toast('In die Rangliste eingetragen.', 'ok');
+  } catch (err) { toast('Eintragen fehlgeschlagen: ' + err.message, 'bad'); }
 }
 async function patchInquiry(id, patch, okMsg) {
   const q = inqById(id); if (!q) return;
@@ -2756,6 +2794,8 @@ const ACTIONS = {
   'inq-toggle': el => { state.openInq = String(state.openInq) === el.dataset.id ? null : el.dataset.id; const l = $('#inqList'); if (l) l.innerHTML = inqListHTML(); },
   'inq-jump': el => { state.openInq = el.dataset.id; state.inqFilter = 'all'; go('inquiries'); },
   'inq-status': el => patchInquiry(el.dataset.id, { status: el.dataset.status }),
+  'dezi-toggle': el => deziToggle(el.dataset.id),
+  'dezi-add': el => deziAdd(el.dataset.id),
   'inq-del': el => deleteInquiry(el.dataset.id),
   'inq-refresh': () => loadInquiries(),
   'inq-tab': el => { state.inqTab = el.dataset.t; renderView(); if (state.inqTab === 'ig' && IG.ready) igLoad(true); },

@@ -499,7 +499,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     <div class="wrap">
       <div class="sec-head">
         <div><p class="kicker label">Geprüfte Werte</p><h2 class="display neon">Rangliste</h2></div>
-        <p class="mute">Hier stehen nur Werte mit Foto, die Matteo geprüft hat. Pro Auto zählt der beste Wert.</p>
+        <p class="mute">Werte vom 3-Sek-Burp mit Foto erscheinen sofort. Matteo prüft die Fotos und nimmt Schummel-Werte wieder raus. Pro Auto zählt der beste Wert.</p>
       </div>
       <div class="tools">
         <label class="search" for="q"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sr">Suchen</span><input id="q" type="search" placeholder="Name oder Auto suchen" autocomplete="off"></label>
@@ -536,6 +536,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
           <h3>Was zählt</h3>
           <ul class="mute">
             <li>Der höchste Wert der 3-Sekunden-Messung mit „Nur Bass“ an.</li>
+            <li>Mit Burp, Standard-Kalibrierung und Foto stehst du sofort in der Rangliste. Alles andere trägt Matteo nach der Prüfung ein.</li>
             <li>Kalibrierung auf Standard (+120), damit alle Handys gleich rechnen.</li>
             <li>Pro Auto zählt der beste Wert. Ein besserer ersetzt den alten.</li>
             <li>Motor darf im Leerlauf laufen.</li>
@@ -606,7 +607,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <details><summary>Wie genau ist die Messung mit dem Handy?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Es ist ein Richtwert. Handy-Mikrofone sind nicht geeicht und hören tiefe Töne schwächer als ein Profi-Messgerät. Weil alle mit derselben Seite und derselben Einstellung messen, ist der Vergleich trotzdem fair.</p></details>
         <details><summary>Warum zeigt mein Handy weniger als ein echtes Messgerät?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Die meisten Handy-Mikrofone übersteuern irgendwo zwischen 110 und 130 dB. Dann erscheint „Mikro übersteuert“ und der echte Wert liegt höher. Für die Rangliste zählt trotzdem die Anzeige.</p></details>
         <details><summary>Wird mein Ton aufgenommen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Nein. Die Seite misst nur die Lautstärke, direkt auf deinem Handy. Es wird nichts gespeichert oder hochgeladen. Deine eigenen Messwerte bleiben nur in deinem Browser.</p></details>
-        <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht nur an Matteo. Er schaut sich deine Fotos an und trägt dann Name, Instagram, Auto, Anlage und Wert in die Rangliste ein. Deine Fotos und deine E-Mail-Adresse kommen nie in die Rangliste.</p></details>
+        <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht an Matteo. Hast du mit dem 3-Sek-Burp gemessen und ein Foto dabei, stehst du sofort in der Rangliste. Matteo schaut sich die Fotos trotzdem an und kann Werte wieder rausnehmen. In der Rangliste stehen nur Name, Instagram, Auto, Anlage und Wert, nie deine Fotos oder deine E-Mail-Adresse.</p></details>
         <details><summary>Das Mikrofon geht nicht. Was tun?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Tipp auf das Schloss oder „aA“ neben der Adresse und erlaube das Mikrofon für mapq.at, dann neu laden. Am iPhone geht es in Safari, am Android-Handy in Chrome. In Apps wie Instagram die Seite lieber im Browser öffnen.</p></details>
         <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier misst die Seite 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
       </div>
@@ -685,13 +686,35 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     });
   }
   $("#q").addEventListener("input",renderBoard);
-  fetch("rangliste.json",{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(d){
-    BOARD=(d.eintraege||[]).filter(function(e){ return e&&typeof e.db==="number"&&isFinite(e.db); }).sort(function(a,b){ return b.db-a.db; });
-    $("#st-count").textContent=BOARD.length;
-    $("#st-record").textContent=BOARD.length?fmt(BOARD[0].db):"–";
-    if(d.stand){ $("#st-stand").textContent=day(d.stand).slice(0,6); $("#board-stand").textContent="Stand: "+day(d.stand); }
-    renderBoard();
-  }).catch(function(){ $("#board-error").hidden=false; });
+  /* Einträge kommen aus zwei Quellen: rangliste.json (von Hand) und Supabase-Tabelle dezi_rangliste (automatisch vom Burp) */
+  var contentReady=fetch("/content.json",{cache:"no-cache"}).then(function(r){ return r.json(); }).catch(function(){ return {}; });
+  function inboxVon(c){ return c&&c.inbox&&/^https:\/\//.test(c.inbox.url||"")&&c.inbox.key?c.inbox:null; }
+  function sbHeaders(ib){ var h={apikey:ib.key}; if(/^eyJ/.test(ib.key)) h.Authorization="Bearer "+ib.key; return h; }
+  function ladeRangliste(){
+    var hand=fetch("rangliste.json",{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).catch(function(){ return null; });
+    var auto=contentReady.then(function(c){
+      var ib=inboxVon(c); if(!ib) return null;
+      return fetch(ib.url.replace(/\/+$/,"")+"/rest/v1/dezi_rangliste?select=name,instagram,auto,anlage,db,erstellt&order=db.desc&limit=500",{headers:sbHeaders(ib),cache:"no-store"})
+        .then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; });
+    });
+    return Promise.all([hand,auto]).then(function(res){
+      var d=res[0], live=res[1]||[], best={}, stand=d&&d.stand||"";
+      if(!d&&!live.length){ $("#board-error").hidden=false; return; }
+      $("#board-error").hidden=true;
+      ((d&&d.eintraege)||[]).concat(live.map(function(e){ var t=String(e.erstellt||"").slice(0,10); if(t>stand) stand=t; return {name:e.name,instagram:e.instagram,auto:e.auto,anlage:e.anlage,db:Number(e.db),datum:t}; }))
+        .forEach(function(e){
+          if(!e||typeof e.db!=="number"||!isFinite(e.db)) return;
+          var k=(String(e.name||"")+"|"+String(e.auto||"")).toLowerCase().replace(/\s+/g," ").trim();
+          if(!best[k]||e.db>best[k].db) best[k]=e;
+        });
+      BOARD=Object.keys(best).map(function(k){ return best[k]; }).sort(function(a,b){ return b.db-a.db; });
+      $("#st-count").textContent=BOARD.length;
+      $("#st-record").textContent=BOARD.length?fmt(BOARD[0].db):"–";
+      if(stand){ $("#st-stand").textContent=day(stand).slice(0,6); $("#board-stand").textContent="Stand: "+day(stand); }
+      renderBoard();
+    });
+  }
+  ladeRangliste();
   function rankFor(db){ var p=1; for(var i=0;i<BOARD.length;i++) if(BOARD[i].db>db) p++; return p; }
 
   /* ---------- Tacho ---------- */
@@ -958,10 +981,10 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   /* ---------- Einreichen: landet im Admin-Postfach (Supabase-Tabelle anfragen), wie die Model-Bewerbung ----------
      Zwei Formulare: das kurze direkt in der Ergebnis-Karte nach dem Burp und das ganze unten. Beide schicken gleich ab. */
   var INBOX=null, IG="mapq.raw";
-  fetch("/content.json",{cache:"no-cache"}).then(function(r){ return r.json(); }).then(function(c){
-    if(c.inbox&&/^https:\/\//.test(c.inbox.url||"")&&c.inbox.key) INBOX=c.inbox;
+  contentReady.then(function(c){
+    INBOX=inboxVon(c);
     if(c.site&&c.site.instagram){ IG=String(c.site.instagram).replace(/^@/,""); document.querySelectorAll(".done-ig").forEach(function(a){ a.href="https://ig.me/m/"+IG; }); }
-  }).catch(function(){});
+  });
   var meta={typ:"selbst eingetragen",hz:0};
   function num(s){ var v=parseFloat(String(s).replace(",",".")); return isFinite(v)?v:NaN; }
   function clearErr(inp){ var f=inp.closest(".fld"); f.classList.remove("bad"); var e=f.querySelector("em"); if(e) e.remove(); }
@@ -1066,6 +1089,15 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     if(!ok){ var b=o.form.querySelector(".fld.bad input:not([type=file])"); if(b) b.focus(); else { var fb=o.form.querySelector(".fld.bad"); if(fb) fb.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"}); } }
     return ok;
   }
+  /* Automatisch in die Rangliste nur mit Burp, „Nur Bass“, Standard-Kalibrierung und hochgeladenem Foto */
+  function autoGrund(v,urls){
+    if(!(meta.typ==="3-Sek-Burp"&&meta.v!=null&&Math.abs(meta.v-v)<.05)) return "Wert selbst eingetragen";
+    if(offset!==STD_OFFSET) return "Kalibrierung nicht Standard";
+    if(!bassOnly) return "nicht mit „Nur Bass“ gemessen";
+    if(!(v>=40&&v<=160)) return "Wert außerhalb 40–160 dB";
+    if(!urls.length) return "kein Foto hochgeladen";
+    return "";
+  }
   function nachricht(o,v,urls,fotoFehler){
     var f=o.f, k=kontakt(o), ig=k[0]==="@"?k:"", heute=new Date().toISOString().slice(0,10),
         same=meta.v!=null&&Math.abs(meta.v-v)<.05, msg=f.msg?f.msg.value.trim():"",
@@ -1077,6 +1109,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       f.anlage.value.trim()&&"Anlage: "+f.anlage.value.trim(),
       urls.length?"Fotos:\n"+urls.join("\n"):"",
       fotoFehler?"Fotos: Hochladen hat nicht geklappt, kommen per Instagram":"",
+      autoGrund(v,urls)?"Rangliste: wartet auf deine Bestätigung ("+autoGrund(v,urls)+")":"Rangliste: wird automatisch eingetragen (Burp mit Foto)",
       msg&&"\nBemerkung:\n"+msg,
       "\nFür die Rangliste (dezi/rangliste.json):\n"+JSON.stringify(eintrag)
     ].filter(Boolean).join("\n").slice(0,4000);
@@ -1103,23 +1136,32 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         .then(function(r){ if(!r.ok) throw new Error(r.status); urls.push(base+"/storage/v1/object/public/dezi/"+path); n++; return hoch(); })
         .catch(function(){ fehler=true; });
     }
+    var aid=id(), automatisch=false;
     hoch().then(function(){
       o.out.textContent="Wird gesendet …";
       return fetch(base+"/rest/v1/anfragen",{method:"POST",headers:Object.assign({"Content-Type":"application/json",Prefer:"return=minimal"},h),body:JSON.stringify({
-        name:f.name.value.trim().slice(0,120), kontakt:kontakt(o).slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(o,v,urls,fehler)
+        id:aid, name:f.name.value.trim().slice(0,120), kontakt:kontakt(o).slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(o,v,urls,fehler)
       })});
     }).then(function(r){
       if(!r.ok) throw new Error(r.status);
+      if(autoGrund(v,urls)) return;
+      var k=kontakt(o);
+      return fetch(base+"/rest/v1/dezi_rangliste",{method:"POST",headers:Object.assign({"Content-Type":"application/json",Prefer:"return=minimal"},h),body:JSON.stringify({
+        anfrage:aid, name:f.name.value.trim().slice(0,60), instagram:k[0]==="@"?k.slice(0,60):null, auto:f.auto.value.trim().slice(0,80),
+        anlage:f.anlage.value.trim().slice(0,160)||null, db:Math.round(v*10)/10, bass_hz:meta.hz||null
+      })}).then(function(r2){ automatisch=r2.ok; }).catch(function(){});
+    }).then(function(){
       save("dezi-ich",JSON.stringify({name:f.name.value.trim(),kontakt:f.kontakt.value.trim(),auto:f.auto.value.trim(),anlage:f.anlage.value.trim()}));
       FORMS.forEach(vorbelegen);
-      fertig(o,v,!fehler);
+      fertig(o,v,!fehler,automatisch);
+      if(automatisch) ladeRangliste();
     }).catch(function(){ fallback(o,"Das hat leider nicht geklappt. Versuch es gleich nochmal."); })
       .then(function(){ o.sending=false; o.btn.disabled=false; });
   }
-  function fertig(o,v,fotosOk){
+  function fertig(o,v,fotosOk,automatisch){
     o.out.textContent="";
-    o.done.querySelector(".done-h").textContent="Eingereicht: "+fmt(v)+" dB";
-    o.done.querySelector(".done-p").textContent=fotosOk?"Matteo prüft deine Fotos und trägt deinen Wert in die Rangliste ein.":"Deine Fotos konnten nicht hochgeladen werden. Schick sie Matteo bitte auf Instagram, dann kommt dein Wert in die Rangliste.";
+    o.done.querySelector(".done-h").textContent=automatisch?"Du bist drin: "+fmt(v)+" dB":"Eingereicht: "+fmt(v)+" dB";
+    o.done.querySelector(".done-p").textContent=automatisch?"Dein Wert steht jetzt in der Rangliste"+(BOARD.length?", auf Platz "+rankFor(v):"")+". Matteo schaut sich die Fotos noch an.":fotosOk?"Matteo prüft deine Fotos und trägt deinen Wert in die Rangliste ein.":"Deine Fotos konnten nicht hochgeladen werden. Schick sie Matteo bitte auf Instagram, dann kommt dein Wert in die Rangliste.";
     o.done.querySelector(".done-ig").hidden=fotosOk;
     o.box.hidden=true; o.done.hidden=false; o.done.focus({preventScroll:true}); o.done.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
     toast("Eingereicht. Danke!");
