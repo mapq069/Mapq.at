@@ -283,6 +283,10 @@ body.dragging main{outline:2px dashed var(--accent);outline-offset:-10px;border-
 .inq-sub{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .inq-body{padding:0 14px 16px}
 .msg{margin:0 0 14px;padding:14px;border-radius:var(--r-btn);background:#050505;border:1px solid var(--line);font-size:14.5px;white-space:pre-wrap;word-break:break-word}
+.msg a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.msg-fotos{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;white-space:normal}
+.msg-fotos a{display:block}
+.msg-fotos img{display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .kv{display:flex;flex-direction:column;gap:9px;margin-bottom:16px;font-size:14px}
 .kv>div{display:flex;align-items:center;gap:10px;color:var(--muted)}
 .kv a,.kv b{color:var(--text);font-weight:500}
@@ -482,6 +486,15 @@ body.locked .app,body.locked .tabbar,body.locked .pending{display:none!important
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/* Nachricht: Links anklickbar, Fotos aus dem Dezi-Contest als Vorschau */
+const msgHtml = s => {
+  const fotos = [], sb = esc(String(state.content?.inbox?.url || '').replace(/\/+$/, ''));
+  const t = esc(s).replace(/https:\/\/[^\s<]+/g, u => {
+    if (sb && u.startsWith(sb + '/storage/v1/object/public/dezi/') && /\.(jpe?g|png|webp)$/i.test(u)) fotos.push(u);
+    return `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https:\/\/(www\.)?/, '')}</a>`;
+  });
+  return t + (fotos.length ? `<span class="msg-fotos">${fotos.map(u => `<a href="${u}" target="_blank" rel="noopener"><img src="${u}" alt="Foto zur Einreichung" loading="lazy"></a>`).join('')}</span>` : '');
+};
 const uid = () => Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 5);
 const arr = a => Array.isArray(a) ? a : [];
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -2231,7 +2244,7 @@ function inqCard(q) {
       <span class="chip st-chip ${esc(q.status)}">${STATUS[q.status] || esc(q.status)}</span>
     </button>
     ${open ? `<div class="inq-body">
-      <p class="msg">${esc(q.nachricht || '(keine Nachricht)')}</p>
+      <p class="msg">${msgHtml(q.nachricht || '(keine Nachricht)')}</p>
       <div class="kv">
         <div>${ic(k.icon, 16)}${k.href ? `<a href="${esc(k.href)}" ${k.type === 'ig' ? 'target="_blank" rel="noopener"' : ''}>${esc(k.label)}</a>` : `<b>${esc(k.label)}</b>`}</div>
         ${q.zeit && q.zeit !== 'Egal' ? `<div>${ic('clock', 16)}<span>Am liebsten <b>${esc(q.zeit.toLowerCase())}</b></span></div>` : ''}

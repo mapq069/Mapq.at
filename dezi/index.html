@@ -200,7 +200,7 @@ details.cal[open]{padding-bottom:1rem}
 .result{position:relative;display:grid;gap:.25rem;padding:var(--space-lg);margin-top:var(--space-lg);border-radius:var(--radius-card);text-align:center;background:linear-gradient(var(--color-card),var(--color-card)) padding-box,var(--grad-hot) border-box;border:2px solid transparent;box-shadow:var(--glow-m)}
 .result b{font-stretch:62%;font-weight:850;font-size:clamp(3.4rem,11vw,5rem);line-height:1;font-variant-numeric:tabular-nums}
 .result .acts{justify-content:center;margin-top:var(--space-sm)}
-.confetti{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none}
+.confetti{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;background:none;border:0;border-radius:0}
 .mine{margin-top:var(--space-xl)}
 .mine ul{list-style:none;padding:0;margin-top:.5rem;border-top:1px solid var(--color-border)}
 .mine li{display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);padding:.65rem 0;border-bottom:1px solid var(--color-border)}
@@ -281,6 +281,18 @@ p.empty{display:block}
 @media (min-width:560px){.two{grid-template-columns:1fr 1fr}}
 .out{display:block;min-height:1.5em;margin-top:.9rem;font-size:.92rem;color:#E6FDFF}
 .out.bad{color:#FF8A8A}
+.fotos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.fotos:empty{display:none}
+.foto{position:relative;aspect-ratio:4/5;border-radius:var(--radius-btn);overflow:hidden;border:1px solid var(--color-border);background:var(--color-muted)}
+.foto img{display:block;width:100%;height:100%;object-fit:cover}
+.foto i{position:absolute;left:6px;bottom:6px;padding:2px 7px;border-radius:6px;background:var(--grad);color:var(--on-neon);font-style:normal;font-size:.72rem;font-weight:700}
+.foto button{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(5,3,10,.8);color:#fff;display:grid;place-items:center;cursor:pointer;transition:border-color var(--ease)}
+.foto button:hover{border-color:var(--neon-red)}
+.add-foto{display:inline-flex;align-items:center;gap:.5rem;min-height:46px;padding:0 16px;border-radius:var(--radius-btn);border:2px dashed rgba(0,229,255,.55);color:#E6FDFF;font-weight:600;cursor:pointer;transition:border-color var(--ease),box-shadow var(--ease)}
+.add-foto:hover{border-style:solid;border-color:var(--neon-cyan);box-shadow:var(--glow-c)}
+.add-foto:focus-within{outline:2px solid var(--color-ring);outline-offset:3px}
+.fld.bad .add-foto{border-color:var(--color-danger)}
+.fld .hint{display:block;margin-top:.5rem;font-size:.85rem}
 .out a{color:var(--neon-cyan)}
 .sent{display:grid;justify-items:center;gap:var(--space-md);padding:var(--space-xl) 0;text-align:center;outline:none}
 .sent svg{width:84px;height:84px;fill:none;stroke:var(--neon-cyan);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 12px rgba(0,229,255,.8))}
@@ -339,7 +351,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       <p class="kicker label">Bass-Contest von mapq.raw</p>
       <h1 class="display neon">Dezi</h1>
       <p class="sub">Wer hat mehr Bass im Auto?</p>
-      <p class="lede">Miss deinen Wert direkt mit dem Handy, reich ihn mit Video ein und hol dir deinen Platz in der Rangliste.</p>
+      <p class="lede">Miss deinen Wert direkt mit dem Handy, reich ihn mit Foto ein und hol dir deinen Platz in der Rangliste.</p>
       <div class="acts">
         <a class="btn" href="#messen">Jetzt messen</a>
         <a class="btn ghost" href="#rangliste">Zur Rangliste</a>
@@ -454,7 +466,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     <div class="wrap">
       <div class="sec-head">
         <div><p class="kicker label">Geprüfte Werte</p><h2 class="display neon">Rangliste</h2></div>
-        <p class="mute">Hier stehen nur Werte mit Video, die Matteo geprüft hat. Pro Auto zählt der beste Wert.</p>
+        <p class="mute">Hier stehen nur Werte mit Foto, die Matteo geprüft hat. Pro Auto zählt der beste Wert.</p>
       </div>
       <div class="tools">
         <label class="search" for="q"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sr">Suchen</span><input id="q" type="search" placeholder="Name oder Auto suchen" autocomplete="off"></label>
@@ -468,7 +480,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       <div class="empty" id="board-empty" hidden>
         <svg viewBox="0 0 96 96" aria-hidden="true" fill="none" stroke="#FAFAFA" stroke-width="2"><rect x="18" y="8" width="60" height="80" rx="8"/><circle cx="48" cy="58" r="18"/><circle cx="48" cy="58" r="7" fill="#FAFAFA"/><circle cx="48" cy="26" r="7"/><path d="M80 40c5 5 5 15 0 20M86 34c9 9 9 23 0 32" stroke-linecap="round"/></svg>
         <b>Noch keine Einträge.<br>Platz 1 ist frei.</b>
-        <p class="mute">Miss deinen Bass, reich den Wert mit Video ein und steh als Erster ganz oben.</p>
+        <p class="mute">Miss deinen Bass, reich den Wert mit Foto ein und steh als Erster ganz oben.</p>
         <a class="btn" href="#messen">Jetzt messen</a>
       </div>
       <p class="empty mute" id="board-error" hidden>Die Rangliste konnte gerade nicht geladen werden. Lade die Seite neu.</p>
@@ -483,8 +495,8 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       <ol class="steps">
         <li class="step"><b class="neon">01</b><h3>Handy hinlegen</h3><p class="mute">Flach in die Mitte vom Armaturenbrett, Mikrofon (Unterseite) frei. Türen und Fenster zu.</p></li>
         <li class="step"><b class="neon">02</b><h3>Burp starten</h3><p class="mute">„3-Sek-Burp“ tippen. Mit 10 Sekunden Vorlauf hast du Zeit, auszusteigen.</p></li>
-        <li class="step"><b class="neon">03</b><h3>Video drehen</h3><p class="mute">Bildschirm und Anlage in einem Video ohne Schnitt filmen, mit dem Ergebnis am Ende.</p></li>
-        <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Unten das Formular abschicken, mit Link zum Video oder das Video an @mapq.raw. Geprüfte Werte kommen in die Rangliste.</p></li>
+        <li class="step"><b class="neon">03</b><h3>Foto machen</h3><p class="mute">Nach dem Burp macht die Seite selbst ein Ergebnis-Bild. Dazu gern ein Foto von deiner Anlage.</p></li>
+        <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Unten das Formular mit Foto abschicken. Matteo prüft es, dann kommt dein Wert in die Rangliste.</p></li>
       </ol>
       <div class="rules">
         <div>
@@ -514,7 +526,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       <div>
         <p class="kicker label">Dein Wert</p>
         <h2 class="display neon" style="font-size:clamp(3rem,9vw,6rem);margin-top:.6rem">Einreichen</h2>
-        <p class="mute" style="margin-top:1rem;max-width:40ch">Füll das Formular aus und schick es ab, es landet direkt bei Matteo. Häng einen Link zu deinem Video an oder schick es danach an <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener">@mapq.raw</a>. Ohne Video kann der Wert nicht in die Rangliste.</p>
+        <p class="mute" style="margin-top:1rem;max-width:40ch">Füll das Formular aus, häng mindestens ein Foto an und schick es ab. Es landet direkt bei Matteo. Ohne Foto kann der Wert nicht in die Rangliste.</p>
       </div>
       <form class="req" id="req" novalidate>
         <div id="req-form">
@@ -528,7 +540,12 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
             <label class="fld" for="f-db"><span class="label mute">Wert in dB *</span><input id="f-db" inputmode="decimal" placeholder="z. B. 128,4" required></label>
           </div>
           <label class="fld" for="f-anlage"><span class="label mute">Anlage</span><input id="f-anlage" placeholder="Subwoofer, Endstufe, Gehäuse" maxlength="160"></label>
-          <label class="fld" for="f-video"><span class="label mute">Link zum Video</span><input id="f-video" type="url" inputmode="url" placeholder="Instagram, TikTok, YouTube oder Google Drive" maxlength="300"></label>
+          <div class="fld">
+            <span class="label mute">Fotos * (1 bis 3)</span>
+            <div class="fotos" id="fotos"></div>
+            <label class="add-foto" for="f-foto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Foto hinzufügen<input type="file" id="f-foto" accept="image/*" multiple class="sr"></label>
+            <small class="hint mute">Nach einem Burp hängt die Seite dein Ergebnis-Bild automatisch an. Dazu gern ein Foto von deiner Anlage.</small>
+          </div>
           <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" placeholder="Was du noch sagen willst" maxlength="1500"></textarea></label>
           <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="acts">
@@ -541,7 +558,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
           <h3 id="done-h">Eingereicht!</h3>
           <p class="mute" id="done-p">Matteo prüft deinen Wert und trägt ihn in die Rangliste ein.</p>
           <div class="acts">
-            <a class="btn" id="done-ig" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Video auf Instagram schicken</a>
+            <a class="btn" id="done-ig" href="https://ig.me/m/mapq.raw" target="_blank" rel="noopener">Fotos auf Instagram schicken</a>
             <button type="button" class="btn ghost" id="done-again">Noch ein Auto einreichen</button>
           </div>
         </div>
@@ -556,7 +573,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <details><summary>Wie genau ist die Messung mit dem Handy?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Es ist ein Richtwert. Handy-Mikrofone sind nicht geeicht und hören tiefe Töne schwächer als ein Profi-Messgerät. Weil alle mit derselben Seite und derselben Einstellung messen, ist der Vergleich trotzdem fair.</p></details>
         <details><summary>Warum zeigt mein Handy weniger als ein echtes Messgerät?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Die meisten Handy-Mikrofone übersteuern irgendwo zwischen 110 und 130 dB. Dann erscheint „Mikro übersteuert“ und der echte Wert liegt höher. Für die Rangliste zählt trotzdem die Anzeige.</p></details>
         <details><summary>Wird mein Ton aufgenommen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Nein. Die Seite misst nur die Lautstärke, direkt auf deinem Handy. Es wird nichts gespeichert oder hochgeladen. Deine eigenen Messwerte bleiben nur in deinem Browser.</p></details>
-        <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht nur an Matteo. Er schaut sich dein Video an und trägt dann Name, Instagram, Auto, Anlage und Wert in die Rangliste ein. Deine E-Mail-Adresse kommt nie in die Rangliste.</p></details>
+        <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht nur an Matteo. Er schaut sich deine Fotos an und trägt dann Name, Instagram, Auto, Anlage und Wert in die Rangliste ein. Deine Fotos und deine E-Mail-Adresse kommen nie in die Rangliste.</p></details>
         <details><summary>Das Mikrofon geht nicht. Was tun?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Tipp auf das Schloss oder „aA“ neben der Adresse und erlaube das Mikrofon für mapq.at, dann neu laden. Am iPhone geht es in Safari, am Android-Handy in Chrome. In Apps wie Instagram die Seite lieber im Browser öffnen.</p></details>
         <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier misst die Seite 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
       </div>
@@ -867,6 +884,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     $("#result").hidden=false;
     addMine({db:v,hz:hz,t:Date.now(),typ:"Burp",off:offset});
     fillForm(v,{typ:"3-Sek-Burp",hz:hz});
+    beleg(v,hz).then(function(b){ if(b) addFoto(b,true); });
     toast("Burp gemessen: "+fmt(v)+" dB");
     confetti();
   }
@@ -909,7 +927,74 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     if(c.inbox&&/^https:\/\//.test(c.inbox.url||"")&&c.inbox.key) INBOX=c.inbox;
     if(c.site&&c.site.instagram){ IG=String(c.site.instagram).replace(/^@/,""); $("#done-ig").href="https://ig.me/m/"+IG; }
   }).catch(function(){});
-  var F={name:$("#f-name"),kontakt:$("#f-kontakt"),auto:$("#f-auto"),db:$("#f-db"),anlage:$("#f-anlage"),video:$("#f-video"),msg:$("#f-msg")};
+  var F={name:$("#f-name"),kontakt:$("#f-kontakt"),auto:$("#f-auto"),db:$("#f-db"),anlage:$("#f-anlage"),foto:$("#f-foto"),msg:$("#f-msg")};
+
+  /* Fotos: verkleinert auf 1600 px, als JPEG */
+  var FOTOS=[], MAXF=3;
+  function shrink(file){
+    return new Promise(function(res,rej){
+      var u=URL.createObjectURL(file), img=new Image();
+      img.onload=function(){
+        var k=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement("canvas");
+        c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u);
+        c.toBlob(function(b){ if(b) res(b); else rej(); },"image/jpeg",.85);
+      };
+      img.onerror=function(){ URL.revokeObjectURL(u); rej(); };
+      img.src=u;
+    });
+  }
+  function addFoto(blob,auto){
+    if(auto) FOTOS=FOTOS.filter(function(f){ if(f.auto) URL.revokeObjectURL(f.url); return !f.auto; });
+    if(FOTOS.length>=MAXF){ toast("Höchstens "+MAXF+" Fotos."); return; }
+    var f={blob:blob,url:URL.createObjectURL(blob),auto:!!auto};
+    if(auto) FOTOS.unshift(f); else FOTOS.push(f);
+    renderFotos(); clearErr(F.foto);
+  }
+  function renderFotos(){
+    var box=$("#fotos"); box.textContent="";
+    FOTOS.forEach(function(f,i){
+      var d=document.createElement("div"), im=document.createElement("img"), x=document.createElement("button");
+      d.className="foto"; im.src=f.url; im.alt=f.auto?"Ergebnis-Bild":"Foto "+(i+1);
+      x.type="button"; x.setAttribute("aria-label","Foto entfernen"); x.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+      x.addEventListener("click",function(){ URL.revokeObjectURL(f.url); FOTOS.splice(FOTOS.indexOf(f),1); renderFotos(); });
+      d.appendChild(im);
+      if(f.auto){ var t=document.createElement("i"); t.textContent="Ergebnis"; d.appendChild(t); }
+      d.appendChild(x); box.appendChild(d);
+    });
+    $(".add-foto").hidden=FOTOS.length>=MAXF;
+  }
+  F.foto.addEventListener("change",function(){
+    var files=Array.prototype.slice.call(F.foto.files||[]).slice(0,Math.max(0,MAXF-FOTOS.length));
+    if((F.foto.files||[]).length>files.length) toast("Höchstens "+MAXF+" Fotos.");
+    files.reduce(function(p,file){ return p.then(function(){ return shrink(file).then(function(b){ addFoto(b,false); },function(){ toast("Dieses Bild konnte nicht gelesen werden."); }); }); },Promise.resolve());
+    F.foto.value="";
+  });
+  /* Ergebnis-Bild nach dem Burp */
+  function beleg(v,hz){
+    var c=document.createElement("canvas"), W=c.width=1080, H=c.height=1350, x=c.getContext("2d");
+    x.fillStyle="#05030A"; x.fillRect(0,0,W,H);
+    [[W*.9,0,"rgba(255,43,214,.38)"],[0,H*.45,"rgba(0,229,255,.25)"],[W,H,"rgba(124,77,255,.32)"]].forEach(function(g){
+      var r=x.createRadialGradient(g[0],g[1],0,g[0],g[1],W*.8); r.addColorStop(0,g[2]); r.addColorStop(1,"rgba(0,0,0,0)"); x.fillStyle=r; x.fillRect(0,0,W,H);
+    });
+    var gr=x.createLinearGradient(60,0,W-60,0); gr.addColorStop(0,"#00E5FF"); gr.addColorStop(.45,"#7C4DFF"); gr.addColorStop(.72,"#FF2BD6"); gr.addColorStop(1,"#FF3B3B");
+    x.strokeStyle=gr; x.lineWidth=8; x.beginPath(); if(x.roundRect) x.roundRect(40,40,W-80,H-80,36); else x.rect(40,40,W-80,H-80); x.stroke();
+    var HEAD="Archivo, 'Arial Black', Arial, sans-serif", BODY="'Space Grotesk', Arial, sans-serif";
+    x.textAlign="left"; x.fillStyle="#A3A8C3"; x.font="600 34px "+BODY; x.fillText("BASS-CONTEST VON MAPQ.RAW",100,150);
+    x.fillStyle=gr; x.shadowColor="rgba(255,43,214,.7)"; x.shadowBlur=34; x.font="900 170px "+HEAD; x.fillText("DEZI",94,320);
+    x.textAlign="center"; x.fillStyle="#FFFFFF"; x.shadowBlur=46; x.font="900 270px "+HEAD; x.fillText(fmt(v),W/2,770);
+    x.shadowBlur=0; x.fillStyle="#A3A8C3"; x.font="800 84px "+HEAD; x.fillText("dB",W/2,875);
+    for(var i=0;i<30;i++){
+      var on=i<Math.round(clamp(v,0,SCALE)/SCALE*30), lw=(W-200-29*8)/30;
+      x.globalAlpha=on?1:.15; x.fillStyle=mix(i/29); x.fillRect(100+i*(lw+8),930,lw,26);
+    }
+    x.globalAlpha=1; x.fillStyle="#E6FDFF"; x.font="500 40px "+BODY;
+    x.fillText("3-Sek-Burp"+(hz?" · Bass-Spitze "+hz+" Hz":""),W/2,1070);
+    x.fillText((bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",","),W/2,1125);
+    x.fillStyle="#A3A8C3"; x.fillText(new Date().toLocaleString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),W/2,1180);
+    x.fillStyle=gr; x.font="800 44px "+HEAD; x.fillText("mapq.at/dezi",W/2,1262);
+    return new Promise(function(res){ c.toBlob(res,"image/jpeg",.9); });
+  }
   var meta={typ:"selbst eingetragen",hz:0};
   function fillForm(v,m){ F.db.value=fmt(v); meta={typ:(m&&m.typ)||"selbst eingetragen",hz:(m&&m.hz)||0,v:v}; clearErr(F.db); }
   function num(s){ var v=parseFloat(String(s).replace(",",".")); return isFinite(v)?v:NaN; }
@@ -923,16 +1008,16 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   }
   function valid(){
     var ok=true;
-    [F.name,F.kontakt,F.auto,F.db,F.video].forEach(clearErr);
+    [F.name,F.kontakt,F.auto,F.db,F.foto].forEach(clearErr);
     if(!F.name.value.trim()){ err(F.name,"Bitte gib deinen Namen an."); ok=false; }
     if(kontakt().length<3){ err(F.kontakt,"Wie erreicht dich Matteo? Instagram oder E-Mail."); ok=false; }
     if(!F.auto.value.trim()){ err(F.auto,"Welches Auto?"); ok=false; }
     var v=num(F.db.value); if(!(v>0&&v<200)){ err(F.db,"Bitte einen Wert wie 128,4 eingeben."); ok=false; }
-    if(F.video.value.trim()&&!/^https?:\/\/\S+\.\S+/.test(F.video.value.trim())){ err(F.video,"Bitte den ganzen Link einfügen, mit https://"); ok=false; }
-    if(!ok){ var b=document.querySelector("#req .fld.bad input"); if(b) b.focus(); }
+    if(!FOTOS.length){ err(F.foto,"Bitte mindestens ein Foto anhängen."); ok=false; }
+    if(!ok){ var b=document.querySelector("#req .fld.bad input:not([type=file])"); if(b) b.focus(); else document.querySelector("#req .fld.bad").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"}); }
     return ok;
   }
-  function nachricht(v){
+  function nachricht(v,urls,fotoFehler){
     var k=kontakt(), ig=k[0]==="@"?k:"", heute=new Date().toISOString().slice(0,10),
         same=meta.v!=null&&Math.abs(meta.v-v)<.05,
         eintrag={name:F.name.value.trim(),instagram:ig||undefined,auto:F.auto.value.trim(),anlage:F.anlage.value.trim()||undefined,db:Math.round(v*10)/10,datum:heute};
@@ -941,7 +1026,8 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       "Messung: "+(same?meta.typ:"selbst eingetragen")+(same&&meta.hz?" · Bass-Spitze "+meta.hz+" Hz":"")+" · "+(bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":" (NICHT Standard)"),
       "Auto: "+F.auto.value.trim(),
       F.anlage.value.trim()&&"Anlage: "+F.anlage.value.trim(),
-      "Video: "+(F.video.value.trim()||"kommt per Instagram"),
+      urls.length?"Fotos:\n"+urls.join("\n"):"",
+      fotoFehler?"Fotos: Hochladen hat nicht geklappt, kommen per Instagram":"",
       F.msg.value.trim()&&"\nBemerkung:\n"+F.msg.value.trim(),
       "\nFür die Rangliste (dezi/rangliste.json):\n"+JSON.stringify(eintrag)
     ].filter(Boolean).join("\n").slice(0,4000);
@@ -956,30 +1042,43 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     e.preventDefault();
     if(sending||!valid()) return;
     var v=num(F.db.value);
-    if($("#f-website").value){ done(v); return; } /* Spam-Falle */
+    if($("#f-website").value){ done(v,true); return; } /* Spam-Falle */
     if(!INBOX){ fallback("Senden geht gerade nicht."); return; }
-    sending=true; sendBtn.disabled=true; out.className="out"; out.textContent="Wird gesendet …";
-    var h={apikey:INBOX.key,"Content-Type":"application/json",Prefer:"return=minimal"};
+    sending=true; sendBtn.disabled=true; out.className="out";
+    var base=INBOX.url.replace(/\/+$/,""), h={apikey:INBOX.key};
     if(/^eyJ/.test(INBOX.key)) h.Authorization="Bearer "+INBOX.key;
-    fetch(INBOX.url.replace(/\/+$/,"")+"/rest/v1/anfragen",{method:"POST",headers:h,body:JSON.stringify({
-      name:F.name.value.trim().slice(0,120), kontakt:kontakt().slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(v)
-    })}).then(function(r){
+    var urls=[], fehler=false, n=0;
+    function id(){ return window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12); }
+    function hoch(){
+      if(n>=FOTOS.length||fehler) return Promise.resolve();
+      out.textContent="Foto "+(n+1)+" von "+FOTOS.length+" wird hochgeladen …";
+      var path="einreichungen/"+new Date().toISOString().slice(0,10)+"-"+id()+".jpg";
+      return fetch(base+"/storage/v1/object/dezi/"+path,{method:"POST",headers:Object.assign({"Content-Type":"image/jpeg","x-upsert":"false","cache-control":"31536000"},h),body:FOTOS[n].blob})
+        .then(function(r){ if(!r.ok) throw new Error(r.status); urls.push(base+"/storage/v1/object/public/dezi/"+path); n++; return hoch(); })
+        .catch(function(){ fehler=true; });
+    }
+    hoch().then(function(){
+      out.textContent="Wird gesendet …";
+      return fetch(base+"/rest/v1/anfragen",{method:"POST",headers:Object.assign({"Content-Type":"application/json",Prefer:"return=minimal"},h),body:JSON.stringify({
+        name:F.name.value.trim().slice(0,120), kontakt:kontakt().slice(0,200), art:("Dezi-Contest · "+fmt(v)+" dB").slice(0,80), nachricht:nachricht(v,urls,fehler)
+      })});
+    }).then(function(r){
       if(!r.ok) throw new Error(r.status);
-      done(v);
+      done(v,!fehler);
     }).catch(function(){ fallback("Das hat leider nicht geklappt. Versuch es gleich nochmal."); })
       .then(function(){ sending=false; sendBtn.disabled=false; });
   });
-  function done(v){
-    var hatVideo=!!F.video.value.trim();
+  function done(v,fotosOk){
     out.textContent="";
     $("#done-h").textContent="Eingereicht: "+fmt(v)+" dB";
-    $("#done-p").textContent=hatVideo?"Matteo prüft dein Video und trägt deinen Wert in die Rangliste ein.":"Jetzt fehlt nur noch dein Video. Schick es Matteo auf Instagram, dann kommt dein Wert in die Rangliste.";
-    $("#done-ig").hidden=hatVideo;
+    $("#done-p").textContent=fotosOk?"Matteo prüft deine Fotos und trägt deinen Wert in die Rangliste ein.":"Deine Fotos konnten nicht hochgeladen werden. Schick sie Matteo bitte auf Instagram, dann kommt dein Wert in die Rangliste.";
+    $("#done-ig").hidden=fotosOk;
     $("#req-form").hidden=true; $("#req-done").hidden=false; $("#req-done").focus({preventScroll:true}); $("#req-done").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
     toast("Eingereicht. Danke!");
   }
   $("#done-again").addEventListener("click",function(){
-    ["auto","db","anlage","video","msg"].forEach(function(k){ F[k].value=""; });
+    ["auto","db","anlage","msg"].forEach(function(k){ F[k].value=""; });
+    FOTOS.forEach(function(f){ URL.revokeObjectURL(f.url); }); FOTOS=[]; renderFotos();
     meta={typ:"selbst eingetragen",hz:0};
     $("#req-done").hidden=true; $("#req-form").hidden=false; F.auto.focus();
   });
