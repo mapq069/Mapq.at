@@ -60,6 +60,15 @@ Seitenspezifische Abweichungen liegen in `design-system/mapq-raw/pages/<seite>.m
 
 `.claude/design-system.md` ist eine Fintech-Dashboard-Vorlage und gilt nicht für mapq.at.
 
+## Dezi (mapq.at/dezi)
+
+Bass-Contest-Seite in `dezi/index.html` mit Dezibel-Messer übers Handy-Mikrofon (Web Audio, nur über https),
+3-Sekunden-Burp, Rangliste und Einreichen per Instagram/E-Mail. Design: MASTER.md plus `design-system/mapq-raw/pages/dezi.md`.
+Rangliste steht in `dezi/rangliste.json`, nur geprüfte Werte mit Video eintragen, neue Einträge ans Array `eintraege` anhängen
+(Reihenfolge egal, die Seite sortiert) und `stand` aufs Datum setzen:
+`{"name":"…","instagram":"@…","auto":"…","anlage":"…","db":128.4,"datum":"2026-11-05"}` (nur name, auto, db Pflicht).
+Messwert = RMS (125 ms) in dBFS + Kalibrierung, Standard +120. Pro Auto nur der beste Wert.
+
 ## Versteckte Extras (nicht entfernen, Besuchern nicht verraten)
 
 Im Skript-Block „Versteckte Extras“ in `index.html`. Alle respektieren „Bewegung reduzieren“.

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dezi – Bass-Contest | mapq.raw</title>
+<meta name="description" content="Der Bass-Contest von mapq.raw: Miss den Bass in deinem Auto mit dem Handy, reich deinen Wert ein und hol dir deinen Platz in der Rangliste.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Dezi – Bass-Contest von mapq.raw">
+<meta property="og:description" content="Wer hat mehr Bass im Auto? Messen, einreichen, Rangliste.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23FAFAFA' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23FAFAFA'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Space+Grotesk:wght@300..700&display=swap">
+<style>
+/* Dezi: Bass-Contest. Gestaltung nach design-system/mapq-raw/MASTER.md mit pages/dezi.md
+   (max. 1200 px, dezentes Leuchten). Rot nur für Gefahr und Übersteuerung. */
+:root{
+  color-scheme:dark;
+  --color-accent:#F8FAFC;
+  --color-on-accent:#0F172A;
+  --color-background:#000000;
+  --color-foreground:#FAFAFA;
+  --color-card:#0C0C0C;
+  --color-muted:#181818;
+  --color-muted-foreground:#94A3B8;
+  --color-border:#3F3F46;
+  --color-ring:#FFFFFF;
+  --color-danger:#EF4444;
+  --font-heading:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+  --space-sm:.5rem;--space-md:1rem;--space-lg:1.5rem;--space-xl:2rem;--space-2xl:3rem;--space-3xl:4rem;
+  --shadow-md:0 4px 6px rgba(0,0,0,.1);--shadow-xl:0 20px 25px rgba(0,0,0,.15);
+  --radius-btn:8px;--radius-card:12px;--radius-modal:16px;
+  --ease:200ms ease;
+  --glow:0 0 10px rgba(250,250,250,.25);
+  --gx:max(clamp(16px,4vw,48px),env(safe-area-inset-left,0px));
+  --max:1200px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--color-background);scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--color-background);color:var(--color-foreground);font:400 1.0625rem/1.6 var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+a,button,label,summary,select{cursor:pointer}
+button,input,textarea,select{font:inherit;color:inherit}
+h1,h2,h3,p,dl,dd,figure,ol,ul{margin:0}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--color-ring);outline-offset:3px}
+::selection{background:var(--color-accent);color:var(--color-on-accent)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gx)}
+.display,.logo,.big,.step b,.stat b,.board td.db,.board .place,.empty b,.overlay b,.result b,.imp h2,.req h3{font-family:var(--font-heading)}
+.display{font-stretch:62%;font-weight:850;line-height:.88;letter-spacing:-.01em;text-transform:uppercase}
+.label{font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
+.mute{color:var(--color-muted-foreground)}
+.kicker{display:flex;align-items:center;gap:.6rem;color:var(--color-muted-foreground)}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--color-foreground)}
+.ic{width:1.1em;height:1.1em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-sm);min-height:46px;padding:12px 24px;border-radius:var(--radius-btn);border:2px solid var(--color-accent);background:var(--color-accent);color:var(--color-on-accent);font-weight:600;font-size:.95rem;text-decoration:none;cursor:pointer;box-shadow:var(--shadow-md);transition:all var(--ease)}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.ghost{background:transparent;color:var(--color-foreground);border-color:var(--color-border);box-shadow:none}
+.btn.ghost:hover{opacity:1;border-color:var(--color-foreground)}
+.btn.stop{background:transparent;color:var(--color-danger);border-color:var(--color-danger);box-shadow:none}
+.acts{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
+.link{background:none;border:0;padding:0;cursor:pointer;color:var(--color-muted-foreground);text-decoration:underline;text-underline-offset:3px;transition:color var(--ease)}
+.link:hover{color:var(--color-foreground)}
+
+/* Kopfzeile */
+.top{position:fixed;inset:0 0 auto;z-index:20;border-bottom:1px solid transparent;transition:background var(--ease),border-color var(--ease)}
+.top.solid{background:rgba(0,0,0,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--color-border)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:var(--space-md)}
+.logo{display:inline-flex;align-items:baseline;gap:.45rem;font-stretch:75%;font-weight:800;font-size:1.25rem;text-decoration:none}
+.logo span{color:var(--color-muted-foreground);font-weight:600}
+.nav{display:flex;align-items:center;gap:clamp(.9rem,2.5vw,2rem);font-size:.95rem;font-weight:500}
+.nav a{text-decoration:none;color:var(--color-muted-foreground);transition:color var(--ease)}
+.nav a:hover{color:var(--color-foreground)}
+@media (max-width:560px){.nav .opt{display:none}}
+
+/* Hero */
+.hero{position:relative;min-height:88svh;display:flex;align-items:center;overflow:hidden;isolation:isolate;padding:96px 0 var(--space-3xl)}
+.rings{position:absolute;top:50%;right:max(-10vmin,calc(50% - 600px));width:min(80vmin,620px);aspect-ratio:1;transform:translateY(-50%);z-index:-1;pointer-events:none}
+.rings i{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(250,250,250,.16)}
+.rings i:nth-child(1){inset:34%;border:2px solid rgba(250,250,250,.5);box-shadow:var(--glow)}
+.rings i:nth-child(2){inset:22%;border-color:rgba(250,250,250,.28)}
+.rings i:nth-child(3){inset:10%}
+.rings b{position:absolute;inset:34%;border-radius:50%;border:1px solid rgba(250,250,250,.55);animation:wave 2.6s cubic-bezier(.2,.6,.3,1) infinite}
+.rings b:nth-of-type(2){animation-delay:.87s}
+.rings b:nth-of-type(3){animation-delay:1.74s}
+@keyframes wave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.9);opacity:0}}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--color-background) 30%,rgba(0,0,0,.4) 70%,rgba(0,0,0,0))}
+@media (max-width:719px){.rings{right:-30vmin;top:30%;opacity:.6}.hero::after{background:linear-gradient(180deg,rgba(0,0,0,.2),var(--color-background) 75%)}}
+.hero .wrap{width:100%}
+.hero h1{font-size:clamp(5rem,20vw,13rem);text-shadow:var(--glow)}
+.hero .sub{font-family:var(--font-heading);font-stretch:75%;font-weight:750;font-size:clamp(1.5rem,3.4vw,2.4rem);line-height:1.1;margin-top:var(--space-md);max-width:20ch}
+.lede{max-width:44ch;margin-top:var(--space-md);font-size:clamp(1.02rem,1.4vw,1.15rem);color:#d4d4d8}
+.hero .acts{margin-top:var(--space-xl)}
+.stats{display:flex;flex-wrap:wrap;gap:var(--space-lg) var(--space-2xl);margin-top:var(--space-2xl)}
+.stat b{display:block;font-stretch:62%;font-weight:850;font-size:clamp(2rem,4.5vw,3rem);line-height:1;font-variant-numeric:tabular-nums}
+
+/* Abschnitte */
+.sec{padding:clamp(4rem,9vw,7rem) 0;border-top:1px solid var(--color-border)}
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-lg);margin-bottom:clamp(1.5rem,4vw,2.5rem)}
+.sec-head h2{font-size:clamp(2.8rem,8vw,5.5rem);margin-top:.6rem}
+.sec-head p{max-width:46ch}
+
+/* Messgerät */
+.meter{position:relative;display:grid;gap:var(--space-lg);background:var(--color-card);border:1px solid var(--color-border);border-radius:var(--radius-card);padding:clamp(1rem,3vw,2rem);overflow:hidden}
+@media (min-width:900px){.meter{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:var(--space-2xl)}}
+.gauge{width:100%;max-width:420px;margin:0 auto;display:block;overflow:visible}
+.gauge text{font-family:var(--font-body);font-size:7px;fill:var(--color-muted-foreground)}
+.gauge .needle{transition:transform 90ms linear}
+.read{text-align:center;margin-top:-.5rem}
+.big{display:flex;align-items:baseline;justify-content:center;gap:.4rem;font-stretch:62%;font-weight:850;font-size:clamp(4.5rem,14vw,7.5rem);line-height:.9;font-variant-numeric:tabular-nums;text-shadow:var(--glow)}
+.big small{font-size:.32em;font-weight:700;color:var(--color-muted-foreground);text-shadow:none}
+.big.hot{color:var(--color-danger);text-shadow:0 0 12px rgba(239,68,68,.35)}
+.readouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:var(--space-lg);background:var(--color-border);border:1px solid var(--color-border);border-radius:var(--radius-card);overflow:hidden}
+.readouts div{background:var(--color-background);padding:.85rem 1rem}
+.readouts b{display:block;font-family:var(--font-heading);font-stretch:75%;font-weight:750;font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.flags{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;min-height:30px;margin-top:var(--space-md)}
+.flag{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:var(--radius-btn);border:1px solid var(--color-danger);color:var(--color-danger);font-size:.8rem;font-weight:600}
+.state{min-height:1.6em;margin-top:var(--space-md);text-align:center;font-size:.95rem}
+.state.err{color:var(--color-danger)}
+.rank{min-height:1.6em;text-align:center;font-weight:600}
+.panel h3{font-size:.75rem;margin-bottom:.5rem}
+canvas{display:block;width:100%;border-radius:var(--radius-btn);background:var(--color-background);border:1px solid var(--color-border)}
+#hist{height:140px}
+#spec{height:120px;margin-top:var(--space-lg)}
+.controls{display:grid;gap:var(--space-md);margin-top:var(--space-lg)}
+.controls .acts .btn{flex:1 1 auto}
+.opts{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;align-items:center}
+.opt-row{display:inline-flex;align-items:center;gap:.55rem;font-size:.95rem}
+.opt-row select{min-height:44px;padding:0 .75rem;border-radius:var(--radius-btn);border:1px solid var(--color-border);background:var(--color-background)}
+.switch{position:relative;width:46px;height:26px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:999px;background:var(--color-muted);border:1px solid var(--color-border);transition:background var(--ease)}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--color-muted-foreground);transition:transform var(--ease),background var(--ease)}
+.switch input:checked+span{background:var(--color-accent)}
+.switch input:checked+span::after{transform:translateX(20px);background:var(--color-on-accent)}
+.switch input:focus-visible+span{outline:2px solid var(--color-ring);outline-offset:2px}
+details.cal{border:1px solid var(--color-border);border-radius:var(--radius-btn);padding:.25rem 1rem}
+details.cal summary{min-height:44px;display:flex;align-items:center;font-weight:600;font-size:.95rem}
+details.cal[open]{padding-bottom:1rem}
+.cal-row{display:flex;align-items:center;gap:var(--space-md);margin-top:.5rem}
+.cal-row input[type=range]{flex:1;accent-color:var(--color-foreground)}
+.cal-row output{font-variant-numeric:tabular-nums;min-width:4.5ch;text-align:right;font-weight:600}
+.overlay{position:absolute;inset:0;z-index:5;display:grid;place-items:center;align-content:center;gap:var(--space-md);text-align:center;background:rgba(0,0,0,.88);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.overlay b{font-stretch:62%;font-weight:850;font-size:clamp(6rem,24vw,12rem);line-height:.9;text-shadow:var(--glow);font-variant-numeric:tabular-nums}
+.overlay .bar{width:min(320px,70%);height:6px;border-radius:3px;background:var(--color-muted);overflow:hidden}
+.overlay .bar span{display:block;height:100%;background:var(--color-foreground);transform-origin:0 50%;transform:scaleX(0)}
+.result{display:grid;gap:.25rem;padding:var(--space-lg);margin-top:var(--space-lg);border:2px solid var(--color-foreground);border-radius:var(--radius-card);text-align:center}
+.result b{font-stretch:62%;font-weight:850;font-size:clamp(3rem,10vw,4.5rem);line-height:1;font-variant-numeric:tabular-nums;text-shadow:var(--glow)}
+.result .acts{justify-content:center;margin-top:var(--space-sm)}
+.mine{margin-top:var(--space-xl)}
+.mine ul{list-style:none;padding:0;margin-top:.5rem;border-top:1px solid var(--color-border)}
+.mine li{display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);padding:.65rem 0;border-bottom:1px solid var(--color-border)}
+.mine li b{font-family:var(--font-heading);font-stretch:75%;font-weight:750;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.mine li .link{font-size:.9rem}
+
+/* Rangliste */
+.tools{display:flex;flex-wrap:wrap;gap:var(--space-md);align-items:center;justify-content:space-between;margin-bottom:var(--space-lg)}
+.search{display:flex;align-items:center;gap:.5rem;min-height:46px;padding:0 14px;border:1px solid var(--color-border);border-radius:var(--radius-btn);background:var(--color-card);min-width:min(320px,100%);transition:border-color var(--ease),box-shadow var(--ease)}
+.search:focus-within{border-color:var(--color-ring);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.search input{flex:1;min-width:0;border:0;background:transparent;font-size:16px;outline:none}
+.search input::placeholder{color:var(--color-muted-foreground)}
+.board{width:100%;border-collapse:collapse}
+.board th{padding:.75rem .5rem;text-align:left;border-bottom:1px solid var(--color-border);color:var(--color-muted-foreground)}
+.board th.r,.board td.db{text-align:right}
+.board td{padding:1rem .5rem;border-bottom:1px solid var(--color-border);vertical-align:middle}
+.board td.name b{display:block;font-weight:600}
+.board td.name a{color:var(--color-muted-foreground);font-size:.9rem;text-decoration:none}
+.board td.name a:hover{color:var(--color-foreground);text-decoration:underline}
+.board td.db{font-stretch:62%;font-weight:850;font-size:2rem;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.board td.db small{font-size:.5em;color:var(--color-muted-foreground);font-weight:700}
+.place{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:var(--radius-btn);border:1px solid var(--color-border);font-stretch:75%;font-weight:800;font-size:1.15rem}
+tr.p1 .place{background:var(--color-accent);color:var(--color-on-accent);border-color:var(--color-accent);box-shadow:var(--glow)}
+tr.p2 .place,tr.p3 .place{border:2px solid var(--color-foreground)}
+tr.p1 td.db{text-shadow:var(--glow)}
+@media (max-width:719px){
+  .board thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .board,.board tbody{display:block}
+  .board tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:var(--space-md);row-gap:.15rem;padding:1rem 0;border-bottom:1px solid var(--color-border)}
+  .board td{display:block;padding:0;border:0}
+  .board td.pl{grid-row:span 3;align-self:center}
+  .board td.db{grid-column:3;grid-row:1 / span 3;align-self:center;font-size:1.8rem}
+  .board td.auto,.board td.anlage,.board td.datum{grid-column:2;font-size:.9rem;color:var(--color-muted-foreground)}
+  .board td.datum{display:none}
+}
+.empty{display:grid;justify-items:center;gap:var(--space-md);padding:var(--space-2xl) var(--space-lg);text-align:center;border:1px dashed var(--color-border);border-radius:var(--radius-card)}
+.empty svg{width:96px;height:96px}
+.empty b{font-stretch:75%;font-weight:750;font-size:1.6rem;line-height:1.15}
+.note{margin-top:var(--space-md);font-size:.9rem}
+
+/* So läuft's */
+.steps{list-style:none;padding:0;display:grid;gap:var(--space-md)}
+@media (min-width:720px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1100px){.steps{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.step{padding:var(--space-lg);border:1px solid var(--color-border);border-radius:var(--radius-card);background:var(--color-card)}
+.step b{display:block;font-stretch:62%;font-weight:850;font-size:3rem;line-height:1;margin-bottom:.5rem}
+.step h3{font-size:1.1rem;margin-bottom:.35rem}
+.rules{display:grid;gap:var(--space-lg);margin-top:var(--space-2xl)}
+@media (min-width:900px){.rules{grid-template-columns:1fr 1fr}}
+.rules ul{padding-left:1.1rem;display:grid;gap:.4rem;margin-top:.6rem}
+.warn{padding:var(--space-lg);border:2px solid var(--color-danger);border-radius:var(--radius-card)}
+.warn h3{display:flex;align-items:center;gap:.5rem;color:var(--color-danger)}
+
+/* Einreichen */
+.req-grid{display:grid;gap:var(--space-xl)}
+@media (min-width:900px){.req-grid{grid-template-columns:5fr 6fr}}
+.req{background:var(--color-card);border:1px solid var(--color-border);border-radius:var(--radius-card);padding:clamp(1.25rem,3vw,var(--space-xl))}
+.req h3{font-stretch:75%;font-weight:750;font-size:1.5rem;margin-bottom:1.25rem}
+.fld{display:block;margin-bottom:var(--space-md)}
+.fld span{display:block;margin-bottom:.45rem}
+.fld input,.fld textarea{width:100%;background:var(--color-background);border:1px solid var(--color-border);border-radius:var(--radius-btn);padding:12px 16px;font-size:16px;transition:border-color var(--ease),box-shadow var(--ease)}
+.fld textarea{min-height:96px;resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--color-ring);box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.fld input::placeholder,.fld textarea::placeholder{color:var(--color-muted-foreground)}
+.fld.bad input{border-color:var(--color-danger)}
+.fld em{display:block;margin-top:.35rem;font-style:normal;font-size:.85rem;color:var(--color-danger)}
+.two{display:grid;gap:0 var(--space-md)}
+@media (min-width:560px){.two{grid-template-columns:1fr 1fr}}
+.out{display:block;min-height:1.5em;margin-top:.9rem;font-size:.92rem}
+
+/* FAQ */
+.faq{display:grid;gap:.5rem}
+.faq details{border:1px solid var(--color-border);border-radius:var(--radius-btn);background:var(--color-card);padding:0 1.1rem;transition:border-color var(--ease)}
+.faq details[open]{border-color:var(--color-muted-foreground);padding-bottom:1rem}
+.faq summary{min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-weight:600;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ic{transition:transform var(--ease)}
+.faq details[open] summary .ic{transform:rotate(180deg)}
+.faq p{color:#d4d4d8;max-width:70ch}
+
+/* Fußzeile und Dialog */
+footer{border-top:1px solid var(--color-border);padding:1.6rem 0 calc(1.6rem + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;flex-wrap:wrap;gap:.75rem var(--space-lg);justify-content:space-between;align-items:center;color:var(--color-muted-foreground)}
+footer a{text-decoration:none}
+footer a:hover{color:var(--color-foreground)}
+dialog{padding:0;border:0;color:var(--color-foreground);background:transparent;max-width:none;max-height:none}
+dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.imp{width:90%;max-width:500px;background:var(--color-card);border:1px solid var(--color-border);border-radius:var(--radius-modal);padding:var(--space-xl);box-shadow:var(--shadow-xl)}
+.imp h2{font-stretch:75%;font-weight:800;font-size:1.8rem;margin-bottom:1.2rem}
+.imp dl div{display:flex;justify-content:space-between;gap:var(--space-md);padding:.7rem 0;border-bottom:1px solid var(--color-border)}
+.imp dt{color:var(--color-muted-foreground);white-space:nowrap}
+.imp dd{text-align:right;overflow-wrap:anywhere}
+.imp form{margin-top:1.4rem}
+@media (max-width:480px){.imp{padding:var(--space-lg)}.imp dd{font-size:.95rem}}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:66;max-width:calc(100vw - 32px);padding:12px 18px;border-radius:var(--radius-btn);background:var(--color-accent);color:var(--color-on-accent);font-weight:600;font-size:.95rem;text-align:center;box-shadow:var(--shadow-xl);opacity:0;transform:translate(-50%,16px);pointer-events:none;transition:opacity 250ms ease,transform 250ms ease}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="Zur Startseite von mapq.raw">mapq.raw<span>/ dezi</span></a>
+    <nav class="nav" aria-label="Menü">
+      <a href="#messen">Messen</a>
+      <a href="#rangliste">Rangliste</a>
+      <a class="opt" href="#regeln">Regeln</a>
+      <a class="opt" href="#einreichen">Einreichen</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="start">
+    <div class="rings" aria-hidden="true"><i></i><i></i><i></i><b></b><b></b><b></b></div>
+    <div class="wrap">
+      <p class="kicker label">Bass-Contest von mapq.raw</p>
+      <h1 class="display" style="margin-top:1rem">Dezi</h1>
+      <p class="sub">Wer hat mehr Bass im Auto?</p>
+      <p class="lede">Miss deinen Wert direkt mit dem Handy, reich ihn mit Video ein und hol dir deinen Platz in der Rangliste.</p>
+      <div class="acts">
+        <a class="btn" href="#messen">Jetzt messen</a>
+        <a class="btn ghost" href="#rangliste">Zur Rangliste</a>
+      </div>
+      <div class="stats" aria-label="Rangliste in Zahlen">
+        <div class="stat"><b id="st-count">–</b><span class="label mute">Einträge</span></div>
+        <div class="stat"><b id="st-record">–</b><span class="label mute">Rekord</span></div>
+        <div class="stat"><b id="st-stand">–</b><span class="label mute">Stand</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="messen">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="kicker label">Dezibel-Messer</p><h2 class="display">Messen</h2></div>
+        <p class="mute">Handy flach aufs Armaturenbrett, Mikrofon frei lassen, Türen und Fenster zu. Der Ton bleibt auf deinem Handy, es wird nichts aufgenommen oder hochgeladen.</p>
+      </div>
+
+      <div class="meter" id="meter">
+        <div>
+          <svg class="gauge" id="gauge" viewBox="0 0 200 118" aria-hidden="true">
+            <g id="g-arcs"></g>
+            <g id="g-ticks"></g>
+            <g class="needle" id="needle" style="transform-origin:100px 100px;transform:rotate(-90deg)">
+              <line x1="100" y1="100" x2="100" y2="28" stroke="#FAFAFA" stroke-width="2.4" stroke-linecap="round"/>
+            </g>
+            <circle cx="100" cy="100" r="6" fill="#FAFAFA"/>
+            <circle cx="100" cy="100" r="2.5" fill="#000"/>
+          </svg>
+          <div class="read">
+            <div class="big" id="big" aria-live="off"><span id="num">–</span><small>dB</small></div>
+            <p class="rank" id="rank" aria-live="polite"></p>
+          </div>
+          <div class="readouts">
+            <div><span class="label mute">Maximum</span><b id="max">–</b></div>
+            <div><span class="label mute">Bass-Spitze</span><b id="hz">–</b></div>
+          </div>
+          <div class="flags" aria-live="polite">
+            <span class="flag" id="f-clip" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Mikro übersteuert, echter Wert ist höher</span>
+            <span class="flag" id="f-ear" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"/></svg>Gehör schützen!</span>
+          </div>
+          <p class="state" id="state" role="status">Tippe auf „Messung starten“ und erlaube das Mikrofon.</p>
+        </div>
+
+        <div class="panel">
+          <h3 class="label mute">Verlauf, letzte 10 Sekunden</h3>
+          <canvas id="hist" aria-hidden="true"></canvas>
+          <h3 class="label mute" style="margin-top:1.5rem">Bass-Spektrum, 20 bis 200 Hz</h3>
+          <canvas id="spec" aria-hidden="true" style="margin-top:0"></canvas>
+          <div class="controls">
+            <div class="acts">
+              <button type="button" class="btn" id="b-start"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg>Messung starten</button>
+              <button type="button" class="btn ghost" id="b-burp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg>3-Sek-Burp</button>
+            </div>
+            <div class="opts">
+              <label class="opt-row" for="o-bass"><span class="switch"><input type="checkbox" id="o-bass" checked><span></span></span>Nur Bass messen (unter 120 Hz)</label>
+              <label class="opt-row" for="o-lead">Vorlauf
+                <select id="o-lead"><option value="3">3 Sekunden</option><option value="10">10 Sekunden</option></select>
+              </label>
+              <button type="button" class="link" id="b-reset">Maximum zurücksetzen</button>
+            </div>
+            <details class="cal">
+              <summary>Kalibrieren</summary>
+              <p class="mute" style="font-size:.92rem">Jedes Handy-Mikrofon ist anders. Leg dein Handy neben ein geeichtes Messgerät und schieb den Regler, bis beide gleich viel anzeigen. Für die Rangliste zählt der Standardwert +120.</p>
+              <div class="cal-row">
+                <input type="range" id="o-off" min="80" max="150" step="0.5" value="120" aria-label="Kalibrierung in dB">
+                <output id="o-off-v" for="o-off">+120</output>
+              </div>
+              <button type="button" class="link" id="b-off" style="margin-top:.5rem">Auf Standard zurücksetzen</button>
+            </details>
+          </div>
+        </div>
+
+        <div class="overlay" id="overlay" hidden>
+          <span class="label mute" id="ov-label">Gleich geht's los</span>
+          <b id="ov-num">3</b>
+          <div class="bar" id="ov-bar" hidden><span id="ov-fill"></span></div>
+          <button type="button" class="btn ghost" id="b-cancel">Abbrechen</button>
+        </div>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <span class="label mute">Dein Burp</span>
+        <b id="res-num">–</b>
+        <span class="mute" id="res-info"></span>
+        <div class="acts">
+          <a class="btn" href="#einreichen" id="res-send">Wert einreichen</a>
+          <button type="button" class="btn ghost" id="res-again">Nochmal</button>
+        </div>
+      </div>
+
+      <div class="mine" id="mine" hidden>
+        <div class="acts" style="justify-content:space-between">
+          <h3 class="label mute">Deine Messungen auf diesem Gerät</h3>
+          <button type="button" class="link" id="b-savemax">Aktuelles Maximum speichern</button>
+        </div>
+        <ul id="mine-list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="rangliste">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="kicker label">Geprüfte Werte</p><h2 class="display">Rangliste</h2></div>
+        <p class="mute">Hier stehen nur Werte mit Video, die Matteo geprüft hat. Pro Auto zählt der beste Wert.</p>
+      </div>
+      <div class="tools">
+        <label class="search" for="q"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="sr">Suchen</span><input id="q" type="search" placeholder="Name oder Auto suchen" autocomplete="off"></label>
+        <span class="label mute" id="board-stand"></span>
+      </div>
+      <table class="board" id="board-table" hidden>
+        <thead><tr><th class="label" scope="col">Platz</th><th class="label" scope="col">Name</th><th class="label" scope="col">Auto</th><th class="label" scope="col">Anlage</th><th class="label" scope="col">Datum</th><th class="label r" scope="col">Wert</th></tr></thead>
+        <tbody id="board-body"></tbody>
+      </table>
+      <p class="mute" id="board-none" hidden>Keine Treffer für deine Suche.</p>
+      <div class="empty" id="board-empty" hidden>
+        <svg viewBox="0 0 96 96" aria-hidden="true" fill="none" stroke="#FAFAFA" stroke-width="2"><rect x="18" y="8" width="60" height="80" rx="8"/><circle cx="48" cy="58" r="18"/><circle cx="48" cy="58" r="7" fill="#FAFAFA"/><circle cx="48" cy="26" r="7"/><path d="M80 40c5 5 5 15 0 20M86 34c9 9 9 23 0 32" stroke-linecap="round"/></svg>
+        <b>Noch keine Einträge.<br>Platz 1 ist frei.</b>
+        <p class="mute">Miss deinen Bass, reich den Wert mit Video ein und steh als Erster ganz oben.</p>
+        <a class="btn" href="#messen">Jetzt messen</a>
+      </div>
+      <p class="empty mute" id="board-error" hidden>Die Rangliste konnte gerade nicht geladen werden. Lade die Seite neu.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="regeln">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="kicker label">So läuft's</p><h2 class="display">Regeln</h2></div>
+      </div>
+      <ol class="steps">
+        <li class="step"><b>01</b><h3>Handy hinlegen</h3><p class="mute">Flach in die Mitte vom Armaturenbrett, Mikrofon (Unterseite) frei. Türen und Fenster zu.</p></li>
+        <li class="step"><b>02</b><h3>Burp starten</h3><p class="mute">„3-Sek-Burp“ tippen. Mit 10 Sekunden Vorlauf hast du Zeit, auszusteigen.</p></li>
+        <li class="step"><b>03</b><h3>Video drehen</h3><p class="mute">Bildschirm und Anlage in einem Video ohne Schnitt filmen, mit dem Ergebnis am Ende.</p></li>
+        <li class="step"><b>04</b><h3>Einreichen</h3><p class="mute">Unten das Formular ausfüllen und das Video an @mapq.raw schicken. Geprüfte Werte kommen in die Rangliste.</p></li>
+      </ol>
+      <div class="rules">
+        <div>
+          <h3>Was zählt</h3>
+          <ul class="mute">
+            <li>Der höchste Wert der 3-Sekunden-Messung mit „Nur Bass“ an.</li>
+            <li>Kalibrierung auf Standard (+120), damit alle Handys gleich rechnen.</li>
+            <li>Pro Auto zählt der beste Wert. Ein besserer ersetzt den alten.</li>
+            <li>Motor darf im Leerlauf laufen.</li>
+            <li>Klopfen, Schreien oder Pusten ins Mikro zählt nicht. Fliegt raus.</li>
+          </ul>
+        </div>
+        <div class="warn">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Pass auf dein Gehör auf</h3>
+          <ul>
+            <li>Ab etwa 120 dB können schon Sekunden das Gehör dauerhaft schädigen.</li>
+            <li>Bei voller Lautstärke nicht im Auto sitzen bleiben oder Gehörschutz tragen.</li>
+            <li>Nur auf Plätzen ohne Nachbarn messen, nicht in der Nacht.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="einreichen">
+    <div class="wrap req-grid">
+      <div>
+        <p class="kicker label">Dein Wert</p>
+        <h2 class="display" style="font-size:clamp(2.8rem,8vw,5.5rem);margin-top:.6rem">Einreichen</h2>
+        <p class="mute" style="margin-top:1rem;max-width:40ch">Füll das Formular aus, kopier den Text und schick ihn zusammen mit deinem Video an <a href="https://www.instagram.com/mapq.raw" target="_blank" rel="noopener">@mapq.raw</a>. Ohne Video kann der Wert nicht in die Rangliste.</p>
+      </div>
+      <form class="req" id="req" novalidate>
+        <h3>Einreichung</h3>
+        <div class="two">
+          <label class="fld" for="f-name"><span class="label mute">Name *</span><input id="f-name" autocomplete="name" required></label>
+          <label class="fld" for="f-ig"><span class="label mute">Instagram</span><input id="f-ig" placeholder="@deinname" autocomplete="off"></label>
+        </div>
+        <div class="two">
+          <label class="fld" for="f-auto"><span class="label mute">Auto *</span><input id="f-auto" placeholder="z. B. Golf 4 Variant" required></label>
+          <label class="fld" for="f-db"><span class="label mute">Wert in dB *</span><input id="f-db" inputmode="decimal" placeholder="z. B. 128,4" required></label>
+        </div>
+        <label class="fld" for="f-anlage"><span class="label mute">Anlage</span><input id="f-anlage" placeholder="Subwoofer, Endstufe, Gehäuse"></label>
+        <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" placeholder="Was du noch sagen willst"></textarea></label>
+        <div class="acts">
+          <button type="button" class="btn" id="f-ig-send">Text kopieren &amp; Instagram öffnen</button>
+          <a class="btn ghost" id="f-mail" href="mailto:Matteohanser8@gmail.com">Per E-Mail senden</a>
+        </div>
+        <output class="out" id="f-out" aria-live="polite"></output>
+      </form>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="sec-head"><div><p class="kicker label">Fragen</p><h2 class="display">FAQ</h2></div></div>
+      <div class="faq">
+        <details><summary>Wie genau ist die Messung mit dem Handy?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Es ist ein Richtwert. Handy-Mikrofone sind nicht geeicht und hören tiefe Töne schwächer als ein Profi-Messgerät. Weil alle mit derselben Seite und derselben Einstellung messen, ist der Vergleich trotzdem fair.</p></details>
+        <details><summary>Warum zeigt mein Handy weniger als ein echtes Messgerät?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Die meisten Handy-Mikrofone übersteuern irgendwo zwischen 110 und 130 dB. Dann erscheint „Mikro übersteuert“ und der echte Wert liegt höher. Für die Rangliste zählt trotzdem die Anzeige.</p></details>
+        <details><summary>Wird mein Ton aufgenommen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Nein. Die Seite misst nur die Lautstärke, direkt auf deinem Handy. Es wird nichts gespeichert oder hochgeladen. Deine eigenen Messwerte bleiben nur in deinem Browser.</p></details>
+        <details><summary>Das Mikrofon geht nicht. Was tun?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Tipp auf das Schloss oder „aA“ neben der Adresse und erlaube das Mikrofon für mapq.at, dann neu laden. Am iPhone geht es in Safari, am Android-Handy in Chrome. In Apps wie Instagram die Seite lieber im Browser öffnen.</p></details>
+        <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier misst die Seite 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Matteo Hanser</span>
+    <a href="/">Zurück zu mapq.at</a>
+    <button type="button" class="link" id="imp-open">Impressum</button>
+  </div>
+</footer>
+
+<dialog class="imp" id="imp" aria-labelledby="imp-h">
+  <h2 id="imp-h">Impressum</h2>
+  <dl>
+    <div><dt>Name</dt><dd>Matteo Hanser</dd></div>
+    <div><dt>Ort</dt><dd>Tirol, Österreich</dd></div>
+    <div><dt>E-Mail</dt><dd><a href="mailto:Matteohanser8@gmail.com">Matteohanser8@gmail.com</a></dd></div>
+  </dl>
+  <form method="dialog"><button class="btn ghost" autofocus>Schließen</button></form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  /* Mikrofon geht nur über https */
+  if(location.protocol==="http:"&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){ location.replace("https://"+location.host+location.pathname+location.hash); return; }
+
+  function $(s){ return document.querySelector(s); }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function fmt(v){ return v.toFixed(1).replace(".",","); }
+  function day(iso){ var d=new Date(iso+"T12:00:00"); return isNaN(d)?iso:d.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}); }
+  function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function save(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var STD_OFFSET=120, SCALE=150;
+
+  /* Kopfzeile */
+  var top=$("#top");
+  function onScroll(){ top.classList.toggle("solid",window.scrollY>30); }
+  window.addEventListener("scroll",onScroll,{passive:true}); onScroll();
+
+  var toastEl=$("#toast"), toastT=0;
+  function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove("on"); },3400); }
+
+  /* ---------- Rangliste ---------- */
+  var BOARD=[];
+  function td(tr,cls,text){ var c=document.createElement("td"); c.className=cls; if(text!=null) c.textContent=text; tr.appendChild(c); return c; }
+  function renderBoard(){
+    var q=$("#q").value.trim().toLowerCase(), body=$("#board-body"); body.textContent="";
+    var list=BOARD.map(function(e,i){ return {e:e,p:i+1}; }).filter(function(x){
+      return !q||[x.e.name,x.e.instagram,x.e.auto,x.e.anlage].join(" ").toLowerCase().indexOf(q)>-1;
+    });
+    $("#board-empty").hidden=BOARD.length>0;
+    $("#board-table").hidden=!list.length;
+    $("#board-none").hidden=!(BOARD.length&&!list.length);
+    list.forEach(function(x){
+      var e=x.e, tr=document.createElement("tr");
+      if(x.p<=3) tr.className="p"+x.p;
+      var pl=td(tr,"pl"), s=document.createElement("span"); s.className="place"; s.textContent=x.p; pl.appendChild(s);
+      var nm=td(tr,"name"), b=document.createElement("b"); b.textContent=e.name||"–"; nm.appendChild(b);
+      if(e.instagram){
+        var h=String(e.instagram).replace(/^@/,""), a=document.createElement("a");
+        a.href="https://www.instagram.com/"+encodeURIComponent(h); a.target="_blank"; a.rel="noopener"; a.textContent="@"+h; nm.appendChild(a);
+      }
+      td(tr,"auto",e.auto||"–");
+      td(tr,"anlage",e.anlage||"");
+      td(tr,"datum",e.datum?day(e.datum):"");
+      var v=td(tr,"db"); v.textContent=fmt(e.db)+" "; var u=document.createElement("small"); u.textContent="dB"; v.appendChild(u);
+      body.appendChild(tr);
+    });
+  }
+  $("#q").addEventListener("input",renderBoard);
+  fetch("rangliste.json",{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(d){
+    BOARD=(d.eintraege||[]).filter(function(e){ return e&&typeof e.db==="number"&&isFinite(e.db); }).sort(function(a,b){ return b.db-a.db; });
+    $("#st-count").textContent=BOARD.length;
+    $("#st-record").textContent=BOARD.length?fmt(BOARD[0].db):"–";
+    if(d.stand){ $("#st-stand").textContent=day(d.stand).slice(0,6); $("#board-stand").textContent="Stand: "+day(d.stand); }
+    renderBoard();
+  }).catch(function(){ $("#board-error").hidden=false; });
+  function rankFor(db){ var p=1; for(var i=0;i<BOARD.length;i++) if(BOARD[i].db>db) p++; return p; }
+
+  /* ---------- Tacho ---------- */
+  var NS="http://www.w3.org/2000/svg";
+  function pt(db,r){ var a=Math.PI*(1-db/SCALE); return [100+r*Math.cos(a),100-r*Math.sin(a)]; }
+  function arc(from,to,r){ var p=pt(from,r), q=pt(to,r); return "M"+p[0].toFixed(2)+" "+p[1].toFixed(2)+" A"+r+" "+r+" 0 0 1 "+q[0].toFixed(2)+" "+q[1].toFixed(2); }
+  [[0,85,"rgba(250,250,250,.25)"],[85,110,"rgba(250,250,250,.7)"],[110,SCALE,"#EF4444"]].forEach(function(z){
+    var p=document.createElementNS(NS,"path"); p.setAttribute("d",arc(z[0]+.6,z[1]-.6,82)); p.setAttribute("stroke",z[2]); p.setAttribute("stroke-width","7"); p.setAttribute("fill","none"); $("#g-arcs").appendChild(p);
+  });
+  for(var t=0;t<=SCALE;t+=10){
+    var a=pt(t,74), b=pt(t,t%30===0?66:70), l=document.createElementNS(NS,"line");
+    l.setAttribute("x1",a[0]); l.setAttribute("y1",a[1]); l.setAttribute("x2",b[0]); l.setAttribute("y2",b[1]); l.setAttribute("stroke","rgba(250,250,250,.55)"); l.setAttribute("stroke-width",t%30===0?"1.6":".8");
+    $("#g-ticks").appendChild(l);
+    if(t%30===0){ var c=pt(t,57), tx=document.createElementNS(NS,"text"); tx.setAttribute("x",c[0]); tx.setAttribute("y",c[1]+2.5); tx.setAttribute("text-anchor","middle"); tx.textContent=t; $("#g-ticks").appendChild(tx); }
+  }
+
+  /* ---------- Messgerät ---------- */
+  var M={running:false,ac:null,stream:null,src:null,filt:null,lvl:null,spec:null,tbuf:null,rbuf:null,fbuf:null,p:0,db:0,max:0,hz:0,clipUntil:0,hist:[],last:0,lock:null,shown:""};
+  var offset=parseFloat(load("dezi-offset")); if(!isFinite(offset)) offset=STD_OFFSET;
+  var bassOnly=true, stateEl=$("#state");
+  function state(kind){
+    var T={
+      idle:"Tippe auf „Messung starten“ und erlaube das Mikrofon.",
+      asking:"Mikrofon wird angefragt …",
+      running:"Messung läuft. Dreh auf!",
+      stopped:"Messung gestoppt.",
+      denied:"Mikrofon blockiert. Erlaube es über das Schloss neben der Adresse und lade die Seite neu.",
+      nomic:"Kein Mikrofon gefunden.",
+      unsupported:"Dein Browser kann hier nicht messen. Öffne mapq.at/dezi in Safari oder Chrome.",
+      error:"Das Mikrofon konnte nicht gestartet werden. Lade die Seite neu und versuch es nochmal."
+    };
+    stateEl.textContent=T[kind]||""; stateEl.classList.toggle("err",/denied|nomic|unsupported|error/.test(kind));
+    var b=$("#b-start");
+    b.lastChild.textContent=M.running?"Messung stoppen":"Messung starten";
+    b.classList.toggle("stop",M.running);
+  }
+  function route(){
+    if(!M.src) return;
+    try{ M.src.disconnect(M.filt); }catch(e){} try{ M.src.disconnect(M.lvl); }catch(e){} try{ M.filt.disconnect(); }catch(e){}
+    if(bassOnly){ M.src.connect(M.filt); M.filt.connect(M.lvl); } else M.src.connect(M.lvl);
+  }
+  function wake(on){
+    try{
+      if(on&&navigator.wakeLock) navigator.wakeLock.request("screen").then(function(l){ M.lock=l; }).catch(function(){});
+      else if(!on&&M.lock){ M.lock.release(); M.lock=null; }
+    }catch(e){}
+  }
+  function start(){
+    if(M.running) return Promise.resolve(true);
+    if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ state("unsupported"); return Promise.resolve(false); }
+    state("asking");
+    return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(s){
+      var C=window.AudioContext||window.webkitAudioContext;
+      M.ac=new C(); M.stream=s; M.src=M.ac.createMediaStreamSource(s);
+      M.filt=M.ac.createBiquadFilter(); M.filt.type="lowpass"; M.filt.frequency.value=120; M.filt.Q.value=.707;
+      M.lvl=M.ac.createAnalyser(); M.lvl.fftSize=2048;
+      M.spec=M.ac.createAnalyser(); M.spec.fftSize=16384; M.spec.smoothingTimeConstant=.5;
+      M.src.connect(M.spec); route();
+      M.tbuf=new Float32Array(M.lvl.fftSize); M.rbuf=new Float32Array(4096); M.fbuf=new Float32Array(M.spec.frequencyBinCount);
+      if(M.ac.state==="suspended") M.ac.resume();
+      M.p=0; M.hist=[]; M.running=true; M.last=performance.now();
+      state("running"); wake(true); renderMine(); requestAnimationFrame(tick);
+      return true;
+    },function(e){
+      var n=e&&e.name;
+      state(n==="NotAllowedError"||n==="SecurityError"?"denied":n==="NotFoundError"?"nomic":"error");
+      return false;
+    });
+  }
+  function stop(){
+    M.running=false;
+    if(M.stream) M.stream.getTracks().forEach(function(t){ t.stop(); });
+    if(M.ac) M.ac.close();
+    M.ac=M.src=M.stream=null; wake(false); cancelBurp(); state("stopped"); renderMine();
+  }
+  function tick(now){
+    if(!M.running) return;
+    var dt=Math.min(100,now-M.last), i, v, s=0, pk=0; M.last=now;
+    M.lvl.getFloatTimeDomainData(M.tbuf);
+    for(i=0;i<M.tbuf.length;i++){ v=M.tbuf[i]; s+=v*v; }
+    M.p+=(s/M.tbuf.length-M.p)*(1-Math.exp(-dt/125));
+    M.db=clamp(10*Math.log10(M.p+1e-12)+offset,0,200);
+    M.spec.getFloatTimeDomainData(M.rbuf);
+    for(i=0;i<M.rbuf.length;i++){ v=Math.abs(M.rbuf[i]); if(v>pk) pk=v; }
+    if(pk>=.98) M.clipUntil=now+1200;
+    if(M.db>M.max) M.max=M.db;
+    if(burp.phase==="rec"&&M.db>burp.max) burp.max=M.db;
+    M.spec.getFloatFrequencyData(M.fbuf);
+    var bin=M.ac.sampleRate/M.spec.fftSize, lo=Math.ceil(20/bin), hi=Math.floor(200/bin), bi=-1, bv=-Infinity;
+    for(i=lo;i<=hi;i++) if(M.fbuf[i]>bv){ bv=M.fbuf[i]; bi=i; }
+    M.hz=bv>-75?Math.round(bi*bin):0;
+    M.hist.push([now,M.db]); while(M.hist.length&&now-M.hist[0][0]>10000) M.hist.shift();
+    draw(now, bin);
+    requestAnimationFrame(tick);
+  }
+
+  /* Anzeige */
+  var numEl=$("#num"), bigEl=$("#big"), needle=$("#needle"), lastRank=0;
+  function draw(now,bin){
+    var txt=fmt(M.db);
+    if(txt!==M.shown){ numEl.textContent=txt; M.shown=txt; }
+    bigEl.classList.toggle("hot",M.db>=110);
+    needle.style.transform="rotate("+(-90+clamp(M.db,0,SCALE)/SCALE*180).toFixed(2)+"deg)";
+    $("#max").textContent=M.max>0?fmt(M.max)+" dB":"–";
+    $("#hz").textContent=M.hz?M.hz+" Hz":"–";
+    $("#f-clip").hidden=now>M.clipUntil;
+    $("#f-ear").hidden=M.db<115;
+    if(now-lastRank>400){ lastRank=now; showRank(burp.phase==="done"?burp.max:M.max); }
+    drawHist(now); drawSpec(bin);
+  }
+  function showRank(db){
+    var r=$("#rank");
+    if(!db){ r.textContent=""; return; }
+    var p=rankFor(db);
+    r.textContent=BOARD.length?"Mit "+fmt(db)+" dB wärst du auf Platz "+p+" von "+(BOARD.length+1)+".":"Mit "+fmt(db)+" dB wärst du gerade auf Platz 1.";
+  }
+  function fit(c){
+    var dpr=Math.min(2,window.devicePixelRatio||1), w=Math.round(c.clientWidth*dpr), h=Math.round(c.clientHeight*dpr);
+    if(c.width!==w||c.height!==h){ c.width=w; c.height=h; }
+    return dpr;
+  }
+  var hist=$("#hist"), hctx=hist.getContext("2d"), spec=$("#spec"), sctx=spec.getContext("2d");
+  function drawHist(now){
+    var d=fit(hist), W=hist.width, H=hist.height, lo=30, hi=SCALE;
+    function y(db){ return H-(clamp(db,lo,hi)-lo)/(hi-lo)*H; }
+    hctx.clearRect(0,0,W,H);
+    hctx.font=(10*d)+"px Space Grotesk, Arial, sans-serif"; hctx.textBaseline="bottom";
+    [60,90,120].forEach(function(g){
+      hctx.strokeStyle=g===120?"rgba(239,68,68,.6)":"rgba(250,250,250,.12)"; hctx.lineWidth=d; hctx.beginPath(); hctx.moveTo(0,y(g)); hctx.lineTo(W,y(g)); hctx.stroke();
+      hctx.fillStyle=g===120?"rgba(239,68,68,.9)":"rgba(148,163,184,.9)"; hctx.fillText(g+" dB",6*d,y(g)-3*d);
+    });
+    if(M.hist.length<2) return;
+    hctx.beginPath();
+    M.hist.forEach(function(p,i){ var x=W-(now-p[0])/10000*W; if(i) hctx.lineTo(x,y(p[1])); else hctx.moveTo(x,y(p[1])); });
+    hctx.strokeStyle="#FAFAFA"; hctx.lineWidth=2*d; hctx.lineJoin="round"; hctx.stroke();
+    hctx.lineTo(W,H); hctx.lineTo(W-(now-M.hist[0][0])/10000*W,H); hctx.closePath();
+    var g=hctx.createLinearGradient(0,0,0,H); g.addColorStop(0,"rgba(250,250,250,.22)"); g.addColorStop(1,"rgba(250,250,250,0)"); hctx.fillStyle=g; hctx.fill();
+  }
+  var BANDS=24;
+  function drawSpec(bin){
+    var d=fit(spec), W=spec.width, H=spec.height, gap=3*d, bw=(W-gap*(BANDS-1))/BANDS, peak=-1, vals=[];
+    sctx.clearRect(0,0,W,H);
+    for(var k=0;k<BANDS;k++){
+      var f0=20*Math.pow(10,k/BANDS), f1=20*Math.pow(10,(k+1)/BANDS), a=Math.max(1,Math.floor(f0/bin)), b=Math.max(a,Math.ceil(f1/bin)), m=-Infinity;
+      for(var i=a;i<=b;i++) if(M.fbuf[i]>m) m=M.fbuf[i];
+      vals.push(clamp((m+100)/80,0,1));
+      if(M.hz>=f0&&M.hz<f1) peak=k;
+    }
+    vals.forEach(function(v,k){
+      var h=Math.max(2*d,v*(H-16*d));
+      sctx.fillStyle=k===peak?"#FAFAFA":"rgba(250,250,250,.38)";
+      sctx.fillRect(k*(bw+gap),H-14*d-h,bw,h);
+    });
+    sctx.fillStyle="rgba(148,163,184,.9)"; sctx.font=(10*d)+"px Space Grotesk, Arial, sans-serif"; sctx.textBaseline="bottom";
+    [[20,"20"],[50,"50"],[100,"100"],[200,"200 Hz"]].forEach(function(l){
+      var x=Math.log10(l[0]/20)*W; sctx.textAlign=l[0]===20?"left":l[0]===200?"right":"center"; sctx.fillText(l[1],clamp(x,0,W),H);
+    });
+  }
+
+  /* Bedienung */
+  $("#b-start").addEventListener("click",function(){ if(M.running) stop(); else start(); });
+  $("#o-bass").addEventListener("change",function(e){ bassOnly=e.target.checked; route(); M.max=0; toast(bassOnly?"Nur Bass: misst alles unter 120 Hz":"Ganzer Ton: misst alle Frequenzen"); });
+  $("#b-reset").addEventListener("click",function(){ M.max=0; $("#max").textContent="–"; $("#rank").textContent=""; });
+  var offIn=$("#o-off"), offOut=$("#o-off-v");
+  function setOffset(v){ offset=v; offIn.value=v; offOut.textContent=(v>=0?"+":"")+String(v).replace(".",","); save("dezi-offset",String(v)); }
+  setOffset(offset);
+  offIn.addEventListener("input",function(){ setOffset(parseFloat(offIn.value)); });
+  $("#b-off").addEventListener("click",function(){ setOffset(STD_OFFSET); });
+
+  /* 3-Sekunden-Burp */
+  var burp={phase:"idle",max:0,timer:0}, ov=$("#overlay");
+  function cancelBurp(){ clearInterval(burp.timer); if(burp.phase!=="done") burp.phase="idle"; ov.hidden=true; $("#b-burp").disabled=false; }
+  $("#b-cancel").addEventListener("click",cancelBurp);
+  function doBurp(){
+    $("#result").hidden=true;
+    start().then(function(ok){
+      if(!ok) return;
+      var lead=parseInt($("#o-lead").value,10)||3, t0=performance.now(), recStart=t0+lead*1000, recEnd=recStart+3000;
+      burp.phase="count"; burp.max=0; $("#b-burp").disabled=true;
+      ov.hidden=false; $("#ov-bar").hidden=true; $("#ov-label").textContent="Gleich geht's los"; $("#ov-num").textContent=lead;
+      clearInterval(burp.timer);
+      burp.timer=setInterval(function(){
+        var n=performance.now();
+        if(n<recStart){ $("#ov-num").textContent=Math.ceil((recStart-n)/1000); return; }
+        if(n<recEnd){
+          if(burp.phase!=="rec"){ burp.phase="rec"; $("#ov-label").textContent="Bass!"; $("#ov-bar").hidden=false; }
+          $("#ov-num").textContent=fmt(Math.max(burp.max,M.db));
+          $("#ov-fill").style.transform="scaleX("+((n-recStart)/3000).toFixed(3)+")";
+          return;
+        }
+        clearInterval(burp.timer); burp.phase="done"; ov.hidden=true; $("#b-burp").disabled=false;
+        finishBurp();
+      },50);
+    });
+  }
+  function finishBurp(){
+    var v=burp.max, hz=M.hz;
+    $("#res-num").textContent=fmt(v)+" dB";
+    $("#res-info").textContent=(BOARD.length?"Platz "+rankFor(v)+" von "+(BOARD.length+1):"Platz 1, die Rangliste ist noch leer")+(hz?" · Bass-Spitze "+hz+" Hz":"")+(offset!==STD_OFFSET?" · Kalibrierung nicht Standard":"");
+    $("#result").hidden=false;
+    addMine({db:v,hz:hz,t:Date.now(),typ:"Burp",off:offset});
+    fillForm(v);
+    toast("Burp gemessen: "+fmt(v)+" dB");
+  }
+  $("#b-burp").addEventListener("click",doBurp);
+  $("#res-again").addEventListener("click",doBurp);
+
+  /* Eigene Messungen (nur auf diesem Gerät) */
+  var mine=[]; try{ mine=JSON.parse(load("dezi-verlauf")||"[]")||[]; }catch(e){ mine=[]; }
+  function addMine(m){ mine.unshift(m); mine=mine.slice(0,10); save("dezi-verlauf",JSON.stringify(mine)); renderMine(); }
+  function renderMine(){
+    var ul=$("#mine-list"); ul.textContent="";
+    $("#mine").hidden=!mine.length&&!M.running;
+    mine.forEach(function(m){
+      var li=document.createElement("li"), l=document.createElement("span"), b=document.createElement("b"), i=document.createElement("span"), a=document.createElement("button");
+      b.textContent=fmt(m.db)+" dB"; i.className="mute"; i.style.fontSize=".85rem"; i.style.marginLeft=".75rem";
+      i.textContent=m.typ+(m.hz?" · "+m.hz+" Hz":"")+" · "+new Date(m.t).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"});
+      l.appendChild(b); l.appendChild(i);
+      a.type="button"; a.className="link"; a.textContent="Einreichen";
+      a.addEventListener("click",function(){ fillForm(m.db); document.getElementById("einreichen").scrollIntoView({behavior:reduce?"auto":"smooth"}); });
+      li.appendChild(l); li.appendChild(a); ul.appendChild(li);
+    });
+  }
+  $("#b-savemax").addEventListener("click",function(){ if(M.max>0){ addMine({db:M.max,hz:M.hz,t:Date.now(),typ:"Maximum",off:offset}); toast("Gespeichert: "+fmt(M.max)+" dB"); } else toast("Noch kein Wert gemessen."); });
+  renderMine();
+
+  /* ---------- Einreichen ---------- */
+  var F={name:$("#f-name"),ig:$("#f-ig"),auto:$("#f-auto"),db:$("#f-db"),anlage:$("#f-anlage"),msg:$("#f-msg")};
+  function fillForm(v){ F.db.value=fmt(v); clearErr(F.db); syncMail(); }
+  function num(s){ var v=parseFloat(String(s).replace(",",".")); return isFinite(v)?v:NaN; }
+  function clearErr(inp){ var f=inp.closest(".fld"); f.classList.remove("bad"); var e=f.querySelector("em"); if(e) e.remove(); }
+  function err(inp,msg){ var f=inp.closest(".fld"); clearErr(inp); f.classList.add("bad"); var e=document.createElement("em"); e.textContent=msg; f.appendChild(e); }
+  function valid(){
+    var ok=true;
+    [F.name,F.auto,F.db].forEach(clearErr);
+    if(!F.name.value.trim()){ err(F.name,"Bitte gib deinen Namen an."); ok=false; }
+    if(!F.auto.value.trim()){ err(F.auto,"Welches Auto?"); ok=false; }
+    var v=num(F.db.value); if(!(v>0&&v<200)){ err(F.db,"Bitte einen Wert wie 128,4 eingeben."); ok=false; }
+    if(!ok){ var b=document.querySelector(".fld.bad input"); if(b) b.focus(); }
+    return ok;
+  }
+  function text(){
+    var v=num(F.db.value), ig=F.ig.value.trim();
+    return "Dezi-Contest Einreichung\n\nName: "+F.name.value.trim()+(ig?"\nInstagram: "+(ig[0]==="@"?ig:"@"+ig):"")+"\nAuto: "+F.auto.value.trim()+
+      (F.anlage.value.trim()?"\nAnlage: "+F.anlage.value.trim():"")+"\nWert: "+(isFinite(v)?fmt(v):F.db.value.trim())+" dB"+
+      "\nEinstellung: "+(bassOnly?"Nur Bass":"Ganzer Ton")+", Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":"")+
+      (F.msg.value.trim()?"\n\n"+F.msg.value.trim():"")+"\n\nDas Video schicke ich mit.";
+  }
+  function syncMail(){
+    var v=num(F.db.value);
+    $("#f-mail").href="mailto:Matteohanser8@gmail.com?subject="+encodeURIComponent("Dezi-Contest: "+(F.auto.value.trim()||"Einreichung")+(isFinite(v)?" – "+fmt(v)+" dB":""))+"&body="+encodeURIComponent(text());
+  }
+  $("#req").addEventListener("input",function(e){ if(e.target.closest(".fld.bad")) clearErr(e.target); syncMail(); });
+  $("#req").addEventListener("submit",function(e){ e.preventDefault(); });
+  syncMail();
+  var out=$("#f-out");
+  $("#f-ig-send").addEventListener("click",function(){
+    if(!valid()) return;
+    function ok(){ out.textContent="Text kopiert. In Instagram einfügen und dein Video mitschicken."; }
+    function fail(){ out.textContent="Kopieren ging nicht. Schreib an @mapq.raw und schick dein Video mit."; }
+    try{ navigator.clipboard.writeText(text()).then(ok,fail); }catch(err2){ fail(); }
+    window.open("https://ig.me/m/mapq.raw","_blank","noopener");
+  });
+  $("#f-mail").addEventListener("click",function(e){ if(!valid()) e.preventDefault(); });
+
+  /* Impressum */
+  var imp=$("#imp");
+  $("#imp-open").addEventListener("click",function(){ if(imp.showModal) imp.showModal(); else imp.setAttribute("open",""); });
+  imp.addEventListener("click",function(e){ if(e.target===imp) imp.close(); });
+})();
+</script>
+</body>
+</html>
