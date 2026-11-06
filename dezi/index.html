@@ -216,6 +216,16 @@ details.cal[open]{padding-bottom:1rem}
 .tr-bar{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--color-muted);overflow:hidden}
 .tr-bar i{display:block;height:100%;background:var(--grad);transform-origin:left center;transform:scaleX(0)}
 .tr-keys .btn{flex:1 1 auto}
+.tr-freq{margin:0;padding:0;border:0;min-width:0}
+.tr-freq legend{padding:0;margin-bottom:.55rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{position:relative;cursor:pointer}
+.chip input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.chip span{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;border-radius:999px;border:1px solid var(--color-border);background:rgba(5,3,10,.6);font-size:.92rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--color-muted-foreground);transition:border-color var(--ease),color var(--ease),box-shadow var(--ease)}
+.chip:hover span{border-color:rgba(0,229,255,.55);color:#E6FDFF}
+.chip input:checked+span{background:var(--grad);border-color:transparent;color:var(--on-neon);box-shadow:var(--glow-m)}
+.chip input:focus-visible+span{outline:2px solid var(--color-ring);outline-offset:2px}
+.tr-freq:disabled .chip{cursor:not-allowed;opacity:.55}
 #tr-play .i-stop,#tr-play[aria-pressed="true"] .i-play{display:none}
 #tr-play[aria-pressed="true"] .i-stop{display:block}
 .tr-h{font-family:var(--font-heading);font-stretch:75%;font-weight:800;font-size:clamp(1.4rem,3vw,1.8rem);line-height:1.1;margin-bottom:.5rem}
@@ -472,16 +482,17 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
 
       <div class="track" id="track">
         <div class="tr-side">
-          <div class="tr-disp" aria-hidden="true"><span class="label">Track 01</span><b>Dezi-Burp</b><span class="label" id="tr-time">0:08</span><span class="tr-bar"><i id="tr-fill"></i></span></div>
+          <fieldset class="tr-freq" id="tr-freq"><legend class="label mute">Frequenz wählen</legend><div class="chips"><label class="chip"><input type="radio" name="burpf" value="sweep" checked><span>Sweep 30–60 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="30"><span>30 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="35"><span>35 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="40"><span>40 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="45"><span>45 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="50"><span>50 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="55"><span>55 Hz</span></label><label class="chip"><input type="radio" name="burpf" value="60"><span>60 Hz</span></label></div></fieldset>
+          <div class="tr-disp" aria-hidden="true"><span class="label" id="tr-no">Track 01</span><b id="tr-name">Dezi-Burp · Sweep</b><span class="label" id="tr-time">0:08</span><span class="tr-bar"><i id="tr-fill"></i></span></div>
           <div class="acts tr-keys">
             <button type="button" class="btn" id="tr-play" aria-pressed="false"><svg class="ic i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg><svg class="ic i-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg><span class="k-main">Abspielen</span></button>
-            <a class="btn ghost" href="dezi-burp.mp3" download="Dezi-Burp.mp3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>MP3 laden</a>
+            <a class="btn ghost" id="tr-dl" href="dezi-burp.mp3" download="Dezi-Burp-Sweep.mp3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>MP3 laden</a>
           </div>
           <audio id="tr-audio" src="dezi-burp.mp3" preload="auto"></audio>
         </div>
         <div class="tr-text">
-          <h3 class="tr-h">Pflicht für alle: der <span class="nw">Dezi-Burp</span></h3>
-          <p class="mute">Jeder misst mit demselben Ton, sonst ist der Vergleich nicht fair. Drei Piepser zählen runter, dann kommen 5 Sekunden Bass, der zwischen 30 und 60 Hz hin und her läuft. So trifft jedes Auto seine stärkste Stelle.</p>
+          <h3 class="tr-h">Pflicht für alle: ein <span class="nw">Dezi-Burp</span></h3>
+          <p class="mute">Jeder misst mit einem Dezi-Burp, sonst ist der Vergleich nicht fair. Drei Piepser zählen runter, dann kommen 5 Sekunden Bass. Weißt du nicht, wo deine Anlage am stärksten ist, nimm „Sweep“: Der läuft zwischen 30 und 60 Hz hin und her und trifft jede Abstimmung. Kennst du deine Frequenz, nimm den festen Ton dazu.</p>
           <p class="mute">Spiel ihn über deine Anlage ab, von einem zweiten Handy (hier auf „Abspielen“) oder als MP3 vom USB-Stick. Auf dem Handy, das misst, <span class="nw">„3-Sek-Burp“</span> tippen und den Ton starten, sobald die Anzeige 3 zeigt.</p>
         </div>
       </div>
@@ -573,7 +584,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <div>
           <h3>Was zählt</h3>
           <ul class="mute">
-            <li>Pflicht für alle: der Dezi-Burp als Ton. Eigene Lieder oder andere Töne zählen nicht.</li>
+            <li>Pflicht für alle: ein Dezi-Burp, als Sweep oder mit fester Frequenz. Eigene Lieder oder andere Töne zählen nicht.</li>
             <li>Der höchste Wert der 3-Sekunden-Messung mit „Nur Bass“ an.</li>
             <li>Mit Burp, Standard-Kalibrierung und Foto stehst du sofort in der Rangliste. Alles andere trägt Matteo nach der Prüfung ein.</li>
             <li>Kalibrierung auf Standard (+120), damit alle Handys gleich rechnen.</li>
@@ -649,7 +660,8 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <details><summary>Wird mein Ton aufgenommen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Nein. Die Seite misst nur die Lautstärke, direkt auf deinem Handy. Es wird nichts gespeichert oder hochgeladen. Deine eigenen Messwerte bleiben nur in deinem Browser.</p></details>
         <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht an Matteo. Hast du mit dem 3-Sek-Burp gemessen und ein Foto dabei, stehst du sofort in der Rangliste. Matteo schaut sich die Fotos trotzdem an und kann Werte wieder rausnehmen. In der Rangliste stehen nur Name, Instagram, Auto, Anlage und Wert, nie deine Fotos oder deine E-Mail-Adresse.</p></details>
         <details><summary>Das Mikrofon geht nicht. Was tun?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Tipp auf das Schloss oder „aA“ neben der Adresse und erlaube das Mikrofon für mapq.at, dann neu laden. Am iPhone geht es in Safari, am Android-Handy in Chrome. In Apps wie Instagram die Seite lieber im Browser öffnen.</p></details>
-        <details><summary>Warum muss jeder den Dezi-Burp nehmen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Mit einem Lied gewinnt, wer die lauteste Stelle erwischt. Mit demselben Ton für alle zählt nur die Anlage. Der Ton läuft zwischen 30 und 60 Hz hin und her, so trifft jedes Auto seine stärkste Frequenz, egal wie es abgestimmt ist. Dauert 8 Sekunden: 3 Piepser, dann 5 Sekunden Bass.</p></details>
+        <details><summary>Warum muss jeder einen Dezi-Burp nehmen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Mit einem Lied gewinnt, wer die lauteste Stelle erwischt. Mit den Dezi-Burps zählt nur die Anlage. Alle dauern 8 Sekunden: 3 Piepser, dann 5 Sekunden Bass.</p></details>
+        <details><summary>Welche Frequenz soll ich nehmen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Im Zweifel den Sweep: Er läuft zwischen 30 und 60 Hz hin und her, so trifft jedes Auto seine stärkste Stelle. Nach einer Messung zeigt dir die Seite deine Bass-Spitze in Hz. Mit dem festen Ton, der am nächsten dran liegt, holst du oft noch etwas raus.</p></details>
         <details><summary>Kann ich den Ton vom selben Handy abspielen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Ja, mit Kabel: Beim Messer „Dezi-Burp von diesem Handy“ einschalten, dann läuft er beim 3-Sek-Burp genau im Takt mit. Über Bluetooth schalten viele Handys beim Messen auf Freisprechen, dann kommt kaum Bass. Sicherer ist ein zweites Handy oder die MP3 auf einem USB-Stick.</p></details>
         <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier ist das der Dezi-Burp, und die Seite misst 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
       </div>
@@ -975,6 +987,23 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   }
   function stopTrack(){ trWant=false; clearTimeout(trT); trA.pause(); try{ trA.currentTime=0; }catch(e){} trUI(); }
   trBtn.addEventListener("click",function(){ if(trBtn.getAttribute("aria-pressed")==="true") stopTrack(); else playTrack(); });
+  /* Auswahl: Sweep 30–60 Hz (dezi-burp.mp3) oder fester Ton (burp/dezi-burp-<Hz>hz.mp3) */
+  var BURPF=["sweep","30","35","40","45","50","55","60"], burpF=load("dezi-burp-f");
+  if(BURPF.indexOf(burpF)<0) burpF="sweep";
+  function burpName(v){ return v==="sweep"?"Sweep 30–60 Hz":v+" Hz"; }
+  function setBurp(v){
+    if(trWant) stopTrack();
+    burpF=v; save("dezi-burp-f",v);
+    var sw=v==="sweep", src=sw?"dezi-burp.mp3":"burp/dezi-burp-"+v+"hz.mp3", dl=$("#tr-dl");
+    if(trA.getAttribute("src")!==src) trA.src=src;
+    dl.href=src; dl.setAttribute("download","Dezi-Burp-"+(sw?"Sweep":v+"Hz")+".mp3");
+    $("#tr-name").textContent="Dezi-Burp · "+(sw?"Sweep":v+" Hz");
+    $("#tr-no").textContent="Track "+String(BURPF.indexOf(v)+1).padStart(2,"0");
+    var r=document.querySelector('input[name="burpf"][value="'+v+'"]'); if(r) r.checked=true;
+    trUI();
+  }
+  document.querySelectorAll('input[name="burpf"]').forEach(function(r){ r.addEventListener("change",function(){ if(r.checked) setBurp(r.value); }); });
+  setBurp(burpF);
   $("#o-track").addEventListener("change",function(e){
     trackOn=e.target.checked; save("dezi-track",trackOn?"1":"0"); if(trackOn) unlockTrack();
     toast(trackOn?"Der Dezi-Burp läuft beim 3-Sek-Burp von diesem Handy mit.":"Der Dezi-Burp kommt von einem anderen Gerät.");
@@ -982,7 +1011,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
 
   var burp={phase:"idle",max:0,timer:0,track:false}, ov=$("#overlay");
   function burpLabel(n){ return n>3?"Gleich geht's los":trackOn?"Dezi-Burp läuft":n===3?"Jetzt Dezi-Burp starten!":"Gleich geht's los"; }
-  function cancelBurp(){ clearInterval(burp.timer); if(burp.phase!=="done") burp.phase="idle"; ov.hidden=true; ov.classList.remove("rec"); $("#b-burp").disabled=false; if(trackOn&&trWant) stopTrack(); }
+  function cancelBurp(){ clearInterval(burp.timer); if(burp.phase!=="done") burp.phase="idle"; ov.hidden=true; ov.classList.remove("rec"); $("#b-burp").disabled=false; $("#tr-freq").disabled=false; if(trackOn&&trWant) stopTrack(); }
   $("#b-cancel").addEventListener("click",cancelBurp);
   function doBurp(){
     $("#result").hidden=true;
@@ -992,7 +1021,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     start().then(function(ok){
       if(!ok) return;
       var lead=parseInt($("#o-lead").value,10)||3, t0=performance.now(), recStart=t0+lead*1000, recEnd=recStart+3000;
-      burp.phase="count"; burp.max=0; burp.track=false; $("#b-burp").disabled=true;
+      burp.phase="count"; burp.max=0; burp.track=false; $("#b-burp").disabled=true; $("#tr-freq").disabled=true;
       ov.hidden=false; $("#ov-bar").hidden=true; $("#ov-label").textContent=burpLabel(lead); $("#ov-num").textContent=lead;
       if(trackOn){ clearTimeout(trT); trT=setTimeout(playTrack,Math.max(0,recStart-3000-performance.now())); }
       clearInterval(burp.timer);
@@ -1001,12 +1030,12 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         if(n<recStart){ var c=String(Math.ceil((recStart-n)/1000)), on=$("#ov-num"); if(on.textContent!==c){ on.textContent=c; $("#ov-label").textContent=burpLabel(+c); on.classList.remove("tick"); void on.offsetWidth; on.classList.add("tick"); } return; }
         if(n<recEnd){
           if(burp.phase!=="rec"){ burp.phase="rec"; ov.classList.add("rec"); $("#ov-num").classList.remove("tick"); $("#ov-label").textContent="Bass!"; $("#ov-bar").hidden=false; }
-          if(!trA.paused&&!trA.muted) burp.track=true;
+          if(!trA.paused&&!trA.muted){ burp.track=true; burp.trackF=burpF; }
           $("#ov-num").textContent=fmt(Math.max(burp.max,M.db));
           $("#ov-fill").style.transform="scaleX("+((n-recStart)/3000).toFixed(3)+")";
           return;
         }
-        clearInterval(burp.timer); burp.phase="done"; ov.hidden=true; ov.classList.remove("rec"); $("#b-burp").disabled=false;
+        clearInterval(burp.timer); burp.phase="done"; ov.hidden=true; ov.classList.remove("rec"); $("#b-burp").disabled=false; $("#tr-freq").disabled=false;
         finishBurp();
       },50);
     });
@@ -1126,7 +1155,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       x.globalAlpha=on?1:.15; x.fillStyle=mix(i/29); x.fillRect(100+i*(lw+8),930,lw,26);
     }
     x.globalAlpha=1; x.fillStyle="#E6FDFF"; x.font="500 40px "+BODY;
-    x.fillText((burp.track?"Dezi-Burp":"3-Sek-Burp")+(hz?" · Bass-Spitze "+hz+" Hz":""),W/2,1070);
+    x.fillText((burp.track?"Dezi-Burp "+(burp.trackF==="sweep"?"Sweep":burp.trackF+" Hz"):"3-Sek-Burp")+(hz?" · Bass-Spitze "+hz+" Hz":""),W/2,1070);
     x.fillText((bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",","),W/2,1125);
     x.fillStyle="#A3A8C3"; x.fillText(new Date().toLocaleString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),W/2,1180);
     x.fillStyle=gr; x.font="800 44px "+HEAD; x.fillText("mapq.at/dezi",W/2,1262);
@@ -1186,7 +1215,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     return [
       "Wert: "+fmt(v)+" dB",
       "Messung: "+(same?meta.typ:"selbst eingetragen")+(same&&meta.hz?" · Bass-Spitze "+meta.hz+" Hz":"")+" · "+(bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":" (NICHT Standard)"),
-      "Ton: "+(f.track.checked?"Dezi-Burp"+(same&&burp.track?" (von der Seite abgespielt)":" (bestätigt)"):"NICHT mit dem Dezi-Burp"),
+      "Ton: "+(f.track.checked?"Dezi-Burp "+burpName(same&&burp.track?burp.trackF:burpF)+(same&&burp.track?" (von der Seite abgespielt)":" (bestätigt)"):"NICHT mit dem Dezi-Burp"),
       "Auto: "+f.auto.value.trim(),
       f.anlage.value.trim()&&"Anlage: "+f.anlage.value.trim(),
       urls.length?"Fotos:\n"+urls.join("\n"):"",
