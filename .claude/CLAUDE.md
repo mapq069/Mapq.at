@@ -60,6 +60,8 @@ Seitenspezifische Abweichungen liegen in `design-system/mapq-raw/pages/<seite>.m
 
 `.claude/design-system.md` ist eine Fintech-Dashboard-Vorlage und gilt nicht für mapq.at.
 
+Zweiter Design-Skill: `.claude/skills/taste-skill` (tasteskill 2.5.0 von Leonxlnx, MIT, Installname `design-taste-frontend`) für Landingpages und Redesigns. Bei Widerspruch gelten MASTER.md und die `pages/`-Dateien sowie Matteos ausdrückliche Wünsche (z. B. Dezi bunt, Familie im Home-Assistant-Stil).
+
 ## Dezi (mapq.at/dezi)
 
 Bass-Contest-Seite in `dezi/index.html` mit Dezibel-Messer übers Handy-Mikrofon (Web Audio, nur über https),
