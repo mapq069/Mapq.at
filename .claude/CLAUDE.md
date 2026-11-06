@@ -62,6 +62,7 @@ Seitenspezifische Abweichungen liegen in `design-system/mapq-raw/pages/<seite>.m
 
 Zweiter Design-Skill: `.claude/skills/taste-skill` (tasteskill 2.5.0 von Leonxlnx, MIT, Installname `design-taste-frontend`) für Landingpages und Redesigns. Bei Widerspruch gelten MASTER.md und die `pages/`-Dateien sowie Matteos ausdrückliche Wünsche (z. B. Dezi bunt, Familie im Home-Assistant-Stil).
 Dritter Design-Skill: `.claude/skills/impeccable` (impeccable 4.8.0 von Paul Bakaus, Apache-2.0) zum Kritisieren, Prüfen und Polieren (`/impeccable audit|critique|polish …`). Sein Werkzeug lädt beim ersten Start ein geprüftes Programm (SHA-256 aus `scripts/engine-checksums.txt`) von den GitHub-Releases in einen Cache außerhalb des Repos. Auch hier gelten MASTER.md, `pages/` und Matteos Wünsche vor.
+Skills von Emil Kowalski (github.com/emilkowalski/skill, MIT, nur Text): `animate`, `choreograph`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `remove-animations`, `animation-performance`, `animation-vocabulary`, `emil-design-eng`, `apple-design`, `mobile-native`, `break-ui`, `prototype`, `pick-ui-library`, `ask-sonner`, `animate-expo`, `write-swift` – je ein Ordner unter `.claude/skills/`. Für Bewegung, Feinschliff und Handy-Gefühl; auch hier gehen MASTER.md, `pages/` und Matteos Wünsche vor.
 
 ## Dezi (mapq.at/dezi)
 
