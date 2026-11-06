@@ -486,9 +486,9 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
           <div class="tr-disp" aria-hidden="true"><span class="label" id="tr-no">Track 01</span><b id="tr-name">Dezi-Burp · Sweep</b><span class="label" id="tr-time">0:08</span><span class="tr-bar"><i id="tr-fill"></i></span></div>
           <div class="acts tr-keys">
             <button type="button" class="btn" id="tr-play" aria-pressed="false"><svg class="ic i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg><svg class="ic i-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg><span class="k-main">Abspielen</span></button>
-            <a class="btn ghost" id="tr-dl" href="dezi-burp.mp3" download="Dezi-Burp-Sweep.mp3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>MP3 laden</a>
+            <a class="btn ghost" id="tr-dl" href="dezi-burp.mp3?v=2" download="Dezi-Burp-Sweep.mp3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>MP3 laden</a>
           </div>
-          <audio id="tr-audio" src="dezi-burp.mp3" preload="auto"></audio>
+          <audio id="tr-audio" src="dezi-burp.mp3?v=2" preload="auto"></audio>
         </div>
         <div class="tr-text">
           <h3 class="tr-h">Pflicht für alle: ein <span class="nw">Dezi-Burp</span></h3>
@@ -988,13 +988,14 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   function stopTrack(){ trWant=false; clearTimeout(trT); trA.pause(); try{ trA.currentTime=0; }catch(e){} trUI(); }
   trBtn.addEventListener("click",function(){ if(trBtn.getAttribute("aria-pressed")==="true") stopTrack(); else playTrack(); });
   /* Auswahl: Sweep 30–60 Hz (dezi-burp.mp3) oder fester Ton (burp/dezi-burp-<Hz>hz.mp3) */
+  var BURP_V="2"; /* bei neuen Tondateien hochzählen, sonst spielen Handys die alte aus dem Zwischenspeicher */
   var BURPF=["sweep","30","35","40","45","50","55","60"], burpF=load("dezi-burp-f");
   if(BURPF.indexOf(burpF)<0) burpF="sweep";
   function burpName(v){ return v==="sweep"?"Sweep 30–60 Hz":v+" Hz"; }
   function setBurp(v){
     if(trWant) stopTrack();
     burpF=v; save("dezi-burp-f",v);
-    var sw=v==="sweep", src=sw?"dezi-burp.mp3":"burp/dezi-burp-"+v+"hz.mp3", dl=$("#tr-dl");
+    var sw=v==="sweep", src=(sw?"dezi-burp.mp3":"burp/dezi-burp-"+v+"hz.mp3")+"?v="+BURP_V, dl=$("#tr-dl");
     if(trA.getAttribute("src")!==src) trA.src=src;
     dl.href=src; dl.setAttribute("download","Dezi-Burp-"+(sw?"Sweep":v+"Hz")+".mp3");
     $("#tr-name").textContent="Dezi-Burp · "+(sw?"Sweep":v+" Hz");
