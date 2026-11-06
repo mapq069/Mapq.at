@@ -1,3 +1,5 @@
 exclude:
   - design-system
   - supabase
+  - PRODUCT.md
+  - DESIGN.md
