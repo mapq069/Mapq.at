@@ -207,6 +207,26 @@ details.cal[open]{padding-bottom:1rem}
 @media (min-width:720px){.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .result .sent{padding:var(--space-lg) 0 0}
 .confetti{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;background:none;border:0;border-radius:0}
+.track{display:grid;gap:var(--space-lg);margin-top:var(--space-lg);padding:clamp(1rem,3vw,1.75rem);border-radius:var(--radius-card);background:linear-gradient(var(--color-card),var(--color-card)) padding-box,var(--grad) border-box;border:2px solid transparent;box-shadow:var(--glow-c)}
+@media (min-width:860px){.track{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:center}}
+.tr-side{display:grid;gap:var(--space-md);min-width:0}
+.tr-disp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:.4rem .9rem;padding:.9rem 1rem;border-radius:var(--radius-btn);background:rgba(5,3,10,.8);border:1px solid var(--color-border)}
+.tr-disp .label{color:var(--color-muted-foreground)}
+.tr-disp b{font-family:var(--font-heading);font-stretch:75%;font-weight:800;font-size:clamp(1.4rem,4vw,1.9rem);line-height:1.1;color:#E6FDFF;text-shadow:0 0 12px rgba(0,229,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-bar{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--color-muted);overflow:hidden}
+.tr-bar i{display:block;height:100%;background:var(--grad);transform-origin:left center;transform:scaleX(0)}
+.tr-keys .btn{flex:1 1 auto}
+#tr-play .i-stop,#tr-play[aria-pressed="true"] .i-play{display:none}
+#tr-play[aria-pressed="true"] .i-stop{display:block}
+.tr-h{font-family:var(--font-heading);font-stretch:75%;font-weight:800;font-size:clamp(1.4rem,3vw,1.8rem);line-height:1.1;margin-bottom:.5rem}
+.tr-text p{max-width:60ch}
+.tr-text p+p{margin-top:.5rem}
+.nw{white-space:nowrap}
+.check{display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;font-weight:600;line-height:1.45}
+.fld .check span{display:inline;margin:0}
+.fld .check input,.fld .check input:focus{flex:none;width:22px;height:22px;margin:.1rem 0 0;padding:0;border:0;box-shadow:none;accent-color:var(--neon-magenta);cursor:pointer}
+.fld .check input:focus-visible{outline:2px solid var(--color-ring);outline-offset:2px}
+.fld.bad .check input{outline:2px solid var(--color-danger);outline-offset:2px}
 .mine{margin-top:var(--space-xl)}
 .mine ul{list-style:none;padding:0;margin-top:.5rem;border-top:1px solid var(--color-border)}
 .mine li{display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);padding:.65rem 0;border-bottom:1px solid var(--color-border)}
@@ -424,6 +444,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
             </div>
             <div class="opts">
               <label class="opt-row" for="o-bass"><span class="switch"><input type="checkbox" id="o-bass" checked><span></span></span>Nur Bass messen (unter 120 Hz)</label>
+              <label class="opt-row" for="o-track"><span class="switch"><input type="checkbox" id="o-track"><span></span></span>Dezi-Burp von diesem Handy</label>
               <label class="opt-row" for="o-lead">Vorlauf
                 <select id="o-lead"><option value="3">3 Sekunden</option><option value="10">10 Sekunden</option></select>
               </label>
@@ -449,6 +470,22 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         </div>
       </div>
 
+      <div class="track" id="track">
+        <div class="tr-side">
+          <div class="tr-disp" aria-hidden="true"><span class="label">Track 01</span><b>Dezi-Burp</b><span class="label" id="tr-time">0:08</span><span class="tr-bar"><i id="tr-fill"></i></span></div>
+          <div class="acts tr-keys">
+            <button type="button" class="btn" id="tr-play" aria-pressed="false"><svg class="ic i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg><svg class="ic i-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg><span class="k-main">Abspielen</span></button>
+            <a class="btn ghost" href="dezi-burp.mp3" download="Dezi-Burp.mp3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>MP3 laden</a>
+          </div>
+          <audio id="tr-audio" src="dezi-burp.mp3" preload="auto"></audio>
+        </div>
+        <div class="tr-text">
+          <h3 class="tr-h">Pflicht für alle: der <span class="nw">Dezi-Burp</span></h3>
+          <p class="mute">Jeder misst mit demselben Ton, sonst ist der Vergleich nicht fair. Drei Piepser zählen runter, dann kommen 5 Sekunden Bass, der zwischen 30 und 60 Hz hin und her läuft. So trifft jedes Auto seine stärkste Stelle.</p>
+          <p class="mute">Spiel ihn über deine Anlage ab, von einem zweiten Handy (hier auf „Abspielen“) oder als MP3 vom USB-Stick. Auf dem Handy, das misst, <span class="nw">„3-Sek-Burp“</span> tippen und den Ton starten, sobald die Anzeige 3 zeigt.</p>
+        </div>
+      </div>
+
       <div class="result" id="result" hidden>
         <span class="label mute">Dein Burp</span>
         <b class="neon" id="res-num">–</b>
@@ -466,6 +503,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
             <div class="fotos"></div>
             <label class="add-foto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Foto von der Anlage<input type="file" name="foto" accept="image/*" multiple class="sr"></label>
           </div>
+          <div class="fld"><label class="check"><input type="checkbox" name="track"><span>Mit dem Dezi-Burp gemessen (Pflicht)</span></label></div>
           <input type="hidden" name="db">
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="acts">
@@ -527,7 +565,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       </div>
       <ol class="steps">
         <li class="step"><b class="neon">01</b><h3>Handy hinlegen</h3><p class="mute">Flach in die Mitte vom Armaturenbrett, Mikrofon (Unterseite) frei. Türen und Fenster zu.</p></li>
-        <li class="step"><b class="neon">02</b><h3>Burp starten</h3><p class="mute">„3-Sek-Burp“ tippen. Mit 10 Sekunden Vorlauf hast du Zeit, auszusteigen.</p></li>
+        <li class="step"><b class="neon">02</b><h3>Burp starten</h3><p class="mute">„3-Sek-Burp“ tippen und den Dezi-Burp über die Anlage starten, sobald die Anzeige 3 zeigt. Mit 10 Sekunden Vorlauf hast du Zeit, auszusteigen.</p></li>
         <li class="step"><b class="neon">03</b><h3>Foto machen</h3><p class="mute">Nach dem Burp macht die Seite selbst ein Ergebnis-Bild. Dazu gern ein Foto von deiner Anlage.</p></li>
         <li class="step"><b class="neon">04</b><h3>Einreichen</h3><p class="mute">Gleich nach dem Burp Name, Kontakt und Auto eintragen und abschicken. Matteo prüft es, dann kommt dein Wert in die Rangliste.</p></li>
       </ol>
@@ -535,6 +573,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <div>
           <h3>Was zählt</h3>
           <ul class="mute">
+            <li>Pflicht für alle: der Dezi-Burp als Ton. Eigene Lieder oder andere Töne zählen nicht.</li>
             <li>Der höchste Wert der 3-Sekunden-Messung mit „Nur Bass“ an.</li>
             <li>Mit Burp, Standard-Kalibrierung und Foto stehst du sofort in der Rangliste. Alles andere trägt Matteo nach der Prüfung ein.</li>
             <li>Kalibrierung auf Standard (+120), damit alle Handys gleich rechnen.</li>
@@ -580,6 +619,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
             <label class="add-foto" for="f-foto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Foto hinzufügen<input type="file" id="f-foto" name="foto" accept="image/*" multiple class="sr"></label>
             <small class="hint mute">Nach einem Burp hängt die Seite dein Ergebnis-Bild automatisch an. Dazu gern ein Foto von deiner Anlage.</small>
           </div>
+          <div class="fld"><label class="check" for="f-track"><input type="checkbox" id="f-track" name="track"><span>Mit dem Dezi-Burp gemessen (Pflicht)</span></label></div>
           <label class="fld" for="f-msg"><span class="label mute">Bemerkung</span><textarea id="f-msg" name="msg" placeholder="Was du noch sagen willst" maxlength="1500"></textarea></label>
           <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="acts">
@@ -609,7 +649,9 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
         <details><summary>Wird mein Ton aufgenommen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Nein. Die Seite misst nur die Lautstärke, direkt auf deinem Handy. Es wird nichts gespeichert oder hochgeladen. Deine eigenen Messwerte bleiben nur in deinem Browser.</p></details>
         <details><summary>Was passiert mit meiner Einreichung?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Sie geht an Matteo. Hast du mit dem 3-Sek-Burp gemessen und ein Foto dabei, stehst du sofort in der Rangliste. Matteo schaut sich die Fotos trotzdem an und kann Werte wieder rausnehmen. In der Rangliste stehen nur Name, Instagram, Auto, Anlage und Wert, nie deine Fotos oder deine E-Mail-Adresse.</p></details>
         <details><summary>Das Mikrofon geht nicht. Was tun?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Tipp auf das Schloss oder „aA“ neben der Adresse und erlaube das Mikrofon für mapq.at, dann neu laden. Am iPhone geht es in Safari, am Android-Handy in Chrome. In Apps wie Instagram die Seite lieber im Browser öffnen.</p></details>
-        <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier misst die Seite 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
+        <details><summary>Warum muss jeder den Dezi-Burp nehmen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Mit einem Lied gewinnt, wer die lauteste Stelle erwischt. Mit demselben Ton für alle zählt nur die Anlage. Der Ton läuft zwischen 30 und 60 Hz hin und her, so trifft jedes Auto seine stärkste Frequenz, egal wie es abgestimmt ist. Dauert 8 Sekunden: 3 Piepser, dann 5 Sekunden Bass.</p></details>
+        <details><summary>Kann ich den Ton vom selben Handy abspielen?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>Ja, mit Kabel: Beim Messer „Dezi-Burp von diesem Handy“ einschalten, dann läuft er beim 3-Sek-Burp genau im Takt mit. Über Bluetooth schalten viele Handys beim Messen auf Freisprechen, dann kommt kaum Bass. Sicherer ist ein zweites Handy oder die MP3 auf einem USB-Stick.</p></details>
+        <details><summary>Was heißt „Burp“?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>So heißt bei Bass-Wettbewerben ein kurzer Ton mit voller Lautstärke. Hier ist das der Dezi-Burp, und die Seite misst 3 Sekunden lang und merkt sich den höchsten Wert.</p></details>
       </div>
     </div>
   </section>
@@ -906,24 +948,60 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   $("#b-off").addEventListener("click",function(){ setOffset(STD_OFFSET); });
 
   /* 3-Sekunden-Burp */
-  var burp={phase:"idle",max:0,timer:0}, ov=$("#overlay");
-  function cancelBurp(){ clearInterval(burp.timer); if(burp.phase!=="done") burp.phase="idle"; ov.hidden=true; ov.classList.remove("rec"); $("#b-burp").disabled=false; }
+  /* Pflicht-Ton: der Dezi-Burp (dezi-burp.mp3: 3 Piepser bei 0, 1, 2 s, ab 2,8 s 5 s Bass 30↔60 Hz) */
+  var trA=$("#tr-audio"), trBtn=$("#tr-play"), trT=0, trOk=false, trWant=false, trackOn=load("dezi-track")==="1";
+  $("#o-track").checked=trackOn;
+  function zeit(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+  function trUI(){
+    var on=!trA.paused&&!trA.ended&&!trA.muted, d=trA.duration||8.3;
+    trBtn.setAttribute("aria-pressed",String(on)); trBtn.querySelector(".k-main").textContent=on?"Stopp":"Abspielen";
+    $("#tr-time").textContent=on?"-"+zeit(d-trA.currentTime):zeit(Math.floor(d));
+    $("#tr-fill").style.transform="scaleX("+(on?Math.min(1,trA.currentTime/d):0).toFixed(3)+")";
+    if(on) requestAnimationFrame(trUI);
+  }
+  ["play","pause","ended","loadedmetadata"].forEach(function(ev){ trA.addEventListener(ev,trUI); });
+  trA.addEventListener("ended",function(){ trWant=false; });
+  /* iPhone: Ton im Tipp freischalten, damit er später ohne Tipp starten darf */
+  function unlockTrack(){
+    if(trOk) return; trA.muted=true;
+    var pr=trA.play();
+    if(pr&&pr.then) pr.then(function(){ trOk=true; if(!trWant){ trA.pause(); try{ trA.currentTime=0; }catch(e){} } trA.muted=false; trUI(); },function(){ trA.muted=false; });
+    else trA.muted=false;
+  }
+  function playTrack(){
+    trWant=true; trA.muted=false; try{ trA.currentTime=0; }catch(e){}
+    var pr=trA.play(); if(pr&&pr.catch) pr.catch(function(){ trWant=false; toast("Der Ton startet hier nicht. Spiel ihn von einem anderen Gerät ab."); });
+    trUI();
+  }
+  function stopTrack(){ trWant=false; clearTimeout(trT); trA.pause(); try{ trA.currentTime=0; }catch(e){} trUI(); }
+  trBtn.addEventListener("click",function(){ if(trBtn.getAttribute("aria-pressed")==="true") stopTrack(); else playTrack(); });
+  $("#o-track").addEventListener("change",function(e){
+    trackOn=e.target.checked; save("dezi-track",trackOn?"1":"0"); if(trackOn) unlockTrack();
+    toast(trackOn?"Der Dezi-Burp läuft beim 3-Sek-Burp von diesem Handy mit.":"Der Dezi-Burp kommt von einem anderen Gerät.");
+  });
+
+  var burp={phase:"idle",max:0,timer:0,track:false}, ov=$("#overlay");
+  function burpLabel(n){ return n>3?"Gleich geht's los":trackOn?"Dezi-Burp läuft":n===3?"Jetzt Dezi-Burp starten!":"Gleich geht's los"; }
+  function cancelBurp(){ clearInterval(burp.timer); if(burp.phase!=="done") burp.phase="idle"; ov.hidden=true; ov.classList.remove("rec"); $("#b-burp").disabled=false; if(trackOn&&trWant) stopTrack(); }
   $("#b-cancel").addEventListener("click",cancelBurp);
   function doBurp(){
     $("#result").hidden=true;
+    if(trackOn) unlockTrack();
     var mt=$("#meter").getBoundingClientRect().top;
     if(mt<0||mt>window.innerHeight*.4) window.scrollTo({top:mt+window.scrollY-72,behavior:reduce?"auto":"smooth"});
     start().then(function(ok){
       if(!ok) return;
       var lead=parseInt($("#o-lead").value,10)||3, t0=performance.now(), recStart=t0+lead*1000, recEnd=recStart+3000;
-      burp.phase="count"; burp.max=0; $("#b-burp").disabled=true;
-      ov.hidden=false; $("#ov-bar").hidden=true; $("#ov-label").textContent="Gleich geht's los"; $("#ov-num").textContent=lead;
+      burp.phase="count"; burp.max=0; burp.track=false; $("#b-burp").disabled=true;
+      ov.hidden=false; $("#ov-bar").hidden=true; $("#ov-label").textContent=burpLabel(lead); $("#ov-num").textContent=lead;
+      if(trackOn){ clearTimeout(trT); trT=setTimeout(playTrack,Math.max(0,recStart-3000-performance.now())); }
       clearInterval(burp.timer);
       burp.timer=setInterval(function(){
         var n=performance.now();
-        if(n<recStart){ var c=String(Math.ceil((recStart-n)/1000)), on=$("#ov-num"); if(on.textContent!==c){ on.textContent=c; on.classList.remove("tick"); void on.offsetWidth; on.classList.add("tick"); } return; }
+        if(n<recStart){ var c=String(Math.ceil((recStart-n)/1000)), on=$("#ov-num"); if(on.textContent!==c){ on.textContent=c; $("#ov-label").textContent=burpLabel(+c); on.classList.remove("tick"); void on.offsetWidth; on.classList.add("tick"); } return; }
         if(n<recEnd){
           if(burp.phase!=="rec"){ burp.phase="rec"; ov.classList.add("rec"); $("#ov-num").classList.remove("tick"); $("#ov-label").textContent="Bass!"; $("#ov-bar").hidden=false; }
+          if(!trA.paused&&!trA.muted) burp.track=true;
           $("#ov-num").textContent=fmt(Math.max(burp.max,M.db));
           $("#ov-fill").style.transform="scaleX("+((n-recStart)/3000).toFixed(3)+")";
           return;
@@ -941,6 +1019,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     addMine({db:v,hz:hz,t:Date.now(),typ:"Burp",off:offset});
     fillForm(v,{typ:"3-Sek-Burp",hz:hz});
     zeigeSchnell(v);
+    if(burp.track) FORMS.forEach(function(o){ o.f.track.checked=true; clearErr(o.f.track); });
     beleg(v,hz).then(function(b){ if(b) addFoto(b,true); });
     toast("Burp gemessen: "+fmt(v)+" dB");
     confetti();
@@ -1047,7 +1126,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       x.globalAlpha=on?1:.15; x.fillStyle=mix(i/29); x.fillRect(100+i*(lw+8),930,lw,26);
     }
     x.globalAlpha=1; x.fillStyle="#E6FDFF"; x.font="500 40px "+BODY;
-    x.fillText("3-Sek-Burp"+(hz?" · Bass-Spitze "+hz+" Hz":""),W/2,1070);
+    x.fillText((burp.track?"Dezi-Burp":"3-Sek-Burp")+(hz?" · Bass-Spitze "+hz+" Hz":""),W/2,1070);
     x.fillText((bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",","),W/2,1125);
     x.fillStyle="#A3A8C3"; x.fillText(new Date().toLocaleString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),W/2,1180);
     x.fillStyle=gr; x.font="800 44px "+HEAD; x.fillText("mapq.at/dezi",W/2,1262);
@@ -1061,7 +1140,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   function formular(form,box,doneBox){
     function el(n){ return form.elements.namedItem(n); }
     var o={form:form,box:box,done:doneBox,out:form.querySelector(".out"),btn:form.querySelector("button[type=submit]"),sending:false,
-      f:{name:el("name"),kontakt:el("kontakt"),auto:el("auto"),db:el("db"),anlage:el("anlage"),msg:el("msg"),foto:el("foto"),website:el("website")}};
+      f:{name:el("name"),kontakt:el("kontakt"),auto:el("auto"),db:el("db"),anlage:el("anlage"),msg:el("msg"),foto:el("foto"),track:el("track"),website:el("website")}};
     form.addEventListener("input",function(e){ if(e.target.closest(".fld.bad")) clearErr(e.target); });
     o.f.foto.addEventListener("change",function(){
       var all=Array.prototype.slice.call(o.f.foto.files||[]), files=all.slice(0,Math.max(0,MAXF-FOTOS.length));
@@ -1080,17 +1159,19 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   }
   function valid(o){
     var ok=true, f=o.f;
-    [f.name,f.kontakt,f.auto,f.db,f.foto].forEach(function(x){ if(x.type!=="hidden") clearErr(x); });
+    [f.name,f.kontakt,f.auto,f.db,f.foto,f.track].forEach(function(x){ if(x.type!=="hidden") clearErr(x); });
     if(!f.name.value.trim()){ err(f.name,"Bitte gib deinen Namen an."); ok=false; }
     if(kontakt(o).length<3){ err(f.kontakt,"Wie erreicht dich Matteo? Instagram oder E-Mail."); ok=false; }
     if(!f.auto.value.trim()){ err(f.auto,"Welches Auto?"); ok=false; }
     var v=num(f.db.value); if(!(v>0&&v<200)){ if(f.db.type==="hidden") toast("Miss zuerst deinen Wert."); else err(f.db,"Bitte einen Wert wie 128,4 eingeben."); ok=false; }
     if(!FOTOS.length){ err(f.foto,"Bitte mindestens ein Foto anhängen."); ok=false; }
+    if(!f.track.checked){ err(f.track,"Gemessen wird nur mit dem Dezi-Burp. Hak es an, wenn er gelaufen ist."); ok=false; }
     if(!ok){ var b=o.form.querySelector(".fld.bad input:not([type=file])"); if(b) b.focus(); else { var fb=o.form.querySelector(".fld.bad"); if(fb) fb.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"}); } }
     return ok;
   }
   /* Automatisch in die Rangliste nur mit Burp, „Nur Bass“, Standard-Kalibrierung und hochgeladenem Foto */
-  function autoGrund(v,urls){
+  function autoGrund(v,urls,o){
+    if(o&&!o.f.track.checked) return "ohne Dezi-Burp";
     if(!(meta.typ==="3-Sek-Burp"&&meta.v!=null&&Math.abs(meta.v-v)<.05)) return "Wert selbst eingetragen";
     if(offset!==STD_OFFSET) return "Kalibrierung nicht Standard";
     if(!bassOnly) return "nicht mit „Nur Bass“ gemessen";
@@ -1105,11 +1186,12 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
     return [
       "Wert: "+fmt(v)+" dB",
       "Messung: "+(same?meta.typ:"selbst eingetragen")+(same&&meta.hz?" · Bass-Spitze "+meta.hz+" Hz":"")+" · "+(bassOnly?"Nur Bass":"Ganzer Ton")+" · Kalibrierung "+(offset>=0?"+":"")+String(offset).replace(".",",")+(offset===STD_OFFSET?" (Standard)":" (NICHT Standard)"),
+      "Ton: "+(f.track.checked?"Dezi-Burp"+(same&&burp.track?" (von der Seite abgespielt)":" (bestätigt)"):"NICHT mit dem Dezi-Burp"),
       "Auto: "+f.auto.value.trim(),
       f.anlage.value.trim()&&"Anlage: "+f.anlage.value.trim(),
       urls.length?"Fotos:\n"+urls.join("\n"):"",
       fotoFehler?"Fotos: Hochladen hat nicht geklappt, kommen per Instagram":"",
-      autoGrund(v,urls)?"Rangliste: wartet auf deine Bestätigung ("+autoGrund(v,urls)+")":"Rangliste: wird automatisch eingetragen (Burp mit Foto)",
+      autoGrund(v,urls,o)?"Rangliste: wartet auf deine Bestätigung ("+autoGrund(v,urls,o)+")":"Rangliste: wird automatisch eingetragen (Burp mit Foto)",
       msg&&"\nBemerkung:\n"+msg,
       "\nFür die Rangliste (dezi/rangliste.json):\n"+JSON.stringify(eintrag)
     ].filter(Boolean).join("\n").slice(0,4000);
@@ -1144,7 +1226,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
       })});
     }).then(function(r){
       if(!r.ok) throw new Error(r.status);
-      if(autoGrund(v,urls)) return;
+      if(autoGrund(v,urls,o)) return;
       var k=kontakt(o);
       return fetch(base+"/rest/v1/dezi_rangliste",{method:"POST",headers:Object.assign({"Content-Type":"application/json",Prefer:"return=minimal"},h),body:JSON.stringify({
         anfrage:aid, name:f.name.value.trim().slice(0,60), instagram:k[0]==="@"?k.slice(0,60):null, auto:f.auto.value.trim().slice(0,80),
@@ -1173,7 +1255,7 @@ dialog::backdrop{background:rgba(5,3,10,.6);backdrop-filter:blur(4px);-webkit-ba
   function fillForm(v,m){ F.db.value=fmt(v); meta={typ:(m&&m.typ)||"selbst eingetragen",hz:(m&&m.hz)||0,v:v}; clearErr(F.db); }
   function zeigeSchnell(v){
     QF.f.db.value=fmt(v); QF.out.textContent=""; QF.out.className="out";
-    [QF.f.name,QF.f.kontakt,QF.f.auto,QF.f.foto].forEach(clearErr);
+    [QF.f.name,QF.f.kontakt,QF.f.auto,QF.f.foto,QF.f.track].forEach(clearErr);
     vorbelegen(QF); QF.box.hidden=false; QF.done.hidden=true;
   }
   MF.done.querySelector(".done-again").addEventListener("click",function(){
