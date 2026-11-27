@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-27T11:19:34.719Z",
+  "updatedAt": "2026-11-27T11:21:00.430Z",
   "site": {
     "kicker": "Fotografie · Tirol, Österreich",
     "lede": "Autos, Motorräder und Motorsport. Fotografiert von Matteo Hanser in Tirol.",
@@ -24,7 +24,7 @@
       "f": "dsc02339-g84f",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 1.7778,
       "hl": false
@@ -33,7 +33,7 @@
       "f": "dsc02528-7ivm",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 0.5625,
       "hl": false
@@ -42,16 +42,16 @@
       "f": "dsc02570-bnwj",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 0.5625,
-      "hl": false
+      "hl": true
     },
     {
       "f": "dsc03206-mei5",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 0.5625,
       "hl": false
@@ -60,7 +60,7 @@
       "f": "dsc03278-cx9x",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 0.5625,
       "hl": false
@@ -69,7 +69,7 @@
       "f": "dsc03398-w9lp",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 0.5625,
       "hl": false
@@ -78,10 +78,10 @@
       "f": "dsc03551-71rw",
       "t": "",
       "c": [
-        "auto"
+        "outdoor"
       ],
       "ar": 0.5631,
-      "hl": false
+      "hl": true
     },
     {
       "f": "dsc01267-m1ae",
